@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initFAQ();
     initActiveNavLink();
     initCourseFilter();
+    initCurriculumTabs();
 });
 
 /* ============================================
@@ -464,6 +465,35 @@ function initContactForm() {
             submitBtn.disabled = false;
             submitBtn.style.background = '';
         }, 5000);
+    });
+}
+
+/* ============================================
+   CURRICULUM LEVEL TABS
+   ============================================ */
+function initCurriculumTabs() {
+    const tabs = document.querySelectorAll('.curriculum-tab');
+    const levels = document.querySelectorAll('.curriculum-level');
+
+    if (tabs.length === 0) return;
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const level = tab.dataset.level;
+
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Update active level content
+            levels.forEach(l => {
+                if (l.dataset.level === level) {
+                    l.classList.add('active');
+                } else {
+                    l.classList.remove('active');
+                }
+            });
+        });
     });
 }
 
