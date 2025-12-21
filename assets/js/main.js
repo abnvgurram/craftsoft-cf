@@ -449,7 +449,7 @@ function initContactForm() {
         const whatsappMsg = `Hi Abhi's Craftsoft!%0A%0AI'm interested in: *${interest}*%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Message:* ${message}`;
 
         // Redirect to WhatsApp
-        window.open(`https://wa.me/917584223909?text=${whatsappMsg}`, '_blank');
+        window.open(`https://wa.me/917842239090?text=${whatsappMsg}`, '_blank');
 
         // Optional: Show success message on current page
         const submitBtn = form.querySelector('button[type="submit"]');
