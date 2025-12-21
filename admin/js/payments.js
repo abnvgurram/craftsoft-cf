@@ -1,4 +1,4 @@
-// Payments Page Logic
+// Payments Page Logic - Enhanced with Material Icons
 
 let allPayments = [];
 
@@ -54,9 +54,9 @@ function renderPayments(payments) {
     if (payments.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="6">
+                <td colspan="5">
                     <div class="empty-state">
-                        <i class="fas fa-receipt"></i>
+                        <span class="material-icons">receipt</span>
                         <h3>No payments found</h3>
                         <p>Payment records will appear here</p>
                     </div>
@@ -68,24 +68,23 @@ function renderPayments(payments) {
 
     tbody.innerHTML = payments.map(payment => {
         const paymentDate = payment.createdAt?.toDate?.()
-            ? payment.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+            ? payment.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
             : '-';
 
         const modeIcons = {
-            'cash': '<i class="fas fa-money-bill" style="color: var(--success);"></i> Cash',
-            'razorpay': '<i class="fas fa-credit-card" style="color: var(--info);"></i> Razorpay',
-            'upi': '<i class="fas fa-mobile-alt" style="color: var(--primary);"></i> UPI',
-            'bank': '<i class="fas fa-university" style="color: var(--gray-600);"></i> Bank'
+            'cash': '<span class="material-icons" style="color: #10B981; font-size: 18px; vertical-align: middle;">payments</span> Cash',
+            'razorpay': '<span class="material-icons" style="color: #3B82F6; font-size: 18px; vertical-align: middle;">credit_card</span> Razorpay',
+            'upi': '<span class="material-icons" style="color: #6C5CE7; font-size: 18px; vertical-align: middle;">smartphone</span> UPI',
+            'bank': '<span class="material-icons" style="color: #64748b; font-size: 18px; vertical-align: middle;">account_balance</span> Bank'
         };
 
         return `
             <tr>
-                <td><strong>${payment.receiptNumber || '-'}</strong></td>
+                <td><strong style="font-size: 0.8rem;">${payment.receiptNumber || '-'}</strong></td>
                 <td>${payment.studentName || '-'}</td>
-                <td style="color: var(--success); font-weight: 700;">${formatCurrency(payment.amount)}</td>
+                <td style="color: #10B981; font-weight: 700;">${formatCurrency(payment.amount)}</td>
                 <td>${modeIcons[payment.mode] || payment.mode}</td>
-                <td><small>${paymentDate}</small></td>
-                <td><small style="color: var(--gray-500);">${payment.notes || '-'}</small></td>
+                <td><small style="color: #64748b;">${paymentDate}</small></td>
             </tr>
         `;
     }).join('');
@@ -124,7 +123,7 @@ function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.innerHTML = `
-        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span class="material-icons">${type === 'success' ? 'check_circle' : 'error'}</span>
         <span>${message}</span>
     `;
     container.appendChild(toast);

@@ -3,40 +3,46 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#2896cd">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Dashboard - Craft Soft Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/admin.css">
 </head>
 
 <body>
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
     <div class="admin-layout">
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <a href="dashboard.html" class="sidebar-logo">
-                    <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="logo-icon"><span class="material-icons">school</span></div>
                     <span>Craft Soft</span>
                 </a>
             </div>
 
             <nav class="sidebar-nav">
                 <a href="dashboard.html" class="nav-item active">
-                    <i class="fas fa-home"></i>
+                    <span class="material-icons">dashboard</span>
                     <span>Dashboard</span>
                 </a>
                 <a href="students.html" class="nav-item">
-                    <i class="fas fa-user-graduate"></i>
+                    <span class="material-icons">people</span>
                     <span>Students</span>
                 </a>
                 <a href="payments.html" class="nav-item">
-                    <i class="fas fa-credit-card"></i>
+                    <span class="material-icons">payments</span>
                     <span>Payments</span>
                 </a>
             </nav>
@@ -49,7 +55,7 @@
                         <div class="role">Administrator</div>
                     </div>
                     <button class="btn-logout" onclick="logout()" title="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="material-icons">logout</span>
                     </button>
                 </div>
             </div>
@@ -57,13 +63,21 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <div class="page-header">
+            <!-- Mobile Header -->
+            <div class="mobile-header" style="display: none;">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <span class="material-icons">menu</span>
+                </button>
+                <h1 style="font-size: 1.25rem;">Dashboard</h1>
+            </div>
+
+            <div class="page-header desktop-only">
                 <div>
                     <h1>Dashboard</h1>
                     <p class="date" id="currentDate"></p>
                 </div>
                 <button class="btn btn-primary" onclick="openAddStudentModal()">
-                    <i class="fas fa-plus"></i> New Admission
+                    <span class="material-icons">add</span> New Admission
                 </button>
             </div>
 
@@ -71,28 +85,28 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon blue">
-                        <i class="fas fa-user-graduate"></i>
+                        <span class="material-icons">school</span>
                     </div>
                     <div class="stat-value" id="totalStudents">0</div>
                     <div class="stat-label">Total Students</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon green">
-                        <i class="fas fa-rupee-sign"></i>
+                        <span class="material-icons">currency_rupee</span>
                     </div>
                     <div class="stat-value" id="totalRevenue">₹0</div>
                     <div class="stat-label">Total Revenue</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon orange">
-                        <i class="fas fa-clock"></i>
+                        <span class="material-icons">pending</span>
                     </div>
                     <div class="stat-value" id="pendingAmount">₹0</div>
                     <div class="stat-label">Pending Amount</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon purple">
-                        <i class="fas fa-check-circle"></i>
+                        <span class="material-icons">verified</span>
                     </div>
                     <div class="stat-value" id="paidStudents">0</div>
                     <div class="stat-label">Fully Paid</div>
@@ -102,10 +116,10 @@
             <!-- Recent Activity -->
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-clock"></i> Recent Admissions</h2>
+                    <h2><span class="material-icons">history</span> Recent Admissions</h2>
                     <a href="students.html" class="btn btn-outline btn-sm">View All</a>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="padding: 0;">
                     <div class="table-responsive">
                         <table>
                             <thead>
@@ -122,7 +136,7 @@
                                 <tr>
                                     <td colspan="6">
                                         <div class="empty-state">
-                                            <i class="fas fa-users"></i>
+                                            <span class="material-icons">group</span>
                                             <h3>No students yet</h3>
                                             <p>Click "New Admission" to add your first student</p>
                                         </div>
@@ -136,12 +150,35 @@
         </main>
     </div>
 
+    <!-- FAB for Mobile -->
+    <button class="fab" onclick="openAddStudentModal()" title="New Admission">
+        <span class="material-icons">add</span>
+    </button>
+
+    <!-- Bottom Navigation - Mobile -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="bottom-nav-item active">
+            <span class="material-icons">dashboard</span>
+            <span>Home</span>
+        </a>
+        <a href="students.html" class="bottom-nav-item">
+            <span class="material-icons">people</span>
+            <span>Students</span>
+        </a>
+        <a href="payments.html" class="bottom-nav-item">
+            <span class="material-icons">payments</span>
+            <span>Payments</span>
+        </a>
+    </nav>
+
     <!-- Add Student Modal -->
     <div class="modal-overlay" id="addStudentModal">
         <div class="modal">
             <div class="modal-header">
-                <h3><i class="fas fa-user-plus"></i> New Admission</h3>
-                <button class="modal-close" onclick="closeModal('addStudentModal')">&times;</button>
+                <h3><span class="material-icons">person_add</span> New Admission</h3>
+                <button class="modal-close" onclick="closeModal('addStudentModal')">
+                    <span class="material-icons">close</span>
+                </button>
             </div>
             <form id="addStudentForm">
                 <div class="modal-body">
@@ -209,7 +246,7 @@
                     <button type="button" class="btn btn-outline"
                         onclick="closeModal('addStudentModal')">Cancel</button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-check"></i> Create Admission
+                        <span class="material-icons">check</span> Create Admission
                     </button>
                 </div>
             </form>
@@ -220,8 +257,10 @@
     <div class="modal-overlay" id="addPaymentModal">
         <div class="modal">
             <div class="modal-header">
-                <h3><i class="fas fa-rupee-sign"></i> Record Payment</h3>
-                <button class="modal-close" onclick="closeModal('addPaymentModal')">&times;</button>
+                <h3><span class="material-icons">payments</span> Record Payment</h3>
+                <button class="modal-close" onclick="closeModal('addPaymentModal')">
+                    <span class="material-icons">close</span>
+                </button>
             </div>
             <form id="addPaymentForm">
                 <div class="modal-body">
@@ -232,7 +271,7 @@
                     </div>
                     <div class="form-group">
                         <label>Pending Amount</label>
-                        <input type="text" id="pendingDisplayAmount" readonly style="color: #E17055; font-weight: 600;">
+                        <input type="text" id="pendingDisplayAmount" readonly style="color: #EF4444; font-weight: 600;">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
@@ -253,20 +292,61 @@
                         <label>Notes (Optional)</label>
                         <textarea id="paymentNotes" rows="2" placeholder="Payment reference or notes..."></textarea>
                     </div>
+
+                    <!-- Razorpay Payment Link Option -->
+                    <div style="margin-top: 16px; padding: 16px; background: #EEF2FF; border-radius: 12px;">
+                        <p style="font-size: 0.85rem; color: #4338CA; margin-bottom: 12px;">
+                            <span class="material-icons" style="font-size: 18px; vertical-align: middle;">link</span>
+                            Or send payment link to student
+                        </p>
+                        <button type="button" class="btn btn-razorpay btn-sm" onclick="generatePaymentLink()">
+                            <span class="material-icons">send</span> Generate Razorpay Link
+                        </button>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline"
                         onclick="closeModal('addPaymentModal')">Cancel</button>
                     <button type="submit" class="btn btn-success">
-                        <i class="fas fa-check"></i> Record Payment
+                        <span class="material-icons">check</span> Record Payment
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- Payment History Modal -->
+    <div class="modal-overlay" id="paymentHistoryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><span class="material-icons">receipt_long</span> Payment History</h3>
+                <button class="modal-close" onclick="closeModal('paymentHistoryModal')">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="studentInfoHeader"
+                    style="margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+                    <!-- Student info will be inserted here -->
+                </div>
+                <ul class="payment-timeline" id="paymentTimeline">
+                    <!-- Timeline items will be inserted here -->
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-whatsapp" onclick="shareReceiptWhatsApp()">
+                    <span class="material-icons">share</span> Share via WhatsApp
+                </button>
+                <button type="button" class="btn btn-outline" onclick="closeModal('paymentHistoryModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Snackbar -->
+    <div class="snackbar" id="snackbar"></div>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -275,6 +355,33 @@
     <script src="js/firebase-config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>
+
+    <script>
+        // Mobile responsiveness
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        }
+
+        // Show mobile header on small screens
+        if (window.innerWidth <= 768) {
+            document.querySelector('.mobile-header').style.display = 'flex';
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 768) {
+                document.querySelector('.mobile-header').style.display = 'flex';
+            } else {
+                document.querySelector('.mobile-header').style.display = 'none';
+                closeSidebar();
+            }
+        });
+    </script>
 </body>
 
 </html>

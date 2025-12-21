@@ -42,7 +42,12 @@ if (loginForm) {
             // Redirect handled by onAuthStateChanged
         } catch (error) {
             // Show error
-            errorMessage.textContent = getErrorMessage(error.code);
+            const errorText = document.getElementById('errorText');
+            if (errorText) {
+                errorText.textContent = getErrorMessage(error.code);
+            } else {
+                errorMessage.textContent = getErrorMessage(error.code);
+            }
             errorMessage.classList.add('show');
 
             // Reset button
@@ -55,16 +60,14 @@ if (loginForm) {
 // Toggle Password Visibility
 function togglePassword() {
     const passwordInput = document.getElementById('password');
-    const toggleBtn = document.querySelector('.toggle-password i');
+    const toggleIcon = document.getElementById('toggleIcon');
 
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
-        toggleBtn.classList.remove('fa-eye');
-        toggleBtn.classList.add('fa-eye-slash');
+        if (toggleIcon) toggleIcon.textContent = 'visibility_off';
     } else {
         passwordInput.type = 'password';
-        toggleBtn.classList.remove('fa-eye-slash');
-        toggleBtn.classList.add('fa-eye');
+        if (toggleIcon) toggleIcon.textContent = 'visibility';
     }
 }
 

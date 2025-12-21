@@ -1,4 +1,8 @@
 // Dashboard Logic for Craft Soft Admin
+// Enhanced with WhatsApp, Payment Links, History, and Mobile features
+
+// Current student for payment history
+let currentStudentData = null;
 
 // Set current date
 document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
@@ -43,11 +47,11 @@ async function loadDashboardData() {
             }
         });
 
-        // Update stats
-        document.getElementById('totalStudents').textContent = totalStudents;
+        // Update stats with animation
+        animateValue('totalStudents', totalStudents);
         document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
         document.getElementById('pendingAmount').textContent = formatCurrency(totalPending);
-        document.getElementById('paidStudents').textContent = fullyPaid;
+        animateValue('paidStudents', fullyPaid);
 
         // Update recent students table (show last 5)
         updateRecentStudentsTable(students.slice(0, 5));
@@ -56,6 +60,12 @@ async function loadDashboardData() {
         console.error('Error loading dashboard:', error);
         showToast('Error loading data', 'error');
     }
+}
+
+// Animate number values
+function animateValue(elementId, value) {
+    const element = document.getElementById(elementId);
+    element.textContent = value;
 }
 
 // Update Recent Students Table
@@ -67,7 +77,7 @@ function updateRecentStudentsTable(students) {
             <tr>
                 <td colspan="6">
                     <div class="empty-state">
-                        <i class="fas fa-users"></i>
+                        <span class="material-icons">group</span>
                         <h3>No students yet</h3>
                         <p>Click "New Admission" to add your first student</p>
                     </div>
@@ -94,19 +104,24 @@ function updateRecentStudentsTable(students) {
             <tr>
                 <td>
                     <strong>${student.name}</strong>
-                    <br><small style="color: var(--gray-500);">${student.phone || '-'}</small>
+                    <br><small style="color: #64748b;">${student.phone || '-'}</small>
                 </td>
                 <td>${student.course}</td>
                 <td>${formatCurrency(student.totalFee)}</td>
-                <td>${formatCurrency(student.paidAmount)}</td>
+                <td style="color: #10B981; font-weight: 600;">${formatCurrency(student.paidAmount)}</td>
                 <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                 <td>
-                    ${pending > 0 ? `<button class="btn btn-success btn-sm" onclick="openPaymentModal('${student.id}', '${student.name}', ${pending})">
-                        <i class="fas fa-plus"></i> Pay
-                    </button>` : ''}
-                    <button class="btn btn-outline btn-sm" onclick="generateReceipt('${student.id}')">
-                        <i class="fas fa-file-pdf"></i>
-                    </button>
+                    <div class="action-buttons">
+                        ${pending > 0 ? `<button class="btn btn-success btn-sm btn-icon" onclick="openPaymentModal('${student.id}', '${student.name}', ${pending})" title="Add Payment">
+                            <span class="material-icons">add</span>
+                        </button>` : ''}
+                        <button class="btn btn-outline btn-sm btn-icon" onclick="openPaymentHistory('${student.id}')" title="Payment History">
+                            <span class="material-icons">receipt_long</span>
+                        </button>
+                        <button class="btn btn-whatsapp btn-sm btn-icon" onclick="shareViaWhatsApp('${student.id}')" title="Share via WhatsApp">
+                            <span class="material-icons">share</span>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -145,6 +160,227 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
         }
     });
 });
+
+// Escape key to close modals
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+            modal.classList.remove('active');
+        });
+    }
+});
+
+// ============================================
+// PAYMENT HISTORY - New Feature
+// ============================================
+async function openPaymentHistory(studentId) {
+    try {
+        // Get student data
+        const studentDoc = await db.collection('students').doc(studentId).get();
+        const student = { id: studentDoc.id, ...studentDoc.data() };
+        currentStudentData = student;
+
+        const pending = student.totalFee - student.paidAmount;
+
+        // Update student info header
+        document.getElementById('studentInfoHeader').innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h4 style="font-size: 1.1rem; margin-bottom: 4px;">${student.name}</h4>
+                    <p style="color: #64748b; font-size: 0.85rem;">${student.course}</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 0.8rem; color: #64748b;">Balance</p>
+                    <p style="font-size: 1.25rem; font-weight: 700; color: ${pending > 0 ? '#EF4444' : '#10B981'};">
+                        ${formatCurrency(pending)}
+                    </p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 100px; background: #f1f5f9; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="font-size: 0.75rem; color: #64748b;">Total Fee</p>
+                    <p style="font-weight: 600;">${formatCurrency(student.totalFee)}</p>
+                </div>
+                <div style="flex: 1; min-width: 100px; background: #ECFDF5; padding: 12px; border-radius: 8px; text-align: center;">
+                    <p style="font-size: 0.75rem; color: #64748b;">Paid</p>
+                    <p style="font-weight: 600; color: #10B981;">${formatCurrency(student.paidAmount)}</p>
+                </div>
+            </div>
+        `;
+
+        // Get payment history
+        const paymentsSnapshot = await db.collection('payments')
+            .where('studentId', '==', studentId)
+            .orderBy('createdAt', 'desc')
+            .get();
+
+        const timeline = document.getElementById('paymentTimeline');
+
+        if (paymentsSnapshot.empty) {
+            timeline.innerHTML = `
+                <div class="empty-state" style="padding: 40px 20px;">
+                    <span class="material-icons">receipt</span>
+                    <h3>No payments recorded</h3>
+                    <p>Add a payment to see history</p>
+                </div>
+            `;
+        } else {
+            let timelineHTML = '';
+            paymentsSnapshot.forEach(doc => {
+                const payment = doc.data();
+                const date = payment.createdAt?.toDate?.()
+                    ? payment.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                    : 'Unknown';
+                const time = payment.createdAt?.toDate?.()
+                    ? payment.createdAt.toDate().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+                    : '';
+
+                const iconClass = payment.mode === 'cash' ? 'cash' : 'online';
+                const modeIcon = payment.mode === 'cash' ? 'payments' : 'credit_card';
+
+                timelineHTML += `
+                    <li class="payment-timeline-item">
+                        <div class="timeline-icon ${iconClass}">
+                            <span class="material-icons">${modeIcon}</span>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="amount">${formatCurrency(payment.amount)}</div>
+                            <div class="meta">
+                                <span class="material-icons" style="font-size: 14px; vertical-align: middle;">calendar_today</span> ${date} at ${time}
+                                • ${payment.mode?.toUpperCase() || 'N/A'}
+                            </div>
+                            ${payment.notes ? `<div style="font-size: 0.8rem; color: #475569; margin-top: 8px;">${payment.notes}</div>` : ''}
+                            <div class="receipt-num">
+                                <span class="material-icons" style="font-size: 12px; vertical-align: middle;">confirmation_number</span> ${payment.receiptNumber || '-'}
+                            </div>
+                        </div>
+                    </li>
+                `;
+            });
+            timeline.innerHTML = timelineHTML;
+        }
+
+        document.getElementById('paymentHistoryModal').classList.add('active');
+
+    } catch (error) {
+        console.error('Error loading payment history:', error);
+        showToast('Error loading payment history', 'error');
+    }
+}
+
+// ============================================
+// WHATSAPP RECEIPT - New Feature
+// ============================================
+async function shareViaWhatsApp(studentId) {
+    try {
+        const studentDoc = await db.collection('students').doc(studentId).get();
+        const student = studentDoc.data();
+
+        const pending = student.totalFee - student.paidAmount;
+        const status = pending <= 0 ? '✅ FULLY PAID' : '⏳ PARTIAL PAYMENT';
+
+        // Get last payment
+        const paymentsSnapshot = await db.collection('payments')
+            .where('studentId', '==', studentId)
+            .orderBy('createdAt', 'desc')
+            .limit(1)
+            .get();
+
+        let lastPaymentInfo = '';
+        paymentsSnapshot.forEach(doc => {
+            const p = doc.data();
+            lastPaymentInfo = `\n💳 Last Payment: ₹${p.amount?.toLocaleString('en-IN')} (${p.mode})`;
+        });
+
+        const message = `🎓 *Abhi's Craft Soft*
+━━━━━━━━━━━━━━━━━━
+📋 *Payment Receipt*
+━━━━━━━━━━━━━━━━━━
+
+👤 *Student:* ${student.name}
+📚 *Course:* ${student.course}
+📱 *Phone:* ${student.phone || '-'}
+
+💰 *Total Fee:* ₹${student.totalFee?.toLocaleString('en-IN')}
+✅ *Paid:* ₹${student.paidAmount?.toLocaleString('en-IN')}
+${pending > 0 ? `⏳ *Balance:* ₹${pending.toLocaleString('en-IN')}` : ''}
+${lastPaymentInfo}
+
+🏷️ *Status:* ${status}
+
+━━━━━━━━━━━━━━━━━━
+📍 Vanasthalipuram, Hyderabad
+📞 +91 7842239090
+🌐 www.craftsoft.co.in
+
+Thank you for choosing Craft Soft! 🙏`;
+
+        const phoneNumber = student.phone ? `91${student.phone}` : '';
+        const whatsappUrl = phoneNumber
+            ? `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+            : `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+        window.open(whatsappUrl, '_blank');
+        showSnackbar('Opening WhatsApp...');
+
+    } catch (error) {
+        console.error('Error sharing via WhatsApp:', error);
+        showToast('Error sharing receipt', 'error');
+    }
+}
+
+// Share current student receipt via WhatsApp (from modal)
+function shareReceiptWhatsApp() {
+    if (currentStudentData) {
+        shareViaWhatsApp(currentStudentData.id);
+    }
+}
+
+// ============================================
+// RAZORPAY PAYMENT LINK - New Feature
+// ============================================
+function generatePaymentLink() {
+    const studentName = document.getElementById('paymentStudentName').value;
+    const amount = document.getElementById('paymentAmount').value || document.getElementById('pendingDisplayAmount').value.replace(/[₹,]/g, '');
+    const studentId = document.getElementById('paymentStudentId').value;
+
+    // For now, create a pre-filled Razorpay payment link message
+    // In production, you'd use Razorpay API with server-side integration
+
+    const message = `💳 *Payment Link Request*
+
+Hi ${studentName}!
+
+Please use the following details to make your payment:
+
+💰 Amount: ₹${parseInt(amount).toLocaleString('en-IN')}
+🏦 UPI: craftsoft@upi
+📱 Phone Pay / Google Pay: 7842239090
+
+Or scan the QR code at our center.
+
+After payment, please share the screenshot.
+
+━━━━━━━━━━━━━━━━━━
+*Abhi's Craft Soft*
+📞 +91 7842239090`;
+
+    // Get student phone from the form or storage
+    db.collection('students').doc(studentId).get().then(doc => {
+        const student = doc.data();
+        const phoneNumber = student.phone ? `91${student.phone}` : '';
+        const whatsappUrl = phoneNumber
+            ? `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+            : `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+        window.open(whatsappUrl, '_blank');
+        showSnackbar('Payment link sent via WhatsApp!');
+    });
+}
+
+// ============================================
+// FORM HANDLERS
+// ============================================
 
 // Add Student Form Handler
 document.getElementById('addStudentForm').addEventListener('submit', async (e) => {
@@ -193,6 +429,15 @@ document.getElementById('addStudentForm').addEventListener('submit', async (e) =
         showToast('Student added successfully!', 'success');
         closeModal('addStudentModal');
         loadDashboardData();
+
+        // Offer to share via WhatsApp
+        if (phone) {
+            setTimeout(() => {
+                if (confirm('Send admission confirmation via WhatsApp?')) {
+                    shareViaWhatsApp(studentRef.id);
+                }
+            }, 500);
+        }
 
     } catch (error) {
         console.error('Error adding student:', error);
@@ -248,132 +493,22 @@ document.getElementById('addPaymentForm').addEventListener('submit', async (e) =
         closeModal('addPaymentModal');
         loadDashboardData();
 
+        // Offer to share receipt via WhatsApp
+        setTimeout(() => {
+            if (confirm('Send payment receipt via WhatsApp?')) {
+                shareViaWhatsApp(studentId);
+            }
+        }, 500);
+
     } catch (error) {
         console.error('Error recording payment:', error);
         showToast('Error recording payment', 'error');
     }
 });
 
-// Generate Receipt (Simple version - opens print dialog)
-async function generateReceipt(studentId) {
-    try {
-        const studentDoc = await db.collection('students').doc(studentId).get();
-        const student = studentDoc.data();
-
-        const paymentsSnapshot = await db.collection('payments')
-            .where('studentId', '==', studentId)
-            .orderBy('createdAt', 'desc')
-            .limit(1)
-            .get();
-
-        let lastPayment = null;
-        paymentsSnapshot.forEach(doc => {
-            lastPayment = doc.data();
-        });
-
-        const pending = student.totalFee - student.paidAmount;
-
-        // Create receipt HTML
-        const receiptHTML = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Receipt - ${student.name}</title>
-                <style>
-                    body { font-family: 'Inter', Arial, sans-serif; padding: 40px; max-width: 600px; margin: 0 auto; }
-                    .header { text-align: center; border-bottom: 2px solid #6C5CE7; padding-bottom: 20px; margin-bottom: 30px; }
-                    .logo { font-size: 24px; font-weight: 700; color: #6C5CE7; }
-                    .receipt-title { font-size: 18px; color: #666; margin-top: 10px; }
-                    .receipt-number { background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 20px 0; text-align: center; }
-                    .details { margin: 20px 0; }
-                    .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-                    .row.total { border-top: 2px solid #333; border-bottom: none; font-weight: 700; font-size: 18px; }
-                    .label { color: #666; }
-                    .value { font-weight: 600; }
-                    .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px; }
-                    .status { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-                    .status.paid { background: #d4edda; color: #155724; }
-                    .status.partial { background: #fff3cd; color: #856404; }
-                    @media print { body { padding: 20px; } }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <div class="logo">🎓 Abhi's Craft Soft</div>
-                    <div class="receipt-title">Payment Receipt</div>
-                </div>
-                
-                <div class="receipt-number">
-                    <strong>Receipt #:</strong> ${lastPayment?.receiptNumber || student.receiptPrefix || 'N/A'}
-                </div>
-                
-                <div class="details">
-                    <div class="row">
-                        <span class="label">Student Name:</span>
-                        <span class="value">${student.name}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Phone:</span>
-                        <span class="value">${student.phone || '-'}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Course:</span>
-                        <span class="value">${student.course}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Date:</span>
-                        <span class="value">${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                    </div>
-                </div>
-                
-                <div class="details" style="margin-top: 30px;">
-                    <div class="row">
-                        <span class="label">Total Fee:</span>
-                        <span class="value">₹${student.totalFee?.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Amount Paid:</span>
-                        <span class="value" style="color: #00B894;">₹${student.paidAmount?.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Balance Due:</span>
-                        <span class="value" style="color: ${pending > 0 ? '#E17055' : '#00B894'};">₹${pending?.toLocaleString('en-IN')}</span>
-                    </div>
-                    ${lastPayment ? `
-                    <div class="row">
-                        <span class="label">Last Payment:</span>
-                        <span class="value">₹${lastPayment.amount?.toLocaleString('en-IN')} (${lastPayment.mode})</span>
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <div style="text-align: center; margin-top: 30px;">
-                    <span class="status ${pending <= 0 ? 'paid' : 'partial'}">
-                        ${pending <= 0 ? '✓ FULLY PAID' : 'PARTIAL PAYMENT'}
-                    </span>
-                </div>
-                
-                <div class="footer">
-                    <p>Plot No. 163, Vijayasree Colony, Vanasthalipuram, Hyderabad 500070</p>
-                    <p>Phone: +91 7842239090 | Email: team.craftsoft@gmail.com</p>
-                    <p style="margin-top: 10px;">Thank you for choosing Craft Soft!</p>
-                </div>
-            </body>
-            </html>
-        `;
-
-        // Open in new window and print
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(receiptHTML);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => printWindow.print(), 500);
-
-    } catch (error) {
-        console.error('Error generating receipt:', error);
-        showToast('Error generating receipt', 'error');
-    }
-}
+// ============================================
+// NOTIFICATIONS
+// ============================================
 
 // Toast Notification
 function showToast(message, type = 'success') {
@@ -381,7 +516,7 @@ function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.innerHTML = `
-        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span class="material-icons">${type === 'success' ? 'check_circle' : 'error'}</span>
         <span>${message}</span>
     `;
     container.appendChild(toast);
@@ -396,14 +531,37 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
-// Make functions global
+// Snackbar Notification
+function showSnackbar(message) {
+    const snackbar = document.getElementById('snackbar');
+    snackbar.textContent = message;
+    snackbar.classList.add('show');
+
+    setTimeout(() => {
+        snackbar.classList.remove('show');
+    }, 3000);
+}
+
+// ============================================
+// GLOBAL FUNCTIONS
+// ============================================
 window.openAddStudentModal = openAddStudentModal;
 window.openPaymentModal = openPaymentModal;
 window.closeModal = closeModal;
-window.generateReceipt = generateReceipt;
+window.openPaymentHistory = openPaymentHistory;
+window.shareViaWhatsApp = shareViaWhatsApp;
+window.shareReceiptWhatsApp = shareReceiptWhatsApp;
+window.generatePaymentLink = generatePaymentLink;
 
 // Load data on page load
 document.addEventListener('DOMContentLoaded', () => {
     // Wait for auth to be ready
     setTimeout(loadDashboardData, 500);
+});
+
+// Phone input validation
+document.querySelectorAll('input[type="tel"]').forEach(input => {
+    input.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+    });
 });

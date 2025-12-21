@@ -1,6 +1,7 @@
-// Students Page Logic
+// Students Page Logic - Enhanced with WhatsApp and Payment History
 
 let allStudents = [];
+let currentStudentData = null;
 
 // Update user info
 auth.onAuthStateChanged((user) => {
@@ -36,9 +37,9 @@ function renderStudents(students) {
     if (students.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="8">
+                <td colspan="6">
                     <div class="empty-state">
-                        <i class="fas fa-users"></i>
+                        <span class="material-icons">group</span>
                         <h3>No students found</h3>
                         <p>Click "New Admission" to add a student</p>
                     </div>
@@ -55,38 +56,37 @@ function renderStudents(students) {
 
         if (pending <= 0) {
             statusClass = 'paid';
-            statusText = 'Fully Paid';
+            statusText = 'Paid';
         } else if (student.paidAmount > 0) {
             statusClass = 'partial';
             statusText = 'Partial';
         }
 
-        const admissionDate = student.createdAt?.toDate?.()
-            ? student.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-            : '-';
-
         return `
             <tr>
                 <td>
                     <strong>${student.name}</strong>
-                    <br><small style="color: var(--gray-500);">${student.phone || '-'}</small>
+                    <br><small style="color: #64748b;">${student.phone || '-'}</small>
                 </td>
-                <td>${student.course}</td>
-                <td>${admissionDate}</td>
+                <td style="font-size: 0.8rem;">${student.course}</td>
                 <td>${formatCurrency(student.totalFee)}</td>
-                <td style="color: var(--success); font-weight: 600;">${formatCurrency(student.paidAmount)}</td>
-                <td style="color: ${pending > 0 ? 'var(--danger)' : 'var(--success)'}; font-weight: 600;">${formatCurrency(pending)}</td>
+                <td style="color: #10B981; font-weight: 600;">${formatCurrency(student.paidAmount)}</td>
                 <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                 <td>
-                    ${pending > 0 ? `<button class="btn btn-success btn-sm" onclick="openPaymentModal('${student.id}', '${student.name}', ${pending})" title="Add Payment">
-                        <i class="fas fa-plus"></i>
-                    </button>` : ''}
-                    <button class="btn btn-outline btn-sm" onclick="generateReceipt('${student.id}')" title="Receipt">
-                        <i class="fas fa-file-pdf"></i>
-                    </button>
-                    <button class="btn btn-outline btn-sm" onclick="deleteStudent('${student.id}')" title="Delete" style="color: var(--danger);">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    <div class="action-buttons">
+                        ${pending > 0 ? `<button class="btn btn-success btn-sm btn-icon" onclick="openPaymentModal('${student.id}', '${student.name}', ${pending})" title="Pay">
+                            <span class="material-icons">add</span>
+                        </button>` : ''}
+                        <button class="btn btn-outline btn-sm btn-icon" onclick="openPaymentHistory('${student.id}')" title="History">
+                            <span class="material-icons">receipt_long</span>
+                        </button>
+                        <button class="btn btn-whatsapp btn-sm btn-icon" onclick="shareViaWhatsApp('${student.id}')" title="WhatsApp">
+                            <span class="material-icons">share</span>
+                        </button>
+                        <button class="btn btn-outline btn-sm btn-icon" onclick="deleteStudent('${student.id}')" title="Delete" style="color: #EF4444;">
+                            <span class="material-icons">delete</span>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -100,15 +100,12 @@ function filterStudents() {
     const status = document.getElementById('statusFilter').value;
 
     let filtered = allStudents.filter(student => {
-        // Search filter
         const matchesSearch = !search ||
             student.name.toLowerCase().includes(search) ||
             (student.phone && student.phone.includes(search));
 
-        // Course filter
         const matchesCourse = !course || student.course === course;
 
-        // Status filter
         const pending = (student.totalFee || 0) - (student.paidAmount || 0);
         let studentStatus = 'pending';
         if (pending <= 0) studentStatus = 'paid';
@@ -134,7 +131,6 @@ async function deleteStudent(studentId) {
     }
 
     try {
-        // Delete payments first
         const paymentsSnapshot = await db.collection('payments')
             .where('studentId', '==', studentId)
             .get();
@@ -144,7 +140,6 @@ async function deleteStudent(studentId) {
             batch.delete(doc.ref);
         });
 
-        // Delete student
         batch.delete(db.collection('students').doc(studentId));
 
         await batch.commit();
@@ -155,6 +150,124 @@ async function deleteStudent(studentId) {
     } catch (error) {
         console.error('Error deleting student:', error);
         showToast('Error deleting student', 'error');
+    }
+}
+
+// Payment History
+async function openPaymentHistory(studentId) {
+    try {
+        const studentDoc = await db.collection('students').doc(studentId).get();
+        const student = { id: studentDoc.id, ...studentDoc.data() };
+        currentStudentData = student;
+
+        const pending = student.totalFee - student.paidAmount;
+
+        document.getElementById('studentInfoHeader').innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h4 style="font-size: 1.1rem; margin-bottom: 4px;">${student.name}</h4>
+                    <p style="color: #64748b; font-size: 0.85rem;">${student.course}</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 0.8rem; color: #64748b;">Balance</p>
+                    <p style="font-size: 1.25rem; font-weight: 700; color: ${pending > 0 ? '#EF4444' : '#10B981'};">
+                        ${formatCurrency(pending)}
+                    </p>
+                </div>
+            </div>
+        `;
+
+        const paymentsSnapshot = await db.collection('payments')
+            .where('studentId', '==', studentId)
+            .orderBy('createdAt', 'desc')
+            .get();
+
+        const timeline = document.getElementById('paymentTimeline');
+
+        if (paymentsSnapshot.empty) {
+            timeline.innerHTML = `
+                <div class="empty-state" style="padding: 40px 20px;">
+                    <span class="material-icons">receipt</span>
+                    <h3>No payments recorded</h3>
+                </div>
+            `;
+        } else {
+            let timelineHTML = '';
+            paymentsSnapshot.forEach(doc => {
+                const payment = doc.data();
+                const date = payment.createdAt?.toDate?.()
+                    ? payment.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                    : 'Unknown';
+
+                const iconClass = payment.mode === 'cash' ? 'cash' : 'online';
+                const modeIcon = payment.mode === 'cash' ? 'payments' : 'credit_card';
+
+                timelineHTML += `
+                    <li class="payment-timeline-item">
+                        <div class="timeline-icon ${iconClass}">
+                            <span class="material-icons">${modeIcon}</span>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="amount">${formatCurrency(payment.amount)}</div>
+                            <div class="meta">${date} • ${payment.mode?.toUpperCase() || 'N/A'}</div>
+                            <div class="receipt-num"># ${payment.receiptNumber || '-'}</div>
+                        </div>
+                    </li>
+                `;
+            });
+            timeline.innerHTML = timelineHTML;
+        }
+
+        document.getElementById('paymentHistoryModal').classList.add('active');
+
+    } catch (error) {
+        console.error('Error loading payment history:', error);
+        showToast('Error loading history', 'error');
+    }
+}
+
+// WhatsApp Share
+async function shareViaWhatsApp(studentId) {
+    try {
+        const studentDoc = await db.collection('students').doc(studentId).get();
+        const student = studentDoc.data();
+
+        const pending = student.totalFee - student.paidAmount;
+        const status = pending <= 0 ? '✅ FULLY PAID' : '⏳ PARTIAL PAYMENT';
+
+        const message = `🎓 *Abhi's Craft Soft*
+━━━━━━━━━━━━━━━━━━
+📋 *Payment Receipt*
+
+👤 *Student:* ${student.name}
+📚 *Course:* ${student.course}
+
+💰 *Total Fee:* ₹${student.totalFee?.toLocaleString('en-IN')}
+✅ *Paid:* ₹${student.paidAmount?.toLocaleString('en-IN')}
+${pending > 0 ? `⏳ *Balance:* ₹${pending.toLocaleString('en-IN')}` : ''}
+
+🏷️ *Status:* ${status}
+━━━━━━━━━━━━━━━━━━
+📍 Vanasthalipuram, Hyderabad
+📞 +91 7842239090
+🌐 www.craftsoft.co.in`;
+
+        const phoneNumber = student.phone ? `91${student.phone}` : '';
+        const whatsappUrl = phoneNumber
+            ? `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+            : `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+        window.open(whatsappUrl, '_blank');
+
+    } catch (error) {
+        console.error('Error sharing via WhatsApp:', error);
+        showToast('Error sharing receipt', 'error');
+    }
+}
+
+function shareReceiptWhatsApp() {
+    if (currentStudentData) {
+        shareViaWhatsApp(currentStudentData.id);
     }
 }
 
@@ -282,7 +395,7 @@ document.getElementById('addPaymentForm').addEventListener('submit', async (e) =
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        showToast('Payment recorded successfully!', 'success');
+        showToast('Payment recorded!', 'success');
         closeModal('addPaymentModal');
         loadStudents();
 
@@ -292,131 +405,13 @@ document.getElementById('addPaymentForm').addEventListener('submit', async (e) =
     }
 });
 
-// Generate Receipt
-async function generateReceipt(studentId) {
-    try {
-        const studentDoc = await db.collection('students').doc(studentId).get();
-        const student = studentDoc.data();
-
-        const paymentsSnapshot = await db.collection('payments')
-            .where('studentId', '==', studentId)
-            .orderBy('createdAt', 'desc')
-            .limit(1)
-            .get();
-
-        let lastPayment = null;
-        paymentsSnapshot.forEach(doc => {
-            lastPayment = doc.data();
-        });
-
-        const pending = student.totalFee - student.paidAmount;
-
-        const receiptHTML = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Receipt - ${student.name}</title>
-                <style>
-                    body { font-family: 'Inter', Arial, sans-serif; padding: 40px; max-width: 600px; margin: 0 auto; }
-                    .header { text-align: center; border-bottom: 2px solid #6C5CE7; padding-bottom: 20px; margin-bottom: 30px; }
-                    .logo { font-size: 24px; font-weight: 700; color: #6C5CE7; }
-                    .receipt-title { font-size: 18px; color: #666; margin-top: 10px; }
-                    .receipt-number { background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 20px 0; text-align: center; }
-                    .details { margin: 20px 0; }
-                    .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-                    .label { color: #666; }
-                    .value { font-weight: 600; }
-                    .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px; }
-                    .status { padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-                    .status.paid { background: #d4edda; color: #155724; }
-                    .status.partial { background: #fff3cd; color: #856404; }
-                    @media print { body { padding: 20px; } }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <div class="logo">🎓 Abhi's Craft Soft</div>
-                    <div class="receipt-title">Payment Receipt</div>
-                </div>
-                
-                <div class="receipt-number">
-                    <strong>Receipt #:</strong> ${lastPayment?.receiptNumber || student.receiptPrefix || 'N/A'}
-                </div>
-                
-                <div class="details">
-                    <div class="row">
-                        <span class="label">Student Name:</span>
-                        <span class="value">${student.name}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Phone:</span>
-                        <span class="value">${student.phone || '-'}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Course:</span>
-                        <span class="value">${student.course}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Date:</span>
-                        <span class="value">${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                    </div>
-                </div>
-                
-                <div class="details" style="margin-top: 30px;">
-                    <div class="row">
-                        <span class="label">Total Fee:</span>
-                        <span class="value">₹${student.totalFee?.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Amount Paid:</span>
-                        <span class="value" style="color: #00B894;">₹${student.paidAmount?.toLocaleString('en-IN')}</span>
-                    </div>
-                    <div class="row">
-                        <span class="label">Balance Due:</span>
-                        <span class="value" style="color: ${pending > 0 ? '#E17055' : '#00B894'};">₹${pending?.toLocaleString('en-IN')}</span>
-                    </div>
-                    ${lastPayment ? `
-                    <div class="row">
-                        <span class="label">Last Payment:</span>
-                        <span class="value">₹${lastPayment.amount?.toLocaleString('en-IN')} (${lastPayment.mode})</span>
-                    </div>
-                    ` : ''}
-                </div>
-                
-                <div style="text-align: center; margin-top: 30px;">
-                    <span class="status ${pending <= 0 ? 'paid' : 'partial'}">
-                        ${pending <= 0 ? '✓ FULLY PAID' : 'PARTIAL PAYMENT'}
-                    </span>
-                </div>
-                
-                <div class="footer">
-                    <p>Plot No. 163, Vijayasree Colony, Vanasthalipuram, Hyderabad 500070</p>
-                    <p>Phone: +91 7842239090 | Email: team.craftsoft@gmail.com</p>
-                    <p style="margin-top: 10px;">Thank you for choosing Craft Soft!</p>
-                </div>
-            </body>
-            </html>
-        `;
-
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(receiptHTML);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => printWindow.print(), 500);
-
-    } catch (error) {
-        console.error('Error generating receipt:', error);
-        showToast('Error generating receipt', 'error');
-    }
-}
-
 // Toast Notification
 function showToast(message, type = 'success') {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.innerHTML = `
-        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        <span class="material-icons">${type === 'success' ? 'check_circle' : 'error'}</span>
         <span>${message}</span>
     `;
     container.appendChild(toast);
@@ -433,10 +428,19 @@ function showToast(message, type = 'success') {
 window.openAddStudentModal = openAddStudentModal;
 window.openPaymentModal = openPaymentModal;
 window.closeModal = closeModal;
-window.generateReceipt = generateReceipt;
+window.openPaymentHistory = openPaymentHistory;
+window.shareViaWhatsApp = shareViaWhatsApp;
+window.shareReceiptWhatsApp = shareReceiptWhatsApp;
 window.deleteStudent = deleteStudent;
 
 // Load data on page load
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadStudents, 500);
+});
+
+// Phone input validation
+document.querySelectorAll('input[type="tel"]').forEach(input => {
+    input.addEventListener('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+    });
 });
