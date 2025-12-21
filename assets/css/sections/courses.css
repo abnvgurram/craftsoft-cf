@@ -1,0 +1,89 @@
+/* ============================================
+   COURSES Preview Section
+   ============================================ */
+.courses-preview {
+    background: linear-gradient(180deg, var(--primary-50) 0%, var(--white) 100%);
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.course-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-base);
+    border: 1px solid var(--gray-100);
+}
+
+.course-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-200);
+}
+
+.course-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.course-icon i {
+    font-size: 1.5rem;
+    color: var(--white);
+}
+
+.course-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.course-card>p {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    margin-bottom: var(--spacing-md);
+}
+
+.course-features {
+    margin-bottom: var(--spacing-lg);
+}
+
+.course-features li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    margin-bottom: var(--spacing-xs);
+}
+
+.course-features li i {
+    color: var(--success);
+    font-size: 0.75rem;
+}
+
+.course-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--primary-600);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.course-link:hover {
+    gap: var(--spacing-md);
+}
+
+.courses-cta {
+    text-align: center;
+}

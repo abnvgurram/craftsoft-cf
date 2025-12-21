@@ -1,0 +1,117 @@
+/* ============================================
+   CONTACT Section
+   ============================================ */
+.contact-section {
+    background: var(--white);
+}
+
+.contact-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-3xl);
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.contact-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: var(--gray-50);
+    border-radius: var(--radius-xl);
+    transition: var(--transition-base);
+}
+
+.contact-card:hover {
+    background: var(--primary-50);
+    transform: translateX(5px);
+}
+
+.contact-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--accent-gradient);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.contact-icon i {
+    font-size: 1.5rem;
+    color: var(--white);
+}
+
+.contact-details h3 {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.contact-details a {
+    font-size: 1rem;
+    color: var(--gray-800);
+    font-weight: 600;
+}
+
+.contact-details a:hover {
+    color: var(--primary-600);
+}
+
+.social-links {
+    margin-top: var(--spacing-lg);
+}
+
+.social-links h3 {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.social-icons {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.social-icons a {
+    width: 50px;
+    height: 50px;
+    background: var(--gray-100);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-600);
+    font-size: 1.25rem;
+    transition: var(--transition-base);
+}
+
+.social-icons a:hover {
+    transform: translateY(-3px);
+    color: var(--white);
+}
+
+.social-icons a[aria-label="LinkedIn"]:hover {
+    background: #0A66C2;
+}
+
+.social-icons a[aria-label="Instagram"]:hover {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.contact-map {
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    min-height: 400px;
+    box-shadow: var(--shadow-lg);
+}
+
+.contact-map iframe {
+    border-radius: var(--radius-2xl);
+}
