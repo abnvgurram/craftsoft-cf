@@ -441,36 +441,22 @@ function initContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) return;
 
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        // Get form values
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const phone = document.getElementById('phone').value;
-        const interest = document.getElementById('interest').options[document.getElementById('interest').selectedIndex].text;
-        const message = document.getElementById('message').value;
-
-        // Create WhatsApp message
-        const whatsappMsg = `Hi Team!%0A%0AI'm interested in: *${interest}*%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Message:* ${message}`;
-
-        // Redirect to WhatsApp
-        window.open(`https://wa.me/917842239090?text=${whatsappMsg}`, '_blank');
-
-        // Optional: Show success message on current page
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Message Sent! ✅';
-        submitBtn.disabled = true;
-        submitBtn.style.background = '#00B894';
-
-        setTimeout(() => {
-            form.reset();
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-            submitBtn.style.background = '';
-        }, 5000);
-    });
+    // Form now submits to Formspree via action attribute
+    // This just handles success feedback after redirect back
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('submitted') === 'true') {
+        // Show success message if redirected back after submission
+        const formCard = form.closest('.contact-form-card');
+        if (formCard) {
+            formCard.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-check-circle" style="font-size: 4rem; color: #00B894; margin-bottom: 20px;"></i>
+                    <h3 style="margin-bottom: 10px;">Message Sent!</h3>
+                    <p style="color: #666;">Thank you for reaching out. We'll get back to you within 24 hours.</p>
+                </div>
+            `;
+        }
+    }
 }
 
 /* ============================================
