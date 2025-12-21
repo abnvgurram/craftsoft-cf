@@ -446,7 +446,7 @@ function initContactForm() {
         const message = document.getElementById('message').value;
 
         // Create WhatsApp message
-        const whatsappMsg = `Hi Abhi's Craftsoft!%0A%0AI'm interested in: *${interest}*%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Message:* ${message}`;
+        const whatsappMsg = `Hi Team!%0A%0AI'm interested in: *${interest}*%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Message:* ${message}`;
 
         // Redirect to WhatsApp
         window.open(`https://wa.me/917842239090?text=${whatsappMsg}`, '_blank');
