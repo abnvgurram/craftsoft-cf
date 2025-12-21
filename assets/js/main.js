@@ -41,6 +41,8 @@ function initMobileMenu() {
     hamburger.addEventListener('click', () => {
         hamburger.classList.toggle('active');
         navMenu.classList.toggle('active');
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
     });
 
     // Close menu when clicking on a link
@@ -49,14 +51,16 @@ function initMobileMenu() {
         link.addEventListener('click', () => {
             hamburger.classList.remove('active');
             navMenu.classList.remove('active');
+            document.body.style.overflow = '';
         });
     });
 
-    // Close menu when clicking outside
+    // Close menu when clicking outside (on overlay)
     document.addEventListener('click', (e) => {
         if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
             hamburger.classList.remove('active');
             navMenu.classList.remove('active');
+            document.body.style.overflow = '';
         }
     });
 }
