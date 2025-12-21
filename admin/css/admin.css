@@ -1281,11 +1281,100 @@ tr:hover {
         padding: 16px;
     }
 
-    /* Table mobile */
-    th,
-    td {
-        padding: 12px;
+    /* Table mobile - hide on small screens, show cards */
+    .table-responsive {
+        display: none;
+    }
+
+    /* Mobile cards for students/data */
+    .mobile-cards {
+        display: block;
+    }
+
+    .mobile-card {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: var(--elevation-1);
+    }
+
+    .mobile-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+
+    .mobile-card-name {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--gray-900);
+        margin-bottom: 4px;
+    }
+
+    .mobile-card-sub {
         font-size: 0.8rem;
+        color: var(--gray-500);
+    }
+
+    .mobile-card-badge {
+        flex-shrink: 0;
+    }
+
+    .mobile-card-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-top: 1px solid var(--gray-100);
+        font-size: 0.85rem;
+    }
+
+    .mobile-card-row span:first-child {
+        color: var(--gray-500);
+    }
+
+    .mobile-card-row span:last-child {
+        font-weight: 600;
+        color: var(--gray-800);
+    }
+
+    .mobile-card-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--gray-100);
+        justify-content: flex-end;
+    }
+
+    /* Mobile logout button in header */
+    .mobile-header {
+        justify-content: space-between;
+    }
+
+    .mobile-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .mobile-logout-btn {
+        width: 40px;
+        height: 40px;
+        background: var(--gray-100);
+        border: none;
+        border-radius: 50%;
+        color: var(--gray-600);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobile-logout-btn:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
     }
 
     /* Modal mobile - full screen */
@@ -1323,6 +1412,11 @@ tr:hover {
     .desktop-only {
         display: none !important;
     }
+}
+
+/* Desktop: show tables, hide mobile cards */
+.mobile-cards {
+    display: none;
 }
 
 /* Bottom Navigation - Mobile Only */

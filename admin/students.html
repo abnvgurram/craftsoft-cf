@@ -52,10 +52,9 @@
 
             <div class="sidebar-footer">
                 <div class="user-info">
-                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-avatar">A</div>
                     <div class="user-details">
-                        <div class="name" id="userName">Admin</div>
-                        <div class="role">Administrator</div>
+                        <div class="name">Admin</div>
                     </div>
                     <button class="btn-logout" onclick="logout()" title="Logout">
                         <span class="material-icons">logout</span>
@@ -68,10 +67,15 @@
         <main class="main-content">
             <!-- Mobile Header -->
             <div class="mobile-header" style="display: none;">
-                <button class="menu-toggle" onclick="toggleSidebar()">
-                    <span class="material-icons">menu</span>
+                <div class="mobile-header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()">
+                        <span class="material-icons">menu</span>
+                    </button>
+                    <h1 style="font-size: 1.25rem;">Students</h1>
+                </div>
+                <button class="mobile-logout-btn" onclick="logout()" title="Logout">
+                    <span class="material-icons">logout</span>
                 </button>
-                <h1 style="font-size: 1.25rem;">Students</h1>
             </div>
 
             <div class="page-header desktop-only">
@@ -136,6 +140,13 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <!-- Mobile Cards -->
+                    <div class="mobile-cards" id="studentsMobileCards">
+                        <div style="text-align: center; padding: 40px;">
+                            <div class="loading-spinner"></div>
+                            <p style="margin-top: 10px; color: #64748b;">Loading...</p>
+                        </div>
                     </div>
                 </div>
             </div>

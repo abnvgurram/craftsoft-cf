@@ -1,16 +1,7 @@
-// Students Page Logic - Enhanced with Edit and Demo Date
+// Students Page Logic - Enhanced with Edit, Demo Date, and Mobile Cards
 
 let allStudents = [];
 let currentStudentData = null;
-
-// Update user info
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        const initial = user.email.charAt(0).toUpperCase();
-        document.getElementById('userAvatar').textContent = initial;
-        document.getElementById('userName').textContent = user.email.split('@')[0];
-    }
-});
 
 // Load Students
 async function loadStudents() {
@@ -30,25 +21,25 @@ async function loadStudents() {
     }
 }
 
-// Render Students Table
+// Render Students Table + Mobile Cards
 function renderStudents(students) {
     const tbody = document.getElementById('studentsTable');
+    const mobileCards = document.getElementById('studentsMobileCards');
 
     if (students.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6">
-                    <div class="empty-state">
-                        <span class="material-icons">group</span>
-                        <h3>No students found</h3>
-                        <p>Click "+" to add a student</p>
-                    </div>
-                </td>
-            </tr>
+        const emptyHTML = `
+            <div class="empty-state" style="padding: 40px; text-align: center;">
+                <span class="material-icons" style="font-size: 48px; color: #94a3b8;">group</span>
+                <h3 style="margin-top: 12px;">No students found</h3>
+                <p style="color: #64748b;">Click "+" to add a student</p>
+            </div>
         `;
+        tbody.innerHTML = `<tr><td colspan="6">${emptyHTML}</td></tr>`;
+        mobileCards.innerHTML = emptyHTML;
         return;
     }
 
+    // Desktop Table
     tbody.innerHTML = students.map(student => {
         const pending = (student.totalFee || 0) - (student.paidAmount || 0);
         let statusClass = 'pending';
@@ -62,7 +53,6 @@ function renderStudents(students) {
             statusText = 'Partial';
         }
 
-        // Format demo date
         let demoInfo = '';
         if (student.demoDate) {
             const demoDate = new Date(student.demoDate);
@@ -97,6 +87,65 @@ function renderStudents(students) {
                     </div>
                 </td>
             </tr>
+        `;
+    }).join('');
+
+    // Mobile Cards
+    mobileCards.innerHTML = students.map(student => {
+        const pending = (student.totalFee || 0) - (student.paidAmount || 0);
+        let statusClass = 'pending';
+        let statusText = 'Pending';
+
+        if (pending <= 0) {
+            statusClass = 'paid';
+            statusText = 'Paid';
+        } else if (student.paidAmount > 0) {
+            statusClass = 'partial';
+            statusText = 'Partial';
+        }
+
+        return `
+            <div class="mobile-card">
+                <div class="mobile-card-header">
+                    <div>
+                        <div class="mobile-card-name">${student.name}</div>
+                        <div class="mobile-card-sub">${student.phone || '-'}</div>
+                    </div>
+                    <div class="mobile-card-badge">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                </div>
+                <div class="mobile-card-row">
+                    <span>Course</span>
+                    <span>${student.course}</span>
+                </div>
+                <div class="mobile-card-row">
+                    <span>Total Fee</span>
+                    <span>${formatCurrency(student.totalFee)}</span>
+                </div>
+                <div class="mobile-card-row">
+                    <span>Paid</span>
+                    <span style="color: #10B981;">${formatCurrency(student.paidAmount)}</span>
+                </div>
+                <div class="mobile-card-row">
+                    <span>Balance</span>
+                    <span style="color: ${pending > 0 ? '#EF4444' : '#10B981'};">${formatCurrency(pending)}</span>
+                </div>
+                <div class="mobile-card-actions">
+                    <button class="btn btn-outline btn-sm btn-icon" onclick="openEditStudentModal('${student.id}')" title="Edit">
+                        <span class="material-icons">edit</span>
+                    </button>
+                    ${pending > 0 ? `<button class="btn btn-success btn-sm btn-icon" onclick="openPaymentModal('${student.id}', '${student.name}', ${pending})" title="Pay">
+                        <span class="material-icons">add</span>
+                    </button>` : ''}
+                    <button class="btn btn-outline btn-sm btn-icon" onclick="openPaymentHistory('${student.id}')" title="History">
+                        <span class="material-icons">receipt_long</span>
+                    </button>
+                    <button class="btn btn-outline btn-sm btn-icon" onclick="deleteStudent('${student.id}')" title="Delete" style="color: #EF4444;">
+                        <span class="material-icons">delete</span>
+                    </button>
+                </div>
+            </div>
         `;
     }).join('');
 }
