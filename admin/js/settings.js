@@ -132,10 +132,16 @@ function toggleEditPayment() {
 }
 
 function cancelEditPayment() {
-    paymentEditMode = false;
-    loadSettings(); // Reload values
-    toggleEditPayment(); // This will flip back to view mode
-    paymentEditMode = false; // Reset after toggle
+    // We want to force a switch FROM Edit TO View.
+    // toggleEditPayment flips the boolean. So if we want to end up in View (false),
+    // we should ensure it starts as true before calling toggle.
+    paymentEditMode = true;
+    toggleEditPayment(); // This will flip it to false (View Mode)
+    loadSettings(); // Reload original values from DB
+
+    // Clear the extra branch display if visible
+    const displayEl = document.getElementById('ifscBranchDisplay');
+    if (displayEl) displayEl.style.display = 'none';
 }
 
 // Toggle edit mode for business settings
