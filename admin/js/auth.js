@@ -224,6 +224,9 @@ async function updateDynamicDropdowns() {
     });
 
     console.log('Courses synchronized from website!');
+    if (typeof renderSubjectCodesBanner === 'function') {
+        renderSubjectCodesBanner();
+    }
 }
 
 // Global Date Formatter: DD/MM/YYYY

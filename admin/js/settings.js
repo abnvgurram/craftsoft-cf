@@ -17,6 +17,7 @@ let selectedNavItems = ['dashboard', 'inquiries', 'students', 'payments'];
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     renderNavigationSettings();
+    renderSubjectCodesBanner();
 });
 
 // Load all settings from Firestore
@@ -531,10 +532,39 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
+// Render Subject Codes Banner dynamically
+function renderSubjectCodesBanner() {
+    const bannerContainer = document.getElementById('subjectCodesBanner');
+    if (!bannerContainer) return;
+
+    const codes = window.subjectCodes || subjectCodes;
+    if (!codes) return;
+
+    // Create a simplified name for display (e.g., "Full Stack Development (MERN)" -> "Full Stack")
+    const simplifyName = (name) => {
+        if (name === 'Other') return 'Other';
+        return name.split(' ')[0] + (name.includes('Design') ? ' Design' : '');
+    };
+
+    bannerContainer.innerHTML = Object.entries(codes)
+        .sort((a, b) => {
+            if (a[1] === '99') return 1;
+            if (b[1] === '99') return -1;
+            return a[1].localeCompare(b[1]);
+        })
+        .map(([name, code]) => `
+            <div class="subject-code-item">
+                <span title="${name}">${simplifyName(name)}</span> 
+                <strong>${code}</strong>
+            </div>
+        `).join('');
+}
+
 // Make functions global
 window.savePaymentSettings = savePaymentSettings;
 window.saveBusinessSettings = saveBusinessSettings;
 window.saveNavigationSettings = saveNavigationSettings;
+window.renderSubjectCodesBanner = renderSubjectCodesBanner;
 window.addNavItem = addNavItem;
 window.removeNavItem = removeNavItem;
 window.toggleEditPayment = toggleEditPayment;
