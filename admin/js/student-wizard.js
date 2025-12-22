@@ -36,16 +36,17 @@ function updateWizardUI() {
         s.classList.toggle('completed', stepNum < currentWizardStep);
     });
 
-    // Update body
-    const stepBodies = document.querySelectorAll('.wizard-step-content');
-    stepBodies.forEach(b => {
-        b.classList.toggle('active', parseInt(b.dataset.step) === currentWizardStep);
+    // Update panel visibility
+    const stepPanels = document.querySelectorAll('.wizard-panel');
+    stepPanels.forEach(p => {
+        const panelNum = parseInt(p.dataset.panel);
+        p.classList.toggle('active', panelNum === currentWizardStep);
     });
 
-    // Update footer buttons
-    const prevBtn = document.getElementById('prevStepBtn');
-    const nextBtn = document.getElementById('nextStepBtn');
-    const submitBtn = document.getElementById('submitStudentBtn');
+    // Update footer buttons (Correct IDs from HTML)
+    const prevBtn = document.getElementById('wizardPrevBtn');
+    const nextBtn = document.getElementById('wizardNextBtn');
+    const submitBtn = document.getElementById('wizardSubmitBtn');
 
     if (prevBtn) prevBtn.style.display = currentWizardStep === 1 ? 'none' : 'block';
     if (nextBtn) nextBtn.style.display = currentWizardStep === 3 ? 'none' : 'block';

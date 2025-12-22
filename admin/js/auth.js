@@ -107,6 +107,24 @@ function getErrorMessage(errorCode) {
 }
 
 // Helper: Format phone number with country code (+91)
+// Subject codes for receipt numbers
+const subjectCodes = {
+    'Full Stack Development': '01',
+    'UI/UX Design': '02',
+    'Graphic Design': '03',
+    'DevOps Engineering': '04',
+    'AWS Cloud': '05',
+    'Python Full Stack': '06',
+    'Java Full Stack': '07',
+    'Data Analytics': '08',
+    'Salesforce': '09',
+    'DSA Mastery': '10',
+    'Soft Skills': '11',
+    'Spoken English': '12',
+    'Resume & Interview': '13',
+    'Other': '99'
+};
+
 function formatPhoneNumber(phone) {
     if (!phone) return '';
     // Remove all non-numeric characters
@@ -320,6 +338,7 @@ window.logout = logout;
 window.showConfirm = showConfirm;
 window.formatPhoneNumber = formatPhoneNumber;
 window.formatDate = formatDate;
+window.subjectCodes = subjectCodes;
 window.initializeBottomNav = initializeBottomNav;
 window.showTableSkeleton = showTableSkeleton;
 window.showCardSkeleton = showCardSkeleton;

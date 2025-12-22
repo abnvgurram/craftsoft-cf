@@ -9,24 +9,6 @@ let currentStudentData = null;
 const ITEMS_PER_PAGE = 10;
 let currentPage = 1;
 
-// Subject codes for receipt numbers
-const subjectCodes = {
-    'Full Stack Development': '01',
-    'UI/UX Design': '02',
-    'Graphic Design': '03',
-    'DevOps Engineering': '04',
-    'AWS Cloud': '05',
-    'Python Full Stack': '06',
-    'Java Full Stack': '07',
-    'Data Analytics': '08',
-    'Salesforce': '09',
-    'DSA Mastery': '10',
-    'Soft Skills': '11',
-    'Spoken English': '12',
-    'Resume & Interview': '13',
-    'Other': '99'
-};
-
 // Load Tutors for dropdown
 async function loadTutors() {
     try {
