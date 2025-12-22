@@ -106,6 +106,34 @@ function getErrorMessage(errorCode) {
     return errors[errorCode] || 'An error occurred. Please try again.';
 }
 
+// Helper: Format phone number with country code (+91)
+function formatPhoneNumber(phone) {
+    if (!phone) return '';
+    // Remove all non-numeric characters
+    let cleaned = phone.toString().replace(/\D/g, '');
+
+    // If it's already got the + sign at the start of the original phone, keep it but clean logic
+    if (phone.toString().startsWith('+')) {
+        return '+' + cleaned;
+    }
+
+    // If it's 10 digits, add +91
+    if (cleaned.length === 10) {
+        return '+91' + cleaned;
+    }
+    // If it starts with 91 and has 12 digits, add +
+    if (cleaned.length === 12 && cleaned.startsWith('91')) {
+        return '+' + cleaned;
+    }
+
+    // Default: if it's longer than 10 but doesn't start with 91, just add +
+    if (cleaned.length > 10) {
+        return '+' + cleaned;
+    }
+
+    return phone;
+}
+
 // Custom Confirmation Dialog Utility
 function showConfirm(options = {}) {
     const {
@@ -182,3 +210,4 @@ function showConfirm(options = {}) {
 window.togglePassword = togglePassword;
 window.logout = logout;
 window.showConfirm = showConfirm;
+window.formatPhoneNumber = formatPhoneNumber;

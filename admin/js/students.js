@@ -261,7 +261,7 @@ document.getElementById('editStudentForm').addEventListener('submit', async (e) 
 
     const studentId = document.getElementById('editStudentId').value;
     const name = document.getElementById('editStudentName').value.trim();
-    const phone = document.getElementById('editStudentPhone').value.trim();
+    const phone = formatPhoneNumber(document.getElementById('editStudentPhone').value.trim());
     const email = document.getElementById('editStudentEmail').value.trim();
     const course = document.getElementById('editStudentCourse').value;
     const totalFee = parseInt(document.getElementById('editTotalFee').value) || 0;
@@ -662,7 +662,7 @@ document.getElementById('addStudentForm').addEventListener('submit', async (e) =
     e.preventDefault();
 
     const name = document.getElementById('studentName').value.trim();
-    const phone = document.getElementById('studentPhone').value.trim();
+    const phone = formatPhoneNumber(document.getElementById('studentPhone').value.trim());
     const email = document.getElementById('studentEmail').value.trim();
     const course = document.getElementById('studentCourse').value;
 
@@ -865,6 +865,71 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
+// Receipt & Data Migration (One-time or periodic)
+async function migrateExistingData() {
+    try {
+        showToast('Starting data migration...', 'info');
+        const snapshot = await db.collection('students').get();
+        const students = [];
+        snapshot.forEach(doc => students.push({ id: doc.id, ...doc.data() }));
+
+        // Sort by createdAt ASC for sequential numbering
+        students.sort((a, b) => {
+            const dateA = a.createdAt?.toDate?.() || new Date(0);
+            const dateB = b.createdAt?.toDate?.() || new Date(0);
+            return dateA - dateB;
+        });
+
+        const courseSequences = {};
+        let updatedCount = 0;
+
+        for (let student of students) {
+            const updates = {};
+
+            // 1. Update Phone Number Format
+            const newPhone = formatPhoneNumber(student.phone);
+            if (newPhone !== student.phone) {
+                updates.phone = newPhone;
+            }
+
+            // 2. Update Receipt Prefix if needed (or if it's in old format)
+            const primarySubject = student.course;
+            const subjectCode = subjectCodes[primarySubject] || '99';
+
+            if (!courseSequences[primarySubject]) courseSequences[primarySubject] = 0;
+            courseSequences[primarySubject]++;
+
+            const seqNum = courseSequences[primarySubject].toString().padStart(3, '0');
+
+            // Generate initials
+            const nameParts = (student.name || 'Anonymous').trim().split(/\s+/);
+            const initials = nameParts.length >= 2
+                ? (nameParts[0][0] + (nameParts[1] ? nameParts[1][0] : '')).toUpperCase()
+                : (nameParts[0].substring(0, 2)).toUpperCase();
+
+            const expectedPrefix = `ACS-${initials}-${subjectCode}${seqNum}`;
+
+            if (student.receiptPrefix !== expectedPrefix) {
+                updates.receiptPrefix = expectedPrefix;
+            }
+
+            if (Object.keys(updates).length > 0) {
+                await db.collection('students').doc(student.id).update({
+                    ...updates,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                updatedCount++;
+            }
+        }
+
+        showToast(`Migration complete! Updated ${updatedCount} records.`, 'success');
+        loadStudents();
+    } catch (error) {
+        console.error('Migration error:', error);
+        showToast('Migration failed', 'error');
+    }
+}
+
 // Make functions global
 window.openAddStudentModal = openAddStudentModal;
 window.openPaymentModal = openPaymentModal;
@@ -875,6 +940,8 @@ window.shareReceiptWhatsApp = shareReceiptWhatsApp;
 window.deleteStudent = deleteStudent;
 window.openEditStudentModal = openEditStudentModal;
 window.downloadReceiptPDF = downloadReceiptPDF;
+window.migrateExistingData = migrateExistingData;
+window.formatPhoneNumber = formatPhoneNumber;
 
 // Load data on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -885,6 +952,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Phone input validation
 document.querySelectorAll('input[type="tel"]').forEach(input => {
     input.addEventListener('input', function () {
-        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        // Allow +, numbers and restrict length to 15 (standard international max)
+        this.value = this.value.replace(/[^+0-9]/g, '').slice(0, 15);
     });
 });

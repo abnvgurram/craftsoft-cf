@@ -234,7 +234,7 @@ document.getElementById('addTutorForm').addEventListener('submit', async (e) => 
     e.preventDefault();
 
     const name = document.getElementById('tutorName').value.trim();
-    const phone = document.getElementById('tutorPhone').value.trim();
+    const phone = formatPhoneNumber(document.getElementById('tutorPhone').value.trim());
     const email = document.getElementById('tutorEmail').value.trim();
     const subject = document.getElementById('tutorSubject').value;
     const mode = document.getElementById('tutorMode').value;
@@ -278,7 +278,7 @@ document.getElementById('editTutorForm').addEventListener('submit', async (e) =>
     try {
         await db.collection('tutors').doc(tutorId).update({
             name: document.getElementById('editTutorName').value.trim(),
-            phone: document.getElementById('editTutorPhone').value.trim(),
+            phone: formatPhoneNumber(document.getElementById('editTutorPhone').value.trim()),
             email: document.getElementById('editTutorEmail').value.trim(),
             subject: document.getElementById('editTutorSubject').value,
             mode: document.getElementById('editTutorMode').value,
@@ -332,6 +332,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Phone input validation
 document.querySelectorAll('input[type="tel"]').forEach(input => {
     input.addEventListener('input', function () {
-        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        this.value = this.value.replace(/[^+0-9]/g, '').slice(0, 15);
     });
 });

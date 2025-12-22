@@ -410,7 +410,7 @@ ${lastPaymentInfo}
 
 Thank you for choosing Craft Soft! 🙏`;
 
-        const phoneNumber = student.phone ? `91${student.phone}` : '';
+        const phoneNumber = student.phone ? student.phone.replace(/\+/g, '') : '';
         const whatsappUrl = phoneNumber
             ? `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
             : `https://wa.me/?text=${encodeURIComponent(message)}`;
@@ -463,7 +463,7 @@ After payment, please share the screenshot.
     // Get student phone from the form or storage
     db.collection('students').doc(studentId).get().then(doc => {
         const student = doc.data();
-        const phoneNumber = student.phone ? `91${student.phone}` : '';
+        const phoneNumber = student.phone ? student.phone.replace(/\+/g, '') : '';
         const whatsappUrl = phoneNumber
             ? `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
             : `https://wa.me/?text=${encodeURIComponent(message)}`;
@@ -482,7 +482,7 @@ document.getElementById('addStudentForm').addEventListener('submit', async (e) =
     e.preventDefault();
 
     const name = document.getElementById('studentName').value.trim();
-    const phone = document.getElementById('studentPhone').value.trim();
+    const phone = formatPhoneNumber(document.getElementById('studentPhone').value.trim());
     const email = document.getElementById('studentEmail').value.trim();
     const course = document.getElementById('studentCourse').value;
     const totalFee = parseInt(document.getElementById('totalFee').value) || 0;
@@ -669,6 +669,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Phone input validation
 document.querySelectorAll('input[type="tel"]').forEach(input => {
     input.addEventListener('input', function () {
-        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        this.value = this.value.replace(/[^+0-9]/g, '').slice(0, 15);
     });
 });

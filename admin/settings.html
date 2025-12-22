@@ -62,7 +62,28 @@
 
         .setting-value {
             text-align: right;
-            max-width: 200px;
+            max-width: 300px;
+            flex: 1;
+        }
+
+        @media (max-width: 600px) {
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .setting-value {
+                text-align: left;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .settings-section h3 {
+                flex-direction: row;
+                justify-content: space-between;
+                font-size: 0.95rem;
+            }
         }
 
         .setting-value input,
@@ -371,9 +392,14 @@
                         <h4>UPI ID</h4>
                         <p>Your UPI address for payments</p>
                     </div>
-                    <div class="setting-value">
+                    <div class="setting-value"
+                        style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
                         <span class="display-value" id="upiIdDisplay">Not set</span>
                         <input type="text" id="upiId" placeholder="name@upi" class="edit-input" style="display: none;">
+                        <button class="btn btn-sm btn-outline edit-input" id="verifyUPIBtn" onclick="verifyUPI()"
+                            style="display: none; padding: 4px 8px; font-size: 0.75rem; white-space: nowrap;">
+                            Verify
+                        </button>
                     </div>
                 </div>
 
@@ -482,6 +508,24 @@
                 </div>
             </div>
 
+            <!-- Data Maintenance -->
+            <div class="settings-section">
+                <h3>
+                    <span class="material-icons" style="color: var(--warning);">storage</span> Data Maintenance
+                </h3>
+                <div class="setting-item" style="border: none;">
+                    <div class="setting-info">
+                        <h4>Migrate Existing Data</h4>
+                        <p>Format existing phone numbers (+91) and update receipt numbers to new format.</p>
+                    </div>
+                    <div class="setting-value">
+                        <button class="btn btn-warning" onclick="migrateExistingData()">
+                            <span class="material-icons">sync</span> Start Migration
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -505,22 +549,6 @@
         </a>
     </nav>
 
-    <!-- Logout Modal -->
-    <div class="modal-overlay" id="logoutModal">
-        <div class="modal" style="max-width: 360px;">
-            <div class="logout-modal">
-                <div class="logout-icon">
-                    <span class="material-icons">logout</span>
-                </div>
-                <h3>Logout</h3>
-                <p>Are you sure you want to logout?</p>
-                <div class="logout-actions">
-                    <button class="btn-cancel" onclick="cancelLogout()">Cancel</button>
-                    <button class="btn-logout-confirm" onclick="confirmLogout()">Logout</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
@@ -532,6 +560,7 @@
     <script src="js/firebase-config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/settings.js"></script>
+    <script src="js/students.js"></script>
 
     <script>
         // Mobile responsiveness

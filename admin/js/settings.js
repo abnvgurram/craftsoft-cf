@@ -180,9 +180,9 @@ function cancelEditBusiness() {
 // Validation patterns
 const validationPatterns = {
     ifsc: /^[A-Z]{4}0[A-Z0-9]{6}$/,
-    upi: /^[\w.-]+@[\w]+$/,
+    upi: /^[\w.-]+@[\w]{2,}$/, // Minimum 2 chars after @
     bankAccount: /^\d{9,18}$/,
-    razorpayLink: /^https:\/\/(rzp\.io|razorpay\.me)\/.+$/
+    razorpayLink: /^https:\/\/(rzp\.io|razorpay\.me|razorpay\.com)\/.+$/
 };
 
 // Validate IFSC via Razorpay API
@@ -197,6 +197,27 @@ async function validateIFSC(ifsc) {
     } catch {
         return { valid: false };
     }
+}
+
+// Verify UPI (Static check for now, can be extended with Razorpay API)
+async function verifyUPI() {
+    const upiId = document.getElementById('upiId').value.trim();
+    if (!upiId) {
+        showToast('Please enter a UPI ID', 'error');
+        return;
+    }
+
+    if (!validationPatterns.upi.test(upiId)) {
+        showToast('Invalid UPI format', 'error');
+        return;
+    }
+
+    showToast('Validating UPI format...', 'success');
+    // Note: True VPA validation requires API keys with basic auth.
+    // For now, we perform a strict pattern check.
+    setTimeout(() => {
+        showToast(`✓ UPI format looks correct: ${upiId}`, 'success');
+    }, 800);
 }
 
 // Save Payment Settings with validation
@@ -454,3 +475,4 @@ window.toggleEditPayment = toggleEditPayment;
 window.cancelEditPayment = cancelEditPayment;
 window.toggleEditBusiness = toggleEditBusiness;
 window.cancelEditBusiness = cancelEditBusiness;
+window.verifyUPI = verifyUPI;

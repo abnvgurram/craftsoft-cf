@@ -192,7 +192,7 @@ We'd love to schedule a FREE demo class for you. When would be a convenient time
 
 Looking forward to hearing from you! 🎓`;
 
-    const whatsappUrl = `https://wa.me/91${phone}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${phone.replace(/\+/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
 }
 
@@ -288,7 +288,7 @@ document.getElementById('addInquiryForm').addEventListener('submit', async (e) =
     e.preventDefault();
 
     const name = document.getElementById('inquiryName').value.trim();
-    const phone = document.getElementById('inquiryPhone').value.trim();
+    const phone = formatPhoneNumber(document.getElementById('inquiryPhone').value.trim());
     const course = document.getElementById('inquiryCourse').value;
     const source = document.getElementById('inquirySource').value;
     const demoDate = document.getElementById('inquiryDemo').value;
@@ -323,7 +323,7 @@ document.getElementById('editInquiryForm').addEventListener('submit', async (e) 
 
     const id = document.getElementById('editInquiryId').value;
     const name = document.getElementById('editName').value.trim();
-    const phone = document.getElementById('editPhone').value.trim();
+    const phone = formatPhoneNumber(document.getElementById('editPhone').value.trim());
     const course = document.getElementById('editCourse').value;
     const status = document.getElementById('editStatus').value;
     const demoDate = document.getElementById('editDemo').value;
@@ -380,7 +380,7 @@ window.deleteInquiry = deleteInquiry;
 // Phone input validation
 document.querySelectorAll('input[type="tel"]').forEach(input => {
     input.addEventListener('input', function () {
-        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+        this.value = this.value.replace(/[^+0-9]/g, '').slice(0, 15);
     });
 });
 
