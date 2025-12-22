@@ -442,23 +442,81 @@ function initContactForm() {
     if (!form) return;
 
     // Phone number validation logic
-    const phoneInputs = document.querySelectorAll('input[type="tel"]');
-    phoneInputs.forEach(input => {
-        input.addEventListener('input', function (e) {
-            // Remove non-numeric characters
-            this.value = this.value.replace(/[^0-9]/g, '');
-
-            // Limit to 10 digits
-            if (this.value.length > 10) {
-                this.value = this.value.slice(0, 10);
-            }
+    const phoneInput = form.querySelector('input[type="tel"]');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
         });
+    }
+
+    form.addEventListener('submit', async function (e) {
+        // We let the form continue to Formspree for email notification, 
+        // but we sync to Firebase first
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        try {
+            // Prevent default just for the sync part
+            e.preventDefault();
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            const formData = new FormData(form);
+            const inquiryData = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone') || '-',
+                subject: formData.get('interest') || 'Website Inquiry',
+                message: formData.get('message'),
+                status: 'new', // Default status for admin panel
+                source: 'website',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            // Save to Firestore
+            if (window.db) {
+                await window.db.collection('inquiries').add(inquiryData);
+                console.log('Inquiry synced to Firestore');
+            }
+
+            // After syncing, we can either submit the form naturally to Formspree 
+            // or just show a success message if we want to rely solely on Firestore
+            // For now, let's just do both for safety
+
+            // Show success UI
+            const formCard = form.closest('.contact-form-card') || document.querySelector('.contact-form-wrapper');
+            if (formCard) {
+                formCard.innerHTML = `
+                    <div class="success-message-container" style="text-align: center; padding: 40px; animation: fadeIn 0.5s ease;">
+                        <div class="success-icon" style="width: 80px; height: 80px; background: rgba(0, 184, 148, 0.1); color: #00B894; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2.5rem;">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h3 style="margin-bottom: 10px; font-size: 1.5rem; color: var(--text-dark);">Inquiry Received!</h3>
+                        <p style="color: var(--text-light); line-height: 1.6;">Thank you for reaching out, <strong>${inquiryData.name}</strong>. Your inquiry has been logged in our system and we'll get back to you shortly.</p>
+                        <button class="btn btn-outline" style="margin-top: 24px;" onclick="window.location.reload()">Send Another Message</button>
+                    </div>
+                `;
+            }
+
+            // Optional: Also ping Formspree in the background so you still get the email
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            });
+
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('Something went wrong. Please try again or contact us via WhatsApp.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
     });
 
-    // Form submission feedback
+    // Check for URL-based feedback (legacy)
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('submitted') === 'true') {
-        // Show success message if redirected back after submission
         const formCard = form.closest('.contact-form-card') || document.querySelector('.contact-form-wrapper');
         if (formCard) {
             formCard.innerHTML = `
