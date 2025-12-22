@@ -70,25 +70,25 @@ function animateValue(elementId, value) {
     element.textContent = value;
 }
 
-// Update Recent Students Table (View-only, no actions)
+// Update Recent Students Table + Mobile Cards (View-only)
 function updateRecentStudentsTable(students) {
     const tbody = document.getElementById('recentStudentsTable');
+    const mobileCards = document.getElementById('recentStudentsMobile');
 
     if (students.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="5">
-                    <div class="empty-state">
-                        <span class="material-icons">group</span>
-                        <h3>No students yet</h3>
-                        <p>Add students from the Students page</p>
-                    </div>
-                </td>
-            </tr>
+        const emptyHTML = `
+            <div class="empty-state" style="padding: 40px; text-align: center;">
+                <span class="material-icons" style="font-size: 48px; color: #94a3b8;">group</span>
+                <h3 style="margin-top: 12px;">No students yet</h3>
+                <p style="color: #64748b;">Add students from the Students page</p>
+            </div>
         `;
+        tbody.innerHTML = `<tr><td colspan="5">${emptyHTML}</td></tr>`;
+        if (mobileCards) mobileCards.innerHTML = emptyHTML;
         return;
     }
 
+    // Desktop Table
     tbody.innerHTML = students.map(student => {
         const pending = (student.totalFee || 0) - (student.paidAmount || 0);
         let statusClass = 'pending';
@@ -115,6 +115,49 @@ function updateRecentStudentsTable(students) {
             </tr>
         `;
     }).join('');
+
+    // Mobile Cards
+    if (mobileCards) {
+        mobileCards.innerHTML = students.map(student => {
+            const pending = (student.totalFee || 0) - (student.paidAmount || 0);
+            let statusClass = 'pending';
+            let statusText = 'Pending';
+
+            if (pending <= 0) {
+                statusClass = 'paid';
+                statusText = 'Paid';
+            } else if (student.paidAmount > 0) {
+                statusClass = 'partial';
+                statusText = 'Partial';
+            }
+
+            return `
+                <div class="mobile-card">
+                    <div class="mobile-card-header">
+                        <div>
+                            <div class="mobile-card-name">${student.name}</div>
+                            <div class="mobile-card-sub">${student.phone || '-'}</div>
+                        </div>
+                        <div class="mobile-card-badge">
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span>Course</span>
+                        <span>${student.course}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span>Total Fee</span>
+                        <span>${formatCurrency(student.totalFee)}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span>Paid</span>
+                        <span style="color: #10B981;">${formatCurrency(student.paidAmount)}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
 }
 
 // Format Currency
