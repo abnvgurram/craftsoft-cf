@@ -254,7 +254,7 @@
 
     <!-- Add Student Modal - Wizard -->
     <div class="modal-overlay" id="addStudentModal">
-        <div class="modal" style="max-width: 520px;">
+        <div class="modal" style="max-width: 650px;">
             <div class="modal-header">
                 <h3><span class="material-icons">person_add</span> New Admission</h3>
                 <button class="modal-close" onclick="closeModal('addStudentModal')">
@@ -341,11 +341,21 @@
                                 <!-- Hidden field for form compatibility -->
                                 <input type="hidden" id="studentCourse" value="">
                             </div>
+                            <!-- Dynamic Course Fees Container -->
+                            <div id="courseFeesContainer" style="margin-top: 15px; display: none;">
+                                <label
+                                    style="font-size: 0.85rem; font-weight: 600; color: var(--gray-600); margin-bottom: 8px; display: block;">Course
+                                    Fees (₹) *</label>
+                                <div id="courseFeesList"
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                                    <!-- Dynamic fields go here -->
+                                </div>
+                            </div>
+
                             <div class="form-row">
-                                <div class="form-group">
-                                    <label>Original Fee (₹) *</label>
-                                    <input type="number" id="originalFee" required placeholder="e.g., 25000" min="0"
-                                        onchange="calculateFinalFee()">
+                                <div class="form-group" style="display: none;">
+                                    <label>Original Fee (₹)</label>
+                                    <input type="number" id="originalFee" placeholder="0" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label>Discount (₹)</label>

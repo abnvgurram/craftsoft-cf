@@ -82,6 +82,13 @@ function resetWizard() {
     if (typeof resetCourseSelection === 'function') {
         resetCourseSelection();
     }
+    const feesList = document.getElementById('courseFeesList');
+    if (feesList) feesList.innerHTML = '';
+    const feesContainer = document.getElementById('courseFeesContainer');
+    if (feesContainer) feesContainer.style.display = 'none';
+    if (typeof calculateFinalFee === 'function') {
+        calculateFinalFee();
+    }
 }
 
 // Multi-Select Course logic
@@ -114,9 +121,44 @@ function updateCourseSelectionDisplay() {
         selectedText.classList.add('has-selection');
     }
 
+    // Update dynamic fee fields
+    const feesContainer = document.getElementById('courseFeesContainer');
+    const feesList = document.getElementById('courseFeesList');
+
+    if (feesContainer && feesList) {
+        if (selectedCourses.length > 0) {
+            feesContainer.style.display = 'block';
+
+            // Keep track of existing values to avoid clearing them as user checks/unchecks
+            const existingFees = {};
+            feesList.querySelectorAll('input').forEach(input => {
+                existingFees[input.dataset.course] = input.value;
+            });
+
+            feesList.innerHTML = selectedCourses.map(course => `
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.75rem; color: #64748b; margin-bottom: 4px;">${course}</label>
+                    <input type="number" class="course-fee-input" data-course="${course}" 
+                           placeholder="Fee for ${course}" min="0" 
+                           value="${existingFees[course] || ''}"
+                           onchange="calculateFinalFee()"
+                           style="padding: 10px; font-size: 0.9rem;">
+                </div>
+            `).join('');
+        } else {
+            feesContainer.style.display = 'none';
+            feesList.innerHTML = '';
+        }
+    }
+
     // Update hidden field if exists for compatibility
     const hiddenInput = document.getElementById('studentCourse');
     if (hiddenInput) hiddenInput.value = selectedCourses.join(', ');
+
+    // Recalculate fees
+    if (typeof calculateFinalFee === 'function') {
+        calculateFinalFee();
+    }
 }
 
 function resetCourseSelection() {

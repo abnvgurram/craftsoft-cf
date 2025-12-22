@@ -741,7 +741,17 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 
 // Calculate Final Fee
 function calculateFinalFee() {
-    const originalFee = parseInt(document.getElementById('originalFee')?.value) || 0;
+    // Sum up dynamic course fees
+    let originalFee = 0;
+    const courseFeeInputs = document.querySelectorAll('.course-fee-input');
+    courseFeeInputs.forEach(input => {
+        originalFee += parseInt(input.value) || 0;
+    });
+
+    // Update the hidden/main originalFee field for compatibility with existing logic
+    const originalFeeInput = document.getElementById('originalFee');
+    if (originalFeeInput) originalFeeInput.value = originalFee;
+
     const discount = parseInt(document.getElementById('discountAmount')?.value) || 0;
     const finalFee = Math.max(0, originalFee - discount);
     document.getElementById('totalFee').value = finalFee;
