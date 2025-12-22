@@ -540,12 +540,6 @@ function renderSubjectCodesBanner() {
     const codes = window.subjectCodes || subjectCodes;
     if (!codes) return;
 
-    // Create a simplified name for display (e.g., "Full Stack Development (MERN)" -> "Full Stack")
-    const simplifyName = (name) => {
-        if (name === 'Other') return 'Other';
-        return name.split(' ')[0] + (name.includes('Design') ? ' Design' : '');
-    };
-
     bannerContainer.innerHTML = Object.entries(codes)
         .sort((a, b) => {
             if (a[1] === '99') return 1;
@@ -554,7 +548,7 @@ function renderSubjectCodesBanner() {
         })
         .map(([name, code]) => `
             <div class="subject-code-item">
-                <span title="${name}">${simplifyName(name)}</span> 
+                <span>${name}</span> 
                 <strong>${code}</strong>
             </div>
         `).join('');
