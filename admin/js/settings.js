@@ -186,6 +186,7 @@ const validationPatterns = {
 };
 
 // Validate IFSC via Razorpay API
+// Validate IFSC via Razorpay API
 async function validateIFSC(ifsc) {
     try {
         const response = await fetch(`https://ifsc.razorpay.com/${ifsc}`);
@@ -197,6 +198,32 @@ async function validateIFSC(ifsc) {
     } catch {
         return { valid: false };
     }
+}
+
+// Check IFSC on blur and show branch
+async function checkIFSC() {
+    const ifsc = document.getElementById('bankIFSC').value.trim().toUpperCase();
+    const displayEl = document.getElementById('ifscBranchDisplay');
+
+    if (!ifsc || !/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc)) {
+        displayEl.style.display = 'none';
+        return;
+    }
+
+    displayEl.innerHTML = '<span class="loading-spinner" style="width: 12px; height: 12px; border-width: 2px;"></span> Verifying...';
+    displayEl.style.color = '#64748b';
+    displayEl.style.display = 'block';
+
+    const result = await validateIFSC(ifsc);
+
+    if (result.valid) {
+        displayEl.innerHTML = `<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">check_circle</span> ${result.bank}, ${result.branch}`;
+        displayEl.style.color = '#10B981';
+    } else {
+        displayEl.innerHTML = `<span class="material-icons" style="font-size: 14px; vertical-align: text-bottom;">error</span> Invalid IFSC Code`;
+        displayEl.style.color = '#EF4444';
+    }
+    displayEl.style.display = 'block';
 }
 
 // Verify UPI (Static check for now, can be extended with Razorpay API)
@@ -476,3 +503,4 @@ window.cancelEditPayment = cancelEditPayment;
 window.toggleEditBusiness = toggleEditBusiness;
 window.cancelEditBusiness = cancelEditBusiness;
 window.verifyUPI = verifyUPI;
+window.checkIFSC = checkIFSC;
