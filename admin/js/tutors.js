@@ -94,6 +94,9 @@ function renderTutors(tutors) {
                 <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                 <td>
                     <div class="action-buttons">
+                        <button class="btn btn-outline btn-sm btn-icon" onclick="openMessageTutor('${tutor.phone}', '${tutor.name}')" title="Message">
+                            <span class="material-icons" style="color:#25D366;">chat</span>
+                        </button>
                         <button class="btn btn-outline btn-sm btn-icon" onclick="openEditTutorModal('${tutor.id}')" title="Edit">
                             <span class="material-icons">edit</span>
                         </button>
@@ -141,6 +144,9 @@ function renderTutors(tutors) {
                     <span>${tutor.availability || '-'}</span>
                 </div>
                 <div class="mobile-card-actions">
+                    <button class="btn btn-outline btn-sm" onclick="openMessageTutor('${tutor.phone}', '${tutor.name}')">
+                        <span class="material-icons" style="color:#25D366; font-size:18px;">chat</span> Message
+                    </button>
                     <button class="btn btn-outline btn-sm" onclick="openEditTutorModal('${tutor.id}')">
                         <span class="material-icons">edit</span> Edit
                     </button>
@@ -422,6 +428,14 @@ window.setSelectedSubjects = setSelectedSubjects;
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadTutors, 500);
 });
+
+// Open Message Action
+function openMessageTutor(phone, name) {
+    if (!phone) { showToast('No phone number available', 'error'); return; }
+    const msg = `Hi ${name}, checking in regarding your classes at Abhi's Craft Soft.`;
+    window.open(`https://wa.me/${phone.replace(/\+/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+window.openMessageTutor = openMessageTutor;
 
 // Phone input validation
 document.querySelectorAll('input[type="tel"]').forEach(input => {

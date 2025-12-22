@@ -473,13 +473,21 @@ function initContactForm() {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
             const formData = new FormData(form);
+
+            // Determine type based on form ID or page
+            const isServiceForm = form.id === 'service-contact-form';
+            const inquiryType = isServiceForm ? 'service' : 'course';
+
             const inquiryData = {
                 name: formData.get('name'),
                 email: formData.get('email'),
                 phone: formData.get('phone') || '-',
-                subject: formData.get('interest') || 'Website Inquiry',
+                subject: formData.get('interest') || (isServiceForm ? 'Service Inquiry' : 'Course Inquiry'),
+                course: formData.get('interest'), // Mapping interest to course field for consistency with legacy
+                service: isServiceForm ? formData.get('interest') : null, // Explicit service field
                 message: formData.get('message'),
                 status: 'new', // Default status for admin panel
+                type: inquiryType, // New type field for routing
                 source: 'website',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };

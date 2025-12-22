@@ -1,17 +1,17 @@
 // Settings Page Logic
 
-// Available navigation items
+// Available navigation items (excluding fixed Home/Settings)
 const availableNavItems = [
-    { id: 'dashboard', icon: 'dashboard', label: 'Home', href: 'dashboard.html' },
     { id: 'inquiries', icon: 'contact_phone', label: 'Inquiries', href: 'inquiries.html' },
+    { id: 'services', icon: 'design_services', label: 'Services', href: 'services.html' },
     { id: 'students', icon: 'people', label: 'Students', href: 'students.html' },
     { id: 'payments', icon: 'payments', label: 'Payments', href: 'payments.html' },
     { id: 'tutors', icon: 'person', label: 'Tutors', href: 'tutors.html' },
-    { id: 'settings', icon: 'settings', label: 'Settings', href: 'settings.html' }
+    { id: 'experts', icon: 'engineering', label: 'Experts', href: 'experts.html' }
 ];
 
-// Default nav items (first 4)
-let selectedNavItems = ['dashboard', 'inquiries', 'students', 'payments'];
+// Default middle items (max 2)
+let middleNavItems = ['inquiries', 'students'];
 
 // Load settings on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -45,8 +45,11 @@ async function loadSettings() {
             document.getElementById('businessAddress').value = data.businessAddress || '';
 
             // Navigation settings
-            if (data.mobileNavItems && data.mobileNavItems.length > 0) {
-                selectedNavItems = data.mobileNavItems;
+            if (data.mobileNavItems && Array.isArray(data.mobileNavItems)) {
+                // Filter out fixed items (dashboard/settings) to get middle items
+                const filtered = data.mobileNavItems.filter(id => id !== 'dashboard' && id !== 'settings');
+                // Take only up to 2 items
+                middleNavItems = filtered.slice(0, 2);
             }
 
             // Display last saved timestamp
@@ -373,16 +376,25 @@ function renderNavigationSettings() {
     const selectedContainer = document.getElementById('selectedNavItems');
     const listContainer = document.getElementById('navItemsList');
 
-    // Show selected items as draggable cards
-    if (selectedNavItems.length === 0) {
-        selectedContainer.innerHTML = `
-            <div style="text-align: center; padding: 20px; color: #94a3b8;">
-                <span class="material-icons" style="font-size: 32px;">add_circle_outline</span>
-                <p style="margin: 8px 0 0; font-size: 0.85rem;">Add items from below</p>
+    // 1. Render Fixed Home (Top)
+    let html = `
+        <div class="sortable-nav-item fixed" style="background: #f8fafc; cursor: default; border: 1px solid #e2e8f0; opacity: 1;">
+            <span class="material-icons drag-handle" style="opacity: 0.3;">lock</span>
+            <span class="material-icons nav-icon">dashboard</span>
+            <span class="nav-label">Home</span>
+            <span style="font-size: 0.75rem; color: #94a3b8; background: #e2e8f0; padding: 2px 8px; border-radius: 4px;">Fixed</span>
+        </div>
+    `;
+
+    // 2. Render Middle Items (Draggable)
+    if (middleNavItems.length === 0) {
+        html += `
+            <div style="text-align: center; padding: 16px; color: #94a3b8; border: 2px dashed #e2e8f0; border-radius: 8px; margin: 8px 0; background: #fff;">
+                <p style="margin: 0; font-size: 0.8rem;">Add 1-2 items here</p>
             </div>
         `;
     } else {
-        selectedContainer.innerHTML = selectedNavItems.map((id, index) => {
+        html += middleNavItems.map((id, index) => {
             const item = availableNavItems.find(n => n.id === id);
             if (!item) return '';
             return `
@@ -396,46 +408,50 @@ function renderNavigationSettings() {
                 </div>
             `;
         }).join('');
-
-        // Initialize drag and drop
-        initDragAndDrop();
     }
 
-    // Show available items (not selected) with add buttons
-    const unselectedItems = availableNavItems.filter(item => !selectedNavItems.includes(item.id));
+    // 3. Render Fixed Settings (Bottom)
+    html += `
+        <div class="sortable-nav-item fixed" style="background: #f8fafc; cursor: default; border: 1px solid #e2e8f0; opacity: 1;">
+            <span class="material-icons drag-handle" style="opacity: 0.3;">lock</span>
+            <span class="material-icons nav-icon">settings</span>
+            <span class="nav-label">Settings</span>
+            <span style="font-size: 0.75rem; color: #94a3b8; background: #e2e8f0; padding: 2px 8px; border-radius: 4px;">Fixed</span>
+        </div>
+    `;
 
-    if (unselectedItems.length === 0) {
-        listContainer.innerHTML = `
-            <div style="text-align: center; padding: 16px; color: #94a3b8; font-size: 0.85rem;">
-                All items selected
+    selectedContainer.innerHTML = html;
+
+    // Initialize drag and drop
+    initDragAndDrop();
+
+    // Show available items (not selected)
+    const unselectedItems = availableNavItems.filter(item => !middleNavItems.includes(item.id));
+
+    listContainer.innerHTML = unselectedItems.map(item => {
+        const canAdd = middleNavItems.length < 2;
+
+        return `
+            <div class="nav-item-toggle">
+                <div class="nav-item-info">
+                    <span class="material-icons">${item.icon}</span>
+                    <span>${item.label}</span>
+                </div>
+                <button class="toggle-btn add ${canAdd ? '' : 'disabled'}" 
+                        onclick="${canAdd ? `addNavItem('${item.id}')` : ''}" 
+                        title="${canAdd ? 'Add' : 'Max 2 middle items'}"
+                        ${canAdd ? '' : 'disabled style="opacity: 0.3; cursor: not-allowed;"'}>
+                    <span class="material-icons">add</span>
+                </button>
             </div>
         `;
-    } else {
-        listContainer.innerHTML = unselectedItems.map(item => {
-            const canAdd = selectedNavItems.length < 4;
-
-            return `
-                <div class="nav-item-toggle">
-                    <div class="nav-item-info">
-                        <span class="material-icons">${item.icon}</span>
-                        <span>${item.label}</span>
-                    </div>
-                    <button class="toggle-btn add ${canAdd ? '' : 'disabled'}" 
-                            onclick="${canAdd ? `addNavItem('${item.id}')` : ''}" 
-                            title="${canAdd ? 'Add' : 'Max 4 items'}"
-                            ${canAdd ? '' : 'disabled style="opacity: 0.3; cursor: not-allowed;"'}>
-                        <span class="material-icons">add</span>
-                    </button>
-                </div>
-            `;
-        }).join('');
-    }
+    }).join('');
 }
 
 // Initialize Drag and Drop
 function initDragAndDrop() {
     const container = document.getElementById('selectedNavItems');
-    const items = container.querySelectorAll('.sortable-nav-item');
+    const items = container.querySelectorAll('.sortable-nav-item[draggable="true"]');
 
     let draggedItem = null;
 
@@ -449,19 +465,20 @@ function initDragAndDrop() {
         item.addEventListener('dragend', () => {
             draggedItem.classList.remove('dragging');
             draggedItem = null;
-            // Update selectedNavItems array based on new order
             updateNavOrder();
         });
 
         item.addEventListener('dragover', (e) => {
             e.preventDefault();
-            if (draggedItem && draggedItem !== item) {
-                const rect = item.getBoundingClientRect();
+            const target = e.target.closest('.sortable-nav-item');
+            // Only allow dropping on other draggable items, not fixed ones
+            if (target && target !== draggedItem && target.getAttribute('draggable') === 'true') {
+                const rect = target.getBoundingClientRect();
                 const midY = rect.top + rect.height / 2;
                 if (e.clientY < midY) {
-                    container.insertBefore(draggedItem, item);
+                    container.insertBefore(draggedItem, target);
                 } else {
-                    container.insertBefore(draggedItem, item.nextSibling);
+                    container.insertBefore(draggedItem, target.nextSibling);
                 }
             }
         });
@@ -471,42 +488,43 @@ function initDragAndDrop() {
 // Update nav order after drag
 function updateNavOrder() {
     const container = document.getElementById('selectedNavItems');
-    const items = container.querySelectorAll('.sortable-nav-item');
-    selectedNavItems = Array.from(items).map(item => item.dataset.id);
+    const items = container.querySelectorAll('.sortable-nav-item[draggable="true"]');
+    middleNavItems = Array.from(items).map(item => item.dataset.id);
 }
 
 // Add nav item
 function addNavItem(itemId) {
-    if (selectedNavItems.length >= 4) {
-        showToast('Maximum 4 items allowed', 'error');
+    if (middleNavItems.length >= 2) {
+        showToast('Maximum 2 middle items allowed', 'error');
         return;
     }
-    if (!selectedNavItems.includes(itemId)) {
-        selectedNavItems.push(itemId);
+    if (!middleNavItems.includes(itemId)) {
+        middleNavItems.push(itemId);
         renderNavigationSettings();
     }
 }
 
 // Remove nav item
 function removeNavItem(itemId) {
-    if (selectedNavItems.length <= 1) {
-        showToast('At least 1 item required', 'error');
-        return;
-    }
-    selectedNavItems = selectedNavItems.filter(id => id !== itemId);
+    middleNavItems = middleNavItems.filter(id => id !== itemId);
     renderNavigationSettings();
 }
 
 // Save Navigation Settings
 async function saveNavigationSettings() {
     try {
+        // Construct full list: Dashboard -> Middle Items -> Settings
+        const fullNavList = ['dashboard', ...middleNavItems, 'settings'];
+
         await db.collection('settings').doc('config').set({
-            mobileNavItems: selectedNavItems,
+            mobileNavItems: fullNavList,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
-        showToast('Navigation settings saved! Changes reflected globally.', 'success');
+        showToast('Navigation settings saved!', 'success');
+        // Notify user about update (could trigger refresh if we had sync)
         if (typeof initializeBottomNav === 'function') initializeBottomNav();
+
     } catch (error) {
         console.error('Error saving navigation settings:', error);
         showToast('Error saving settings', 'error');

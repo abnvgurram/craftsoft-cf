@@ -26,6 +26,12 @@ async function loadInquiries() {
 
         snapshot.forEach(doc => {
             const inquiry = { id: doc.id, ...doc.data() };
+
+            // Skip service inquiries (handled in Services page)
+            if (inquiry.type === 'service' || (inquiry.service && !inquiry.course)) {
+                return;
+            }
+
             allInquiries.push(inquiry);
             totalCount++;
 
