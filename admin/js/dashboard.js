@@ -355,74 +355,6 @@ async function openPaymentHistory(studentId) {
 }
 
 // ============================================
-// WHATSAPP RECEIPT - New Feature
-// ============================================
-async function shareViaWhatsApp(studentId) {
-    try {
-        const studentDoc = await db.collection('students').doc(studentId).get();
-        const student = studentDoc.data();
-
-        const pending = student.totalFee - student.paidAmount;
-        const status = pending <= 0 ? '✅ FULLY PAID' : '⏳ PARTIAL PAYMENT';
-
-        // Get last payment
-        const paymentsSnapshot = await db.collection('payments')
-            .where('studentId', '==', studentId)
-            .orderBy('createdAt', 'desc')
-            .limit(1)
-            .get();
-
-        let lastPaymentInfo = '';
-        paymentsSnapshot.forEach(doc => {
-            const p = doc.data();
-            lastPaymentInfo = `\n💳 Last Payment: ₹${p.amount?.toLocaleString('en-IN')} (${p.mode})`;
-        });
-
-        const message = `🎓 *Abhi's Craft Soft*
-━━━━━━━━━━━━━━━━━━
-📋 *Payment Receipt*
-━━━━━━━━━━━━━━━━━━
-
-👤 *Student:* ${student.name}
-📚 *Course:* ${student.course}
-📱 *Phone:* ${student.phone || '-'}
-
-💰 *Total Fee:* ₹${student.totalFee?.toLocaleString('en-IN')}
-✅ *Paid:* ₹${student.paidAmount?.toLocaleString('en-IN')}
-${pending > 0 ? `⏳ *Balance:* ₹${pending.toLocaleString('en-IN')}` : ''}
-${lastPaymentInfo}
-
-🏷️ *Status:* ${status}
-
-━━━━━━━━━━━━━━━━━━
-📍 Plot No. 163, Vijayasree Colony, Vanasthalipuram, Hyderabad 500070
-📞 +91 7842239090
-🌐 www.craftsoft.co.in
-
-Thank you for choosing Craft Soft! 🙏`;
-
-        const phoneNumber = student.phone ? student.phone.replace(/\+/g, '') : '';
-        const whatsappUrl = phoneNumber
-            ? `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
-            : `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-        window.open(whatsappUrl, '_blank');
-        showSnackbar('Opening WhatsApp...');
-
-    } catch (error) {
-        console.error('Error sharing via WhatsApp:', error);
-        showToast('Error sharing receipt', 'error');
-    }
-}
-
-// Share current student receipt via WhatsApp (from modal)
-function shareReceiptWhatsApp() {
-    if (currentStudentData) {
-        shareViaWhatsApp(currentStudentData.id);
-    }
-}
-
-// ============================================
 // RAZORPAY PAYMENT LINK - New Feature
 // ============================================
 function generatePaymentLink() {
@@ -650,8 +582,6 @@ window.openAddStudentModal = openAddStudentModal;
 window.openPaymentModal = openPaymentModal;
 window.closeModal = closeModal;
 window.openPaymentHistory = openPaymentHistory;
-window.shareViaWhatsApp = shareViaWhatsApp;
-window.shareReceiptWhatsApp = shareReceiptWhatsApp;
 window.generatePaymentLink = generatePaymentLink;
 
 // Load data on page load

@@ -539,9 +539,11 @@ function downloadReceiptPDF() {
     doc.text("ABHI'S CRAFT SOFT", 20, 22);
 
     // Dynamic Receipt Info
+    const latestReceipt = payments.length > 0 ? payments[payments.length - 1].receiptNumber : `ACS-${student.name?.substring(0, 2).toUpperCase()}-PENDING`;
+
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text(`RECEIPT NO: ACS-${student.name?.substring(0, 2).toUpperCase()}-${new Date().getTime().toString().slice(-6)}`, 190, 20, { align: 'right' });
+    doc.text(`RECEIPT NO: ${latestReceipt}`, 190, 20, { align: 'right' });
     doc.text(`DATE: ${formatDate(new Date())}`, 190, 28, { align: 'right' });
 
     // Company Address (Updated)
@@ -570,11 +572,12 @@ function downloadReceiptPDF() {
     doc.setDrawColor(226, 232, 240);
     doc.rect(20, yPos, 170, 10);
 
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.text('ITEM #', 25, yPos + 7);
-    doc.text('ITEM DESCRIPTION', 45, yPos + 7);
-    doc.text('PAYMENT MODE', 125, yPos + 7);
+    doc.text('#', 25, yPos + 7);
+    doc.text('RECEIPT #', 35, yPos + 7);
+    doc.text('DESCRIPTION', 75, yPos + 7);
+    doc.text('PAYMENT MODE', 135, yPos + 7);
     doc.text('AMOUNT (₹)', 185, yPos + 7, { align: 'right' });
 
     // Items Logic (All Payments)
@@ -590,9 +593,10 @@ function downloadReceiptPDF() {
             const rowHeight = 10;
             doc.rect(20, yPos, 170, rowHeight);
 
-            doc.text((index + 1).toString(), 28, yPos + 7, { align: 'center' });
-            doc.text(`${student.course} (Paid on ${formatDate(payment.createdAt)})`, 45, yPos + 7);
-            doc.text((payment.mode || 'N/A').toUpperCase(), 125, yPos + 7);
+            doc.text((index + 1).toString(), 25, yPos + 7);
+            doc.text(payment.receiptNumber || '-', 35, yPos + 7);
+            doc.text(`${student.course} (${formatDate(payment.createdAt)})`, 75, yPos + 7);
+            doc.text((payment.mode || 'N/A').toUpperCase(), 135, yPos + 7);
             doc.text(payment.amount.toLocaleString('en-IN'), 185, yPos + 7, { align: 'right' });
 
             yPos += rowHeight;
@@ -604,6 +608,7 @@ function downloadReceiptPDF() {
     const totalsX = 130;
 
     doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
     doc.text('TOTAL PAID:', totalsX, yPos);
     doc.text(`₹ ${student.paidAmount.toLocaleString('en-IN')}`, 190, yPos, { align: 'right' });
 
@@ -640,51 +645,6 @@ function downloadReceiptPDF() {
     doc.save(fileName);
 
     showToast('PDF downloaded!', 'success');
-}
-
-// WhatsApp Share
-async function shareViaWhatsApp(studentId) {
-    try {
-        const studentDoc = await db.collection('students').doc(studentId).get();
-        const student = studentDoc.data();
-
-        const pending = student.totalFee - student.paidAmount;
-        const status = pending <= 0 ? '✅ FULLY PAID' : '⏳ PARTIAL PAYMENT';
-
-        const message = `🎓 *Abhi's Craft Soft*
-━━━━━━━━━━━━━━━━━━
-📋 *Payment Receipt*
-
-👤 *Student:* ${student.name}
-📚 *Course:* ${student.course}
-
-💰 *Total Fee:* ₹${student.totalFee?.toLocaleString('en-IN')}
-✅ *Paid:* ₹${student.paidAmount?.toLocaleString('en-IN')}
-${pending > 0 ? `⏳ *Balance:* ₹${pending.toLocaleString('en-IN')}` : ''}
-
-🏷️ *Status:* ${status}
-━━━━━━━━━━━━━━━━━━
-📍 Vanasthalipuram, Hyderabad
-📞 +91 7842239090
-🌐 www.craftsoft.co.in`;
-
-        const phoneNumber = student.phone ? `91${student.phone}` : '';
-        const whatsappUrl = phoneNumber
-            ? `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
-            : `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-        window.open(whatsappUrl, '_blank');
-
-    } catch (error) {
-        console.error('Error sharing via WhatsApp:', error);
-        showToast('Error sharing receipt', 'error');
-    }
-}
-
-function shareReceiptWhatsApp() {
-    if (currentStudentData) {
-        shareViaWhatsApp(currentStudentData.id);
-    }
 }
 
 // Format Currency
@@ -1172,8 +1132,6 @@ window.openAddStudentModal = openAddStudentModal;
 window.openPaymentModal = openPaymentModal;
 window.closeModal = closeModal;
 window.openPaymentHistory = openPaymentHistory;
-window.shareViaWhatsApp = shareViaWhatsApp;
-window.shareReceiptWhatsApp = shareReceiptWhatsApp;
 window.deleteStudent = deleteStudent;
 window.openEditStudentModal = openEditStudentModal;
 window.downloadReceiptPDF = downloadReceiptPDF;

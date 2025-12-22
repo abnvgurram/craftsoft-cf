@@ -152,6 +152,78 @@ function formatPhoneNumber(phone) {
     return phone;
 }
 
+// Dynamic Courses Loader
+async function fetchCoursesFromWebsite() {
+    try {
+        const response = await fetch('../pages/courses.html');
+        if (!response.ok) throw new Error('Could not fetch courses page');
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // Find all course titles
+        const titles = Array.from(doc.querySelectorAll('.course-info h3'))
+            .map(h => h.textContent.trim())
+            .filter(t => t);
+
+        return [...new Set(titles)];
+    } catch (error) {
+        console.error('Error fetching courses:', error);
+        return Object.keys(subjectCodes).filter(c => c !== 'Other');
+    }
+}
+
+async function updateDynamicDropdowns() {
+    const titles = await fetchCoursesFromWebsite();
+    const currentCodes = { ...subjectCodes };
+
+    // Determine next sequence for new courses
+    let nextSeq = 14;
+    Object.values(subjectCodes).forEach(v => {
+        const n = parseInt(v);
+        if (!isNaN(n) && n < 99 && n >= nextSeq) nextSeq = n + 1;
+    });
+
+    titles.forEach(title => {
+        if (!currentCodes[title]) {
+            currentCodes[title] = nextSeq.toString().padStart(2, '0');
+            nextSeq++;
+        }
+    });
+
+    // Update global
+    window.subjectCodes = currentCodes;
+
+    // Build the checkbox list HTML
+    const checkboxesHTML = titles.map(title => `
+        <label><input type="checkbox" value="${title}"> ${title}</label>
+    `).join('') + '<label><input type="checkbox" value="Other"> Other</label>';
+
+    // Update all dynamic course containers
+    const containers = document.querySelectorAll('.multi-select-options');
+    containers.forEach(container => {
+        if (container.id !== 'navOrderOptions') { // Skip navigation settings if any
+            container.innerHTML = checkboxesHTML;
+            // Re-attach listeners
+            container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', updateCourseSelectionDisplay);
+            });
+        }
+    });
+
+    // Also update subject filters if they exist
+    const filters = document.querySelectorAll('#subjectFilter');
+    filters.forEach(filter => {
+        const currentVal = filter.value;
+        filter.innerHTML = '<option value="">All Subjects</option>' +
+            titles.map(t => `<option value="${t}">${t}</option>`).join('') +
+            '<option value="Other">Other</option>';
+        filter.value = currentVal;
+    });
+
+    console.log('Courses synchronized from website!');
+}
+
 // Global Date Formatter: DD/MM/YYYY
 function formatDate(date) {
     if (!date) return '-';
@@ -330,6 +402,7 @@ async function initializeBottomNav() {
 // Call on load
 document.addEventListener('DOMContentLoaded', () => {
     initializeBottomNav();
+    updateDynamicDropdowns(); // Sync courses on load
 });
 
 // Make functions global
