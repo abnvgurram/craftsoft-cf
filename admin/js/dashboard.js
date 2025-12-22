@@ -112,6 +112,11 @@ function updateRecentStudentsTable(students) {
                 <td>${formatCurrency(student.totalFee)}</td>
                 <td style="color: #10B981; font-weight: 600;">${formatCurrency(student.paidAmount)}</td>
                 <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>
+                    <button class="btn btn-icon btn-outline" onclick='showQuickView(${JSON.stringify(student)})' title="Quick View">
+                        <span class="material-icons" style="font-size: 18px;">visibility</span>
+                    </button>
+                </td>
             </tr>
         `;
     }).join('');
@@ -132,7 +137,7 @@ function updateRecentStudentsTable(students) {
             }
 
             return `
-                <div class="mobile-card">
+                <div class="mobile-card" onclick='showQuickView(${JSON.stringify(student)})' style="cursor: pointer;">
                     <div class="mobile-card-header">
                         <div>
                             <div class="mobile-card-name">${student.name}</div>
@@ -158,6 +163,64 @@ function updateRecentStudentsTable(students) {
             `;
         }).join('');
     }
+}
+
+// Quick View Student
+function showQuickView(student) {
+    const pending = (student.totalFee || 0) - (student.paidAmount || 0);
+    let statusClass = 'pending';
+    let statusText = 'Pending';
+
+    if (pending <= 0) {
+        statusClass = 'paid';
+        statusText = 'Paid';
+    } else if (student.paidAmount > 0) {
+        statusClass = 'partial';
+        statusText = 'Partial';
+    }
+
+    const joinDate = student.createdAt?.toDate?.()
+        ? student.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+        : '-';
+
+    const content = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="width: 64px; height: 64px; background: var(--accent-gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: white; font-size: 1.5rem; font-weight: 600;">
+                ${student.name.charAt(0).toUpperCase()}
+            </div>
+            <h3 style="margin: 0 0 4px;">${student.name}</h3>
+            <p style="color: #64748b; margin: 0;">${student.phone || '-'}</p>
+        </div>
+        <div style="background: #f8fafc; border-radius: 12px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #64748b;">Course</span>
+                <span style="font-weight: 600;">${student.course}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #64748b;">Total Fee</span>
+                <span style="font-weight: 600;">${formatCurrency(student.totalFee)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #64748b;">Paid</span>
+                <span style="font-weight: 600; color: #10B981;">${formatCurrency(student.paidAmount)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #64748b;">Balance</span>
+                <span style="font-weight: 600; color: ${pending > 0 ? '#EF4444' : '#10B981'};">${formatCurrency(pending)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                <span style="color: #64748b;">Status</span>
+                <span class="status-badge ${statusClass}">${statusText}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                <span style="color: #64748b;">Joined</span>
+                <span style="font-weight: 500;">${joinDate}</span>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('quickViewContent').innerHTML = content;
+    document.getElementById('quickViewModal').classList.add('active');
 }
 
 // Format Currency

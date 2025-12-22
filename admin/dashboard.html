@@ -129,6 +129,7 @@
                                     <th>Total Fee</th>
                                     <th>Paid</th>
                                     <th>Status</th>
+                                    <th style="width: 50px;"></th>
                                 </tr>
                             </thead>
                             <tbody id="recentStudentsTable">
@@ -194,6 +195,26 @@
                     <button class="btn-cancel" onclick="cancelLogout()">Cancel</button>
                     <button class="btn-logout-confirm" onclick="confirmLogout()">Logout</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Student Modal -->
+    <div class="modal-overlay" id="quickViewModal">
+        <div class="modal" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3><span class="material-icons">visibility</span> Student Details</h3>
+                <button class="modal-close" onclick="closeModal('quickViewModal')">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body" id="quickViewContent">
+                <!-- Content populated by JS -->
+            </div>
+            <div class="modal-footer">
+                <a href="students.html" class="btn btn-outline">
+                    <span class="material-icons">open_in_new</span> View All Students
+                </a>
             </div>
         </div>
     </div>
