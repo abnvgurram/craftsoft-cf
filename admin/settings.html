@@ -562,21 +562,22 @@
                             gap: 6px;
                         }
 
-                        /* Desktop - Compact horizontal */
+                        /* Desktop - Proper Grid Layout */
                         @media (min-width: 769px) {
                             .info-banner {
-                                padding: 8px 12px;
+                                padding: 16px 20px;
                             }
 
                             .subject-codes-grid {
-                                overflow-x: auto;
-                                flex-wrap: nowrap;
-                                scrollbar-width: thin;
+                                flex-wrap: wrap;
+                                gap: 8px;
                             }
 
                             .subject-code-item {
-                                font-size: 0.7rem;
-                                padding: 2px 6px;
+                                font-size: 0.8rem;
+                                padding: 6px 12px;
+                                background: rgba(255, 255, 255, 0.8);
+                                border: 1px solid rgba(22, 101, 52, 0.15);
                             }
                         }
 
@@ -638,24 +639,7 @@
     </div>
 
     <!-- Bottom Navigation - Mobile -->
-    <nav class="bottom-nav">
-        <a href="dashboard.html" class="bottom-nav-item">
-            <span class="material-icons">dashboard</span>
-            <span>Home</span>
-        </a>
-        <a href="inquiries.html" class="bottom-nav-item">
-            <span class="material-icons">contact_phone</span>
-            <span>Inquiries</span>
-        </a>
-        <a href="students.html" class="bottom-nav-item">
-            <span class="material-icons">people</span>
-            <span>Students</span>
-        </a>
-        <a href="payments.html" class="bottom-nav-item">
-            <span class="material-icons">payments</span>
-            <span>Payments</span>
-        </a>
-    </nav>
+    <nav class="bottom-nav"></nav>
 
 
     <!-- Toast Container -->

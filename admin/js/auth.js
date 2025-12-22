@@ -206,8 +206,95 @@ function showConfirm(options = {}) {
     });
 }
 
+// Skeleton Loaders
+function showTableSkeleton(tableId, rows = 5, cols = 6) {
+    const tbody = document.getElementById(tableId);
+    if (!tbody) return;
+
+    let html = '';
+    for (let i = 0; i < rows; i++) {
+        html += '<tr class="loading-table-row">';
+        for (let j = 0; j < cols; j++) {
+            html += '<td><div class="skeleton skeleton-text"></div></td>';
+        }
+        html += '</tr>';
+    }
+    tbody.innerHTML = html;
+}
+
+function showCardSkeleton(containerId, count = 4) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `
+            <div class="mobile-card skeleton-card">
+                <div class="mobile-card-header">
+                    <div style="width: 100%;">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-text" style="width: 40%;"></div>
+                    </div>
+                </div>
+                <div class="mobile-card-row"><div class="skeleton skeleton-text"></div></div>
+                <div class="mobile-card-row"><div class="skeleton skeleton-text"></div></div>
+                <div class="mobile-card-row"><div class="skeleton skeleton-text"></div></div>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
+
+// Bottom Navigation Logic
+const allNavOptions = {
+    'dashboard': { icon: 'dashboard', label: 'Home', href: 'dashboard.html' },
+    'inquiries': { icon: 'contact_phone', label: 'Inquiries', href: 'inquiries.html' },
+    'students': { icon: 'people', label: 'Students', href: 'students.html' },
+    'payments': { icon: 'payments', label: 'Payments', href: 'payments.html' },
+    'tutors': { icon: 'person', label: 'Tutors', href: 'tutors.html' },
+    'settings': { icon: 'settings', label: 'Settings', href: 'settings.html' }
+};
+
+async function initializeBottomNav() {
+    const bottomNav = document.querySelector('.bottom-nav');
+    if (!bottomNav) return;
+
+    try {
+        const doc = await db.collection('settings').doc('config').get();
+        let selectedIds = ['dashboard', 'inquiries', 'students', 'payments']; // Default
+
+        if (doc.exists && doc.data().mobileNavItems) {
+            selectedIds = doc.data().mobileNavItems;
+        }
+
+        const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+
+        bottomNav.innerHTML = selectedIds.map(id => {
+            const item = allNavOptions[id];
+            if (!item) return '';
+            const isActive = currentPage === item.href ? 'active' : '';
+            return `
+                <a href="${item.href}" class="bottom-nav-item ${isActive}">
+                    <span class="material-icons">${item.icon}</span>
+                    <span>${item.label}</span>
+                </a>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Error loading bottom nav:', error);
+    }
+}
+
+// Call on load
+document.addEventListener('DOMContentLoaded', () => {
+    initializeBottomNav();
+});
+
 // Make functions global
 window.togglePassword = togglePassword;
 window.logout = logout;
 window.showConfirm = showConfirm;
 window.formatPhoneNumber = formatPhoneNumber;
+window.initializeBottomNav = initializeBottomNav;
+window.showTableSkeleton = showTableSkeleton;
+window.showCardSkeleton = showCardSkeleton;

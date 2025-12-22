@@ -254,7 +254,7 @@
         </div>
     </div>
 
-    <!-- Add Student Modal -->
+    <!-- Add Student Modal - Wizard -->
     <div class="modal-overlay" id="addStudentModal">
         <div class="modal">
             <div class="modal-header">
@@ -265,72 +265,122 @@
             </div>
             <form id="addStudentForm">
                 <div class="modal-body">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Full Name *</label>
-                            <input type="text" id="studentName" required placeholder="Enter full name">
+                    <!-- Wizard Progress -->
+                    <div class="wizard-progress">
+                        <div class="wizard-step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Personal Info</div>
                         </div>
-                        <div class="form-group">
-                            <label>Phone Number *</label>
-                            <input type="tel" id="studentPhone" required placeholder="10-digit number" maxlength="10">
+                        <div class="wizard-step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Course & Fees</div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Email (Optional)</label>
-                        <input type="email" id="studentEmail" placeholder="email@example.com">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Course *</label>
-                            <select id="studentCourse" required>
-                                <option value="">Select Course</option>
-                                <option value="Full Stack Development">Full Stack Development</option>
-                                <option value="UI/UX Design">UI/UX Design</option>
-                                <option value="Graphic Design">Graphic Design</option>
-                                <option value="DevOps Engineering">DevOps Engineering</option>
-                                <option value="AWS Cloud">AWS Cloud</option>
-                                <option value="Python Full Stack">Python Full Stack</option>
-                                <option value="Java Full Stack">Java Full Stack</option>
-                                <option value="Data Analytics">Data Analytics</option>
-                                <option value="Salesforce">Salesforce</option>
-                                <option value="DSA Mastery">DSA Mastery</option>
-                                <option value="Soft Skills">Soft Skills</option>
-                                <option value="Spoken English">Spoken English</option>
-                                <option value="Resume & Interview">Resume & Interview Prep</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Total Fee (₹) *</label>
-                            <input type="number" id="totalFee" required placeholder="e.g., 25000" min="0">
+                        <div class="wizard-step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Batch & Payment</div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Initial Payment (₹)</label>
-                            <input type="number" id="initialPayment" placeholder="e.g., 10000" min="0" value="0">
+
+                    <!-- Wizard Content -->
+                    <div class="wizard-content">
+                        <!-- Step 1: Basic Info -->
+                        <div class="wizard-panel active" data-panel="1">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="studentName" required placeholder="Enter full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number *</label>
+                                <input type="tel" id="studentPhone" required placeholder="10-digit number"
+                                    maxlength="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Email (Optional)</label>
+                                <input type="email" id="studentEmail" placeholder="email@example.com">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Payment Mode</label>
-                            <select id="paymentMode">
-                                <option value="cash">Cash</option>
-                                <option value="razorpay">Razorpay / Online</option>
-                                <option value="upi">UPI</option>
-                                <option value="bank">Bank Transfer</option>
-                            </select>
+
+                        <!-- Step 2: Course & Fees -->
+                        <div class="wizard-panel" data-panel="2">
+                            <div class="form-group">
+                                <label>Course(s) * <span style="font-weight:400;color:#64748b;font-size:0.8rem;">(Select
+                                        one or more)</span></label>
+                                <div class="multi-select-dropdown" id="studentCoursesDropdown">
+                                    <div class="multi-select-trigger"
+                                        onclick="toggleMultiSelect('studentCoursesDropdown')">
+                                        <span class="selected-text">Select courses...</span>
+                                        <span class="material-icons">expand_more</span>
+                                    </div>
+                                    <div class="multi-select-options">
+                                        <label><input type="checkbox" value="Full Stack Development"> Full Stack
+                                            Development</label>
+                                        <label><input type="checkbox" value="UI/UX Design"> UI/UX Design</label>
+                                        <label><input type="checkbox" value="Graphic Design"> Graphic Design</label>
+                                        <label><input type="checkbox" value="DevOps Engineering"> DevOps
+                                            Engineering</label>
+                                        <label><input type="checkbox" value="AWS Cloud"> AWS Cloud</label>
+                                        <label><input type="checkbox" value="Python Full Stack"> Python Full
+                                            Stack</label>
+                                        <label><input type="checkbox" value="Java Full Stack"> Java Full Stack</label>
+                                        <label><input type="checkbox" value="Data Analytics"> Data Analytics</label>
+                                        <label><input type="checkbox" value="Salesforce"> Salesforce</label>
+                                        <label><input type="checkbox" value="DSA Mastery"> DSA Mastery</label>
+                                        <label><input type="checkbox" value="Soft Skills"> Soft Skills</label>
+                                        <label><input type="checkbox" value="Spoken English"> Spoken English</label>
+                                        <label><input type="checkbox" value="Resume & Interview"> Resume & Interview
+                                            Prep</label>
+                                        <label><input type="checkbox" value="Other"> Other</label>
+                                    </div>
+                                </div>
+                                <!-- Hidden field for form compatibility -->
+                                <input type="hidden" id="studentCourse" value="">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Total Fee (₹) *</label>
+                                    <input type="number" id="totalFee" required placeholder="e.g., 25000" min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Batch & Payment -->
+                        <div class="wizard-panel" data-panel="3">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Initial Payment (₹)</label>
+                                    <input type="number" id="initialPayment" placeholder="0" min="0" value="0">
+                                </div>
+                                <div class="form-group">
+                                    <label>Payment Mode</label>
+                                    <select id="paymentMode">
+                                        <option value="cash">Cash</option>
+                                        <option value="razorpay">Razorpay / Online</option>
+                                        <option value="upi">UPI</option>
+                                        <option value="bank">Bank Transfer</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Notes (Optional)</label>
+                                <textarea id="studentNotes" rows="2" placeholder="Any additional notes..."></textarea>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Notes (Optional)</label>
-                        <textarea id="studentNotes" rows="2" placeholder="Any additional notes..."></textarea>
+
+                    <!-- Wizard Navigation -->
+                    <div class="wizard-nav">
+                        <button type="button" class="btn btn-outline" id="wizardPrevBtn" onclick="wizardPrev()"
+                            style="display:none;">
+                            <span class="material-icons">arrow_back</span> Back
+                        </button>
+                        <div style="flex:1;"></div>
+                        <button type="button" class="btn btn-primary" id="wizardNextBtn" onclick="wizardNext()">
+                            Next <span class="material-icons">arrow_forward</span>
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="wizardSubmitBtn" style="display:none;">
+                            <span class="material-icons">check</span> Create
+                        </button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline"
-                        onclick="closeModal('addStudentModal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">
-                        <span class="material-icons">check</span> Create Admission
-                    </button>
                 </div>
             </form>
         </div>
@@ -437,6 +487,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/student-wizard.js"></script>
     <script src="js/dashboard.js"></script>
 
     <script>

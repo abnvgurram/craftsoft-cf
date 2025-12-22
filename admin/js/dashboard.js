@@ -484,7 +484,10 @@ document.getElementById('addStudentForm').addEventListener('submit', async (e) =
     const name = document.getElementById('studentName').value.trim();
     const phone = formatPhoneNumber(document.getElementById('studentPhone').value.trim());
     const email = document.getElementById('studentEmail').value.trim();
-    const course = document.getElementById('studentCourse').value;
+
+    // Get multiple courses
+    const selectedCourses = typeof getSelectedCourses === 'function' ? getSelectedCourses() : [];
+    const course = selectedCourses.join(', ') || document.getElementById('studentCourse').value;
     const totalFee = parseInt(document.getElementById('totalFee').value) || 0;
     const initialPayment = parseInt(document.getElementById('initialPayment').value) || 0;
     const paymentMode = document.getElementById('paymentMode').value;

@@ -6,6 +6,9 @@ let allTutors = [];
 async function loadTutors() {
     try {
         console.log('Loading tutors...');
+        if (typeof showTableSkeleton === 'function') showTableSkeleton('tutorsTable', 5, 6);
+        if (typeof showCardSkeleton === 'function') showCardSkeleton('tutorsMobileCards', 3);
+
         const snapshot = await db.collection('tutors').get();
 
         allTutors = [];

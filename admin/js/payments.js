@@ -6,6 +6,9 @@ let allPayments = [];
 async function loadPayments() {
     try {
         console.log('Loading payments...');
+        if (typeof showTableSkeleton === 'function') showTableSkeleton('paymentsTable', 5, 5);
+        if (typeof showCardSkeleton === 'function') showCardSkeleton('paymentsMobileCards', 3);
+
         // Query without orderBy to avoid index requirement
         const snapshot = await db.collection('payments').get();
 

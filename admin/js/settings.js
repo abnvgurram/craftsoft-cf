@@ -504,7 +504,8 @@ async function saveNavigationSettings() {
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
-        showToast('Navigation settings saved! Refresh other pages to see changes.', 'success');
+        showToast('Navigation settings saved! Changes reflected globally.', 'success');
+        if (typeof initializeBottomNav === 'function') initializeBottomNav();
     } catch (error) {
         console.error('Error saving navigation settings:', error);
         showToast('Error saving settings', 'error');

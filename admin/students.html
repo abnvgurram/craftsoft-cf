@@ -242,24 +242,7 @@
     </button>
 
     <!-- Bottom Navigation - Mobile -->
-    <nav class="bottom-nav">
-        <a href="dashboard.html" class="bottom-nav-item">
-            <span class="material-icons">dashboard</span>
-            <span>Home</span>
-        </a>
-        <a href="inquiries.html" class="bottom-nav-item">
-            <span class="material-icons">contact_phone</span>
-            <span>Inquiries</span>
-        </a>
-        <a href="students.html" class="bottom-nav-item active">
-            <span class="material-icons">people</span>
-            <span>Students</span>
-        </a>
-        <a href="payments.html" class="bottom-nav-item">
-            <span class="material-icons">payments</span>
-            <span>Payments</span>
-        </a>
-    </nav>
+    <nav class="bottom-nav"></nav>
 
     <!-- Add Student Modal - Wizard -->
     <div class="modal-overlay" id="addStudentModal">
@@ -310,24 +293,37 @@
                         <!-- Step 2: Course & Fees -->
                         <div class="wizard-panel" data-panel="2">
                             <div class="form-group">
-                                <label>Course *</label>
-                                <select id="studentCourse" required>
-                                    <option value="">Select Course</option>
-                                    <option value="Full Stack Development">Full Stack Development</option>
-                                    <option value="UI/UX Design">UI/UX Design</option>
-                                    <option value="Graphic Design">Graphic Design</option>
-                                    <option value="DevOps Engineering">DevOps Engineering</option>
-                                    <option value="AWS Cloud">AWS Cloud</option>
-                                    <option value="Python Full Stack">Python Full Stack</option>
-                                    <option value="Java Full Stack">Java Full Stack</option>
-                                    <option value="Data Analytics">Data Analytics</option>
-                                    <option value="Salesforce">Salesforce</option>
-                                    <option value="DSA Mastery">DSA Mastery</option>
-                                    <option value="Soft Skills">Soft Skills</option>
-                                    <option value="Spoken English">Spoken English</option>
-                                    <option value="Resume & Interview">Resume & Interview Prep</option>
-                                    <option value="Other">Other</option>
-                                </select>
+                                <label>Course(s) * <span style="font-weight:400;color:#64748b;font-size:0.8rem;">(Select
+                                        one or more)</span></label>
+                                <div class="multi-select-dropdown" id="studentCoursesDropdown">
+                                    <div class="multi-select-trigger"
+                                        onclick="toggleMultiSelect('studentCoursesDropdown')">
+                                        <span class="selected-text">Select courses...</span>
+                                        <span class="material-icons">expand_more</span>
+                                    </div>
+                                    <div class="multi-select-options">
+                                        <label><input type="checkbox" value="Full Stack Development"> Full Stack
+                                            Development</label>
+                                        <label><input type="checkbox" value="UI/UX Design"> UI/UX Design</label>
+                                        <label><input type="checkbox" value="Graphic Design"> Graphic Design</label>
+                                        <label><input type="checkbox" value="DevOps Engineering"> DevOps
+                                            Engineering</label>
+                                        <label><input type="checkbox" value="AWS Cloud"> AWS Cloud</label>
+                                        <label><input type="checkbox" value="Python Full Stack"> Python Full
+                                            Stack</label>
+                                        <label><input type="checkbox" value="Java Full Stack"> Java Full Stack</label>
+                                        <label><input type="checkbox" value="Data Analytics"> Data Analytics</label>
+                                        <label><input type="checkbox" value="Salesforce"> Salesforce</label>
+                                        <label><input type="checkbox" value="DSA Mastery"> DSA Mastery</label>
+                                        <label><input type="checkbox" value="Soft Skills"> Soft Skills</label>
+                                        <label><input type="checkbox" value="Spoken English"> Spoken English</label>
+                                        <label><input type="checkbox" value="Resume & Interview"> Resume & Interview
+                                            Prep</label>
+                                        <label><input type="checkbox" value="Other"> Other</label>
+                                    </div>
+                                </div>
+                                <!-- Hidden field for form compatibility -->
+                                <input type="hidden" id="studentCourse" value="">
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
@@ -682,6 +678,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/student-wizard.js"></script>
     <script src="js/students.js"></script>
 
     <script>

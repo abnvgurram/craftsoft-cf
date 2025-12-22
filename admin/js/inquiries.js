@@ -15,6 +15,7 @@ auth.onAuthStateChanged((user) => {
 // Load Inquiries
 async function loadInquiries() {
     try {
+        if (typeof showCardSkeleton === 'function') showCardSkeleton('inquiriesList', 4);
         const snapshot = await db.collection('inquiries').orderBy('createdAt', 'desc').get();
 
         allInquiries = [];
