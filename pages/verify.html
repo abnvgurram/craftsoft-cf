@@ -534,14 +534,14 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
 
-            // Colors matching the new design
+            // Colors matching the design
             const colors = {
-                primary: [31, 122, 92],      // #1f7a5c - teal green
-                textDark: [15, 23, 42],      // #0f172a - dark text
-                textMuted: [100, 116, 139],  // #64748b - muted gray
-                border: [229, 231, 235],     // #e5e7eb - light border
-                bgLight: [248, 250, 252],    // #f8fafc - light background
-                badgeBlue: [37, 99, 235],    // #2563eb - blue badge
+                primary: [31, 122, 92],
+                textDark: [15, 23, 42],
+                textMuted: [100, 116, 139],
+                border: [229, 231, 235],
+                bgLight: [248, 250, 252],
+                badgeBlue: [37, 99, 235],
                 white: [255, 255, 255]
             };
 
@@ -551,47 +551,43 @@
             let y = margin;
 
             // === HEADER ===
-            // Brand name - Left
             doc.setFontSize(18);
             doc.setTextColor(...colors.primary);
             doc.setFont('helvetica', 'bold');
             doc.text("Abhi's Craft Soft", margin, y);
 
-            // Receipt ID - Right
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.setTextColor(...colors.textMuted);
             doc.setFont('helvetica', 'normal');
-            doc.text('Receipt ID', pageWidth - margin, y - 3, { align: 'right' });
+            doc.text('Receipt ID', pageWidth - margin, y - 2, { align: 'right' });
 
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setTextColor(...colors.textDark);
             doc.setFont('helvetica', 'bold');
-            doc.text(data.receiptId, pageWidth - margin, y + 3, { align: 'right' });
+            doc.text(data.receiptId, pageWidth - margin, y + 4, { align: 'right' });
 
             y += 12;
 
-            // Header border
             doc.setDrawColor(...colors.border);
             doc.setLineWidth(0.3);
             doc.line(margin, y, pageWidth - margin, y);
 
-            y += 20;
+            y += 15;
 
             // === TITLE ===
-            doc.setFontSize(28);
+            doc.setFontSize(24);
             doc.setTextColor(...colors.textDark);
             doc.setFont('helvetica', 'bold');
             doc.text('Payment Receipt', margin, y);
 
-            y += 8;
+            y += 6;
 
-            // Subtitle
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setTextColor(...colors.textMuted);
             doc.setFont('helvetica', 'normal');
             doc.text('This is a payment receipt for your enrollment in ' + (data.course || 'Course') + '.', margin, y);
 
-            y += 12;
+            y += 10;
 
             // === BADGE ===
             const isFullPayment = data.status === 'Full Payment' || data.status === 'Paid';
@@ -599,92 +595,86 @@
             const badgeText = isFullPayment ? 'FULL PAYMENT' : 'PARTIAL PAYMENT';
 
             doc.setFillColor(...badgeColor);
-            doc.roundedRect(margin, y, 42, 8, 4, 4, 'F');
+            doc.roundedRect(margin, y, 38, 7, 3, 3, 'F');
 
-            doc.setFontSize(9);
+            doc.setFontSize(8);
             doc.setTextColor(...colors.white);
             doc.setFont('helvetica', 'bold');
-            doc.text(badgeText, margin + 21, y + 5.5, { align: 'center' });
+            doc.text(badgeText, margin + 19, y + 5, { align: 'center' });
 
-            y += 18;
+            y += 14;
 
             // === AMOUNT ===
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.setTextColor(...colors.textMuted);
             doc.setFont('helvetica', 'normal');
             doc.text('AMOUNT PAID', margin, y);
 
-            y += 12;
+            y += 10;
 
-            doc.setFontSize(36);
+            doc.setFontSize(28);
             doc.setTextColor(...colors.textDark);
             doc.setFont('helvetica', 'bold');
             const amountFormatted = Number(data.amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             doc.text('Rs. ' + amountFormatted, margin, y);
 
-            y += 8;
-
-            doc.setFontSize(11);
-            doc.setTextColor(...colors.textMuted);
-            doc.setFont('helvetica', 'normal');
-            doc.text('via ' + (data.mode || 'Cash'), margin, y);
-
-            y += 18;
-
-            // === ISSUED TO / PAID ON ===
-            doc.setDrawColor(...colors.border);
-            doc.setLineWidth(0.3);
-            doc.line(margin, y, pageWidth - margin, y);
-
-            y += 12;
-
-            const col2X = 110;
+            y += 6;
 
             doc.setFontSize(10);
             doc.setTextColor(...colors.textMuted);
             doc.setFont('helvetica', 'normal');
+            doc.text('via ' + (data.mode || 'Cash'), margin, y);
+
+            y += 14;
+
+            // === RECIPIENT ===
+            doc.setDrawColor(...colors.border);
+            doc.setLineWidth(0.3);
+            doc.line(margin, y, pageWidth - margin, y);
+
+            y += 10;
+
+            const col2X = 110;
+
+            doc.setFontSize(9);
+            doc.setTextColor(...colors.textMuted);
             doc.text('ISSUED TO', margin, y);
             doc.text('PAID ON', col2X, y);
 
-            y += 8;
+            y += 6;
 
-            doc.setFontSize(14);
+            doc.setFontSize(12);
             doc.setTextColor(...colors.textDark);
             doc.setFont('helvetica', 'bold');
             doc.text(data.studentName || 'Student', margin, y);
             doc.text(data.date || '-', col2X, y);
 
-            y += 6;
+            y += 5;
 
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setTextColor(...colors.primary);
             doc.setFont('helvetica', 'normal');
             doc.text(data.phone || '', margin, y);
 
-            y += 18;
+            y += 14;
 
             // === TABLE ===
             doc.setDrawColor(...colors.border);
             doc.line(margin, y, pageWidth - margin, y);
 
-            y += 10;
+            y += 8;
 
-            const col3X = pageWidth - margin;
-
-            doc.setFontSize(9);
+            doc.setFontSize(8);
             doc.setTextColor(...colors.textMuted);
-            doc.setFont('helvetica', 'normal');
             doc.text('NAME OF THE COURSE', margin, y);
             doc.text('MODE OF PAYMENT', 100, y);
-            doc.text('AMOUNT PAID', col3X, y, { align: 'right' });
+            doc.text('AMOUNT PAID', pageWidth - margin, y, { align: 'right' });
 
-            y += 10;
-
+            y += 8;
             doc.line(margin, y, pageWidth - margin, y);
+            y += 8;
 
-            y += 10;
-
-            doc.setFontSize(12);
+            doc.setFontSize(11);
             doc.setTextColor(...colors.textDark);
             doc.setFont('helvetica', 'normal');
             doc.text(data.course || 'Course', margin, y);
@@ -692,93 +682,88 @@
 
             doc.setTextColor(...colors.primary);
             doc.setFont('helvetica', 'bold');
-            doc.text('Rs. ' + amountFormatted, col3X, y, { align: 'right' });
+            doc.text('Rs. ' + amountFormatted, pageWidth - margin, y, { align: 'right' });
 
-            y += 20;
+            y += 16;
 
             // === SUMMARY BOX ===
             const totalFee = data.totalFee || data.amount;
             const amountPaid = data.amount;
             const balanceDue = totalFee - amountPaid;
 
-            const boxWidth = 75;
+            const boxWidth = 70;
             const boxX = pageWidth - margin - boxWidth;
-            const boxHeight = 45;
+            const boxHeight = 38;
 
             doc.setFillColor(...colors.bgLight);
-            doc.roundedRect(boxX, y, boxWidth, boxHeight, 3, 3, 'F');
+            doc.roundedRect(boxX, y, boxWidth, boxHeight, 2, 2, 'F');
 
             doc.setDrawColor(...colors.border);
             doc.setLineWidth(0.3);
-            doc.roundedRect(boxX, y, boxWidth, boxHeight, 3, 3);
+            doc.roundedRect(boxX, y, boxWidth, boxHeight, 2, 2);
 
-            let innerY = y + 10;
+            let innerY = y + 8;
 
-            // Total Fee
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.setTextColor(...colors.textMuted);
             doc.setFont('helvetica', 'normal');
-            doc.text('Total Fee', boxX + 5, innerY);
+            doc.text('Total Fee', boxX + 4, innerY);
             doc.setTextColor(...colors.textDark);
             doc.setFont('helvetica', 'bold');
-            doc.text('Rs. ' + Number(totalFee).toLocaleString('en-IN', { minimumFractionDigits: 2 }), boxX + boxWidth - 5, innerY, { align: 'right' });
+            doc.text('Rs. ' + Number(totalFee).toLocaleString('en-IN', { minimumFractionDigits: 2 }), boxX + boxWidth - 4, innerY, { align: 'right' });
+
+            innerY += 8;
+
+            doc.setTextColor(...colors.primary);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Amount Paid', boxX + 4, innerY);
+            doc.text('Rs. ' + amountFormatted, boxX + boxWidth - 4, innerY, { align: 'right' });
 
             innerY += 10;
 
-            // Amount Paid
-            doc.setTextColor(...colors.primary);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Amount Paid', boxX + 5, innerY);
-            doc.text('Rs. ' + amountFormatted, boxX + boxWidth - 5, innerY, { align: 'right' });
-
-            innerY += 12;
-
-            // Divider
             doc.setDrawColor(...colors.border);
-            doc.line(boxX + 5, innerY - 4, boxX + boxWidth - 5, innerY - 4);
+            doc.line(boxX + 4, innerY - 3, boxX + boxWidth - 4, innerY - 3);
 
-            // Balance Due
             if (balanceDue > 0) {
                 doc.setTextColor(220, 38, 38);
                 doc.setFont('helvetica', 'bold');
-                doc.text('Balance Due', boxX + 5, innerY);
-                doc.text('Rs. ' + Number(balanceDue).toLocaleString('en-IN', { minimumFractionDigits: 2 }), boxX + boxWidth - 5, innerY, { align: 'right' });
+                doc.text('Balance Due', boxX + 4, innerY);
+                doc.text('Rs. ' + Number(balanceDue).toLocaleString('en-IN', { minimumFractionDigits: 2 }), boxX + boxWidth - 4, innerY, { align: 'right' });
             } else {
                 doc.setTextColor(...colors.primary);
                 doc.setFont('helvetica', 'bold');
-                doc.text('Fully Paid', boxX + 5, innerY);
-                doc.text('Rs. 0.00', boxX + boxWidth - 5, innerY, { align: 'right' });
+                doc.text('Fully Paid', boxX + 4, innerY);
+                doc.text('Rs. 0.00', boxX + boxWidth - 4, innerY, { align: 'right' });
             }
 
             // === FOOTER ===
-            const footerY = pageHeight - 55;
+            const footerY = pageHeight - 50;
 
             doc.setDrawColor(...colors.border);
             doc.setLineWidth(0.3);
             doc.line(margin, footerY, pageWidth - margin, footerY);
 
-            // Company info
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.setTextColor(...colors.textDark);
             doc.setFont('helvetica', 'bold');
-            doc.text("Abhi's Craft Soft", margin, footerY + 10);
+            doc.text("Abhi's Craft Soft", margin, footerY + 8);
 
-            doc.setFontSize(9);
+            doc.setFontSize(8);
             doc.setTextColor(...colors.textMuted);
             doc.setFont('helvetica', 'normal');
-            doc.text('Plot No. 163, Vijayasree Colony,', margin, footerY + 16);
-            doc.text('Vanasthalipuram, Hyderabad 500070', margin, footerY + 22);
-            doc.text('Phone: +91 7842239090', margin, footerY + 28);
-            doc.text('Email: team.craftsoft@gmail.com', margin, footerY + 34);
+            doc.text('Plot No. 163, Vijayasree Colony,', margin, footerY + 13);
+            doc.text('Vanasthalipuram, Hyderabad 500070', margin, footerY + 18);
+            doc.text('Phone: +91 7842239090', margin, footerY + 23);
+            doc.text('Email: team.craftsoft@gmail.com', margin, footerY + 28);
 
-            // Verify info
-            doc.setFontSize(9);
+            const centerX = 115;
+            doc.setFontSize(8);
             doc.setTextColor(...colors.textMuted);
-            doc.text('Scan to verify', pageWidth - margin - 30, footerY + 10, { align: 'center' });
+            doc.text('Scan to verify', centerX, footerY + 8);
 
             doc.setTextColor(...colors.primary);
             doc.setFont('helvetica', 'bold');
-            doc.text('craftsoft.co.in/verify', pageWidth - margin - 30, footerY + 16, { align: 'center' });
+            doc.text('craftsoft.co.in/verify', centerX, footerY + 13);
 
             // QR Code
             const qrUrl = 'https://craftsoft.co.in/pages/verify.html?id=' + data.receiptId;
@@ -801,16 +786,16 @@
             const qrCanvas = qrContainer.querySelector('canvas');
             if (qrCanvas) {
                 const qrDataUrl = qrCanvas.toDataURL('image/png');
-                doc.addImage(qrDataUrl, 'PNG', pageWidth - margin - 45, footerY + 20, 28, 28);
+                doc.addImage(qrDataUrl, 'PNG', pageWidth - margin - 25, footerY + 5, 22, 22);
             }
 
             document.body.removeChild(qrContainer);
 
             // Disclaimer
-            doc.setFontSize(8);
+            doc.setFontSize(7);
             doc.setTextColor(...colors.textMuted);
             doc.setFont('helvetica', 'normal');
-            doc.text('This is a system-generated receipt and does not require a signature.', margin, pageHeight - 15);
+            doc.text('This is a system-generated receipt and does not require a signature.', margin, pageHeight - 12);
 
             // Save
             doc.save('Receipt_' + data.receiptId + '.pdf');
