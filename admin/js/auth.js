@@ -31,17 +31,14 @@ function isLoginPage() {
 function forceRedirectToLogin() {
     // Set logout flag
     sessionStorage.setItem('loggedOut', 'true');
-    // Clear history state to prevent back navigation
-    if (window.history && window.history.replaceState) {
-        window.history.replaceState(null, '', 'index.html');
-    }
     // Replace current history entry so back button won't work
     window.location.replace('index.html');
 }
 
-// IMMEDIATE CHECK: If we logged out and pressed back, redirect immediately
+// IMMEDIATE CHECK: Only for protected pages after logout
 // This runs BEFORE Firebase even initializes
 (function immediateAuthCheck() {
+    // Only apply to protected pages, NOT the login page
     if (isProtectedPage()) {
         // Check if user just logged out
         if (sessionStorage.getItem('loggedOut') === 'true') {
@@ -56,19 +53,20 @@ function forceRedirectToLogin() {
     }
 })();
 
-// Clear logout flag on login page
+// Clear logout flag on login page (runs once)
 if (isLoginPage()) {
     sessionStorage.removeItem('loggedOut');
-    // Clear forward history on login page to prevent forward navigation to protected pages
-    if (window.history && window.history.replaceState) {
-        window.history.replaceState(null, '', window.location.href);
-    }
 }
 
-// Check if user is already logged in
+// Auth state change listener - runs once when auth is ready
+let authChecked = false;
 auth.onAuthStateChanged((user) => {
+    // Prevent multiple executions
+    if (authChecked && !isProtectedPage()) return;
+    authChecked = true;
+
     if (user) {
-        // User is signed in - clear logout flag and show content
+        // User is signed in
         sessionStorage.removeItem('loggedOut');
 
         if (isLoginPage()) {
@@ -88,67 +86,32 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// Handle browser back/forward button (bfcache issue) - Works on Desktop & Mobile
+// Handle browser back button - ONLY for protected pages
 window.addEventListener('pageshow', (event) => {
+    // Skip if on login page
+    if (isLoginPage()) return;
+
     if (isProtectedPage()) {
         // Check logout flag first (fastest)
         if (sessionStorage.getItem('loggedOut') === 'true') {
             window.location.replace('index.html');
             return;
         }
-        // Then check Firebase auth
-        const user = auth.currentUser;
-        if (!user) {
-            forceRedirectToLogin();
-        }
     }
 });
 
-// Handle page hide - set flag when leaving page after logout
-window.addEventListener('pagehide', (event) => {
-    // This helps with mobile bfcache
-    if (isLoginPage() && sessionStorage.getItem('loggedOut') === 'true') {
-        // Keep the logout flag when leaving login page
-    }
-});
-
-// Check on visibility change (tab becomes active) - Important for Mobile
+// Visibility change - ONLY for protected pages
 document.addEventListener('visibilitychange', () => {
+    // Skip if on login page
+    if (isLoginPage()) return;
+
     if (document.visibilityState === 'visible' && isProtectedPage()) {
-        // Check logout flag first
         if (sessionStorage.getItem('loggedOut') === 'true') {
             window.location.replace('index.html');
-            return;
-        }
-        const user = auth.currentUser;
-        if (!user) {
-            forceRedirectToLogin();
         }
     }
 });
 
-// Focus event - Works well on mobile when app comes to foreground
-window.addEventListener('focus', () => {
-    if (isProtectedPage()) {
-        if (sessionStorage.getItem('loggedOut') === 'true') {
-            window.location.replace('index.html');
-            return;
-        }
-        const user = auth.currentUser;
-        if (!user) {
-            forceRedirectToLogin();
-        }
-    }
-});
-
-// Touch start - Extra check for mobile interactions (catches edge cases)
-document.addEventListener('touchstart', function checkAuthOnTouch() {
-    if (isProtectedPage() && sessionStorage.getItem('loggedOut') === 'true') {
-        window.location.replace('index.html');
-    }
-    // Remove after first touch to avoid performance issues
-    document.removeEventListener('touchstart', checkAuthOnTouch);
-}, { once: true });
 
 // Login Form Handler
 const loginForm = document.getElementById('loginForm');
