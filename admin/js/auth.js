@@ -1,20 +1,76 @@
 // Authentication Logic for Craft Soft Admin
 
+// List of protected pages (all admin pages except login)
+const protectedPages = [
+    'dashboard.html',
+    'students.html',
+    'payments.html',
+    'inquiries.html',
+    'tutors.html',
+    'experts.html',
+    'services.html',
+    'settings.html'
+];
+
+// Check if current page is protected
+function isProtectedPage() {
+    const currentPage = window.location.pathname;
+    return protectedPages.some(page => currentPage.includes(page));
+}
+
+// Check if current page is login page
+function isLoginPage() {
+    const currentPage = window.location.pathname;
+    return currentPage.includes('index.html') ||
+        currentPage.endsWith('/admin/') ||
+        currentPage.endsWith('/admin');
+}
+
+// Force redirect to login if not authenticated
+function forceRedirectToLogin() {
+    // Replace current history entry so back button won't work
+    window.location.replace('index.html');
+}
+
 // Check if user is already logged in
 auth.onAuthStateChanged((user) => {
-    const currentPage = window.location.pathname;
-
     if (user) {
         // User is signed in
-        if (currentPage.includes('index.html') || currentPage.endsWith('/admin/') || currentPage.endsWith('/admin')) {
+        if (isLoginPage()) {
             // Redirect to dashboard if on login page
             window.location.href = 'dashboard.html';
         }
     } else {
         // User is not signed in
-        if (currentPage.includes('dashboard.html') || currentPage.includes('students.html') || currentPage.includes('payments.html')) {
+        if (isProtectedPage()) {
             // Redirect to login if on protected page
-            window.location.href = 'index.html';
+            forceRedirectToLogin();
+        }
+    }
+});
+
+// Handle browser back/forward button (bfcache issue)
+// This fires when user navigates back to a cached page
+window.addEventListener('pageshow', (event) => {
+    // event.persisted is true when page is loaded from bfcache (back button)
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        // Re-check authentication
+        if (isProtectedPage()) {
+            auth.onAuthStateChanged((user) => {
+                if (!user) {
+                    forceRedirectToLogin();
+                }
+            });
+        }
+    }
+});
+
+// Also check on visibility change (tab becomes active)
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && isProtectedPage()) {
+        const user = auth.currentUser;
+        if (!user) {
+            forceRedirectToLogin();
         }
     }
 });
