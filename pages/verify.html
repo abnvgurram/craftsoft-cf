@@ -336,7 +336,7 @@
         const db = firebase.firestore();
 
         async function verifyReceipt() {
-            const receiptId = document.getElementById('receiptId').value.trim();
+            const receiptId = document.getElementById('receiptId').value.trim().toUpperCase();
             const resultCard = document.getElementById('resultCard');
             const verifyBtn = document.getElementById('verifyBtn');
 
@@ -355,11 +355,53 @@
             verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
 
             try {
-                // Query receipts collection
+                let found = false;
+                let receiptData = null;
+
+                // First check the receipts collection (for new receipts)
                 const receiptDoc = await db.collection('receipts').doc(receiptId).get();
 
                 if (receiptDoc.exists) {
-                    const data = receiptDoc.data();
+                    found = true;
+                    receiptData = receiptDoc.data();
+                } else {
+                    // Search in students -> payments subcollections (for old receipts)
+                    const studentsSnapshot = await db.collection('students').get();
+
+                    for (const studentDoc of studentsSnapshot.docs) {
+                        const student = studentDoc.data();
+                        const paymentsSnapshot = await db.collection('students')
+                            .doc(studentDoc.id)
+                            .collection('payments')
+                            .where('receiptNumber', '==', receiptId)
+                            .get();
+
+                        if (!paymentsSnapshot.empty) {
+                            const payment = paymentsSnapshot.docs[0].data();
+                            found = true;
+
+                            // Format date
+                            let dateStr = '-';
+                            if (payment.createdAt) {
+                                const d = payment.createdAt.toDate ? payment.createdAt.toDate() : new Date(payment.createdAt);
+                                dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                            }
+
+                            receiptData = {
+                                studentName: student.name,
+                                phone: student.phone,
+                                course: student.course,
+                                amount: payment.amount,
+                                mode: payment.mode,
+                                date: dateStr,
+                                status: (student.totalFee - student.paidAmount) <= 0 ? 'Fully Paid' : 'Partial Payment'
+                            };
+                            break;
+                        }
+                    }
+                }
+
+                if (found && receiptData) {
                     resultCard.className = 'result-card verified';
                     resultCard.innerHTML = `
                         <div class="result-header">
@@ -372,19 +414,19 @@
                             </div>
                             <div class="result-row">
                                 <span class="result-label">Amount</span>
-                                <span class="result-value amount">Rs. ${Number(data.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                <span class="result-value amount">Rs. ${Number(receiptData.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                             </div>
                             <div class="result-row">
                                 <span class="result-label">Date</span>
-                                <span class="result-value">${data.date || '-'}</span>
+                                <span class="result-value">${receiptData.date || '-'}</span>
                             </div>
                             <div class="result-row">
                                 <span class="result-label">Course</span>
-                                <span class="result-value">${data.course || '-'}</span>
+                                <span class="result-value">${receiptData.course || '-'}</span>
                             </div>
                             <div class="result-row">
                                 <span class="result-label">Status</span>
-                                <span class="result-value">${data.status || 'Paid'}</span>
+                                <span class="result-value">${receiptData.status || 'Paid'}</span>
                             </div>
                         </div>
                         <div class="result-footer">

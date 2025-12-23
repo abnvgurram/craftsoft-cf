@@ -346,7 +346,7 @@
         let currentReceiptData = null;
 
         async function findReceipt() {
-            const receiptId = document.getElementById('receiptId').value.trim();
+            const receiptId = document.getElementById('receiptId').value.trim().toUpperCase();
             const resultCard = document.getElementById('resultCard');
             const findBtn = document.getElementById('findBtn');
 
@@ -365,12 +365,57 @@
             findBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Finding...';
 
             try {
+                let found = false;
+                let receiptData = null;
+
+                // First check the receipts collection (for new receipts)
                 const receiptDoc = await db.collection('receipts').doc(receiptId).get();
 
                 if (receiptDoc.exists) {
-                    const data = receiptDoc.data();
-                    currentReceiptData = { ...data, receiptId };
+                    found = true;
+                    receiptData = { ...receiptDoc.data(), receiptId };
+                } else {
+                    // Search in students -> payments subcollections (for old receipts)
+                    const studentsSnapshot = await db.collection('students').get();
 
+                    for (const studentDoc of studentsSnapshot.docs) {
+                        const student = studentDoc.data();
+                        const paymentsSnapshot = await db.collection('students')
+                            .doc(studentDoc.id)
+                            .collection('payments')
+                            .where('receiptNumber', '==', receiptId)
+                            .get();
+
+                        if (!paymentsSnapshot.empty) {
+                            const payment = paymentsSnapshot.docs[0].data();
+                            found = true;
+
+                            // Format date
+                            let dateStr = '-';
+                            if (payment.createdAt) {
+                                const d = payment.createdAt.toDate ? payment.createdAt.toDate() : new Date(payment.createdAt);
+                                dateStr = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                            }
+
+                            receiptData = {
+                                receiptId: receiptId,
+                                studentName: student.name,
+                                phone: student.phone,
+                                course: student.course,
+                                amount: payment.amount,
+                                mode: payment.mode || 'Cash',
+                                date: dateStr,
+                                totalFee: student.totalFee,
+                                paidAmount: student.paidAmount,
+                                status: (student.totalFee - student.paidAmount) <= 0 ? 'Fully Paid' : 'Partial Payment'
+                            };
+                            break;
+                        }
+                    }
+                }
+
+                if (found && receiptData) {
+                    currentReceiptData = receiptData;
                     resultCard.className = 'result-card found';
                     resultCard.innerHTML = `
                         <div class="result-header">
@@ -383,15 +428,15 @@
                             </div>
                             <div class="result-row">
                                 <span class="result-label">Amount</span>
-                                <span class="result-value amount">Rs. ${Number(data.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                                <span class="result-value amount">Rs. ${Number(receiptData.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                             </div>
                             <div class="result-row">
                                 <span class="result-label">Date</span>
-                                <span class="result-value">${data.date || '-'}</span>
+                                <span class="result-value">${receiptData.date || '-'}</span>
                             </div>
                             <div class="result-row">
                                 <span class="result-label">Course</span>
-                                <span class="result-value">${data.course || '-'}</span>
+                                <span class="result-value">${receiptData.course || '-'}</span>
                             </div>
                         </div>
                         <button class="download-pdf-btn" onclick="downloadPDF()">
