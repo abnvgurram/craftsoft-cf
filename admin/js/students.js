@@ -509,7 +509,7 @@ async function openPaymentHistory(studentId) {
 // ============================================
 // PDF RECEIPT GENERATION (Razorpay Style)
 // ============================================
-function downloadReceiptPDF(paymentIndex = null) {
+async function downloadReceiptPDF(paymentIndex = null) {
     if (!currentStudentData) {
         showToast('No student data available', 'error');
         return;
@@ -534,9 +534,18 @@ function downloadReceiptPDF(paymentIndex = null) {
         date: formatDate(p.createdAt)
     }));
 
+    // Get receipt ID
+    const receiptId = currentPayment.receiptNumber || `RCPT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // Calculate balance
+    const historicalTotal = historicalPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+    const totalPaid = historicalTotal + currentPayment.amount;
+    const balanceDue = (student.totalFee || 0) - totalPaid;
+    const status = balanceDue <= 0 ? 'Fully Paid' : 'Partial Payment';
+
     // Prepare receipt data
     const receiptData = {
-        receiptId: currentPayment.receiptNumber || `RCPT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+        receiptId: receiptId,
         studentName: student.name,
         phone: student.phone || '',
         courseName: student.course,
@@ -546,6 +555,28 @@ function downloadReceiptPDF(paymentIndex = null) {
         paymentDate: formatDate(currentPayment.createdAt),
         paymentHistory: historicalPayments
     };
+
+    // Save receipt to Firestore for verification
+    try {
+        await db.collection('receipts').doc(receiptId).set({
+            studentName: student.name,
+            studentId: student.id,
+            phone: student.phone || '',
+            course: student.course,
+            amount: currentPayment.amount,
+            mode: formatPaymentMode(currentPayment.mode),
+            date: formatDate(currentPayment.createdAt),
+            totalFee: student.totalFee || 0,
+            totalPaid: totalPaid,
+            balanceDue: balanceDue,
+            status: status,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('Receipt saved to Firestore:', receiptId);
+    } catch (error) {
+        console.error('Error saving receipt to Firestore:', error);
+        // Continue with PDF generation even if save fails
+    }
 
     // Generate the PDF using the receipt generator
     try {
