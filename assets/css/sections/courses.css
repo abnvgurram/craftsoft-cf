@@ -2,7 +2,7 @@
    COURSES Preview Section
    ============================================ */
 .courses-preview {
-    background: linear-gradient(180deg, var(--primary-50) 0%, var(--white) 100%);
+    background: var(--white);
 }
 
 .courses-grid {
@@ -13,12 +13,11 @@
 }
 
 .course-card {
-    background: var(--white);
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 100%);
     border-radius: var(--radius-xl);
     padding: var(--spacing-xl);
-    box-shadow: var(--shadow-md);
+    border: 1px solid var(--primary-100);
     transition: var(--transition-base);
-    border: 1px solid var(--gray-100);
 }
 
 .course-card:hover {
@@ -30,16 +29,18 @@
 .course-icon {
     width: 60px;
     height: 60px;
+    background: var(--white);
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
 }
 
 .course-icon i {
     font-size: 1.5rem;
-    color: var(--white);
+    color: var(--primary-600);
 }
 
 .course-card h3 {
@@ -67,8 +68,13 @@
 }
 
 .course-features li i {
-    color: var(--success);
-    font-size: 0.75rem;
+    color: var(--primary-500);
+    font-size: 0.875rem;
+}
+
+.course-features li i::before {
+    content: "\f178";
+    /* fa-long-arrow-alt-right */
 }
 
 .course-link {
