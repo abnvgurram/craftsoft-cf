@@ -3,20 +3,24 @@
 
 // List of protected pages (all admin pages except login)
 const protectedPages = [
-    'dashboard.html',
-    'students.html',
-    'payments.html',
-    'inquiries.html',
-    'tutors.html',
-    'experts.html',
-    'services.html',
-    'settings.html'
+    'dashboard',
+    'students',
+    'payments',
+    'inquiries',
+    'tutors',
+    'experts',
+    'services',
+    'settings'
 ];
 
 // Check if current page is protected
 function isProtectedPage() {
-    const currentPage = window.location.pathname;
-    return protectedPages.some(page => currentPage.includes(page));
+    const currentPage = window.location.pathname.toLowerCase();
+    // Check if URL contains any of the protected page names
+    // This handles both /admin/experts and /admin/experts.html
+    return protectedPages.some(page => {
+        return currentPage.includes('/' + page) || currentPage.includes(page + '.html');
+    });
 }
 
 // Check if current page is login page
