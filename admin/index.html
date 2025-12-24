@@ -34,8 +34,10 @@
             <!-- Login Form -->
             <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label class="form-label">Email Address <span class="required">*</span></label>
-                    <input type="email" class="form-input" id="email" placeholder="Enter your email" required>
+                    <label class="form-label">Email or Employee ID <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="loginId" placeholder="email@example.com or ACS-0001"
+                        required>
+                    <span class="form-hint">Enter your email address or Employee ID (e.g., ACS-0001)</span>
                 </div>
 
                 <div class="form-group">
@@ -70,16 +72,46 @@
         // Check if already logged in
         document.addEventListener('DOMContentLoaded', checkExistingSession);
 
+        // Check if input is Employee ID format
+        function isEmployeeId(input) {
+            return /^ACS-\d{4}$/i.test(input.trim());
+        }
+
+        // Get email from Employee ID
+        async function getEmailFromEmployeeId(employeeId) {
+            const { data, error } = await window.supabase
+                .from('admin_profiles')
+                .select('email')
+                .ilike('employee_id', employeeId.trim())
+                .single();
+
+            if (error || !data) {
+                console.error('Employee ID lookup failed:', error);
+                return null;
+            }
+            return data.email;
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
 
-            const email = document.getElementById('email').value.trim();
+            const loginId = document.getElementById('loginId').value.trim();
             const password = document.getElementById('password').value;
             const submitBtn = document.getElementById('submitBtn');
 
-            // Validate
-            if (!isValidEmail(email)) {
-                showAlert('alertBox', 'error', 'Please enter a valid email address');
+            let email = loginId;
+
+            // Check if it's an Employee ID
+            if (isEmployeeId(loginId)) {
+                showAlert('alertBox', 'success', 'Looking up Employee ID...');
+                email = await getEmailFromEmployeeId(loginId);
+
+                if (!email) {
+                    showAlert('alertBox', 'error', 'Employee ID not found');
+                    return;
+                }
+            } else if (!isValidEmail(loginId)) {
+                showAlert('alertBox', 'error', 'Please enter a valid email or Employee ID (e.g., ACS-0001)');
                 return;
             }
 
@@ -101,7 +133,7 @@
                     window.location.href = 'dashboard.html';
                 }, 1000);
             } else {
-                showAlert('alertBox', 'error', result.error || 'Invalid email or password');
+                showAlert('alertBox', 'error', result.error || 'Invalid credentials');
                 submitBtn.classList.remove('btn-loading');
                 submitBtn.disabled = false;
             }
@@ -109,15 +141,24 @@
 
         async function handleForgotPassword(e) {
             e.preventDefault();
-            const email = document.getElementById('email').value.trim();
+            const loginId = document.getElementById('loginId').value.trim();
 
-            if (!email) {
-                showAlert('alertBox', 'error', 'Please enter your email address first');
+            if (!loginId) {
+                showAlert('alertBox', 'error', 'Please enter your email or Employee ID first');
                 return;
             }
 
-            if (!isValidEmail(email)) {
-                showAlert('alertBox', 'error', 'Please enter a valid email address');
+            let email = loginId;
+
+            // Check if it's an Employee ID
+            if (isEmployeeId(loginId)) {
+                email = await getEmailFromEmployeeId(loginId);
+                if (!email) {
+                    showAlert('alertBox', 'error', 'Employee ID not found');
+                    return;
+                }
+            } else if (!isValidEmail(loginId)) {
+                showAlert('alertBox', 'error', 'Please enter a valid email or Employee ID');
                 return;
             }
 

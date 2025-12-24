@@ -27,7 +27,7 @@
                     <div class="user-name" id="userName">Loading...</div>
                     <div class="user-id" id="userEmployeeId">-</div>
                 </div>
-                <button class="btn btn-logout" onclick="handleLogout()">
+                <button class="btn btn-logout" onclick="showLogoutModal()">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </div>
@@ -54,6 +54,25 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2 class="modal-title">Sign Out?</h2>
+            <p class="modal-text">Are you sure you want to sign out of your admin account?</p>
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="hideLogoutModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn btn-danger" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Loading State -->
@@ -101,11 +120,32 @@
             document.getElementById('dashboardContainer').style.display = 'flex';
         }
 
-        async function handleLogout() {
-            if (confirm('Are you sure you want to logout?')) {
-                await signOut();
-            }
+        // Logout Modal Functions
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.add('show');
         }
+
+        function hideLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('show');
+        }
+
+        async function confirmLogout() {
+            await signOut();
+        }
+
+        // Close modal on overlay click
+        document.getElementById('logoutModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                hideLogoutModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                hideLogoutModal();
+            }
+        });
     </script>
 </body>
 
