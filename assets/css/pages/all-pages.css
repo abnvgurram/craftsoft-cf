@@ -44,6 +44,7 @@
 /* Courses Page */
 .courses-page {
     padding: var(--spacing-3xl) 0;
+    background: rgba(40, 150, 205, 0.05);
 }
 
 /* Breadcrumbs Navigation */
@@ -240,6 +241,7 @@
 /* Services Page */
 .services-page {
     padding: var(--spacing-3xl) 0;
+    background: rgba(40, 150, 205, 0.05);
 }
 
 /* Service Category */
