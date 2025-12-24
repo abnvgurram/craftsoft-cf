@@ -71,7 +71,15 @@
     <script src="js/auth.js"></script>
     <script>
         // Check if already logged in
-        document.addEventListener('DOMContentLoaded', checkExistingSession);
+        document.addEventListener('DOMContentLoaded', function () {
+            checkExistingSession();
+
+            // Check for logout message
+            const logoutMsg = checkLogoutMessage();
+            if (logoutMsg) {
+                showAlert('alertBox', 'error', logoutMsg);
+            }
+        });
 
         // Check if input is Employee ID format
         function isEmployeeId(input) {
