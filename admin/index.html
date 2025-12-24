@@ -37,7 +37,6 @@
                     <label class="form-label">Email or Employee ID <span class="required">*</span></label>
                     <input type="text" class="form-input" id="loginId" placeholder="email@example.com or ACS-0001"
                         required>
-                    <span class="form-hint">Enter your email address or Employee ID (e.g., ACS-0001)</span>
                 </div>
 
                 <div class="form-group">
@@ -82,14 +81,18 @@
             const { data, error } = await window.supabase
                 .from('admin_profiles')
                 .select('email')
-                .ilike('employee_id', employeeId.trim())
-                .single();
+                .ilike('employee_id', employeeId.trim());
 
-            if (error || !data) {
-                console.error('Employee ID lookup failed:', error);
+            if (error) {
+                console.error('Employee ID lookup error:', error);
                 return null;
             }
-            return data.email;
+
+            if (!data || data.length === 0) {
+                return null;
+            }
+
+            return data[0].email;
         }
 
         async function handleLogin(e) {
