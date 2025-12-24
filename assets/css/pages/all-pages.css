@@ -1194,3 +1194,140 @@
         flex-basis: 100%;
     }
 }
+
+/* ============================================
+   Form Legal Text
+   ============================================ */
+.form-legal {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    text-align: center;
+    margin-top: var(--spacing-md);
+    line-height: 1.5;
+}
+
+.form-legal a {
+    color: var(--primary-600);
+    text-decoration: underline;
+}
+
+.form-legal a:hover {
+    color: var(--primary-700);
+}
+
+/* Directions Link */
+.directions-link {
+    display: inline-block;
+    margin-top: var(--spacing-xs);
+    color: var(--primary-600);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.directions-link:hover {
+    color: var(--primary-700);
+}
+
+/* ============================================
+   Courses Contact Section
+   ============================================ */
+.courses-contact-section {
+    background: rgba(40, 150, 205, 0.05);
+    border-radius: var(--radius-2xl);
+    padding: var(--spacing-3xl) 0;
+    margin-top: var(--spacing-3xl);
+}
+
+.courses-contact-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-3xl);
+    align-items: start;
+}
+
+.courses-contact-left {
+    padding-right: var(--spacing-xl);
+}
+
+/* Counseling Benefits */
+.counseling-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    transition: var(--transition-base);
+}
+
+.benefit-item:hover {
+    border-color: var(--primary-200);
+    box-shadow: 0 4px 12px rgba(40, 150, 205, 0.1);
+}
+
+.benefit-item i {
+    color: var(--success);
+    font-size: 1.25rem;
+}
+
+.benefit-item span {
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+/* WhatsApp Alternative */
+.whatsapp-alternative {
+    text-align: center;
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px dashed var(--gray-300);
+}
+
+.whatsapp-alternative span {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--gray-500);
+    margin-bottom: var(--spacing-sm);
+}
+
+.btn-whatsapp {
+    background: #25D366;
+    color: var(--white);
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-xl);
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    transition: var(--transition-base);
+}
+
+.btn-whatsapp:hover {
+    background: #1da851;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+/* Mobile Responsiveness for Courses Contact */
+@media (max-width: 768px) {
+    .courses-contact-wrapper {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+    }
+
+    .courses-contact-left {
+        padding-right: 0;
+    }
+
+    .counseling-benefits {
+        margin-bottom: var(--spacing-lg);
+    }
+}
