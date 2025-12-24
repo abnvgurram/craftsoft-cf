@@ -24,7 +24,9 @@ async function loadDashboardData() {
 
         calculateKpis();
         updateRecentStudentsTable();
+        updateRecentStudentsMobile();
         renderUpcomingDemos();
+        initFab();
     } catch (e) {
         console.error('Dashboard Load Error:', e);
         if (typeof showToast === 'function') showToast('Error loading stats', 'error');
@@ -78,6 +80,52 @@ function updateRecentStudentsTable() {
             </tr>
         `;
     }).join('');
+}
+
+function updateRecentStudentsMobile() {
+    const container = document.getElementById('recentStudentsMobile');
+    if (!container) return;
+
+    const recent = allStudents.slice(0, 5);
+    if (recent.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding:20px; color:#64748b;">No recent admissions</div>';
+        return;
+    }
+
+    container.innerHTML = recent.map(s => {
+        const bal = (s.total_fee || 0) - (s.paid_amount || 0);
+        const status = bal <= 0 ? 'paid' : (s.paid_amount > 0 ? 'partial' : 'pending');
+        return `
+            <div class="card" style="margin-bottom:12px; padding:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:12px;">
+                    <div>
+                        <div style="font-weight:700; color:var(--gray-900);">${s.name}</div>
+                        <div style="font-size:0.75rem; color:#64748b;">${s.course}</div>
+                    </div>
+                    <span class="status-badge ${status}" style="font-size:0.65rem;">${status.toUpperCase()}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="color:#10B981; font-weight:700;">${formatCurrency(s.paid_amount)}</div>
+                    <button class="btn btn-outline btn-sm" onclick="viewStudentQuick('${s.id}')">View</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function initFab() {
+    const fabButton = document.getElementById('fabButton');
+    const fabContainer = document.getElementById('fabContainer');
+    if (fabButton && fabContainer) {
+        fabButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            fabContainer.classList.toggle('open');
+        });
+
+        document.addEventListener('click', () => {
+            fabContainer.classList.remove('open');
+        });
+    }
 }
 
 function renderUpcomingDemos() {
