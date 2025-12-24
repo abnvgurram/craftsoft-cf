@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Dashboard - Abhi's Craft Soft Admin</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+    <div class="dashboard-container" id="dashboardContainer" style="display: none;">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="dashboard-logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Craftsoft Admin</span>
+            </div>
+            <div class="dashboard-user">
+                <div class="user-info">
+                    <div class="user-name" id="userName">Loading...</div>
+                    <div class="user-id" id="userEmployeeId">-</div>
+                </div>
+                <button class="btn btn-logout" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <main class="dashboard-content">
+            <div class="welcome-card">
+                <div class="welcome-icon">👋</div>
+                <h1>Welcome, <span id="welcomeName">Admin</span>!</h1>
+
+                <div class="welcome-details">
+                    <p><i class="fas fa-id-badge"></i> <span id="displayEmployeeId">-</span></p>
+                    <p><i class="fas fa-envelope"></i> <span id="displayEmail">-</span></p>
+                </div>
+
+                <div class="welcome-status">
+                    <i class="fas fa-check-circle"></i>
+                    You are logged in successfully
+                </div>
+
+                <div class="coming-soon">
+                    <i class="fas fa-tools"></i> Full dashboard coming soon...
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading State -->
+    <div class="auth-container" id="loadingState">
+        <div class="auth-card" style="text-align: center;">
+            <div class="btn-spinner" style="display: inline-block; width: 40px; height: 40px; margin-bottom: 16px;">
+            </div>
+            <p style="color: var(--gray-500);">Loading dashboard...</p>
+        </div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', initDashboard);
+
+        async function initDashboard() {
+            // Check if logged in
+            const session = await requireAuth();
+            if (!session) return;
+
+            // Get profile
+            const profile = await getAdminProfile(session.user.id);
+
+            if (profile) {
+                // Update UI
+                const fullName = `${profile.first_name} ${profile.last_name}`;
+                document.getElementById('userName').textContent = fullName;
+                document.getElementById('userEmployeeId').textContent = profile.employee_id;
+                document.getElementById('welcomeName').textContent = profile.first_name;
+                document.getElementById('displayEmployeeId').textContent = profile.employee_id;
+                document.getElementById('displayEmail').textContent = profile.email;
+            } else {
+                // No profile yet (might be newly signed up)
+                const email = session.user.email;
+                document.getElementById('userName').textContent = email;
+                document.getElementById('welcomeName').textContent = 'Admin';
+                document.getElementById('displayEmail').textContent = email;
+            }
+
+            // Show dashboard, hide loading
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'flex';
+        }
+
+        async function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                await signOut();
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -4,87 +4,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Start - Craft Soft</title>
-    <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background: #f8fafc;
-        }
-
-        .status-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            text-align: center;
-        }
-
-        .status-dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-
-        .online {
-            background: #10b981;
-            box-shadow: 0 0 8px #10b981;
-        }
-
-        .offline {
-            background: #ef4444;
-            box-shadow: 0 0 8px #ef4444;
-        }
-
-        .checking {
-            background: #f59e0b;
-        }
-    </style>
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Login - Abhi's Craft Soft</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
 </head>
 
 <body>
-    <div class="status-card">
-        <h1 style="margin-top: 0;">Admin Fresh Start</h1>
-        <p id="statusText">
-            <span id="statusDot" class="status-dot checking"></span>
-            Checking Supabase Connection...
-        </p>
-        <p style="font-size: 0.9rem; color: #64748b;">Ready to build from scratch.</p>
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Header -->
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <div class="auth-logo-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="auth-logo-text">Abhi's <span>Craft Soft</span></div>
+                </div>
+                <h1 class="auth-title">Admin Portal</h1>
+            </div>
+
+            <!-- Alert -->
+            <div id="alertBox" class="alert"></div>
+
+            <!-- Login Form -->
+            <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Email Address <span class="required">*</span></label>
+                    <input type="email" class="form-input" id="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password <span class="required">*</span></label>
+                    <div class="password-wrapper">
+                        <input type="password" class="form-input" id="password" placeholder="Enter your password"
+                            required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+                    <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Sign In</span>
+                    <span class="btn-spinner"></span>
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="auth-footer">
+                <p><a href="#" onclick="handleForgotPassword(event)">Forgot password?</a></p>
+            </div>
+        </div>
     </div>
 
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
     <script>
-        async function checkConnection() {
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', checkExistingSession);
 
-            try {
-                // Simple query to check connection
-                const { data, error } = await window.supabase.from('settings').select('count').limit(1);
+        async function handleLogin(e) {
+            e.preventDefault();
 
-                if (error && error.code !== 'PGRST116') { // PGRST116 is just "no rows", which is fine
-                    throw error;
-                }
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
 
-                dot.className = 'status-dot online';
-                text.innerHTML = '<span class="status-dot online"></span> Supabase Connected Successfully';
-            } catch (err) {
-                console.error(err);
-                dot.className = 'status-dot offline';
-                text.innerHTML = '<span class="status-dot offline"></span> Connection Failed';
+            // Validate
+            if (!isValidEmail(email)) {
+                showAlert('alertBox', 'error', 'Please enter a valid email address');
+                return;
+            }
+
+            if (password.length < 8) {
+                showAlert('alertBox', 'error', 'Password must be at least 8 characters');
+                return;
+            }
+
+            // Show loading
+            submitBtn.classList.add('btn-loading');
+            submitBtn.disabled = true;
+
+            // Attempt sign in
+            const result = await signIn(email, password);
+
+            if (result.success) {
+                showAlert('alertBox', 'success', 'Login successful! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            } else {
+                showAlert('alertBox', 'error', result.error || 'Invalid email or password');
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.disabled = false;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', checkConnection);
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+
+            if (!email) {
+                showAlert('alertBox', 'error', 'Please enter your email address first');
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showAlert('alertBox', 'error', 'Please enter a valid email address');
+                return;
+            }
+
+            const result = await resetPassword(email);
+
+            if (result.success) {
+                showAlert('alertBox', 'success', 'Password reset link sent to your email!');
+            } else {
+                showAlert('alertBox', 'error', result.error || 'Failed to send reset link');
+            }
+        }
     </script>
 </body>
 
