@@ -150,8 +150,62 @@ function renderSubjectCodesBanner() {
 }
 
 // Globals
-window.savePaymentSettings = savePaymentSettings;
-window.saveBusinessSettings = saveBusinessSettings;
-window.toggleEditPayment = toggleEditPayment;
-window.toggleEditBusiness = toggleEditBusiness;
 window.renderSubjectCodesBanner = renderSubjectCodesBanner;
+window.cancelEditPayment = cancelEditPayment;
+window.cancelEditBusiness = cancelEditBusiness;
+window.verifyUPI = verifyUPI;
+window.checkIFSC = checkIFSC;
+window.migrateExistingData = migrateExistingData;
+
+function cancelEditPayment() {
+    if (paymentEditMode) toggleEditPayment();
+    loadSettings();
+}
+
+function cancelEditBusiness() {
+    if (businessEditMode) toggleEditBusiness();
+    loadSettings();
+}
+
+async function verifyUPI() {
+    const upi = document.getElementById('upiId').value;
+    if (!upi.includes('@')) return showToast('Invalid UPI ID format', 'error');
+    showToast('UPI Format Validated', 'info');
+}
+
+async function checkIFSC() {
+    const ifsc = document.getElementById('bankIFSC').value.toUpperCase();
+    const display = document.getElementById('ifscBranchDisplay');
+    if (ifsc.length === 11) {
+        display.style.display = 'block';
+        display.textContent = 'IFSC Format Valid';
+    } else {
+        display.style.display = 'none';
+    }
+}
+
+async function migrateExistingData() {
+    if (!confirm('This will update phone formats and sync sequences. Proceed?')) return;
+    try {
+        showToast('Starting migration...', 'info');
+
+        // 1. Fix Phone Numbers
+        const { data: students } = await supabase.from('students').select('id, phone');
+        for (const s of students) {
+            if (s.phone && !s.phone.startsWith('+')) {
+                const fixed = '+91' + s.phone.replace(/\D/g, '').slice(-10);
+                await supabase.from('students').update({ phone: fixed }).eq('id', s.id);
+            }
+        }
+
+        // 2. Sync Receipt Sequence
+        const { count } = await supabase.from('payments').select('*', { count: 'exact', head: true });
+        const { data: config } = await supabase.from('settings').select('metadata').eq('id', 'config').single();
+        const meta = { ...(config?.metadata || {}), receiptSequence: Math.max(count || 0, config?.metadata?.receiptSequence || 0) };
+        await supabase.from('settings').update({ metadata: meta }).eq('id', 'config');
+
+        showToast('Migration complete!');
+    } catch (e) {
+        showToast('Migration failed', 'error');
+    }
+}

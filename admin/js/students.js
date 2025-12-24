@@ -8,25 +8,8 @@ let currentStudentData = null;
 const ITEMS_PER_PAGE = 8;
 let currentPage = 1;
 
-// Subject Codes Mapping
-const subjectCodes = {
-    'Full Stack Development (MERN)': '01',
-    'UI/UX Design': '02',
-    'Graphic Design': '03',
-    'DevOps Engineering': '04',
-    'AWS Cloud Excellence': '05',
-    'Python Full Stack Development': '06',
-    'Java Full Stack Development': '07',
-    'Data Analytics': '08',
-    'Salesforce Administration': '09',
-    'DSA Mastery': '10',
-    'Soft Skills Training': '11',
-    'Spoken English Mastery': '12',
-    'Resume Writing & Interview Prep': '13',
-    'DevSecOps': '14',
-    'Handwriting Improvement': '15',
-    'Other': '99'
-};
+// Subject Codes are globally available from auth.js
+
 
 // Helper: Map Supabase DB Row (snake_case) to JS Object (camelCase)
 function mapStudentRow(row) {
