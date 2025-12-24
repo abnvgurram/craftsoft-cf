@@ -822,6 +822,32 @@
     font-weight: bold;
 }
 
+/* Services Included Section (Service Pages) */
+.services-included {
+    margin-top: var(--spacing-2xl);
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid var(--gray-200);
+}
+
+.services-included h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.services-included h3 i {
+    color: var(--primary-600);
+    font-size: 1.1rem;
+}
+
+.services-included .course-highlights {
+    margin-top: 0;
+}
+
 /* Share Course Section */
 .share-course {
     margin-top: var(--spacing-xl);
