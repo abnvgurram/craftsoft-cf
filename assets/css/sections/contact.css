@@ -225,26 +225,32 @@
         text-align: center !important;
     }
 
-    /* Contact methods - left aligned content within centered container */
+    /* Contact methods - left aligned across full width */
     .contact-methods-list {
-        align-items: flex-start;
-        max-width: 320px;
-        margin: 0 auto;
+        align-items: stretch;
+        width: 100%;
+        max-width: none;
+        padding: 0 var(--spacing-md);
     }
 
     .method-item {
-        text-align: left;
+        text-align: left !important;
         width: 100%;
+        justify-content: flex-start;
+    }
+
+    .method-icon {
+        flex-shrink: 0;
     }
 
     .method-info {
-        text-align: left;
+        text-align: left !important;
     }
 
     .method-info h3,
     .method-info p,
     .method-info a {
-        text-align: left;
+        text-align: left !important;
     }
 
     .contact-form-side {

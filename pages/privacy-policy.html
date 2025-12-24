@@ -104,27 +104,32 @@
 
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
             <a href="../index.html" class="logo">
                 <div class="logo-placeholder"><i class="fas fa-graduation-cap"></i></div>
                 <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
                         Soft</span></span>
             </a>
-            <div class="nav-menu" id="navMenu">
-                <a href="../index.html" class="nav-link">Home</a>
-                <a href="courses.html" class="nav-link">Courses</a>
-                <a href="services.html" class="nav-link">Services</a>
-                <a href="../about.html" class="nav-link">About</a>
-                <a href="../index.html#contact" class="nav-link">Contact</a>
-            </div>
+            <ul class="nav-menu" id="nav-menu">
+                <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
+                <li><a href="../index.html" class="nav-link">Home</a></li>
+                <li><a href="../about.html" class="nav-link">About</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="services.html" class="nav-link">Services</a></li>
+                <li><a href="../index.html#contact" class="nav-link">Contact</a></li>
+                <li><a href="../admin/index.html" class="nav-admin-link"><i class="fas fa-lock"></i> Admin Login</a>
+                </li>
+            </ul>
             <div class="nav-cta">
-                <a href="tel:+917842239090" class="phone-btn"><i class="fas fa-phone"></i> +91 7842239090</a>
+                <a href="../admin/index.html" class="admin-login-icon" title="Admin Login"><i
+                        class="fas fa-lock"></i></a>
             </div>
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-                <span></span><span></span><span></span>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
             </button>
         </div>
+        <div class="nav-overlay" id="navOverlay"></div>
     </nav>
 
     <!-- Legal Content -->

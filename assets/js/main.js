@@ -40,33 +40,48 @@ function initNavbar() {
 function initMobileMenu() {
     const hamburger = document.getElementById('hamburger');
     const navMenu = document.getElementById('nav-menu');
+    const navClose = document.getElementById('navClose');
+    const navOverlay = document.getElementById('navOverlay');
 
     if (!hamburger || !navMenu) return;
 
+    // Toggle menu on hamburger click
     hamburger.addEventListener('click', () => {
         hamburger.classList.toggle('active');
         navMenu.classList.toggle('active');
-        // Prevent body scroll when menu is open
+        if (navOverlay) navOverlay.classList.toggle('active');
         document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
     });
 
+    // Close menu on close button click
+    if (navClose) {
+        navClose.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+            if (navOverlay) navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+
+    // Close menu on overlay click
+    if (navOverlay) {
+        navOverlay.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('active');
+            navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+
     // Close menu when clicking on a link
-    const navLinks = navMenu.querySelectorAll('.nav-link');
+    const navLinks = navMenu.querySelectorAll('.nav-link, .nav-admin-link');
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
             hamburger.classList.remove('active');
             navMenu.classList.remove('active');
+            if (navOverlay) navOverlay.classList.remove('active');
             document.body.style.overflow = '';
         });
-    });
-
-    // Close menu when clicking outside (on overlay)
-    document.addEventListener('click', (e) => {
-        if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
-            document.body.style.overflow = '';
-        }
     });
 }
 

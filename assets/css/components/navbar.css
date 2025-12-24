@@ -162,3 +162,29 @@
     border-radius: var(--radius-full);
     transition: all 0.3s ease;
 }
+
+/* Admin Login Icon (Desktop) */
+.admin-login-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: var(--gray-100);
+    border-radius: 50%;
+    color: var(--gray-500);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.admin-login-icon:hover {
+    background: var(--primary-50);
+    color: var(--primary-500);
+}
+
+/* Hide on mobile (shown differently in menu) */
+@media (max-width: 768px) {
+    .admin-login-icon {
+        display: none;
+    }
+}
