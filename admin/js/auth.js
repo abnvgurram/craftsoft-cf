@@ -90,25 +90,24 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// Handle browser back button - ONLY for protected pages
+// Handle browser back/forward buttons - STRICT SECURITY
 window.addEventListener('pageshow', (event) => {
-    // Skip if on login page
-    if (isLoginPage()) return;
-
-    if (isProtectedPage()) {
-        // Check logout flag first (fastest)
-        if (sessionStorage.getItem('loggedOut') === 'true') {
-            window.location.replace('index.html');
-            return;
+    // If page is loaded from cache (bfcache)
+    if (event.persisted) {
+        if (isProtectedPage()) {
+            // Check if user is logged out in current session
+            if (sessionStorage.getItem('loggedOut') === 'true') {
+                window.location.replace('index.html');
+            } else {
+                // Force a reload to trigger Firebase auth check
+                window.location.reload();
+            }
         }
     }
 });
 
-// Visibility change - ONLY for protected pages
+// Visibility change - Additional check when user returns to tab
 document.addEventListener('visibilitychange', () => {
-    // Skip if on login page
-    if (isLoginPage()) return;
-
     if (document.visibilityState === 'visible' && isProtectedPage()) {
         if (sessionStorage.getItem('loggedOut') === 'true') {
             window.location.replace('index.html');
@@ -185,8 +184,9 @@ async function logout() {
 
 // Perform the actual logout
 function performLogout() {
+    sessionStorage.setItem('loggedOut', 'true');
     auth.signOut().then(() => {
-        window.location.href = 'index.html';
+        window.location.replace('index.html');
     });
 }
 
