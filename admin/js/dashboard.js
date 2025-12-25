@@ -10,38 +10,53 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
     // SINGLE TAB SESSION (prevents multiple tabs)
+    // Uses localStorage lock - simple and no flickering
     // ============================================
 
-    const SESSION_CHANNEL = 'craftsoft_admin_channel';
+    const LOCK_KEY = 'craftsoft_admin_lock';
+    const LOCK_TIMEOUT = 3000; // 3 seconds
 
-    // Generate unique tab ID
-    const tabId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+    function checkSingleTab() {
+        const now = Date.now();
+        const existingLock = localStorage.getItem(LOCK_KEY);
 
-    // Check if another tab is already open
-    function initSingleTabSession() {
-        // Use BroadcastChannel API for cross-tab communication
-        if ('BroadcastChannel' in window) {
-            const channel = new BroadcastChannel(SESSION_CHANNEL);
-
-            // Ask if any other tab is open
-            channel.postMessage({ type: 'CHECK_SESSION', tabId: tabId });
-
-            // Listen for responses
-            channel.onmessage = (event) => {
-                if (event.data.type === 'CHECK_SESSION' && event.data.tabId !== tabId) {
-                    // Another tab is asking - respond that we exist
-                    channel.postMessage({ type: 'SESSION_EXISTS', tabId: tabId });
-                }
-
-                if (event.data.type === 'SESSION_EXISTS' && event.data.tabId !== tabId) {
-                    // Another tab exists - silently redirect to login
-                    window.location.replace('signin.html');
-                }
-            };
+        if (existingLock) {
+            const lockTime = parseInt(existingLock, 10);
+            // If lock is recent (within timeout), another tab is active
+            if (now - lockTime < LOCK_TIMEOUT) {
+                // Another tab is active - redirect to signin
+                window.location.replace('signin.html');
+                return false;
+            }
         }
+
+        // Set our lock
+        localStorage.setItem(LOCK_KEY, now.toString());
+
+        // Keep refreshing the lock while this tab is active
+        setInterval(() => {
+            localStorage.setItem(LOCK_KEY, Date.now().toString());
+        }, 1000);
+
+        // Clear lock when tab closes
+        window.addEventListener('beforeunload', () => {
+            localStorage.removeItem(LOCK_KEY);
+        });
+
+        // Also clear on visibility change (tab becomes hidden/closed)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                // Don't remove immediately - allow for tab switching
+            }
+        });
+
+        return true;
     }
 
-    initSingleTabSession();
+    // Check single tab first - if fails, stop execution
+    if (!checkSingleTab()) {
+        return;
+    }
 
     // ============================================
     // SESSION PROTECTION (back/forward)
