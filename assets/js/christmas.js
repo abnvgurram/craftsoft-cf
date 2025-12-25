@@ -1,17 +1,25 @@
 /* ============================================
    CHRISTMAS SNOWFALL - JavaScript
-   Active until: January 1st, 2026 23:59:59 IST
+   Auto-activates: Dec 25 00:00 to Jan 1 23:59 IST (every year)
    ============================================ */
 
 (function () {
     'use strict';
 
-    // Check if Christmas season (until Jan 1, 2026 23:59:59 IST)
-    const endDate = new Date('2026-01-01T23:59:59+05:30');
-    const now = new Date();
+    // Check if it's Christmas season (Dec 25 - Jan 1)
+    function isChristmasSeason() {
+        const now = new Date();
+        const month = now.getMonth(); // 0-11 (0=Jan, 11=Dec)
+        const day = now.getDate();
 
-    if (now > endDate) {
-        console.log('🎄 Christmas season ended. Snowfall disabled.');
+        // Dec 25-31 (month 11, day 25-31) OR Jan 1 (month 0, day 1)
+        if (month === 11 && day >= 25) return true;  // Dec 25-31
+        if (month === 0 && day === 1) return true;   // Jan 1
+        return false;
+    }
+
+    if (!isChristmasSeason()) {
+        console.log('🎄 Not Christmas season. Snowfall inactive.');
         return;
     }
 
@@ -33,23 +41,44 @@
     snowfall.className = 'snowfall';
     snowfall.setAttribute('aria-hidden', 'true');
 
-    // Snowflake characters
-    const flakes = ['❄', '❅', '❆', '•', '*'];
+    // Festive characters - snowflakes and trees
+    const flakes = ['❄', '❅', '❆', '✧', '✦'];
+    const trees = ['🎄'];
+    const stars = ['⭐', '✨'];
 
-    // Create 20 snowflakes
-    for (let i = 0; i < 20; i++) {
+    // Create 25 snowflakes
+    for (let i = 0; i < 25; i++) {
         const flake = document.createElement('span');
         flake.className = 'snowflake';
         flake.textContent = flakes[Math.floor(Math.random() * flakes.length)];
         snowfall.appendChild(flake);
     }
 
+    // Create decorative trees at bottom
+    const treeContainer = document.createElement('div');
+    treeContainer.className = 'christmas-trees';
+
+    // Left tree
+    const leftTree = document.createElement('span');
+    leftTree.className = 'tree tree-left';
+    leftTree.textContent = '🎄';
+    treeContainer.appendChild(leftTree);
+
+    // Right tree
+    const rightTree = document.createElement('span');
+    rightTree.className = 'tree tree-right';
+    rightTree.textContent = '🎄';
+    treeContainer.appendChild(rightTree);
+
     // Add to page when DOM is ready
-    if (document.body) {
+    function addChristmasElements() {
         document.body.appendChild(snowfall);
+        document.body.appendChild(treeContainer);
+    }
+
+    if (document.body) {
+        addChristmasElements();
     } else {
-        document.addEventListener('DOMContentLoaded', function () {
-            document.body.appendChild(snowfall);
-        });
+        document.addEventListener('DOMContentLoaded', addChristmasElements);
     }
 })();
