@@ -7,56 +7,46 @@
    - Logout
    ============================================ */
 
-document.addEventListener('DOMContentLoaded', async () => {
-    // ============================================
-    // SINGLE TAB SESSION (prevents multiple tabs)
-    // Uses localStorage lock - simple and no flickering
-    // ============================================
+// ============================================
+// SINGLE TAB SESSION - RUNS IMMEDIATELY
+// (before page renders to prevent flickering)
+// ============================================
 
+(function () {
     const LOCK_KEY = 'craftsoft_admin_lock';
-    const LOCK_TIMEOUT = 3000; // 3 seconds
+    const LOCK_TIMEOUT = 2000; // 2 seconds
 
-    function checkSingleTab() {
-        const now = Date.now();
-        const existingLock = localStorage.getItem(LOCK_KEY);
+    const now = Date.now();
+    const existingLock = localStorage.getItem(LOCK_KEY);
 
-        if (existingLock) {
-            const lockTime = parseInt(existingLock, 10);
-            // If lock is recent (within timeout), another tab is active
-            if (now - lockTime < LOCK_TIMEOUT) {
-                // Another tab is active - redirect to signin
-                window.location.replace('signin.html');
-                return false;
-            }
+    if (existingLock) {
+        const lockTime = parseInt(existingLock, 10);
+        if (now - lockTime < LOCK_TIMEOUT) {
+            // Another tab is active - redirect immediately
+            window.location.replace('signin.html');
+            return; // Stop script execution
         }
-
-        // Set our lock
-        localStorage.setItem(LOCK_KEY, now.toString());
-
-        // Keep refreshing the lock while this tab is active
-        setInterval(() => {
-            localStorage.setItem(LOCK_KEY, Date.now().toString());
-        }, 1000);
-
-        // Clear lock when tab closes
-        window.addEventListener('beforeunload', () => {
-            localStorage.removeItem(LOCK_KEY);
-        });
-
-        // Also clear on visibility change (tab becomes hidden/closed)
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden') {
-                // Don't remove immediately - allow for tab switching
-            }
-        });
-
-        return true;
     }
 
-    // Check single tab first - if fails, stop execution
-    if (!checkSingleTab()) {
-        return;
-    }
+    // Set our lock
+    localStorage.setItem(LOCK_KEY, now.toString());
+
+    // Keep refreshing the lock
+    setInterval(() => {
+        localStorage.setItem(LOCK_KEY, Date.now().toString());
+    }, 1000);
+
+    // Clear lock when tab closes
+    window.addEventListener('beforeunload', () => {
+        localStorage.removeItem(LOCK_KEY);
+    });
+})();
+
+// ============================================
+// MAIN DASHBOARD LOGIC (after DOM loads)
+// ============================================
+
+document.addEventListener('DOMContentLoaded', async () => {
 
     // ============================================
     // SESSION PROTECTION (back/forward)
