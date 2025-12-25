@@ -318,6 +318,35 @@
     color: var(--primary);
 }
 
+/* Payment Mode Badges */
+.mode-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.mode-cash {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+}
+
+.mode-upi {
+    background: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
+}
+
+.mode-bank {
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--info);
+}
+
+.mode-card {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+}
+
 .action-btn {
     background: none;
     border: none;
