@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Payments - Abhi's Craft Soft Admin</title>
+    <title>Receipts - Abhi's Craft Soft Admin</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,11 +45,11 @@
                     <span class="sublink-line"></span>
                     <span>Add Student</span>
                 </a>
-                <a href="payments.html" class="sidebar-sublink active">
+                <a href="payments.html" class="sidebar-sublink">
                     <span class="sublink-line"></span>
                     <span>Payments</span>
                 </a>
-                <a href="receipts.html" class="sidebar-sublink">
+                <a href="receipts.html" class="sidebar-sublink active">
                     <span class="sublink-line"></span>
                     <span>Receipts</span>
                 </a>
@@ -88,7 +88,7 @@
                 <button class="hamburger-btn" id="sidebarToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1 class="page-title">Payments</h1>
+                <h1 class="page-title">Receipts</h1>
             </header>
 
             <!-- Content Area -->
@@ -97,63 +97,47 @@
                 <div class="filters-card">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search by student name...">
-                    </div>
-                    <div class="filter-group">
-                        <select id="modeFilter">
-                            <option value="">All Modes</option>
-                            <option value="cash">Cash</option>
-                            <option value="upi">UPI</option>
-                            <option value="bank">Bank Transfer</option>
-                            <option value="card">Card</option>
-                        </select>
-                        <select id="dateFilter">
-                            <option value="">All Time</option>
-                            <option value="today">Today</option>
-                            <option value="week">This Week</option>
-                            <option value="month">This Month</option>
-                        </select>
+                        <input type="text" id="searchInput" placeholder="Search by Receipt ID or Student Name...">
                     </div>
                 </div>
 
                 <!-- Data Table -->
-                <div class="data-table-card" id="paymentsTable">
+                <div class="data-table-card" id="receiptsTable">
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th>Receipt ID</th>
                                 <th>Date</th>
                                 <th>Student</th>
                                 <th>Course</th>
                                 <th>Amount</th>
-                                <th>Mode</th>
-                                <th>Reference</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="paymentsTableBody">
+                        <tbody id="receiptsTableBody">
                             <!-- Data loaded via JS -->
                         </tbody>
                     </table>
 
                     <!-- Empty State -->
                     <div class="empty-state" id="emptyState" style="display: none;">
-                        <i class="far fa-credit-card"></i>
-                        <h3>No payments yet</h3>
-                        <p>Record payments from the Students page</p>
-                        <a href="students.html" class="btn btn-primary">
-                            View Students
+                        <i class="fas fa-file-invoice"></i>
+                        <h3>No receipts generated</h3>
+                        <p>Go to Payments to generate and view receipts</p>
+                        <a href="payments.html" class="btn btn-primary">
+                            View Payments
                         </a>
                     </div>
 
                     <!-- Loading State -->
                     <div class="loading-state" id="loadingState">
                         <div class="spinner"></div>
-                        <p>Loading payments...</p>
+                        <p>Loading receipts...</p>
                     </div>
                 </div>
 
                 <!-- Mobile Cards -->
-                <div class="mobile-cards" id="paymentCards">
+                <div class="mobile-cards" id="receiptCards">
                     <!-- Rendered via JS -->
                 </div>
             </main>
@@ -182,7 +166,7 @@
     <script src="js/supabase.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/receipt-pdf.js"></script>
-    <script src="js/payments.js"></script>
+    <script src="js/receipts.js"></script>
 </body>
 
 </html>

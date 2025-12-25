@@ -297,8 +297,29 @@ function setupActionMenu() {
         showPaymentModal(currentStudentId);
     });
 
-    document.getElementById('actionReceipt').addEventListener('click', () => {
-        window.location.href = `student-profile.html?id=${currentStudentId}&action=receipt`;
+    document.getElementById('actionReceipt').addEventListener('click', async () => {
+        hideActionMenu();
+        try {
+            // Fetch latest payment for this student
+            const { data: payments, error } = await supabase
+                .from('fee_payments')
+                .select('id')
+                .eq('student_id', currentStudentId)
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (error) throw error;
+
+            if (!payments || payments.length === 0) {
+                showToast('No payments found for this student', 'info');
+                return;
+            }
+
+            downloadReceipt(payments[0].id);
+        } catch (error) {
+            console.error('Error fetching latest payment:', error);
+            showToast('Failed to generate receipt', 'error');
+        }
     });
 
     document.getElementById('actionDeactivate').addEventListener('click', () => {
