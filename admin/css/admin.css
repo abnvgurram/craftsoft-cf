@@ -776,6 +776,52 @@ body {
     margin-left: auto;
 }
 
+/* Sidebar Sublinks (Tree Style) */
+.sidebar-sublink {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px 8px 32px;
+    color: var(--gray-500);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: var(--transition);
+}
+
+.sidebar-sublink:hover {
+    color: var(--gray-700);
+}
+
+.sidebar-sublink.active {
+    color: var(--primary);
+}
+
+.sublink-line {
+    position: relative;
+    width: 16px;
+    height: 16px;
+}
+
+.sublink-line::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: -8px;
+    width: 1px;
+    height: 16px;
+    background: var(--gray-300);
+}
+
+.sublink-line::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 8px;
+    width: 8px;
+    height: 1px;
+    background: var(--gray-300);
+}
+
 .sidebar-divider {
     height: 1px;
     background: var(--gray-200);
@@ -1063,8 +1109,16 @@ body {
 }
 
 .empty-state .btn {
-    padding: 10px 20px;
-    font-size: 0.875rem;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+}
+
+.empty-state .btn:hover {
+    background: var(--primary);
+    color: var(--white);
 }
 
 .spinner {
