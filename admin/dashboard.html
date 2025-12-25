@@ -164,6 +164,20 @@
                         </a>
                     </div>
                 </div>
+                <!-- Recent Activity -->
+                <div class="recent-activity">
+                    <div class="activity-header">
+                        <h3>Recent Payments</h3>
+                        <a href="payments.html" class="view-all">View All</a>
+                    </div>
+                    <div class="activity-list" id="recentActivityList">
+                        <!-- Activity items loaded via JS -->
+                        <div class="loading-activity">
+                            <div class="spinner-sm"></div>
+                            <span>Loading activity...</span>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
 
@@ -190,133 +204,11 @@
         </div>
     </div>
 
-
-
-    <!-- Supabase -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
     <script src="js/auth.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', initDashboard);
-
-        async function initDashboard() {
-            // Check if logged in
-            const session = await requireAuth();
-            if (!session) return;
-
-            // Get profile
-            const profile = await getAdminProfile(session.user.id);
-
-            if (profile) {
-                const fullName = `${profile.first_name} ${profile.last_name}`;
-                document.getElementById('userName').textContent = fullName;
-                document.getElementById('welcomeName').textContent = profile.first_name;
-            } else {
-                const email = session.user.email;
-                document.getElementById('userName').textContent = email;
-                document.getElementById('welcomeName').textContent = 'Admin';
-            }
-
-            // Load stats
-            await loadDashboardStats();
-
-            // Show dashboard
-            document.getElementById('adminLayout').style.display = 'flex';
-
-            // Setup sidebar
-            setupSidebar();
-        }
-
-        async function loadDashboardStats() {
-            try {
-                // Get student count
-                const { count: studentCount } = await supabase
-                    .from('students')
-                    .select('*', { count: 'exact', head: true });
-
-                document.getElementById('totalStudents').textContent = studentCount || 0;
-
-                // Get payment stats
-                const { data: payments } = await supabase
-                    .from('fee_payments')
-                    .select('amount');
-
-                const totalCollected = payments?.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0) || 0;
-                document.getElementById('totalCollected').textContent = '₹' + formatNumber(totalCollected);
-
-                // Get pending fees from enrollments
-                const { data: enrollments } = await supabase
-                    .from('student_enrollments')
-                    .select('final_fee');
-
-                const totalFees = enrollments?.reduce((sum, e) => sum + parseFloat(e.final_fee || 0), 0) || 0;
-                const pending = totalFees - totalCollected;
-                document.getElementById('pendingFees').textContent = '₹' + formatNumber(pending > 0 ? pending : 0);
-
-                // Get course count
-                const { count: courseCount } = await supabase
-                    .from('courses')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('is_active', true);
-
-                document.getElementById('activeCourses').textContent = courseCount || 0;
-
-            } catch (error) {
-                console.error('Error loading stats:', error);
-            }
-        }
-
-        function formatNumber(num) {
-            return new Intl.NumberFormat('en-IN').format(num);
-        }
-
-        function setupSidebar() {
-            const sidebar = document.getElementById('adminSidebar');
-            const toggle = document.getElementById('sidebarToggle');
-            const close = document.getElementById('sidebarClose');
-            const overlay = document.getElementById('sidebarOverlay');
-
-            toggle.addEventListener('click', () => {
-                sidebar.classList.add('open');
-                overlay.classList.add('show');
-            });
-
-            close.addEventListener('click', closeSidebar);
-            overlay.addEventListener('click', closeSidebar);
-
-            function closeSidebar() {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('show');
-            }
-        }
-
-        // Logout Modal Functions
-        function showLogoutModal() {
-            document.getElementById('logoutModal').classList.add('show');
-        }
-
-        function hideLogoutModal() {
-            document.getElementById('logoutModal').classList.remove('show');
-        }
-
-        async function confirmLogout() {
-            await signOut();
-        }
-
-        // Close modal on overlay click
-        document.getElementById('logoutModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                hideLogoutModal();
-            }
-        });
-
-        // Close modal on Escape key
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                hideLogoutModal();
-            }
-        });
-    </script>
+    <script src="js/dashboard.js"></script>
 </body>
 
 </html>
