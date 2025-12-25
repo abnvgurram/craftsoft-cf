@@ -211,7 +211,7 @@ function renderStudents(students) {
                 </div>
             </div>
             <div class="card-actions">
-                <a href="#" class="btn btn-outline btn-sm disabled" title="Coming Soon">
+                <a href="profile.html?id=${student.id}" class="btn btn-outline btn-sm">
                     <i class="fas fa-eye"></i> View
                 </a>
                 <button class="btn btn-primary btn-sm" onclick="showActionMenu(event, '${student.id}')">
@@ -285,7 +285,7 @@ function setupActionMenu() {
 
     // Setup action handlers
     document.getElementById('actionView').addEventListener('click', () => {
-        showToast('Student profile coming soon', 'info');
+        window.location.href = `profile.html?id=${currentStudentId}`;
     });
 
     document.getElementById('actionEdit').addEventListener('click', () => {

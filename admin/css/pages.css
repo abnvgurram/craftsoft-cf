@@ -503,3 +503,206 @@
         padding: 12px;
     }
 }
+
+/* ============================================
+   STUDENT PROFILE PAGE
+   ============================================ */
+.profile-header-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.profile-info h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 4px;
+}
+
+.profile-info .status-badge {
+    margin-bottom: 8px;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.contact-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.contact-btn {
+    flex: 1;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--gray-700);
+    transition: var(--transition);
+}
+
+.contact-btn:hover {
+    border-color: var(--primary);
+    background: var(--gray-50);
+}
+
+.contact-btn i {
+    font-size: 1.25rem;
+    color: var(--primary);
+}
+
+.contact-btn.whatsapp i {
+    color: #25D366;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.profile-detail-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.profile-detail-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-50);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    color: var(--gray-500);
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    font-weight: 500;
+    color: var(--gray-800);
+}
+
+.ledger-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.ledger-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ledger-summary {
+    display: flex;
+    gap: 32px;
+    padding: 16px 24px;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    margin-top: 20px;
+}
+
+.summary-item .label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.summary-item .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+@media (max-width: 992px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .contact-bar {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .profile-header-card {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+
+    .profile-identity {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .profile-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .profile-actions .btn {
+        width: 100%;
+    }
+
+    .ledger-summary {
+        flex-direction: column;
+        gap: 16px;
+    }
+}
