@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Admin Registration - Abhi's Craft Soft">
+    <title>Admin Sign Up | Abhi's Craft Soft</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/admin-auth.css">
+</head>
+
+<body>
+    <div class="auth-page">
+        <!-- Header -->
+        <header class="auth-header">
+            <a href="../index.html" class="auth-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <span class="logo-text">
+                    <span class="logo-signature">Abhi's</span>
+                    <span class="highlight">Craft Soft</span>
+                </span>
+            </a>
+            <a href="../index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Website</span>
+            </a>
+        </header>
+
+        <!-- Main Content -->
+        <main class="auth-main">
+            <div class="auth-card">
+                <!-- Card Header -->
+                <div class="auth-card-header">
+                    <div class="auth-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h1 class="auth-title">Admin Registration</h1>
+                    <p class="auth-subtitle">Create your admin account</p>
+                </div>
+
+                <!-- Sign Up Form -->
+                <form id="signupForm" class="auth-form" novalidate>
+                    <!-- Name Row -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="firstName">
+                                First Name <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" id="firstName" name="firstName" class="form-input"
+                                    placeholder="Enter first name" autocomplete="given-name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="lastName">
+                                Last Name <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" id="lastName" name="lastName" class="form-input"
+                                    placeholder="Enter last name" autocomplete="family-name" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label class="form-label" for="email">
+                            Email Address <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" name="email" class="form-input" placeholder="you@example.com"
+                                autocomplete="email" required>
+                        </div>
+                    </div>
+
+                    <!-- Password Row -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="password">
+                                Password <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="password" id="password" name="password" class="form-input password-field"
+                                    placeholder="Min. 8 characters" autocomplete="new-password" minlength="8" required>
+                                <button type="button" class="password-toggle" id="togglePassword"
+                                    aria-label="Toggle password visibility">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <span class="form-hint">Minimum 8 characters</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="confirmPassword">
+                                Confirm Password <span class="required">*</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="password" id="confirmPassword" name="confirmPassword"
+                                    class="form-input password-field" placeholder="Re-type password"
+                                    autocomplete="new-password" required>
+                                <button type="button" class="password-toggle" id="toggleConfirmPassword"
+                                    aria-label="Toggle password visibility">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <span class="form-hint">Must match password</span>
+                        </div>
+                    </div>
+
+                    <!-- Phone (Optional) -->
+                    <div class="form-group">
+                        <label class="form-label" for="phone">
+                            Phone Number <span class="optional">(optional)</span>
+                        </label>
+                        <div class="phone-wrapper">
+                            <span class="country-code">+91</span>
+                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="10-digit number"
+                                maxlength="10" inputmode="numeric" autocomplete="tel-national">
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <span id="submitText">Create Admin Account</span>
+                        <span class="spinner" id="submitSpinner" style="display: none;"></span>
+                        <i class="fas fa-arrow-right" id="submitIcon"></i>
+                    </button>
+                </form>
+
+                <!-- Card Footer -->
+                <div class="auth-card-footer">
+                    <p>Already have an account? <a href="signin.html">Sign In →</a></p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="auth-footer">
+            <p>&copy; 2024 Abhi's Craft Soft. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Scripts -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/ui-components.js"></script>
+    <script src="js/signup.js"></script>
+</body>
+
+</html>
