@@ -1,78 +1,16 @@
 /* ============================================
    Dashboard Core Logic
-   - Single Tab Session
-   - Auth check
-   - Session protection
+   - Auth check (on page load only)
+   - Session protection (back/forward)
    - Sidebar navigation
-   - Logout
+   - Logout (redirect only, preserves session)
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
-    // SINGLE TAB SESSION (prevents multiple tabs)
-    // ============================================
-
-    const SESSION_KEY = 'craftsoft_admin_session';
-    const SESSION_CHANNEL = 'craftsoft_admin_channel';
-    let channel = null;
-
-    // Generate unique tab ID
-    const tabId = Date.now().toString(36) + Math.random().toString(36).substr(2);
-
-    // Check if another tab is already open
-    function initSingleTabSession() {
-        // Only use BroadcastChannel if supported
-        if (!('BroadcastChannel' in window)) return;
-
-        // Clear any stale session data first
-        const existingSession = sessionStorage.getItem(SESSION_KEY);
-
-        channel = new BroadcastChannel(SESSION_CHANNEL);
-
-        // Listen for messages from other tabs
-        channel.onmessage = (event) => {
-            if (event.data.type === 'CHECK_SESSION' && event.data.tabId !== tabId) {
-                // Another tab is asking - respond that we exist
-                channel.postMessage({ type: 'SESSION_EXISTS', tabId: tabId });
-            }
-
-            if (event.data.type === 'SESSION_EXISTS' && event.data.tabId !== tabId) {
-                // Another dashboard tab exists - show error
-                showDuplicateTabError();
-            }
-
-            if (event.data.type === 'TAB_CLOSING') {
-                // Another tab is closing, we can ignore duplicate checks briefly
-            }
-        };
-
-        // Wait a moment before checking (let other tabs respond)
-        setTimeout(() => {
-            channel.postMessage({ type: 'CHECK_SESSION', tabId: tabId });
-        }, 500);
-
-        // Mark this tab as the active session
-        sessionStorage.setItem(SESSION_KEY, tabId);
-
-        // Clear on unload
-        window.addEventListener('beforeunload', () => {
-            if (channel) {
-                channel.postMessage({ type: 'TAB_CLOSING', tabId: tabId });
-            }
-            sessionStorage.removeItem(SESSION_KEY);
-        });
-    }
-
-    function showDuplicateTabError() {
-        // Bank-level security: Immediate redirect, no content shown
-        window.location.replace('signin.html');
-    }
-
-    // ============================================
     // SESSION PROTECTION (back/forward)
     // ============================================
 
-    // Prevent caching
     if (window.history && window.history.pushState) {
         window.history.pushState(null, '', window.location.href);
         window.addEventListener('popstate', () => {
@@ -89,14 +27,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await window.supabaseClient.auth.getSession();
 
             if (!session || !session.user) {
-                // Not logged in - redirect to signin
                 window.location.replace('signin.html');
                 return null;
             }
 
-            // Check if email is verified
             if (!session.user.email_confirmed_at) {
-                await window.supabaseClient.auth.signOut();
                 window.location.replace('signin.html');
                 return null;
             }
@@ -111,9 +46,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const session = await checkAuth();
     if (!session) return;
-
-    // Initialize single tab session AFTER auth check
-    initSingleTabSession();
 
     // ============================================
     // LOAD ADMIN DATA
@@ -140,14 +72,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const admin = await loadAdminData();
-
-    function forceLogout() {
-        // Bank-level security: Clear all data and redirect immediately
-        localStorage.removeItem('craftsoft_session_token');
-        sessionStorage.removeItem('craftsoft_admin_session');
-        window.supabaseClient.auth.signOut();
-        window.location.replace('signin.html');
-    }
 
     // Update UI with admin info
     if (admin) {
@@ -230,44 +154,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ============================================
-    // LOGOUT
+    // LOGOUT (redirect only - preserves session for other tabs)
+    // Like FB/Instagram behavior
     // ============================================
 
     const logoutBtns = document.querySelectorAll('[data-logout]');
 
     logoutBtns.forEach(btn => {
-        btn.addEventListener('click', async (e) => {
+        btn.addEventListener('click', (e) => {
             e.preventDefault();
 
             window.modal.confirm(
-                'Logout',
-                'Are you sure you want to logout?',
-                async () => {
-                    try {
-                        await window.supabaseClient.auth.signOut();
-
-                        // Clear any cached data
-                        sessionStorage.clear();
-                        localStorage.removeItem('sb-pklhwfipldiswdboobua-auth-token');
-
-                        // Redirect to signin
-                        window.location.replace('signin.html');
-                    } catch (error) {
-                        console.error('Logout error:', error);
-                        window.location.replace('signin.html');
-                    }
+                'Leave Dashboard',
+                'Are you sure you want to leave? Other open tabs will remain active.',
+                () => {
+                    // Just redirect - don't sign out (keeps other tabs working)
+                    window.location.replace('signin.html');
                 }
             );
         });
-    });
-
-    // ============================================
-    // LISTEN FOR AUTH STATE CHANGES
-    // ============================================
-
-    window.supabaseClient.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_OUT' || !session) {
-            window.location.replace('signin.html');
-        }
     });
 });
