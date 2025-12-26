@@ -1,0 +1,247 @@
+/* ============================================
+   Admin Switcher Logic
+   - Handles multi-account switching
+   - Stores saved admin info in localStorage
+   - Handles password-protected switching
+   ============================================ */
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const switcher = document.getElementById('adminSwitcher');
+    const toggle = document.getElementById('adminSwitcherToggle');
+    const dropdown = document.getElementById('adminSwitcherDropdown');
+    const savedAdminsList = document.getElementById('savedAdminsList');
+    const savedAdminsSection = document.getElementById('savedAdminsSection');
+    const addAnotherBtn = document.getElementById('addAnotherAdmin');
+    const logoutCurrentBtn = document.getElementById('logoutCurrent');
+    const logoutAllBtn = document.getElementById('logoutAll');
+    const savedCountEl = document.getElementById('savedCount');
+
+    // ============================================
+    // TOGGLE DROPDOWN
+    // ============================================
+
+    if (toggle) {
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            switcher.classList.toggle('active');
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (switcher && !switcher.contains(e.target)) {
+            switcher.classList.remove('active');
+        }
+    });
+
+    // ============================================
+    // MANAGE SAVED ADMINS
+    // ============================================
+
+    const SAVED_ADMINS_KEY = 'craftsoft_saved_admins';
+
+    function getSavedAdmins() {
+        return JSON.parse(localStorage.getItem(SAVED_ADMINS_KEY) || '[]');
+    }
+
+    function saveAdmin(admin) {
+        let saved = getSavedAdmins();
+        // Remove if already exists (to update info)
+        saved = saved.filter(a => a.id !== admin.id);
+        saved.push({
+            id: admin.id,
+            admin_id: admin.admin_id,
+            full_name: admin.full_name,
+            email: admin.email,
+            avatar: admin.full_name.charAt(0).toUpperCase()
+        });
+        localStorage.setItem(SAVED_ADMINS_KEY, JSON.stringify(saved));
+        renderSavedAdmins();
+    }
+
+    function renderSavedAdmins() {
+        if (!savedAdminsList) return;
+
+        const { data: { session } } = supabaseClient ? { data: { session: null } } : { data: { session: null } }; // Placeholder
+        // We'll get real session in a bit
+    }
+
+    // ============================================
+    // INITIAL LOAD & AUTH SYNC
+    // ============================================
+
+    async function initSwitcher() {
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
+        if (!session) return;
+
+        // Get current admin details from DB
+        const { data: admin } = await window.supabaseClient
+            .from('admins')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+        if (admin) {
+            // Internal sync: Save current admin to memory/list
+            saveAdmin(admin);
+            updateCurrentUI(admin);
+        }
+
+        renderSavedAdminsList(session.user.id);
+    }
+
+    function updateCurrentUI(admin) {
+        const nameEl = document.getElementById('currentAdminName');
+        const idEl = document.getElementById('currentAdminId');
+        const avatarEl = document.getElementById('currentAdminAvatar');
+
+        if (nameEl) nameEl.textContent = admin.full_name;
+        if (idEl) idEl.textContent = admin.admin_id;
+        if (avatarEl) avatarEl.textContent = admin.full_name.charAt(0).toUpperCase();
+    }
+
+    function renderSavedAdminsList(currentUserId) {
+        const saved = getSavedAdmins();
+        const otherAdmins = saved.filter(a => a.id !== currentUserId);
+
+        if (otherAdmins.length > 0) {
+            savedAdminsSection.style.display = 'block';
+            logoutAllBtn.style.display = 'flex';
+            savedCountEl.textContent = otherAdmins.length + 1; // +1 for current
+
+            savedAdminsList.innerHTML = otherAdmins.map(admin => `
+                <div class="saved-admin" data-admin-id="${admin.id}" data-email="${admin.email}">
+                    <div class="saved-admin-avatar">${admin.avatar}</div>
+                    <div class="saved-admin-info">
+                        <div class="saved-admin-name">${admin.full_name}</div>
+                        <div class="saved-admin-id">${admin.admin_id}</div>
+                    </div>
+                    <i class="fas fa-history" title="Requires Password"></i>
+                </div>
+            `).join('');
+
+            // Add click listeners to saved admins
+            savedAdminsList.querySelectorAll('.saved-admin').forEach(item => {
+                item.addEventListener('click', () => {
+                    const email = item.getAttribute('data-email');
+                    const name = item.querySelector('.saved-admin-name').textContent;
+                    const adminId = item.querySelector('.saved-admin-id').textContent;
+                    promptPasswordAndSwitch(email, name, adminId);
+                });
+            });
+        } else {
+            savedAdminsSection.style.display = 'none';
+            logoutAllBtn.style.display = 'none';
+        }
+    }
+
+    // ============================================
+    // SWITCH LOGIC
+    // ============================================
+
+    function promptPasswordAndSwitch(email, name, adminId) {
+        switcher.classList.remove('active');
+
+        window.modal.show({
+            type: 'primary',
+            title: 'Enter Password',
+            message: `
+                <div style="text-align: left;">
+                    <p style="margin-bottom: 1rem; font-size: 0.875rem; color: var(--gray-600);">
+                        Switching to: <strong>${name}</strong> (${adminId})
+                    </p>
+                    <div class="form-group">
+                        <input type="password" id="switchPassword" class="form-input" placeholder="Enter your password" 
+                               style="width: 100%; padding: 0.75rem; border: 1px solid var(--gray-200); border-radius: var(--radius-md);">
+                    </div>
+                </div>
+            `,
+            buttons: [
+                {
+                    text: 'Cancel',
+                    type: 'secondary'
+                },
+                {
+                    text: 'Switch Now',
+                    type: 'primary',
+                    className: 'btn-switch-confirm'
+                }
+            ],
+            onRender: (modalEl) => {
+                const input = modalEl.querySelector('#switchPassword');
+                const confirmBtn = modalEl.querySelector('.btn-switch-confirm');
+
+                input.focus();
+
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') confirmBtn.click();
+                });
+
+                confirmBtn.addEventListener('click', async () => {
+                    const password = input.value;
+                    if (!password) return;
+
+                    confirmBtn.innerText = 'Switching...';
+                    confirmBtn.disabled = true;
+
+                    try {
+                        const { error } = await window.supabaseClient.auth.signInWithPassword({
+                            email: email,
+                            password: password
+                        });
+
+                        if (error) throw error;
+
+                        window.toast.show('Switched successfully!', 'success');
+                        setTimeout(() => window.location.reload(), 500);
+                    } catch (e) {
+                        window.toast.show(e.message || 'Incorrect password', 'error');
+                        confirmBtn.innerText = 'Switch Now';
+                        confirmBtn.disabled = false;
+                    }
+                });
+            }
+        });
+    }
+
+    // ============================================
+    // ACTION HANDLERS
+    // ============================================
+
+    if (addAnotherBtn) {
+        addAnotherBtn.addEventListener('click', () => {
+            // Simple approach: Logout current and go to signin with a return hint
+            // But user might want to keep current session. 
+            // Better: Just go to signin.html - it will handle the new session.
+            window.location.href = 'signin.html?action=add_account';
+        });
+    }
+
+    if (logoutCurrentBtn) {
+        logoutCurrentBtn.addEventListener('click', () => {
+            window.modal.confirm('Logout', 'Are you sure you want to leave?', async () => {
+                // Remove from saved list
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                if (session) {
+                    let saved = getSavedAdmins();
+                    saved = saved.filter(a => a.id !== session.user.id);
+                    localStorage.setItem(SAVED_ADMINS_KEY, JSON.stringify(saved));
+                }
+
+                window.location.href = 'signin.html?from=logout';
+            });
+        });
+    }
+
+    if (logoutAllBtn) {
+        logoutAllBtn.addEventListener('click', () => {
+            window.modal.confirm('Logout All', 'This will sign out all saved accounts. Continue?', async () => {
+                localStorage.removeItem(SAVED_ADMINS_KEY);
+                await window.supabaseClient.auth.signOut();
+                window.location.href = 'signin.html?from=logout';
+            });
+        });
+    }
+
+    // Start
+    initSwitcher();
+});

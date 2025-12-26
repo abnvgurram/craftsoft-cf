@@ -28,12 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Check if already logged in (skip if user came from logout)
+    // Check if already logged in (skip if user came from logout or adding account)
     async function checkExistingSession() {
-        // If user clicked logout, don't auto-redirect back
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('from') === 'logout') {
-            // User intentionally came here from logout - stay on signin
+
+        // Skip auto-redirect if:
+        // 1. User clicked logout
+        // 2. User clicked "Add another admin"
+        if (urlParams.get('from') === 'logout' || urlParams.get('action') === 'add_account') {
             return;
         }
 
