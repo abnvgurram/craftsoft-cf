@@ -458,27 +458,117 @@ body {
     text-decoration: underline;
 }
 
-/* Page Footer */
-.auth-footer {
-    text-align: center;
-    padding: var(--spacing-lg);
+/* Account Picker (Gmail style) */
+.account-picker {
+    display: none;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.account-picker.show {
+    display: flex;
+}
+
+.account-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-height: 280px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.account-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: var(--transition-base);
+    text-align: left;
+}
+
+.account-item:hover {
+    background: var(--white);
+    border-color: var(--primary-300);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.account-item.active {
+    border-color: var(--primary-500);
+    background: var(--primary-50);
+}
+
+.account-avatar {
+    width: 44px;
+    height: 44px;
+    background: var(--accent-gradient);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.account-info {
+    flex: 1;
+}
+
+.account-name {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--gray-900);
+    margin-bottom: 2px;
+}
+
+.account-id-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
     color: var(--gray-500);
-    font-size: 0.8125rem;
+    background: var(--gray-200);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
 }
 
-.auth-footer a {
-    color: var(--gray-600);
-    text-decoration: none;
-}
-
-.auth-footer a:hover {
+.account-status {
+    font-size: 0.75rem;
+    font-weight: 600;
     color: var(--primary-600);
+}
+
+.use-another-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: none;
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius-xl);
+    color: var(--gray-600);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.use-another-btn:hover {
+    border-color: var(--primary-400);
+    color: var(--primary-600);
+    background: var(--primary-50);
 }
 
 /* ============================================
    Custom Modal Styles
    ============================================ */
-
 .modal-overlay {
     position: fixed;
     inset: 0;

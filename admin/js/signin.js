@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submitBtn');
     const submitText = document.getElementById('submitText');
     const submitSpinner = document.getElementById('submitSpinner');
+    const accountPicker = document.getElementById('accountPicker');
+    const accountList = document.getElementById('accountList');
+    const useAnotherBtn = document.getElementById('useAnotherBtn');
+    const authSubtitle = document.getElementById('authSubtitle');
 
     // Form fields
     const identifierInput = document.getElementById('identifier');
@@ -15,6 +19,77 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Password toggle
     const togglePassword = document.getElementById('togglePassword');
+
+    // ============================================
+    // ACCOUNT PICKER (Gmail style)
+    // ============================================
+
+    const SAVED_ADMINS_KEY = 'craftsoft_saved_admins';
+
+    function getSavedAdmins() {
+        return JSON.parse(localStorage.getItem(SAVED_ADMINS_KEY) || '[]');
+    }
+
+    async function initAccountPicker() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const action = urlParams.get('action');
+        const saved = getSavedAdmins();
+
+        // If action is add_account or no saved admins, show form directly
+        if (action === 'add_account' || saved.length === 0) {
+            showLoginForm();
+            return;
+        }
+
+        // Show picker
+        form.style.display = 'none';
+        accountPicker.classList.add('show');
+        authSubtitle.textContent = 'Choose an account to continue';
+
+        // Get current active session if any (just for status badge)
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
+        const currentUserId = session ? session.user.id : null;
+
+        accountList.innerHTML = saved.map(admin => `
+            <div class="account-item ${admin.id === currentUserId ? 'active' : ''}" 
+                 data-identifier="${admin.admin_id}">
+                <div class="account-avatar">${admin.avatar}</div>
+                <div class="account-info">
+                    <div class="account-name">${admin.full_name}</div>
+                    <div class="account-id-badge">${admin.admin_id}</div>
+                    ${admin.id === currentUserId ? '<div class="account-status">Active Session</div>' : ''}
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        `).join('');
+
+        // Item clicks
+        accountList.querySelectorAll('.account-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const identifier = item.getAttribute('data-identifier');
+                identifierInput.value = identifier;
+                showLoginForm(true); // Is switching
+            });
+        });
+    }
+
+    function showLoginForm(isSwitching = false) {
+        accountPicker.classList.remove('show');
+        form.style.display = 'flex';
+        authSubtitle.textContent = 'Sign in with your email or Admin ID';
+
+        if (isSwitching) {
+            passwordInput.focus();
+        } else {
+            identifierInput.focus();
+        }
+    }
+
+    if (useAnotherBtn) {
+        useAnotherBtn.addEventListener('click', () => showLoginForm());
+    }
+
+    initAccountPicker();
 
     // ============================================
     // SESSION & SECURITY MANAGEMENT

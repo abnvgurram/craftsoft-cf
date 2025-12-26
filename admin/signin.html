@@ -54,7 +54,18 @@
                         <i class="fas fa-graduation-cap"></i>
                     </div>
                     <h1 class="auth-title">Admin Sign In</h1>
-                    <p class="auth-subtitle">Sign in with your email or Admin ID</p>
+                    <p class="auth-subtitle" id="authSubtitle">Sign in with your email or Admin ID</p>
+                </div>
+
+                <!-- Account Picker (Hidden by default) -->
+                <div id="accountPicker" class="account-picker">
+                    <div class="account-list" id="accountList">
+                        <!-- Accounts rendered here -->
+                    </div>
+                    <button type="button" class="use-another-btn" id="useAnotherBtn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Use another account</span>
+                    </button>
                 </div>
 
                 <!-- Sign In Form -->
@@ -114,4 +125,3 @@
 </body>
 
 </html>
-

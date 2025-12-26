@@ -56,7 +56,7 @@ class Modal {
         });
     }
 
-    show({ type = 'info', title, message, buttons = [], showClose = true }) {
+    show({ type = 'info', title, message, buttons = [], showClose = true, customIcon = null }) {
         const modal = this.overlay.querySelector('.modal');
         const iconEl = modal.querySelector('.modal-icon');
         const titleEl = modal.querySelector('.modal-title');
@@ -69,11 +69,13 @@ class Modal {
             success: 'fa-check',
             error: 'fa-times',
             warning: 'fa-exclamation-triangle',
-            info: 'fa-info'
+            info: 'fa-info',
+            primary: 'fa-user-shield'
         };
 
+        const iconClass = customIcon || icons[type] || icons.info;
         iconEl.className = `modal-icon ${type}`;
-        iconEl.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i>`;
+        iconEl.innerHTML = `<i class="fas ${iconClass}"></i>`;
 
         // Set content
         titleEl.textContent = title;

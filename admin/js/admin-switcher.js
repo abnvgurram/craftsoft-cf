@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.modal.show({
             type: 'primary',
             title: 'Enter Password',
+            customIcon: 'fa-graduation-cap',
             message: `
                 <div style="text-align: left;">
                     <p style="margin-bottom: 1rem; font-size: 0.875rem; color: var(--gray-600);">
