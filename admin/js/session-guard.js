@@ -1,150 +1,108 @@
 /* ============================================
-   Session Guard - Single Tab Session Enforcement
-   Prevents multiple tabs from accessing admin panel
-   Include this in ALL admin pages (except signin, verify)
+   Session Guard v2 - Simple & Bulletproof
+   Single Tab Session Enforcement
    ============================================ */
 
 (function () {
     'use strict';
 
-    const SESSION_KEY = 'craftsoft_admin_active_tab';
-    const HEARTBEAT_KEY = 'craftsoft_admin_heartbeat';
-    const CHANNEL_NAME = 'craftsoft_admin_session';
-    const HEARTBEAT_INTERVAL = 2000; // 2 seconds
-    const HEARTBEAT_TIMEOUT = 5000; // 5 seconds - consider tab dead if no heartbeat
+    const LOCK_KEY = 'craftsoft_admin_lock';
+    const LOCK_TIMEOUT = 3000; // 3 seconds - if no update, consider tab dead
 
-    // Generate unique tab ID
-    const currentTabId = 'tab_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-
-    let heartbeatTimer = null;
-    let channel = null;
+    // Generate unique ID for this tab
+    const thisTabId = 'T' + Date.now() + Math.random().toString(36).substr(2, 5);
 
     // ============================================
-    // CHECK IF ANOTHER TAB IS ACTIVE
+    // CHECK IF SESSION IS LOCKED BY ANOTHER TAB
     // ============================================
 
-    function isAnotherTabActive() {
-        const existingTab = localStorage.getItem(SESSION_KEY);
-        const lastHeartbeat = localStorage.getItem(HEARTBEAT_KEY);
+    function isLockedByAnotherTab() {
+        const lockData = localStorage.getItem(LOCK_KEY);
 
-        if (!existingTab) {
-            return false;
+        if (!lockData) {
+            return false; // No lock exists
         }
 
-        // Check if the existing tab is still alive (heartbeat within timeout)
-        if (lastHeartbeat) {
-            const timeSinceHeartbeat = Date.now() - parseInt(lastHeartbeat, 10);
-            if (timeSinceHeartbeat > HEARTBEAT_TIMEOUT) {
-                // Existing tab is dead/crashed, clear it
-                localStorage.removeItem(SESSION_KEY);
-                localStorage.removeItem(HEARTBEAT_KEY);
+        try {
+            const lock = JSON.parse(lockData);
+            const now = Date.now();
+
+            // Check if lock is still valid (updated within timeout)
+            if (now - lock.timestamp > LOCK_TIMEOUT) {
+                // Lock is stale (tab crashed or closed without cleanup)
                 return false;
             }
+
+            // Lock is valid and belongs to another tab
+            if (lock.tabId !== thisTabId) {
+                return true;
+            }
+
+            return false;
+        } catch (e) {
+            return false;
         }
-
-        // Another tab is active
-        return existingTab !== currentTabId;
     }
 
     // ============================================
-    // REGISTER THIS TAB AS ACTIVE
+    // ACQUIRE LOCK FOR THIS TAB
     // ============================================
 
-    function registerAsActiveTab() {
-        localStorage.setItem(SESSION_KEY, currentTabId);
-        updateHeartbeat();
-        startHeartbeat();
+    function acquireLock() {
+        const lockData = {
+            tabId: thisTabId,
+            timestamp: Date.now()
+        };
+        localStorage.setItem(LOCK_KEY, JSON.stringify(lockData));
     }
 
     // ============================================
-    // HEARTBEAT SYSTEM
+    // KEEP LOCK ALIVE (heartbeat)
     // ============================================
 
-    function updateHeartbeat() {
-        localStorage.setItem(HEARTBEAT_KEY, Date.now().toString());
-    }
+    let heartbeatInterval = null;
 
     function startHeartbeat() {
-        if (heartbeatTimer) {
-            clearInterval(heartbeatTimer);
-        }
-        heartbeatTimer = setInterval(() => {
-            // Only update heartbeat if we're still the active tab
-            if (localStorage.getItem(SESSION_KEY) === currentTabId) {
-                updateHeartbeat();
-            } else {
-                // Another tab took over, redirect
-                redirectToSignin();
+        // Update lock every 1 second
+        heartbeatInterval = setInterval(() => {
+            const lockData = localStorage.getItem(LOCK_KEY);
+            if (lockData) {
+                try {
+                    const lock = JSON.parse(lockData);
+                    if (lock.tabId === thisTabId) {
+                        // Still our lock, refresh timestamp
+                        lock.timestamp = Date.now();
+                        localStorage.setItem(LOCK_KEY, JSON.stringify(lock));
+                    } else {
+                        // Another tab took the lock - we should leave
+                        redirectToSignin();
+                    }
+                } catch (e) {
+                    // Error parsing, redirect to be safe
+                    redirectToSignin();
+                }
             }
-        }, HEARTBEAT_INTERVAL);
-    }
-
-    function stopHeartbeat() {
-        if (heartbeatTimer) {
-            clearInterval(heartbeatTimer);
-            heartbeatTimer = null;
-        }
-    }
-
-    // ============================================
-    // BROADCAST CHANNEL (instant cross-tab communication)
-    // ============================================
-
-    function initBroadcastChannel() {
-        if (!('BroadcastChannel' in window)) {
-            return;
-        }
-
-        channel = new BroadcastChannel(CHANNEL_NAME);
-
-        channel.onmessage = (event) => {
-            const data = event.data;
-
-            if (data.type === 'NEW_TAB_OPENED' && data.tabId !== currentTabId) {
-                // Another tab is trying to open - tell it we exist
-                channel.postMessage({
-                    type: 'TAB_EXISTS',
-                    tabId: currentTabId
-                });
-            }
-
-            if (data.type === 'TAB_EXISTS' && data.tabId !== currentTabId) {
-                // We're the new tab and another tab exists - redirect
-                redirectToSignin();
-            }
-
-            if (data.type === 'TAB_CLOSED' && data.tabId !== currentTabId) {
-                // The other tab closed, we can potentially take over
-                // But only if we were blocked - not needed in this flow
-            }
-        };
-
-        // Announce this tab
-        channel.postMessage({
-            type: 'NEW_TAB_OPENED',
-            tabId: currentTabId
-        });
+        }, 1000);
     }
 
     // ============================================
-    // CLEANUP ON TAB CLOSE
+    // RELEASE LOCK ON TAB CLOSE
     // ============================================
 
-    function cleanup() {
-        // Only clear if we're the active tab
-        if (localStorage.getItem(SESSION_KEY) === currentTabId) {
-            localStorage.removeItem(SESSION_KEY);
-            localStorage.removeItem(HEARTBEAT_KEY);
+    function releaseLock() {
+        const lockData = localStorage.getItem(LOCK_KEY);
+        if (lockData) {
+            try {
+                const lock = JSON.parse(lockData);
+                if (lock.tabId === thisTabId) {
+                    localStorage.removeItem(LOCK_KEY);
+                }
+            } catch (e) {
+                // Ignore
+            }
         }
-
-        stopHeartbeat();
-
-        if (channel) {
-            channel.postMessage({
-                type: 'TAB_CLOSED',
-                tabId: currentTabId
-            });
-            channel.close();
+        if (heartbeatInterval) {
+            clearInterval(heartbeatInterval);
         }
     }
 
@@ -153,23 +111,18 @@
     // ============================================
 
     function redirectToSignin() {
-        stopHeartbeat();
-        if (channel) {
-            channel.close();
-        }
+        releaseLock();
         window.location.replace('signin.html');
     }
 
     // ============================================
-    // SHOW PAGE (remove hidden state)
+    // SHOW PAGE (make visible after validation)
     // ============================================
 
     function showPage() {
-        // Add class to make body visible
         if (document.body) {
             document.body.classList.add('session-validated');
         } else {
-            // Body not ready yet, wait for it
             document.addEventListener('DOMContentLoaded', () => {
                 document.body.classList.add('session-validated');
             });
@@ -177,48 +130,52 @@
     }
 
     // ============================================
-    // INITIALIZE
+    // WATCH FOR OTHER TABS TRYING TO TAKE OVER
     // ============================================
 
-    function init() {
-        // Check if another tab is already active
-        if (isAnotherTabActive()) {
-            redirectToSignin();
-            return;
-        }
-
-        // Register this tab as active
-        registerAsActiveTab();
-
-        // Initialize broadcast channel for instant communication
-        initBroadcastChannel();
-
-        // SESSION VALIDATED - Show the page
-        showPage();
-
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', cleanup);
-
-        // Also handle visibility changes (tab hidden/shown)
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                // Tab became visible, update heartbeat
-                if (localStorage.getItem(SESSION_KEY) === currentTabId) {
-                    updateHeartbeat();
-                } else {
-                    // Another tab took over while we were hidden
-                    redirectToSignin();
+    function watchForChanges() {
+        window.addEventListener('storage', (event) => {
+            if (event.key === LOCK_KEY && event.newValue) {
+                try {
+                    const newLock = JSON.parse(event.newValue);
+                    if (newLock.tabId !== thisTabId) {
+                        // Another tab acquired the lock - redirect this one
+                        redirectToSignin();
+                    }
+                } catch (e) {
+                    // Ignore parse errors
                 }
             }
         });
+    }
 
-        // Handle storage events (changes from other tabs)
-        window.addEventListener('storage', (event) => {
-            if (event.key === SESSION_KEY && event.newValue && event.newValue !== currentTabId) {
-                // Another tab registered as active
-                redirectToSignin();
-            }
-        });
+    // ============================================
+    // MAIN INITIALIZATION
+    // ============================================
+
+    function init() {
+        // Step 1: Check if locked by another active tab
+        if (isLockedByAnotherTab()) {
+            // Don't show anything, just redirect immediately
+            window.location.replace('signin.html');
+            return; // Stop execution
+        }
+
+        // Step 2: Acquire lock for this tab
+        acquireLock();
+
+        // Step 3: Start heartbeat to keep lock alive
+        startHeartbeat();
+
+        // Step 4: Watch for other tabs
+        watchForChanges();
+
+        // Step 5: Release lock when tab closes
+        window.addEventListener('beforeunload', releaseLock);
+        window.addEventListener('pagehide', releaseLock);
+
+        // Step 6: Show the page content
+        showPage();
     }
 
     // Run immediately
