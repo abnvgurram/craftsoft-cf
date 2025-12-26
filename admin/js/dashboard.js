@@ -8,8 +8,7 @@
    ============================================ */
 
 // ============================================
-// SINGLE TAB SESSION - RUNS IMMEDIATELY
-// Must be outside DOMContentLoaded to prevent flickering
+// SINGLE TAB SESSION (runs IMMEDIATELY before page renders)
 // ============================================
 (function () {
     const LOCK_KEY = 'craftsoft_admin_lock';
@@ -21,10 +20,10 @@
     if (existingLock) {
         const lockTime = parseInt(existingLock, 10);
         if (now - lockTime < LOCK_TIMEOUT) {
-            // Another tab is active - redirect immediately
+            // Another tab is active - redirect immediately and stop
+            window.stop(); // Stop page loading
             window.location.replace('signin.html');
-            // Stop script execution
-            throw new Error('Duplicate tab - redirecting');
+            return; // Exit IIFE
         }
     }
 
