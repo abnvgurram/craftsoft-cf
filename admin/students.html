@@ -196,6 +196,17 @@
                         <i class="fas fa-search"></i>
                         <input type="text" id="studentSearch" placeholder="Search by name, ID, phone...">
                     </div>
+                    <div class="filter-group">
+                        <select id="courseFilter" class="filter-select">
+                            <option value="">All Courses</option>
+                        </select>
+                        <select id="sortBy" class="filter-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="name_asc">Name A-Z</option>
+                            <option value="name_desc">Name Z-A</option>
+                        </select>
+                    </div>
                     <button class="btn-primary" id="addStudentBtn">
                         <i class="fas fa-plus"></i>
                         <span>Add Student</span>
@@ -212,6 +223,7 @@
                                 <th>Phone</th>
                                 <th>Course(s)</th>
                                 <th>Joining Date</th>
+                                <th>WhatsApp</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -225,6 +237,17 @@
                         <i class="fas fa-user-graduate"></i>
                         <h3>No Students Yet</h3>
                         <p>Add your first student to get started!</p>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination">
+                        <button class="pagination-btn" id="prevPage" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span class="pagination-info" id="paginationInfo">Page 1 of 1</span>
+                        <button class="pagination-btn" id="nextPage" disabled>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -251,11 +274,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name <span class="required">*</span></label>
-                            <input type="text" id="firstName" required>
+                            <input type="text" id="firstName" placeholder="e.g. Rahul" required>
                         </div>
                         <div class="form-group">
                             <label for="surname">Surname <span class="required">*</span></label>
-                            <input type="text" id="surname" required>
+                            <input type="text" id="surname" placeholder="e.g. Sharma" required>
                         </div>
                     </div>
 
@@ -263,11 +286,14 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="phone">Phone / WhatsApp <span class="required">*</span></label>
-                            <input type="tel" id="phone" required>
+                            <div class="phone-input-group">
+                                <span class="phone-prefix">+91</span>
+                                <input type="tel" id="phone" placeholder="9876543210" maxlength="10" required>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="email">Email <span class="optional">(optional)</span></label>
-                            <input type="email" id="email">
+                            <input type="email" id="email" placeholder="student@email.com">
                         </div>
                     </div>
 
@@ -286,7 +312,7 @@
                         <div class="selected-tags" id="selectedCourses"></div>
                     </div>
 
-                    <!-- Row 4: Tutors (Auto-assigned) -->
+                    <!-- Row 4: Tutors -->
                     <div class="form-group" id="tutorsGroup" style="display: none;">
                         <label>Assigned Tutors</label>
                         <div class="tutor-assignments" id="tutorAssignments">
@@ -298,15 +324,15 @@
                     <div class="form-row form-row-3">
                         <div class="form-group">
                             <label for="fee">Total Fee (₹)</label>
-                            <input type="number" id="fee" readonly>
+                            <input type="number" id="fee" placeholder="0" readonly>
                         </div>
                         <div class="form-group">
                             <label for="discount">Discount (₹)</label>
-                            <input type="number" id="discount" value="0">
+                            <input type="number" id="discount" placeholder="0" value="0">
                         </div>
                         <div class="form-group">
                             <label for="finalFee">Final Fee (₹)</label>
-                            <input type="number" id="finalFee" readonly>
+                            <input type="number" id="finalFee" placeholder="0" readonly>
                         </div>
                     </div>
 
@@ -354,13 +380,13 @@
                     <!-- Row 9: Address -->
                     <div class="form-group">
                         <label for="address">Address</label>
-                        <textarea id="address" rows="2"></textarea>
+                        <textarea id="address" rows="2" placeholder="Street, City, State"></textarea>
                     </div>
 
                     <!-- Row 10: Notes -->
                     <div class="form-group">
                         <label for="notes">Notes / Remarks</label>
-                        <textarea id="notes" rows="2"></textarea>
+                        <textarea id="notes" rows="2" placeholder="Any additional notes..."></textarea>
                     </div>
                 </form>
             </div>

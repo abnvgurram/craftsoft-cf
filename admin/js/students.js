@@ -1,6 +1,6 @@
 /**
  * Students Management Module
- * Phase 2: Student CRUD Operations
+ * Phase 2: Student CRUD Operations with Pagination, Sorting, Filtering
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         { id: 6, name: 'Deepika Nair', courses: ['17', '18', '19', '20'] }
     ];
 
+    // Pagination Settings
+    const ITEMS_PER_PAGE = 10;
+
     // ============================================
     // DOM Elements
     // ============================================
@@ -65,17 +68,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     const discountInput = document.getElementById('discount');
     const finalFeeInput = document.getElementById('finalFee');
 
+    // Filter & Pagination Elements
+    const courseFilter = document.getElementById('courseFilter');
+    const sortBy = document.getElementById('sortBy');
+    const prevPageBtn = document.getElementById('prevPage');
+    const nextPageBtn = document.getElementById('nextPage');
+    const paginationInfo = document.getElementById('paginationInfo');
+
     // State
     let students = [];
     let selectedCourses = [];
-    let selectedTutors = {}; // { courseCode: tutorId }
+    let selectedTutors = {};
     let editingStudentId = null;
+    let currentPage = 1;
+    let filteredStudents = [];
 
     // ============================================
     // Initialize
     // ============================================
     initCoursesDropdown();
+    initCourseFilter();
     await loadStudents();
+
+    // ============================================
+    // Course Filter Dropdown
+    // ============================================
+    function initCourseFilter() {
+        courseFilter.innerHTML = '<option value="">All Courses</option>' +
+            COURSES.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
+
+        courseFilter.addEventListener('change', () => {
+            currentPage = 1;
+            applyFiltersAndSort();
+        });
+
+        sortBy.addEventListener('change', () => {
+            currentPage = 1;
+            applyFiltersAndSort();
+        });
+    }
 
     // ============================================
     // Courses Multi-Select Dropdown
@@ -95,30 +126,38 @@ document.addEventListener('DOMContentLoaded', async () => {
             coursesOptions.classList.toggle('active');
         });
 
-        // Select/Deselect options
+        // Select/Deselect options - attach listeners
+        attachCourseOptionListeners();
+
+        // Close on outside click
+        document.addEventListener('click', () => {
+            coursesOptions.classList.remove('active');
+        });
+    }
+
+    function attachCourseOptionListeners() {
         coursesOptions.querySelectorAll('.multi-select-option').forEach(option => {
             option.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const code = option.dataset.code;
                 const checkbox = option.querySelector('input');
+
+                // Toggle checkbox
                 checkbox.checked = !checkbox.checked;
                 option.classList.toggle('selected', checkbox.checked);
 
-                if (checkbox.checked) {
+                // Update selectedCourses array
+                if (checkbox.checked && !selectedCourses.includes(code)) {
                     selectedCourses.push(code);
-                } else {
+                } else if (!checkbox.checked) {
                     selectedCourses = selectedCourses.filter(c => c !== code);
+                    delete selectedTutors[code];
                 }
 
                 updateSelectedTags();
                 updateTutorAssignments();
                 updateFees();
             });
-        });
-
-        // Close on outside click
-        document.addEventListener('click', () => {
-            coursesOptions.classList.remove('active');
         });
     }
 
@@ -146,6 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             btn.addEventListener('click', (e) => {
                 const code = e.target.closest('.selected-tag').dataset.code;
                 selectedCourses = selectedCourses.filter(c => c !== code);
+                delete selectedTutors[code];
 
                 // Update checkbox
                 const option = coursesOptions.querySelector(`[data-code="${code}"]`);
@@ -252,7 +292,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Generate Student ID
     // ============================================
     function generateStudentId(courseCode) {
-        // Get all students enrolled in this course
         const courseStudents = students.filter(s =>
             s.courses && s.courses.includes(courseCode)
         );
@@ -266,7 +305,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     saveStudentBtn.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        // Validation
         const firstName = document.getElementById('firstName').value.trim();
         const surname = document.getElementById('surname').value.trim();
         const phone = document.getElementById('phone').value.trim();
@@ -276,8 +314,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        if (!phone) {
-            window.toast.warning('Required', 'Please enter phone number');
+        if (!phone || phone.length < 10) {
+            window.toast.warning('Required', 'Please enter a valid 10-digit phone number');
             return;
         }
 
@@ -286,16 +324,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // Collect form data
+        // Store phone with +91 prefix
+        const fullPhone = '+91' + phone.replace(/\D/g, '').slice(-10);
+
         const studentData = {
             id: editingStudentId || generateStudentId(selectedCourses[0]),
             name: `${firstName} ${surname}`,
             first_name: firstName,
             surname: surname,
-            phone: phone,
+            phone: fullPhone,
             email: document.getElementById('email').value.trim() || null,
-            courses: selectedCourses,
-            tutors: selectedTutors,
+            courses: [...selectedCourses],
+            tutors: { ...selectedTutors },
             fee: parseInt(feeInput.value) || 0,
             discount: parseInt(discountInput.value) || 0,
             final_fee: parseInt(finalFeeInput.value) || 0,
@@ -313,7 +353,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         saveStudentBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
         try {
-            // For now, save to localStorage (will be Supabase in production)
             if (editingStudentId) {
                 const index = students.findIndex(s => s.id === editingStudentId);
                 if (index !== -1) {
@@ -326,7 +365,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             saveStudentsToStorage();
-            renderStudents();
+            applyFiltersAndSort();
             updateDashboardStats();
             closeModal();
 
@@ -344,11 +383,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
     async function loadStudents() {
         try {
-            // Load from localStorage for now
             const stored = localStorage.getItem('craftsoft_students');
             students = stored ? JSON.parse(stored) : [];
 
-            // Add mock data if empty
             if (students.length === 0) {
                 students = [
                     {
@@ -356,10 +393,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         name: 'Rahul Sharma',
                         first_name: 'Rahul',
                         surname: 'Sharma',
-                        phone: '9876543210',
+                        phone: '+919876543210',
                         email: 'rahul@example.com',
                         courses: ['01'],
-                        tutors: [1],
+                        tutors: { '01': '1' },
                         fee: 15000,
                         discount: 1000,
                         final_fee: 14000,
@@ -377,10 +414,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                         name: 'Priya Kumari',
                         first_name: 'Priya',
                         surname: 'Kumari',
-                        phone: '8765432109',
+                        phone: '+918765432109',
                         email: 'priya@example.com',
                         courses: ['12', '13'],
-                        tutors: [5],
+                        tutors: { '12': '5', '13': '5' },
                         fee: 55000,
                         discount: 5000,
                         final_fee: 50000,
@@ -397,7 +434,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 saveStudentsToStorage();
             }
 
-            renderStudents();
+            applyFiltersAndSort();
             updateDashboardStats();
 
         } catch (error) {
@@ -410,35 +447,114 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ============================================
+    // Filtering & Sorting
+    // ============================================
+    function applyFiltersAndSort() {
+        let result = [...students];
+
+        // Search filter
+        const searchQuery = studentSearch.value.toLowerCase().trim();
+        if (searchQuery) {
+            result = result.filter(s =>
+                s.name.toLowerCase().includes(searchQuery) ||
+                s.id.toLowerCase().includes(searchQuery) ||
+                s.phone.includes(searchQuery) ||
+                (s.email && s.email.toLowerCase().includes(searchQuery))
+            );
+        }
+
+        // Course filter
+        const selectedCourse = courseFilter.value;
+        if (selectedCourse) {
+            result = result.filter(s => s.courses && s.courses.includes(selectedCourse));
+        }
+
+        // Sorting
+        const sortOption = sortBy.value;
+        switch (sortOption) {
+            case 'newest':
+                result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                break;
+            case 'oldest':
+                result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                break;
+            case 'name_asc':
+                result.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case 'name_desc':
+                result.sort((a, b) => b.name.localeCompare(a.name));
+                break;
+        }
+
+        filteredStudents = result;
+        renderStudents();
+    }
+
+    studentSearch.addEventListener('input', () => {
+        currentPage = 1;
+        applyFiltersAndSort();
+    });
+
+    // ============================================
+    // Pagination
+    // ============================================
+    function getTotalPages() {
+        return Math.ceil(filteredStudents.length / ITEMS_PER_PAGE) || 1;
+    }
+
+    function getPageData() {
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        return filteredStudents.slice(start, end);
+    }
+
+    function updatePagination() {
+        const totalPages = getTotalPages();
+        paginationInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+        prevPageBtn.disabled = currentPage <= 1;
+        nextPageBtn.disabled = currentPage >= totalPages;
+    }
+
+    prevPageBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderStudents();
+        }
+    });
+
+    nextPageBtn.addEventListener('click', () => {
+        if (currentPage < getTotalPages()) {
+            currentPage++;
+            renderStudents();
+        }
+    });
+
+    // ============================================
     // Render Students
     // ============================================
-    function renderStudents(filteredStudents = null) {
-        const data = filteredStudents || students;
+    function renderStudents() {
+        const data = getPageData();
 
-        if (data.length === 0) {
+        if (filteredStudents.length === 0) {
             studentsTableBody.innerHTML = '';
             studentsCards.innerHTML = '';
             emptyState.style.display = 'block';
             document.querySelector('.data-table').style.display = 'none';
+            document.getElementById('pagination').style.display = 'none';
             return;
         }
 
         emptyState.style.display = 'none';
         document.querySelector('.data-table').style.display = 'table';
+        document.getElementById('pagination').style.display = 'flex';
+        updatePagination();
 
         // Table View (Desktop)
         studentsTableBody.innerHTML = data.map(student => `
             <tr data-id="${student.id}">
                 <td><span class="student-id">${student.id}</span></td>
                 <td><span class="student-name">${student.name}</span></td>
-                <td>
-                    <div class="phone-cell">
-                        <span>${student.phone}</span>
-                        <button class="action-btn whatsapp" title="WhatsApp" onclick="openWhatsApp('${student.phone}')">
-                            <i class="fab fa-whatsapp"></i>
-                        </button>
-                    </div>
-                </td>
+                <td>${student.phone}</td>
                 <td>
                     <div class="course-tags">
                         ${student.courses.map(code => {
@@ -448,6 +564,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </td>
                 <td>${student.joining_date ? formatDate(student.joining_date) : '-'}</td>
+                <td>
+                    <button class="action-btn whatsapp" title="WhatsApp" onclick="openWhatsApp('${student.phone}')">
+                        <i class="fab fa-whatsapp"></i>
+                    </button>
+                </td>
                 <td>
                     <div class="action-btns">
                         <button class="action-btn edit" title="Edit" onclick="editStudent('${student.id}')">
@@ -467,6 +588,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="data-card-header">
                     <span class="data-card-id">${student.id}</span>
                     <div class="action-btns">
+                        <button class="action-btn whatsapp" title="WhatsApp" onclick="openWhatsApp('${student.phone}')">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
                         <button class="action-btn edit" title="Edit" onclick="editStudent('${student.id}')">
                             <i class="fas fa-pen"></i>
                         </button>
@@ -509,12 +633,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // WhatsApp Integration
     // ============================================
     window.openWhatsApp = function (phone) {
-        // Clean phone number
         let cleanPhone = phone.replace(/[^0-9]/g, '');
-        // Add India country code if not present
-        if (!cleanPhone.startsWith('91') && cleanPhone.length === 10) {
-            cleanPhone = '91' + cleanPhone;
-        }
         window.open(`https://wa.me/${cleanPhone}`, '_blank');
     };
 
@@ -532,7 +651,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Populate form
         document.getElementById('firstName').value = student.first_name || '';
         document.getElementById('surname').value = student.surname || '';
-        document.getElementById('phone').value = student.phone || '';
+        // Extract phone without country code
+        const phoneNumber = student.phone ? student.phone.replace(/^\+91/, '') : '';
+        document.getElementById('phone').value = phoneNumber;
         document.getElementById('email').value = student.email || '';
         document.getElementById('demoDate').value = student.demo_date || '';
         document.getElementById('joiningDate').value = student.joining_date || '';
@@ -543,19 +664,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('notes').value = student.notes || '';
         document.getElementById('discount').value = student.discount || 0;
 
-        // Restore course selection
+        // Restore course selection - FIXED
         selectedCourses = [...(student.courses || [])];
-        selectedTutors = student.tutors || {};
+        selectedTutors = typeof student.tutors === 'object' ? { ...student.tutors } : {};
+
+        // Update checkboxes to match selected courses
         coursesOptions.querySelectorAll('.multi-select-option').forEach(opt => {
             const code = opt.dataset.code;
+            const checkbox = opt.querySelector('input');
             if (selectedCourses.includes(code)) {
                 opt.classList.add('selected');
-                opt.querySelector('input').checked = true;
+                checkbox.checked = true;
             } else {
                 opt.classList.remove('selected');
-                opt.querySelector('input').checked = false;
+                checkbox.checked = false;
             }
         });
+
         updateSelectedTags();
         updateTutorAssignments();
         updateFees();
@@ -577,7 +702,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 () => {
                     students = students.filter(s => s.id !== id);
                     saveStudentsToStorage();
-                    renderStudents();
+                    applyFiltersAndSort();
                     updateDashboardStats();
                     window.toast.success('Deleted', 'Student removed successfully');
                 }
@@ -586,29 +711,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // ============================================
-    // Search
-    // ============================================
-    studentSearch.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        if (!query) {
-            renderStudents();
-            return;
-        }
-
-        const filtered = students.filter(s =>
-            s.name.toLowerCase().includes(query) ||
-            s.id.toLowerCase().includes(query) ||
-            s.phone.includes(query) ||
-            (s.email && s.email.toLowerCase().includes(query))
-        );
-        renderStudents(filtered);
-    });
-
-    // ============================================
     // Update Dashboard Stats
     // ============================================
     function updateDashboardStats() {
-        // Update localStorage for dashboard to read
         localStorage.setItem('craftsoft_student_count', students.length);
     }
 });

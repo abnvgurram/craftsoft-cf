@@ -1218,6 +1218,92 @@ body {
     box-shadow: 0 0 0 3px rgba(40, 150, 205, 0.1);
 }
 
+.filter-group {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.filter-select {
+    padding: 10px 14px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    font-family: var(--font-secondary);
+    color: var(--gray-700);
+    background: var(--white);
+    cursor: pointer;
+    min-width: 140px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-400);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--gray-100);
+}
+
+.pagination-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    color: var(--gray-600);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: var(--primary-50);
+    border-color: var(--primary-200);
+    color: var(--primary-600);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+}
+
+/* Phone Input Group */
+.phone-input-group {
+    display: flex;
+    align-items: stretch;
+}
+
+.phone-prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-right: none;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    font-size: 0.9375rem;
+    color: var(--gray-600);
+    font-weight: 500;
+}
+
+.phone-input-group input {
+    flex: 1;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
+}
+
 .btn-primary {
     display: inline-flex;
     align-items: center;
@@ -1787,5 +1873,15 @@ body {
 
     .modal-footer button {
         width: 100%;
+    }
+
+    .filter-group {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .filter-select {
+        flex: 1;
+        min-width: 120px;
     }
 }
