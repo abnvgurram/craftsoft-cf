@@ -76,4 +76,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (welcomeIdEl) welcomeIdEl.textContent = admin.admin_id;
         if (welcomeEmailEl) welcomeEmailEl.textContent = admin.email;
     }
+
+    // ============================================
+    // LOAD DASHBOARD STATS
+    // ============================================
+    function loadDashboardStats() {
+        // Load student count from localStorage
+        const studentCount = localStorage.getItem('craftsoft_student_count') || 0;
+        const statStudents = document.getElementById('statStudents');
+        if (statStudents) statStudents.textContent = studentCount;
+
+        // Tutors, Inquiries, Revenue will be added in later phases
+        // For now they stay at 0
+    }
+
+    loadDashboardStats();
+
+    // Refresh stats when page becomes visible (in case user added students in another tab)
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) loadDashboardStats();
+    });
 });

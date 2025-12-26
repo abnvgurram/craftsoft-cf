@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Dashboard | Abhi's Craft Soft Admin</title>
+    <title>Students | Abhi's Craft Soft Admin</title>
 
     <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="css/admin-auth.css">
     <link rel="stylesheet" href="css/dashboard.css">
 
-    <!-- BANK-LEVEL SECURITY: Hide content until auth verified -->
+    <!-- Hide content until auth verified -->
     <style>
         .dashboard-layout {
             display: none !important;
@@ -42,7 +42,7 @@
 </head>
 
 <body>
-    <!-- Immediate Auth Check - Runs before page renders -->
+    <!-- Immediate Auth Check -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script>
@@ -53,7 +53,6 @@
                     window.location.replace('signin.html');
                     return;
                 }
-                // Auth verified - show content
                 document.body.classList.add('auth-verified');
             } catch (e) {
                 window.location.replace('signin.html');
@@ -90,12 +89,12 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Menu</div>
 
-                    <a href="dashboard.html" class="nav-item active">
+                    <a href="dashboard.html" class="nav-item">
                         <i class="fas fa-home nav-icon"></i>
                         <span>Dashboard</span>
                     </a>
 
-                    <a href="students.html" class="nav-item">
+                    <a href="students.html" class="nav-item active">
                         <i class="fas fa-users nav-icon"></i>
                         <span>Students</span>
                     </a>
@@ -135,7 +134,7 @@
                     <button class="mobile-menu-btn" id="mobileMenuBtn">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <h1 class="page-title">Dashboard</h1>
+                    <h1 class="page-title">Students</h1>
                 </div>
 
                 <div class="header-right">
@@ -191,152 +190,195 @@
 
             <!-- Page Content -->
             <div class="page-content">
-                <!-- Welcome Banner -->
-                <div class="welcome-banner">
-                    <div class="welcome-text">
-                        <h2>Welcome back, <span id="welcomeName">Admin</span>! 👋</h2>
-                        <p>Here's what's happening with your institute today.</p>
+                <!-- Search & Actions Bar -->
+                <div class="page-actions-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="studentSearch" placeholder="Search by name, ID, phone...">
+                    </div>
+                    <button class="btn-primary" id="addStudentBtn">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Student</span>
+                    </button>
+                </div>
+
+                <!-- Students Table (Desktop) -->
+                <div class="data-table-container">
+                    <table class="data-table" id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Course(s)</th>
+                                <th>Joining Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+
+                    <!-- Empty State -->
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <i class="fas fa-user-graduate"></i>
+                        <h3>No Students Yet</h3>
+                        <p>Add your first student to get started!</p>
                     </div>
                 </div>
 
-                <!-- Stats Cards Grid -->
-                <div class="stats-grid">
-                    <div class="stat-card" data-type="students">
-                        <div class="stat-icon">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="statStudents">0</div>
-                            <div class="stat-label">Students</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card" data-type="tutors">
-                        <div class="stat-icon">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="statTutors">0</div>
-                            <div class="stat-label">Tutors</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card" data-type="inquiries">
-                        <div class="stat-icon">
-                            <i class="fas fa-envelope-open-text"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="statInquiries">0</div>
-                            <div class="stat-label">Inquiries</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card" data-type="revenue">
-                        <div class="stat-icon">
-                            <i class="fas fa-indian-rupee-sign"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="statRevenue">₹0</div>
-                            <div class="stat-label">Revenue</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Two Column Layout -->
-                <div class="dashboard-grid">
-                    <!-- Quick Actions -->
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <i class="fas fa-bolt"></i>
-                            <h3>Quick Actions</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="quick-actions-grid">
-                                <button class="quick-action-btn" data-maintenance="Add Student">
-                                    <i class="fas fa-user-plus"></i>
-                                    <span>Add Student</span>
-                                </button>
-                                <button class="quick-action-btn" data-maintenance="Add Tutor">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span>Add Tutor</span>
-                                </button>
-                                <button class="quick-action-btn" data-maintenance="New Inquiry">
-                                    <i class="fas fa-plus-circle"></i>
-                                    <span>New Inquiry</span>
-                                </button>
-                                <button class="quick-action-btn" data-maintenance="View Reports">
-                                    <i class="fas fa-chart-bar"></i>
-                                    <span>Reports</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Activity -->
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <i class="fas fa-clock"></i>
-                            <h3>Recent Activity</h3>
-                            <button class="clear-activity-btn" id="clearActivityBtn">Clear all</button>
-                        </div>
-                        <div class="card-body">
-                            <div class="activity-timeline" id="activityTimeline">
-                                <div class="activity-item" data-type="inquiry">
-                                    <div class="activity-icon">
-                                        <i class="fas fa-envelope"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">New inquiry from Rahul</div>
-                                        <div class="activity-desc">"Need Python tutor for weekends"</div>
-                                        <div class="activity-time">2 hours ago</div>
-                                    </div>
-                                </div>
-
-                                <div class="activity-item" data-type="payment">
-                                    <div class="activity-icon">
-                                        <i class="fas fa-indian-rupee-sign"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">Payment received ₹5,000</div>
-                                        <div class="activity-desc">From Priya Sharma - Java Course</div>
-                                        <div class="activity-time">Yesterday</div>
-                                    </div>
-                                </div>
-
-                                <div class="activity-item" data-type="enrollment">
-                                    <div class="activity-icon">
-                                        <i class="fas fa-user-check"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">New student enrolled</div>
-                                        <div class="activity-desc">Amit Kumar joined Web Dev batch</div>
-                                        <div class="activity-time">3 days ago</div>
-                                    </div>
-                                </div>
-
-                                <div class="activity-item" data-type="tutor">
-                                    <div class="activity-icon">
-                                        <i class="fas fa-chalkboard-teacher"></i>
-                                    </div>
-                                    <div class="activity-content">
-                                        <div class="activity-title">Tutor schedule updated</div>
-                                        <div class="activity-desc">Sneha added new slots for C++</div>
-                                        <div class="activity-time">5 days ago</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Students Cards (Mobile) -->
+                <div class="data-cards" id="studentsCards">
+                    <!-- Dynamic content -->
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Additional Scripts (Supabase already loaded above) -->
+    <!-- Add Student Modal -->
+    <div class="modal-overlay" id="studentModalOverlay">
+        <div class="modal student-modal" id="studentModal">
+            <div class="modal-header">
+                <h2 id="studentModalTitle">Add New Student</h2>
+                <button class="modal-close" id="closeStudentModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="studentForm">
+                    <!-- Row 1: Name -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name <span class="required">*</span></label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="surname">Surname <span class="required">*</span></label>
+                            <input type="text" id="surname" required>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Contact -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Phone / WhatsApp <span class="required">*</span></label>
+                            <input type="tel" id="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email <span class="optional">(optional)</span></label>
+                            <input type="email" id="email">
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Courses -->
+                    <div class="form-group">
+                        <label for="courses">Courses <span class="required">*</span></label>
+                        <div class="multi-select-dropdown" id="coursesDropdown">
+                            <div class="multi-select-trigger" id="coursesTrigger">
+                                <span class="placeholder">Select courses...</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="multi-select-options" id="coursesOptions">
+                                <!-- Dynamic course options -->
+                            </div>
+                        </div>
+                        <div class="selected-tags" id="selectedCourses"></div>
+                    </div>
+
+                    <!-- Row 4: Tutors (Auto-assigned) -->
+                    <div class="form-group" id="tutorsGroup" style="display: none;">
+                        <label>Assigned Tutors</label>
+                        <div class="tutor-assignments" id="tutorAssignments">
+                            <!-- Dynamic tutor assignments per course -->
+                        </div>
+                    </div>
+
+                    <!-- Row 5: Fees -->
+                    <div class="form-row form-row-3">
+                        <div class="form-group">
+                            <label for="fee">Total Fee (₹)</label>
+                            <input type="number" id="fee" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="discount">Discount (₹)</label>
+                            <input type="number" id="discount" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="finalFee">Final Fee (₹)</label>
+                            <input type="number" id="finalFee" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Row 6: Dates -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="demoDate">Demo Date</label>
+                            <input type="date" id="demoDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="joiningDate">Joining Date</label>
+                            <input type="date" id="joiningDate">
+                        </div>
+                    </div>
+
+                    <!-- Row 7: Batch & Lead -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="batchTime">Batch Time</label>
+                            <input type="time" id="batchTime">
+                        </div>
+                        <div class="form-group">
+                            <label for="leadSource">Lead Source</label>
+                            <select id="leadSource">
+                                <option value="">Select source...</option>
+                                <option value="website">Website</option>
+                                <option value="linkedin">LinkedIn</option>
+                                <option value="walkin">Walk-in</option>
+                                <option value="referral">Friend Referral</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Row 8: Occupation -->
+                    <div class="form-group">
+                        <label for="occupation">Current Occupation</label>
+                        <select id="occupation">
+                            <option value="">Select occupation...</option>
+                            <option value="student">Student</option>
+                            <option value="working">Working Professional</option>
+                            <option value="career_break">Career Break</option>
+                        </select>
+                    </div>
+
+                    <!-- Row 9: Address -->
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <textarea id="address" rows="2"></textarea>
+                    </div>
+
+                    <!-- Row 10: Notes -->
+                    <div class="form-group">
+                        <label for="notes">Notes / Remarks</label>
+                        <textarea id="notes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="cancelStudentBtn">Cancel</button>
+                <button type="submit" class="btn-primary" id="saveStudentBtn">
+                    <i class="fas fa-save"></i>
+                    <span>Save Student</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="js/ui-components.js"></script>
     <script src="js/admin-common.js"></script>
     <script src="js/admin-switcher.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/students.js"></script>
 </body>
 
 </html>
