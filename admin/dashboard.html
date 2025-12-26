@@ -28,18 +28,6 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/admin-auth.css">
     <link rel="stylesheet" href="css/dashboard.css">
-
-    <!-- Single Tab Check - MUST be in head to run before body renders -->
-    <script>
-        (function () {
-            var LOCK_KEY = 'craftsoft_admin_lock';
-            var now = Date.now();
-            var lock = localStorage.getItem(LOCK_KEY);
-            if (lock && (now - parseInt(lock, 10)) < 2000) {
-                window.location.replace('signin.html');
-            }
-        })();
-    </script>
 </head>
 
 <body>
@@ -171,6 +159,9 @@
 
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Session Guard (Single Tab Enforcement) - MUST load first -->
+    <script src="js/session-guard.js"></script>
 
     <!-- Scripts -->
     <script src="js/supabase-config.js"></script>

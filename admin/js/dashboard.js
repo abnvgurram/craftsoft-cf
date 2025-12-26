@@ -1,40 +1,17 @@
 /* ============================================
    Dashboard Core Logic
-   - Single Tab Session
    - Auth check
    - Session protection
    - Sidebar navigation
    - Logout
    ============================================ */
 
-// ============================================
-// SINGLE TAB SESSION - Set lock and keep refreshing
-// (The redirect check is in dashboard.html head)
-// ============================================
-(function () {
-    const LOCK_KEY = 'craftsoft_admin_lock';
-
-    // Set our lock immediately
-    localStorage.setItem(LOCK_KEY, Date.now().toString());
-
-    // Keep refreshing the lock every 500ms
-    setInterval(() => {
-        localStorage.setItem(LOCK_KEY, Date.now().toString());
-    }, 500);
-
-    // Clear lock when tab closes
-    window.addEventListener('beforeunload', () => {
-        localStorage.removeItem(LOCK_KEY);
-    });
-})();
-
 document.addEventListener('DOMContentLoaded', async () => {
-
     // ============================================
     // SESSION PROTECTION (back/forward)
     // ============================================
 
-    // Prevent caching
+    // Prevent back/forward navigation
     if (window.history && window.history.pushState) {
         window.history.pushState(null, '', window.location.href);
         window.addEventListener('popstate', () => {
