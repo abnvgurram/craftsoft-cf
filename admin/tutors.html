@@ -7,29 +7,20 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Tutors | Abhi's Craft Soft Admin</title>
 
-    <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap"
         rel="stylesheet">
-
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Styles -->
     <link rel="stylesheet" href="css/admin-auth.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/admin-panel.css">
 
-    <!-- Hide content until auth verified -->
     <style>
         .dashboard-layout {
             display: none !important;
@@ -42,7 +33,6 @@
 </head>
 
 <body>
-    <!-- Immediate Auth Check -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script>
@@ -61,17 +51,13 @@
     </script>
 
     <div class="dashboard-layout">
-        <!-- Sidebar Overlay (Mobile) -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <!-- Mobile Close Button -->
             <button class="mobile-close-btn" id="mobileCloseBtn">
                 <i class="fas fa-times"></i>
             </button>
 
-            <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <a href="dashboard.html" class="sidebar-logo">
                     <div class="logo-icon">
@@ -84,51 +70,54 @@
                 </a>
             </div>
 
-            <!-- Sidebar Navigation -->
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <div class="nav-section-title">Menu</div>
-
                     <a href="dashboard.html" class="nav-item">
                         <i class="fas fa-home nav-icon"></i>
                         <span>Dashboard</span>
                     </a>
-
                     <a href="students.html" class="nav-item">
                         <i class="fas fa-users nav-icon"></i>
                         <span>Students</span>
                     </a>
-
                     <a href="tutors.html" class="nav-item active">
                         <i class="fas fa-chalkboard-teacher nav-icon"></i>
                         <span>Tutors</span>
                     </a>
-
                     <a href="inquiries.html" class="nav-item">
                         <i class="fas fa-envelope-open-text nav-icon"></i>
                         <span>Inquiries</span>
                     </a>
-
                     <a href="payments.html" class="nav-item">
                         <i class="fas fa-indian-rupee-sign nav-icon"></i>
                         <span>Payments</span>
                     </a>
                 </div>
-
                 <div class="nav-section">
                     <div class="nav-section-title">Account</div>
-
-                    <a href="#" class="nav-item" data-maintenance="Settings">
+                    <a href="settings.html" class="nav-item">
                         <i class="fas fa-cog nav-icon"></i>
                         <span>Settings</span>
                     </a>
                 </div>
             </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-profile" id="adminProfile">
+                    <div class="admin-avatar" id="adminAvatar">A</div>
+                    <div class="admin-info">
+                        <div class="admin-name" id="adminName">Admin</div>
+                        <div class="admin-id" id="adminId">ACS-01</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Header -->
             <header class="dashboard-header">
                 <div class="header-left">
                     <button class="mobile-menu-btn" id="mobileMenuBtn">
@@ -136,310 +125,38 @@
                     </button>
                     <h1 class="page-title">Tutors</h1>
                 </div>
-
-                <div class="header-right">
-                    <!-- Admin Switcher Dropdown -->
-                    <div class="admin-switcher" id="adminSwitcher">
-                        <button class="admin-switcher-toggle" id="adminSwitcherToggle">
-                            <div class="admin-switcher-info">
-                                <div class="admin-name" id="adminName">Admin</div>
-                                <div class="admin-id" id="adminId">ACS-01</div>
-                            </div>
-                            <i class="fas fa-chevron-down admin-switcher-arrow"></i>
-                        </button>
-
-                        <div class="admin-switcher-dropdown" id="adminSwitcherDropdown">
-                            <!-- Current Admin -->
-                            <div class="dropdown-section">
-                                <div class="dropdown-label">Current Admin</div>
-                                <div class="saved-admin current" id="currentAdminItem">
-                                    <div class="saved-admin-avatar" id="currentAdminAvatar">A</div>
-                                    <div class="saved-admin-info">
-                                        <div class="saved-admin-name" id="currentAdminName">Admin</div>
-                                        <div class="saved-admin-id" id="currentAdminId">ACS-01</div>
-                                    </div>
-                                    <i class="fas fa-check"></i>
-                                </div>
-                            </div>
-
-                            <!-- Saved Admins -->
-                            <div class="dropdown-section" id="savedAdminsSection" style="display: none;">
-                                <div class="dropdown-label">Switch To</div>
-                                <div id="savedAdminsList"></div>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="dropdown-section dropdown-actions">
-                                <button class="dropdown-action-btn" id="addAnotherAdmin">
-                                    <i class="fas fa-plus"></i>
-                                    <span>Add another admin</span>
-                                </button>
-                                <button class="dropdown-action-btn logout" id="logoutCurrent">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>Logout</span>
-                                </button>
-                                <button class="dropdown-action-btn logout-all" id="logoutAll" style="display: none;">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>Logout All (<span id="savedCount">0</span>)</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </header>
 
-            <!-- Page Content -->
             <div class="page-content">
-                <!-- Search & Actions Bar -->
-                <div class="page-actions-bar">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="tutorSearch" placeholder="Search by name, ID, phone...">
-                    </div>
-                    <div class="filter-group">
-                        <select id="courseFilter" class="filter-select">
-                            <option value="">All Courses</option>
-                        </select>
-                        <select id="modeFilter" class="filter-select">
-                            <option value="">All Modes</option>
-                            <option value="offline">Offline</option>
-                            <option value="online">Online</option>
-                            <option value="both">Both</option>
-                        </select>
-                    </div>
-                    <button class="btn-primary" id="addTutorBtn">
-                        <i class="fas fa-plus"></i>
-                        <span>Add Tutor</span>
-                    </button>
-                </div>
-
-                <!-- Tutors Table (Desktop) -->
-                <div class="data-table-container" id="tableContainer">
-                    <!-- Skeleton Loader (Table) -->
-                    <div class="skeleton-table" id="skeletonTable">
-                        <div class="skeleton-row">
-                            <div class="skeleton-cell skeleton id"></div>
-                            <div class="skeleton-cell skeleton name"></div>
-                            <div class="skeleton-cell skeleton phone"></div>
-                            <div class="skeleton-cell skeleton course"></div>
-                            <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton btn"></div>
-                            <div class="skeleton-cell actions">
-                                <div class="skeleton-cell skeleton btn"></div>
-                                <div class="skeleton-cell skeleton btn"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton-row">
-                            <div class="skeleton-cell skeleton id"></div>
-                            <div class="skeleton-cell skeleton name"></div>
-                            <div class="skeleton-cell skeleton phone"></div>
-                            <div class="skeleton-cell skeleton course"></div>
-                            <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton btn"></div>
-                            <div class="skeleton-cell actions">
-                                <div class="skeleton-cell skeleton btn"></div>
-                                <div class="skeleton-cell skeleton btn"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton-row">
-                            <div class="skeleton-cell skeleton id"></div>
-                            <div class="skeleton-cell skeleton name"></div>
-                            <div class="skeleton-cell skeleton phone"></div>
-                            <div class="skeleton-cell skeleton course"></div>
-                            <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton btn"></div>
-                            <div class="skeleton-cell actions">
-                                <div class="skeleton-cell skeleton btn"></div>
-                                <div class="skeleton-cell skeleton btn"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <table class="data-table" id="tutorsTable" style="display: none;">
-                        <thead>
-                            <tr>
-                                <th>Tutor ID</th>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Course(s)</th>
-                                <th>Mode</th>
-                                <th>Availability</th>
-                                <th>WhatsApp</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tutorsTableBody">
-                            <!-- Dynamic content -->
-                        </tbody>
-                    </table>
-
-                    <!-- Empty State -->
-                    <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="coming-soon-container">
+                    <div class="coming-soon-icon">
                         <i class="fas fa-chalkboard-teacher"></i>
-                        <h3>No Tutors Yet</h3>
-                        <p>Add your first tutor to get started!</p>
                     </div>
-
-                    <!-- Pagination -->
-                    <div class="pagination" id="pagination">
-                        <button class="pagination-btn" id="prevPage" disabled>
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <span class="pagination-info" id="paginationInfo">Page 1 of 1</span>
-                        <button class="pagination-btn" id="nextPage" disabled>
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tutors Cards (Mobile) -->
-                <!-- Skeleton Cards (Mobile) -->
-                <div class="skeleton-cards" id="skeletonCards">
-                    <div class="skeleton-card">
-                        <div class="skeleton-card-header">
-                            <div class="skeleton-card-id skeleton"></div>
-                            <div class="skeleton-card-actions">
-                                <div class="skeleton-cell skeleton btn"></div>
-                                <div class="skeleton-cell skeleton btn"></div>
-                            </div>
+                    <h2 class="coming-soon-title">Coming Soon</h2>
+                    <p class="coming-soon-text">
+                        Tutor management is under development.
+                        <br>Soon you'll be able to manage all your tutors here.
+                    </p>
+                    <div class="coming-soon-features">
+                        <div class="feature-badge">
+                            <i class="fas fa-user-tie"></i>
+                            <span>Add Tutors</span>
                         </div>
-                        <div class="skeleton-card-name skeleton"></div>
-                        <div class="skeleton-card-row">
-                            <div class="skeleton-card-icon skeleton"></div>
-                            <div class="skeleton-card-text skeleton"></div>
+                        <div class="feature-badge">
+                            <i class="fas fa-calendar"></i>
+                            <span>Schedules</span>
                         </div>
-                        <div class="skeleton-card-row">
-                            <div class="skeleton-card-icon skeleton"></div>
-                            <div class="skeleton-card-text skeleton"></div>
+                        <div class="feature-badge">
+                            <i class="fas fa-star"></i>
+                            <span>Performance</span>
                         </div>
                     </div>
-                    <div class="skeleton-card">
-                        <div class="skeleton-card-header">
-                            <div class="skeleton-card-id skeleton"></div>
-                            <div class="skeleton-card-actions">
-                                <div class="skeleton-cell skeleton btn"></div>
-                                <div class="skeleton-cell skeleton btn"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton-card-name skeleton"></div>
-                        <div class="skeleton-card-row">
-                            <div class="skeleton-card-icon skeleton"></div>
-                            <div class="skeleton-card-text skeleton"></div>
-                        </div>
-                        <div class="skeleton-card-row">
-                            <div class="skeleton-card-icon skeleton"></div>
-                            <div class="skeleton-card-text skeleton"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="data-cards" id="tutorsCards" style="display: none;">
-                    <!-- Dynamic content -->
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Add Tutor Modal -->
-    <div class="modal-overlay" id="tutorModalOverlay">
-        <div class="modal student-modal" id="tutorModal">
-            <div class="modal-header">
-                <h2 id="tutorModalTitle">Add New Tutor</h2>
-                <button class="modal-close" id="closeTutorModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="tutorForm">
-                    <!-- Row 1: Name -->
-                    <div class="form-group">
-                        <label for="fullName">Full Name <span class="required">*</span></label>
-                        <input type="text" id="fullName" placeholder="e.g. Sneha Reddy" required>
-                    </div>
-
-                    <!-- Row 2: Contact -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="tutorPhone">Phone / WhatsApp <span class="required">*</span></label>
-                            <div class="phone-input-group">
-                                <input type="text" id="tutorCountryCode" class="phone-country-code" placeholder="+91"
-                                    value="+91" maxlength="5">
-                                <input type="tel" id="tutorPhone" placeholder="9876543210" maxlength="10" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="tutorEmail">Email <span class="optional">(optional)</span></label>
-                            <input type="email" id="tutorEmail" placeholder="tutor@email.com">
-                        </div>
-                    </div>
-
-                    <!-- Row 3: Courses -->
-                    <div class="form-group">
-                        <label for="tutorCourses">Courses <span class="required">*</span></label>
-                        <div class="multi-select-dropdown" id="tutorCoursesDropdown">
-                            <div class="multi-select-trigger" id="tutorCoursesTrigger">
-                                <span class="placeholder">Select courses...</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                            <div class="multi-select-options" id="tutorCoursesOptions">
-                                <!-- Dynamic course options -->
-                            </div>
-                        </div>
-                        <div class="selected-tags" id="selectedTutorCourses"></div>
-                    </div>
-
-                    <!-- Row 4: LinkedIn -->
-                    <div class="form-group">
-                        <label for="linkedin">LinkedIn <span class="optional">(optional)</span></label>
-                        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username">
-                    </div>
-
-                    <!-- Row 5: Mode & Availability -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="teachingMode">Teaching Mode <span class="required">*</span></label>
-                            <select id="teachingMode" required>
-                                <option value="">Select mode...</option>
-                                <option value="offline">Offline</option>
-                                <option value="online">Online</option>
-                                <option value="both">Both</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="availability">Availability <span class="required">*</span></label>
-                            <select id="availability" required>
-                                <option value="">Select availability...</option>
-                                <option value="weekdays">Weekdays</option>
-                                <option value="weekends">Weekends</option>
-                                <option value="flexible">Flexible</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Row 6: Notes -->
-                    <div class="form-group">
-                        <label for="tutorNotes">Notes / Remarks</label>
-                        <textarea id="tutorNotes" rows="2" placeholder="Any additional notes..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-secondary" id="cancelTutorBtn">Cancel</button>
-                <button type="submit" class="btn-primary" id="saveTutorBtn">
-                    <i class="fas fa-save"></i>
-                    <span>Save Tutor</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="js/ui-components.js"></script>
-    <script src="js/admin-common.js"></script>
-    <script src="js/admin-switcher.js"></script>
-    <script src="js/tutors.js"></script>
+    <script src="js/admin-panel.js"></script>
 </body>
 
 </html>

@@ -7,29 +7,20 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Inquiries | Abhi's Craft Soft Admin</title>
 
-    <!-- Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap"
         rel="stylesheet">
-
-    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Styles -->
     <link rel="stylesheet" href="css/admin-auth.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/admin-panel.css">
 
-    <!-- Hide content until auth verified -->
     <style>
         .dashboard-layout {
             display: none !important;
@@ -42,7 +33,6 @@
 </head>
 
 <body>
-    <!-- Immediate Auth Check -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
     <script>
@@ -61,17 +51,13 @@
     </script>
 
     <div class="dashboard-layout">
-        <!-- Sidebar Overlay (Mobile) -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <!-- Mobile Close Button -->
             <button class="mobile-close-btn" id="mobileCloseBtn">
                 <i class="fas fa-times"></i>
             </button>
 
-            <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <a href="dashboard.html" class="sidebar-logo">
                     <div class="logo-icon">
@@ -84,51 +70,54 @@
                 </a>
             </div>
 
-            <!-- Sidebar Navigation -->
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <div class="nav-section-title">Menu</div>
-
                     <a href="dashboard.html" class="nav-item">
                         <i class="fas fa-home nav-icon"></i>
                         <span>Dashboard</span>
                     </a>
-
                     <a href="students.html" class="nav-item">
                         <i class="fas fa-users nav-icon"></i>
                         <span>Students</span>
                     </a>
-
                     <a href="tutors.html" class="nav-item">
                         <i class="fas fa-chalkboard-teacher nav-icon"></i>
                         <span>Tutors</span>
                     </a>
-
                     <a href="inquiries.html" class="nav-item active">
                         <i class="fas fa-envelope-open-text nav-icon"></i>
                         <span>Inquiries</span>
                     </a>
-
                     <a href="payments.html" class="nav-item">
                         <i class="fas fa-indian-rupee-sign nav-icon"></i>
                         <span>Payments</span>
                     </a>
                 </div>
-
                 <div class="nav-section">
                     <div class="nav-section-title">Account</div>
-
-                    <a href="#" class="nav-item" data-maintenance="Settings">
+                    <a href="settings.html" class="nav-item">
                         <i class="fas fa-cog nav-icon"></i>
                         <span>Settings</span>
                     </a>
                 </div>
             </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-profile" id="adminProfile">
+                    <div class="admin-avatar" id="adminAvatar">A</div>
+                    <div class="admin-info">
+                        <div class="admin-name" id="adminName">Admin</div>
+                        <div class="admin-id" id="adminId">ACS-01</div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Header -->
             <header class="dashboard-header">
                 <div class="header-left">
                     <button class="mobile-menu-btn" id="mobileMenuBtn">
@@ -136,384 +125,38 @@
                     </button>
                     <h1 class="page-title">Inquiries</h1>
                 </div>
-
-                <div class="header-right">
-                    <!-- Admin Switcher Dropdown -->
-                    <div class="admin-switcher" id="adminSwitcher">
-                        <button class="admin-switcher-toggle" id="adminSwitcherToggle">
-                            <div class="admin-switcher-info">
-                                <div class="admin-name" id="adminName">Admin</div>
-                                <div class="admin-id" id="adminId">ACS-01</div>
-                            </div>
-                            <i class="fas fa-chevron-down admin-switcher-arrow"></i>
-                        </button>
-
-                        <div class="admin-switcher-dropdown" id="adminSwitcherDropdown">
-                            <!-- Current Admin -->
-                            <div class="dropdown-section">
-                                <div class="dropdown-label">Current Admin</div>
-                                <div class="saved-admin current" id="currentAdminItem">
-                                    <div class="saved-admin-avatar" id="currentAdminAvatar">A</div>
-                                    <div class="saved-admin-info">
-                                        <div class="saved-admin-name" id="currentAdminName">Admin</div>
-                                        <div class="saved-admin-id" id="currentAdminId">ACS-01</div>
-                                    </div>
-                                    <i class="fas fa-check"></i>
-                                </div>
-                            </div>
-
-                            <!-- Saved Admins -->
-                            <div class="dropdown-section" id="savedAdminsSection" style="display: none;">
-                                <div class="dropdown-label">Switch To</div>
-                                <div id="savedAdminsList"></div>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="dropdown-section dropdown-actions">
-                                <button class="dropdown-action-btn" id="addAnotherAdmin">
-                                    <i class="fas fa-plus"></i>
-                                    <span>Add another admin</span>
-                                </button>
-                                <button class="dropdown-action-btn logout" id="logoutCurrent">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>Logout</span>
-                                </button>
-                                <button class="dropdown-action-btn logout-all" id="logoutAll" style="display: none;">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>Logout All (<span id="savedCount">0</span>)</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </header>
 
-            <!-- Page Content -->
             <div class="page-content">
-                <!-- Search & Actions Bar -->
-                <div class="page-actions-bar">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="inquirySearch" placeholder="Search by name, phone, email...">
-                    </div>
-                    <div class="filter-group">
-                        <select id="statusFilter" class="filter-select">
-                            <option value="">All Status</option>
-                            <option value="new">🙂 New</option>
-                            <option value="contacted">📞 Contacted</option>
-                            <option value="converted">👤 Converted</option>
-                            <option value="lost">😢 Lost</option>
-                        </select>
-                        <select id="sourceFilter" class="filter-select">
-                            <option value="">All Sources</option>
-                            <option value="website">🌐 Website</option>
-                            <option value="instagram">📷 Instagram</option>
-                            <option value="linkedin">💼 LinkedIn</option>
-                            <option value="classifieds">📰 Classifieds</option>
-                            <option value="walkin">🚶 Walk-in</option>
-                        </select>
-                    </div>
-                    <button class="btn-primary" id="addInquiryBtn">
-                        <i class="fas fa-plus"></i>
-                        <span>Add Inquiry</span>
-                    </button>
-                </div>
-
-                <!-- Inquiries Table (Desktop) -->
-                <div class="data-table-container" id="tableContainer">
-                    <!-- Skeleton Loader (Table) -->
-                    <div class="skeleton-table" id="skeletonTable">
-                        <div class="skeleton-row">
-                            <div class="skeleton-cell skeleton id"></div>
-                            <div class="skeleton-cell skeleton name"></div>
-                            <div class="skeleton-cell skeleton phone"></div>
-                            <div class="skeleton-cell skeleton course"></div>
-                            <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton btn"></div>
-                            <div class="skeleton-cell actions">
-                                <div class="skeleton-cell skeleton btn"></div>
-                                <div class="skeleton-cell skeleton btn"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton-row">
-                            <div class="skeleton-cell skeleton id"></div>
-                            <div class="skeleton-cell skeleton name"></div>
-                            <div class="skeleton-cell skeleton phone"></div>
-                            <div class="skeleton-cell skeleton course"></div>
-                            <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton btn"></div>
-                            <div class="skeleton-cell actions">
-                                <div class="skeleton-cell skeleton btn"></div>
-                                <div class="skeleton-cell skeleton btn"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton-row">
-                            <div class="skeleton-cell skeleton id"></div>
-                            <div class="skeleton-cell skeleton name"></div>
-                            <div class="skeleton-cell skeleton phone"></div>
-                            <div class="skeleton-cell skeleton course"></div>
-                            <div class="skeleton-cell skeleton date"></div>
-                            <div class="skeleton-cell skeleton btn"></div>
-                            <div class="skeleton-cell actions">
-                                <div class="skeleton-cell skeleton btn"></div>
-                                <div class="skeleton-cell skeleton btn"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <table class="data-table" id="inquiriesTable" style="display: none;">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Interest</th>
-                                <th>Status</th>
-                                <th>Demo</th>
-                                <th>WhatsApp</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inquiriesTableBody">
-                            <!-- Dynamic content -->
-                        </tbody>
-                    </table>
-
-                    <!-- Empty State -->
-                    <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="coming-soon-container">
+                    <div class="coming-soon-icon">
                         <i class="fas fa-envelope-open-text"></i>
-                        <h3>No Inquiries Yet</h3>
-                        <p>Add your first inquiry to get started!</p>
                     </div>
-
-                    <!-- Pagination -->
-                    <div class="pagination" id="pagination">
-                        <button class="pagination-btn" id="prevPage" disabled>
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <span class="pagination-info" id="paginationInfo">Page 1 of 1</span>
-                        <button class="pagination-btn" id="nextPage" disabled>
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Inquiries Cards (Mobile) -->
-                <!-- Skeleton Cards (Mobile) -->
-                <div class="skeleton-cards" id="skeletonCards">
-                    <div class="skeleton-card">
-                        <div class="skeleton-card-header">
-                            <div class="skeleton-card-id skeleton"></div>
-                            <div class="skeleton-card-actions">
-                                <div class="skeleton-cell skeleton btn"></div>
-                                <div class="skeleton-cell skeleton btn"></div>
-                            </div>
+                    <h2 class="coming-soon-title">Coming Soon</h2>
+                    <p class="coming-soon-text">
+                        Inquiry management is under development.
+                        <br>Soon you'll be able to track all inquiries here.
+                    </p>
+                    <div class="coming-soon-features">
+                        <div class="feature-badge">
+                            <i class="fas fa-inbox"></i>
+                            <span>View Inquiries</span>
                         </div>
-                        <div class="skeleton-card-name skeleton"></div>
-                        <div class="skeleton-card-row">
-                            <div class="skeleton-card-icon skeleton"></div>
-                            <div class="skeleton-card-text skeleton"></div>
+                        <div class="feature-badge">
+                            <i class="fas fa-reply"></i>
+                            <span>Quick Reply</span>
                         </div>
-                        <div class="skeleton-card-row">
-                            <div class="skeleton-card-icon skeleton"></div>
-                            <div class="skeleton-card-text skeleton"></div>
+                        <div class="feature-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Status Tracking</span>
                         </div>
                     </div>
-                    <div class="skeleton-card">
-                        <div class="skeleton-card-header">
-                            <div class="skeleton-card-id skeleton"></div>
-                            <div class="skeleton-card-actions">
-                                <div class="skeleton-cell skeleton btn"></div>
-                                <div class="skeleton-cell skeleton btn"></div>
-                            </div>
-                        </div>
-                        <div class="skeleton-card-name skeleton"></div>
-                        <div class="skeleton-card-row">
-                            <div class="skeleton-card-icon skeleton"></div>
-                            <div class="skeleton-card-text skeleton"></div>
-                        </div>
-                        <div class="skeleton-card-row">
-                            <div class="skeleton-card-icon skeleton"></div>
-                            <div class="skeleton-card-text skeleton"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="data-cards" id="inquiriesCards" style="display: none;">
-                    <!-- Dynamic content -->
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Add Inquiry Modal -->
-    <div class="modal-overlay" id="inquiryModalOverlay">
-        <div class="modal student-modal" id="inquiryModal">
-            <div class="modal-header">
-                <h2 id="inquiryModalTitle">Add New Inquiry</h2>
-                <button class="modal-close" id="closeInquiryModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="inquiryForm">
-                    <!-- Section: Contact Info -->
-                    <div class="form-section-title">Contact Information</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="inquiryName">Name <span class="required">*</span></label>
-                            <input type="text" id="inquiryName" placeholder="e.g. Amit Sharma" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inquiryEmail">Email <span class="optional">(optional)</span></label>
-                            <input type="email" id="inquiryEmail" placeholder="amit@email.com">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inquiryPhone">Phone / WhatsApp <span class="required">*</span></label>
-                        <div class="phone-input-group">
-                            <input type="text" id="inquiryCountryCode" class="phone-country-code" placeholder="+91"
-                                value="+91" maxlength="5">
-                            <input type="tel" id="inquiryPhone" placeholder="9876543210" maxlength="10" required>
-                        </div>
-                    </div>
-
-                    <!-- Section: Interest -->
-                    <div class="form-section-title">Interest</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="courseService">Course / Service <span class="required">*</span></label>
-                            <select id="courseService" required>
-                                <option value="">Select interest...</option>
-                                <optgroup label="Courses">
-                                    <!-- Dynamic courses -->
-                                </optgroup>
-                                <optgroup label="Services">
-                                    <!-- Dynamic services -->
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="leadSource">Lead Source</label>
-                            <select id="leadSource">
-                                <option value="">Select source...</option>
-                                <option value="website">🌐 Website</option>
-                                <option value="instagram">📷 Instagram</option>
-                                <option value="linkedin">💼 LinkedIn</option>
-                                <option value="classifieds">📰 Classifieds</option>
-                                <option value="walkin">🚶 Walk-in</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Section: Current Status -->
-                    <div class="form-section-title">Current Status</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="occupation">Occupation</label>
-                            <select id="occupation">
-                                <option value="">Select occupation...</option>
-                                <option value="student">Student</option>
-                                <option value="working">Working Professional</option>
-                                <option value="career_break">Career Break</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="expectedStart">Expected Start</label>
-                            <select id="expectedStart">
-                                <option value="">Select timing...</option>
-                                <option value="immediate">⚡ Immediate</option>
-                                <option value="this_month">📅 This Month</option>
-                                <option value="next_month">📅 Next Month</option>
-                                <option value="custom">📆 Specific Month</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row" id="customMonthGroup" style="display: none;">
-                        <div class="form-group">
-                            <label for="customMonthSelect">Month</label>
-                            <select id="customMonthSelect">
-                                <option value="01">January</option>
-                                <option value="02">February</option>
-                                <option value="03">March</option>
-                                <option value="04">April</option>
-                                <option value="05">May</option>
-                                <option value="06">June</option>
-                                <option value="07">July</option>
-                                <option value="08">August</option>
-                                <option value="09">September</option>
-                                <option value="10">October</option>
-                                <option value="11">November</option>
-                                <option value="12">December</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="customYearSelect">Year</label>
-                            <select id="customYearSelect">
-                                <option value="2025">2025</option>
-                                <option value="2026">2026</option>
-                                <option value="2027">2027</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Section: Demo Scheduling -->
-                    <div class="form-section-title">Demo Scheduling</div>
-                    <div class="form-group">
-                        <label class="toggle-label">
-                            <span class="toggle-text">Schedule a Demo</span>
-                            <span class="toggle-switch">
-                                <input type="checkbox" id="scheduleDemo">
-                                <span class="toggle-slider"></span>
-                            </span>
-                        </label>
-                    </div>
-                    <div class="form-row" id="demoFields" style="display: none;">
-                        <div class="form-group">
-                            <label for="demoDate">Demo Date</label>
-                            <input type="date" id="demoDate">
-                        </div>
-                        <div class="form-group">
-                            <label for="demoTime">Demo Time</label>
-                            <input type="time" id="demoTime">
-                        </div>
-                    </div>
-
-                    <!-- Section: Inquiry Status -->
-                    <div class="form-section-title">Inquiry Status</div>
-                    <div class="form-group">
-                        <label for="inquiryStatus">Status <span class="required">*</span></label>
-                        <select id="inquiryStatus" required>
-                            <option value="new">🙂 New</option>
-                            <option value="contacted">📞 Contacted</option>
-                            <option value="converted">👤 Converted</option>
-                            <option value="lost">😢 Lost</option>
-                        </select>
-                    </div>
-
-                    <!-- Section: Notes -->
-                    <div class="form-section-title">Notes</div>
-                    <div class="form-group">
-                        <label for="inquiryNotes">Notes / Remarks</label>
-                        <textarea id="inquiryNotes" rows="3"
-                            placeholder="Any additional notes about this inquiry..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-secondary" id="cancelInquiryBtn">Cancel</button>
-                <button type="submit" class="btn-primary" id="saveInquiryBtn">
-                    <i class="fas fa-save"></i>
-                    <span>Save Inquiry</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="js/ui-components.js"></script>
-    <script src="js/admin-common.js"></script>
-    <script src="js/admin-switcher.js"></script>
-    <script src="js/inquiries.js"></script>
+    <script src="js/admin-panel.js"></script>
 </body>
 
 </html>
