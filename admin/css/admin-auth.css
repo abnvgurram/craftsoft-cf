@@ -973,3 +973,73 @@ body {
     background: var(--error-light);
     color: var(--error);
 }
+
+/* ============================================
+   Manage Accounts Toggle (Option 2)
+   ============================================ */
+
+.picker-actions {
+    display: flex;
+    justify-content: flex-end;
+    /* Negative margin to pull it closer if needed, 
+       but parent has gap. keeping it standard */
+}
+
+.text-btn {
+    background: none;
+    border: none;
+    font-family: var(--font-primary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--primary-600);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    transition: var(--transition-base);
+}
+
+.text-btn:hover {
+    background: var(--primary-50);
+}
+
+/* Default State: Hide Trash, Show Arrow */
+.account-item .remove-account-btn {
+    display: none !important;
+    /* Override previous hover styles */
+}
+
+.account-item .fa-chevron-right {
+    display: block;
+}
+
+/* Edit State: Show Trash, Hide Arrow */
+.account-picker.editing .remove-account-btn {
+    display: flex !important;
+    opacity: 1;
+    animation: scaleIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.account-picker.editing .fa-chevron-right {
+    display: none;
+}
+
+.account-picker.editing .account-item {
+    cursor: default;
+    /* Indicate not clickable (for login) */
+    border-color: var(--gray-200);
+    /* Reset active border */
+    background: var(--white);
+}
+
+/* Shake animation for feedback if needed */
+@keyframes scaleIn {
+    from {
+        transform: translateY(-50%) scale(0);
+    }
+
+    to {
+        transform: translateY(-50%) scale(1);
+    }
+}

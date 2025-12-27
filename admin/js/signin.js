@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authSubtitle = document.getElementById('authSubtitle');
     const backToAccounts = document.getElementById('backToAccounts');
     const backToAccountsBtn = document.getElementById('backToAccountsBtn');
+    const manageAccountsBtn = document.getElementById('manageAccountsBtn');
 
     // Form fields
     const identifierInput = document.getElementById('identifier');
@@ -84,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="remove-account-btn" title="Remove account" data-id="${admin.id}">
                         <i class="fas fa-trash-alt"></i>
                     </button>
-                    ${admin.id !== currentUserId ? '<i class="fas fa-chevron-right"></i>' : ''}
+                    <i class="fas fa-chevron-right"></i>
                 </div>
             `;
         }).join('');
@@ -94,6 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
             item.addEventListener('click', (e) => {
                 // Don't trigger if clicked on remove button
                 if (e.target.closest('.remove-account-btn')) return;
+
+                // Option 2: If editing, do NOT sign in
+                if (accountPicker.classList.contains('editing')) {
+                    return;
+                }
 
                 const identifier = item.getAttribute('data-identifier');
                 identifierInput.value = identifier;
@@ -110,12 +116,36 @@ document.addEventListener('DOMContentLoaded', () => {
                     const updated = getSavedAdmins().filter(a => a.id !== idToRemove);
                     localStorage.setItem(SAVED_ADMINS_KEY, JSON.stringify(updated));
                     initAccountPicker(); // Re-render
+                    // Keep editing state after re-render if it was active?
+                    // Re-render resets innerHTML but not parent class.
+                    // But initAccountPicker runs clean slate logic usually?
+                    // No, styling is CSS based on parent class.
+                    // However, re-init might reset text/manage button if we are not careful.
+                    if (accountPicker.classList.contains('editing')) {
+                        // Ensure subtitle/button stay correct if we re-run init logic
+                        // Actually initAccountPicker resets authSubtitle.textContent
+                        authSubtitle.textContent = 'Remove an account';
+                    } else if (updated.length === 0) {
+                        // If no accounts left, show form
+                        showLoginForm(false);
+                    }
                 });
             });
         });
+
+        // Hide manage button if no accounts (shouldn't happen here as we return early)
+        if (manageAccountsBtn) {
+            manageAccountsBtn.style.display = saved.length > 0 ? 'block' : 'none';
+        }
     }
 
     function showLoginForm(showBack = false) {
+        // Reset editing state
+        if (accountPicker.classList.contains('editing')) {
+            accountPicker.classList.remove('editing');
+            if (manageAccountsBtn) manageAccountsBtn.textContent = 'Manage';
+        }
+
         accountPicker.classList.remove('show');
         form.style.display = 'flex';
         authSubtitle.textContent = 'Sign in with your email or Admin ID';
@@ -131,6 +161,14 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             identifierInput.focus();
         }
+    }
+
+    if (manageAccountsBtn) {
+        manageAccountsBtn.addEventListener('click', () => {
+            const isEditing = accountPicker.classList.toggle('editing');
+            manageAccountsBtn.textContent = isEditing ? 'Done' : 'Manage';
+            authSubtitle.textContent = isEditing ? 'Remove an account' : 'Choose an account to continue';
+        });
     }
 
     if (useAnotherBtn) {
