@@ -292,8 +292,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             method: method,
             payment_date: paymentDate,
             transaction_id: document.getElementById('transactionId').value.trim() || null,
-            notes: document.getElementById('paymentNotes').value.trim() || null,
-            created_at: editingPaymentId ? undefined : new Date().toISOString()
+            notes: document.getElementById('paymentNotes').value.trim() || null
         };
 
         savePaymentBtn.disabled = true;
@@ -301,13 +300,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             if (editingPaymentId) {
+                // Update in Supabase
+                const { error } = await window.supabaseClient
+                    .from('payments')
+                    .update(paymentData)
+                    .eq('id', editingPaymentId);
+
+                if (error) throw error;
+
                 const index = payments.findIndex(p => p.id === editingPaymentId);
                 if (index !== -1) {
                     payments[index] = { ...payments[index], ...paymentData };
                 }
                 window.toast.success('Updated', 'Payment updated successfully');
             } else {
-                payments.push(paymentData);
+                // Insert to Supabase
+                const { error } = await window.supabaseClient
+                    .from('payments')
+                    .insert([paymentData]);
+
+                if (error) throw error;
+
+                payments.push({ ...paymentData, created_at: new Date().toISOString() });
                 window.toast.success('Added', 'Payment added successfully');
             }
 
@@ -318,7 +332,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error('Error saving payment:', error);
-            window.toast.error('Error', 'Failed to save payment');
+            window.toast.error('Error', 'Failed to save payment: ' + error.message);
         } finally {
             savePaymentBtn.disabled = false;
             savePaymentBtn.innerHTML = '<i class="fas fa-save"></i> <span>Save Payment</span>';
@@ -330,19 +344,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
     async function loadPayments() {
         try {
-            const stored = localStorage.getItem('craftsoft_payments');
-            payments = stored ? JSON.parse(stored) : [];
+            // Try loading from Supabase first
+            const { data: supabasePayments, error } = await window.supabaseClient
+                .from('payments')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-            // Version check - clear old format data
-            const version = localStorage.getItem('craftsoft_payments_version');
-            if (version !== 'v2') {
-                localStorage.removeItem('craftsoft_payments');
-                payments = [];
-                localStorage.setItem('craftsoft_payments_version', 'v2');
+            if (error) {
+                console.warn('Supabase load failed, using localStorage:', error.message);
+                const stored = localStorage.getItem('craftsoft_payments');
+                payments = stored ? JSON.parse(stored) : [];
+            } else {
+                // Supabase is source of truth - sync to localStorage
+                payments = supabasePayments || [];
+                savePaymentsToStorage();
             }
 
+            // Seed mock data if empty
             if (payments.length === 0) {
-                payments = [
+                const mockPayments = [
                     {
                         id: '03-ACS-RK001',
                         student_id: 'ACS-03-001',
@@ -368,21 +388,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                         transaction_id: null,
                         notes: 'Partial payment',
                         created_at: new Date().toISOString()
-                    },
-                    {
-                        id: '13-ACS-AS001',
-                        student_id: 'ACS-13-001',
-                        student_name: 'Amit Sharma',
-                        student_phone: '+919988776655',
-                        course_code: '13',
-                        amount: 20000,
-                        method: 'bank',
-                        payment_date: '2024-12-25',
-                        transaction_id: 'NEFT98765432',
-                        notes: 'Full payment',
-                        created_at: new Date().toISOString()
                     }
                 ];
+
+                // Insert mock data to Supabase
+                for (const pay of mockPayments) {
+                    await window.supabaseClient
+                        .from('payments')
+                        .insert([pay])
+                        .catch(e => console.warn('Mock insert skipped:', e.message));
+                }
+
+                payments = mockPayments;
                 savePaymentsToStorage();
             }
 
@@ -391,6 +408,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error('Error loading payments:', error);
+            const stored = localStorage.getItem('craftsoft_payments');
+            payments = stored ? JSON.parse(stored) : [];
+            applyFiltersAndSort();
         }
     }
 
@@ -664,12 +684,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.modal.confirm(
                 'Delete Payment',
                 `Are you sure you want to delete receipt <strong>${pay.id}</strong> (${formatCurrency(pay.amount)})?`,
-                () => {
-                    payments = payments.filter(p => p.id !== id);
-                    savePaymentsToStorage();
-                    applyFiltersAndSort();
-                    updateStats();
-                    window.toast.success('Deleted', 'Payment removed successfully');
+                async () => {
+                    try {
+                        const { error } = await window.supabaseClient
+                            .from('payments')
+                            .delete()
+                            .eq('id', id);
+
+                        if (error) throw error;
+
+                        payments = payments.filter(p => p.id !== id);
+                        savePaymentsToStorage();
+                        applyFiltersAndSort();
+                        updateStats();
+                        window.toast.success('Deleted', 'Payment removed successfully');
+                    } catch (error) {
+                        console.error('Delete error:', error);
+                        window.toast.error('Error', 'Failed to delete: ' + error.message);
+                    }
                 }
             );
         }
