@@ -214,8 +214,48 @@
                 </div>
 
                 <!-- Students Table (Desktop) -->
-                <div class="data-table-container">
-                    <table class="data-table" id="studentsTable">
+                <div class="data-table-container" id="tableContainer">
+                    <!-- Skeleton Loader (Table) -->
+                    <div class="skeleton-table" id="skeletonTable">
+                        <div class="skeleton-row">
+                            <div class="skeleton-cell skeleton id"></div>
+                            <div class="skeleton-cell skeleton name"></div>
+                            <div class="skeleton-cell skeleton phone"></div>
+                            <div class="skeleton-cell skeleton course"></div>
+                            <div class="skeleton-cell skeleton date"></div>
+                            <div class="skeleton-cell skeleton btn"></div>
+                            <div class="skeleton-cell actions">
+                                <div class="skeleton-cell skeleton btn"></div>
+                                <div class="skeleton-cell skeleton btn"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-row">
+                            <div class="skeleton-cell skeleton id"></div>
+                            <div class="skeleton-cell skeleton name"></div>
+                            <div class="skeleton-cell skeleton phone"></div>
+                            <div class="skeleton-cell skeleton course"></div>
+                            <div class="skeleton-cell skeleton date"></div>
+                            <div class="skeleton-cell skeleton btn"></div>
+                            <div class="skeleton-cell actions">
+                                <div class="skeleton-cell skeleton btn"></div>
+                                <div class="skeleton-cell skeleton btn"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-row">
+                            <div class="skeleton-cell skeleton id"></div>
+                            <div class="skeleton-cell skeleton name"></div>
+                            <div class="skeleton-cell skeleton phone"></div>
+                            <div class="skeleton-cell skeleton course"></div>
+                            <div class="skeleton-cell skeleton date"></div>
+                            <div class="skeleton-cell skeleton btn"></div>
+                            <div class="skeleton-cell actions">
+                                <div class="skeleton-cell skeleton btn"></div>
+                                <div class="skeleton-cell skeleton btn"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="data-table" id="studentsTable" style="display: none;">
                         <thead>
                             <tr>
                                 <th>Student ID</th>
@@ -252,7 +292,46 @@
                 </div>
 
                 <!-- Students Cards (Mobile) -->
-                <div class="data-cards" id="studentsCards">
+                <!-- Skeleton Cards (Mobile) -->
+                <div class="skeleton-cards" id="skeletonCards">
+                    <div class="skeleton-card">
+                        <div class="skeleton-card-header">
+                            <div class="skeleton-card-id skeleton"></div>
+                            <div class="skeleton-card-actions">
+                                <div class="skeleton-cell skeleton btn"></div>
+                                <div class="skeleton-cell skeleton btn"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-card-name skeleton"></div>
+                        <div class="skeleton-card-row">
+                            <div class="skeleton-card-icon skeleton"></div>
+                            <div class="skeleton-card-text skeleton"></div>
+                        </div>
+                        <div class="skeleton-card-row">
+                            <div class="skeleton-card-icon skeleton"></div>
+                            <div class="skeleton-card-text skeleton"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-card-header">
+                            <div class="skeleton-card-id skeleton"></div>
+                            <div class="skeleton-card-actions">
+                                <div class="skeleton-cell skeleton btn"></div>
+                                <div class="skeleton-cell skeleton btn"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-card-name skeleton"></div>
+                        <div class="skeleton-card-row">
+                            <div class="skeleton-card-icon skeleton"></div>
+                            <div class="skeleton-card-text skeleton"></div>
+                        </div>
+                        <div class="skeleton-card-row">
+                            <div class="skeleton-card-icon skeleton"></div>
+                            <div class="skeleton-card-text skeleton"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="data-cards" id="studentsCards" style="display: none;">
                     <!-- Dynamic content -->
                 </div>
             </div>

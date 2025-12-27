@@ -536,9 +536,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderStudents() {
         const data = getPageData();
 
+        // Hide skeletons
+        const skeletonTable = document.getElementById('skeletonTable');
+        const skeletonCards = document.getElementById('skeletonCards');
+        if (skeletonTable) skeletonTable.style.display = 'none';
+        if (skeletonCards) skeletonCards.style.display = 'none';
+
         if (filteredStudents.length === 0) {
             studentsTableBody.innerHTML = '';
             studentsCards.innerHTML = '';
+            studentsCards.style.display = 'none';
             emptyState.style.display = 'block';
             document.querySelector('.data-table').style.display = 'none';
             document.getElementById('pagination').style.display = 'none';
@@ -547,6 +554,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         emptyState.style.display = 'none';
         document.querySelector('.data-table').style.display = 'table';
+        studentsCards.style.display = '';
         document.getElementById('pagination').style.display = 'flex';
         updatePagination();
 
