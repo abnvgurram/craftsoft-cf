@@ -264,7 +264,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             phone: fullPhone,
             email: document.getElementById('tutorEmail').value.trim() || null,
             courses: [...selectedCourses],
-            join_date: null,
             status: 'active',
             notes: document.getElementById('tutorNotes').value.trim() || null
         };
