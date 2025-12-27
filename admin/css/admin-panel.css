@@ -650,13 +650,14 @@ body {
 }
 
 /* =====================================================
-   RESPONSIVE - Mobile
+   RESPONSIVE - Mobile (max 768px)
    ===================================================== */
 
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
         width: 280px;
+        box-shadow: var(--shadow-lg);
     }
 
     .sidebar.open {
@@ -671,6 +672,8 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 40px;
+        height: 40px;
     }
 
     .main-content {
@@ -681,10 +684,13 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
     }
 
     .dashboard-header {
         padding: 0 1rem;
+        height: 60px;
     }
 
     .page-content {
@@ -692,39 +698,263 @@ body {
     }
 
     .page-title {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
     }
 
     .coming-soon-container {
         padding: 2rem 1.5rem;
+        margin: 0;
+        border-radius: var(--border-radius);
     }
 
     .coming-soon-icon {
         width: 80px;
         height: 80px;
         font-size: 2rem;
+        margin-bottom: 1.5rem;
     }
 
     .coming-soon-title {
         font-size: 1.5rem;
     }
 
+    .coming-soon-text {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
     .coming-soon-features {
         flex-direction: column;
         align-items: center;
+        gap: 0.75rem;
     }
 
+    .feature-badge {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.8rem;
+    }
+
+    /* Admin Switcher Mobile */
     .admin-switcher-toggle {
-        padding: 0.4rem 0.75rem;
+        padding: 0.5rem 0.75rem;
+        min-height: 44px;
     }
 
     .admin-switcher-info .admin-name {
         font-size: 0.8rem;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .admin-switcher-info .admin-id {
+        font-size: 0.65rem;
     }
 
     .admin-switcher-dropdown {
-        width: 260px;
-        right: -1rem;
+        width: calc(100vw - 2rem);
+        max-width: 300px;
+        right: 0;
+    }
+
+    .saved-admin {
+        padding: 0.875rem;
+    }
+
+    .dropdown-action-btn {
+        padding: 0.875rem;
+        min-height: 44px;
+    }
+
+    /* Nav items touch targets */
+    .nav-item {
+        padding: 1rem;
+        min-height: 48px;
+    }
+
+    .sidebar-nav {
+        padding: 0.5rem 0;
+    }
+
+    .nav-section {
+        padding: 0 0.75rem;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE - Small Mobile (max 480px)
+   ===================================================== */
+
+@media (max-width: 480px) {
+    .dashboard-header {
+        padding: 0 0.75rem;
+        height: 56px;
+    }
+
+    .page-title {
+        font-size: 1rem;
+    }
+
+    .page-content {
+        padding: 1rem 0.75rem;
+    }
+
+    .coming-soon-container {
+        padding: 1.5rem 1rem;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .coming-soon-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 1.75rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .coming-soon-title {
+        font-size: 1.25rem;
+    }
+
+    .coming-soon-text {
+        font-size: 0.85rem;
+        line-height: 1.6;
+    }
+
+    .feature-badge {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    /* Header adjustments */
+    .admin-switcher-info .admin-name {
+        max-width: 70px;
+    }
+
+    .admin-switcher-toggle {
+        padding: 0.4rem 0.6rem;
+    }
+
+    .admin-switcher-arrow {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
+        font-size: 1rem;
+    }
+
+    /* Sidebar adjustments */
+    .sidebar {
+        width: 85vw;
+        max-width: 280px;
+    }
+
+    .sidebar-header {
+        padding: 1rem;
+    }
+
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .logo-text {
+        font-size: 1rem;
+    }
+
+    .logo-signature {
+        font-size: 1.2rem;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE - Extra Small (max 360px)
+   ===================================================== */
+
+@media (max-width: 360px) {
+    .page-title {
+        font-size: 0.9rem;
+    }
+
+    .admin-switcher-info {
+        display: none;
+    }
+
+    .admin-switcher-toggle {
+        padding: 0.5rem;
+    }
+
+    .admin-switcher-toggle::before {
+        content: '\\f007';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        font-size: 1rem;
+        color: var(--primary-500);
+    }
+
+    .coming-soon-container {
+        padding: 1.25rem 0.875rem;
+    }
+
+    .coming-soon-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    .coming-soon-title {
+        font-size: 1.1rem;
+    }
+
+    .coming-soon-text br {
+        display: none;
+    }
+}
+
+/* =====================================================
+   Touch Device Optimizations
+   ===================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+
+    /* Larger touch targets */
+    .nav-item {
+        min-height: 48px;
+    }
+
+    .dropdown-action-btn {
+        min-height: 48px;
+    }
+
+    .modal-btn {
+        min-height: 48px;
+        padding: 0.875rem 1.5rem;
+    }
+
+    .admin-switcher-toggle {
+        min-height: 44px;
+    }
+
+    /* Remove hover states for touch */
+    .nav-item:hover {
+        background: transparent;
+    }
+
+    .nav-item:active {
+        background: var(--primary-50);
+    }
+
+    .saved-admin:hover {
+        background: transparent;
+    }
+
+    .saved-admin:active {
+        background: var(--gray-100);
     }
 }
 
