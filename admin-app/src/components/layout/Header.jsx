@@ -38,7 +38,7 @@ export default function Header({ onMobileToggle }) {
     const handleLogout = () => {
         handleClose();
         signOut();
-        navigate('/signin');
+        navigate('/signin', { replace: true });
     };
 
     const handleAddAccount = () => {

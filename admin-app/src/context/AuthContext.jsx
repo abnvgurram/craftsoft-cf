@@ -25,8 +25,8 @@ export const AuthProvider = ({ children }) => {
         await supabase.auth.signOut();
         // Use window.location to ensure full refresh/redirect logic
         // Or use router navigation if we had access here, but window is safer for hard logout
-        if (window.location.pathname !== '/signin') {
-            window.location.href = '/signin?reason=timeout';
+        if (window.location.pathname.indexOf('/signin') === -1) {
+            window.location.replace('/admin/signin?reason=timeout');
         }
     };
 

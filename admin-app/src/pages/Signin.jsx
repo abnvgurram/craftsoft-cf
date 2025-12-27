@@ -50,6 +50,14 @@ export default function Signin() {
         if (searchParams.get('reason') === 'timeout') {
             setError('You were logged out due to inactivity.');
         }
+
+        // Aggressive Back Button Block
+        window.history.pushState(null, null, window.location.href);
+        const handlePopState = () => {
+            window.history.pushState(null, null, window.location.href);
+        };
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
     }, [session, navigate, searchParams]);
 
     const handleSelectAccount = (account) => {
