@@ -3,7 +3,7 @@
    Handles sidebar, auth, and common functionality
    ===================================================== */
 
-(async function () {
+document.addEventListener('DOMContentLoaded', async function () {
     'use strict';
 
     // =========================================
@@ -13,33 +13,66 @@
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mobileCloseBtn = document.getElementById('mobileCloseBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const adminAvatar = document.getElementById('adminAvatar');
-    const adminName = document.getElementById('adminName');
-    const adminId = document.getElementById('adminId');
 
     // =========================================
     // Sidebar Toggle (Mobile)
     // =========================================
     function openSidebar() {
-        sidebar?.classList.add('open');
-        sidebarOverlay?.classList.add('active');
+        if (sidebar) {
+            sidebar.classList.add('open');
+        }
+        if (sidebarOverlay) {
+            sidebarOverlay.classList.add('active');
+        }
         document.body.style.overflow = 'hidden';
     }
 
     function closeSidebar() {
-        sidebar?.classList.remove('open');
-        sidebarOverlay?.classList.remove('active');
+        if (sidebar) {
+            sidebar.classList.remove('open');
+        }
+        if (sidebarOverlay) {
+            sidebarOverlay.classList.remove('active');
+        }
         document.body.style.overflow = '';
     }
 
-    mobileMenuBtn?.addEventListener('click', openSidebar);
-    mobileCloseBtn?.addEventListener('click', closeSidebar);
-    sidebarOverlay?.addEventListener('click', closeSidebar);
+    // Event Listeners for Sidebar
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openSidebar();
+        });
+    }
+
+    if (mobileCloseBtn) {
+        mobileCloseBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeSidebar();
+        });
+    }
+
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', closeSidebar);
+    }
 
     // Close sidebar on escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeSidebar();
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeSidebar();
+        }
+    });
+
+    // Close sidebar when clicking a nav link (mobile)
+    const navLinks = document.querySelectorAll('.nav-item');
+    navLinks.forEach(function (link) {
+        link.addEventListener('click', function () {
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
+        });
     });
 
     // =========================================
@@ -47,6 +80,8 @@
     // =========================================
     async function loadAdminInfo() {
         try {
+            if (!window.supabaseClient) return;
+
             const { data: { session } } = await window.supabaseClient.auth.getSession();
             if (!session) return;
 
@@ -57,6 +92,10 @@
                 .single();
 
             if (admin) {
+                const adminName = document.getElementById('adminName');
+                const adminId = document.getElementById('adminId');
+                const adminAvatar = document.getElementById('adminAvatar');
+
                 if (adminName) adminName.textContent = admin.full_name;
                 if (adminId) adminId.textContent = admin.admin_id;
                 if (adminAvatar) adminAvatar.textContent = admin.full_name.charAt(0).toUpperCase();
@@ -67,26 +106,13 @@
     }
 
     // =========================================
-    // Logout
-    // =========================================
-    logoutBtn?.addEventListener('click', async () => {
-        try {
-            await window.supabaseClient.auth.signOut();
-            window.location.href = 'signin.html';
-        } catch (error) {
-            console.error('Logout error:', error);
-            window.location.href = 'signin.html';
-        }
-    });
-
-    // =========================================
     // Set Active Nav Item
     // =========================================
     function setActiveNav() {
         const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
         const navItems = document.querySelectorAll('.nav-item');
 
-        navItems.forEach(item => {
+        navItems.forEach(function (item) {
             const href = item.getAttribute('href');
             if (href === currentPage) {
                 item.classList.add('active');
@@ -113,4 +139,8 @@
     preventBackNavigation();
     await loadAdminInfo();
 
-})();
+    // Debug log
+    console.log('Admin panel initialized');
+    console.log('Sidebar:', sidebar ? 'found' : 'not found');
+    console.log('Mobile menu btn:', mobileMenuBtn ? 'found' : 'not found');
+});

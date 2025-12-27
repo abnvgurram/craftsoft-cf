@@ -20,14 +20,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     // TOGGLE DROPDOWN
     // ============================================
 
-    if (toggle) {
-        toggle.addEventListener('click', (e) => {
+    if (toggle && switcher) {
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
             e.stopPropagation();
             switcher.classList.toggle('active');
+            console.log('Switcher toggled:', switcher.classList.contains('active'));
         });
+
+        // Touch support
+        toggle.addEventListener('touchend', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            switcher.classList.toggle('active');
+        }, { passive: false });
     }
 
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', function (e) {
         if (switcher && !switcher.contains(e.target)) {
             switcher.classList.remove('active');
         }
