@@ -43,7 +43,6 @@ export default function Header({ onMobileToggle }) {
 
     const handleAddAccount = () => {
         handleClose();
-        signOut();
         navigate('/signin?action=add_account');
     };
 

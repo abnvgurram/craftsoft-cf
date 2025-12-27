@@ -46,7 +46,17 @@ export default function Signin() {
     const [shake, setShake] = useState(false);
 
     useEffect(() => {
-        if (session) navigate('/');
+        const action = searchParams.get('action');
+
+        if (session && action !== 'add_account') {
+            navigate('/');
+            return;
+        }
+
+        if (session && action === 'add_account') {
+            supabase.auth.signOut();
+        }
+
         if (searchParams.get('reason') === 'timeout') {
             setError('You were logged out due to inactivity.');
         }
