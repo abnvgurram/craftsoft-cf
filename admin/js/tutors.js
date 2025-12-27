@@ -257,17 +257,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         const countryCode = document.getElementById('tutorCountryCode').value.trim() || '+91';
         const fullPhone = countryCode + phone.replace(/\D/g, '');
 
+        // Supabase data (only fields in table)
         const tutorData = {
             id: editingTutorId || generateTutorId(),
             name: fullName,
             phone: fullPhone,
             email: document.getElementById('tutorEmail').value.trim() || null,
             courses: [...selectedCourses],
+            join_date: null,
+            status: 'active',
+            notes: document.getElementById('tutorNotes').value.trim() || null
+        };
+
+        // Extra fields for localStorage (not in Supabase)
+        const localExtraData = {
             linkedin: document.getElementById('linkedin').value.trim() || null,
             teaching_mode: teachingMode,
-            availability: availability,
-            notes: document.getElementById('tutorNotes').value.trim() || null,
-            created_at: editingTutorId ? undefined : new Date().toISOString()
+            availability: availability
         };
 
         saveTutorBtn.disabled = true;
@@ -275,13 +281,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         try {
             if (editingTutorId) {
+                // Update in Supabase
+                const { error } = await window.supabaseClient
+                    .from('tutors')
+                    .update(tutorData)
+                    .eq('id', editingTutorId);
+
+                if (error) throw error;
+
                 const index = tutors.findIndex(t => t.id === editingTutorId);
                 if (index !== -1) {
-                    tutors[index] = { ...tutors[index], ...tutorData };
+                    tutors[index] = { ...tutors[index], ...tutorData, ...localExtraData };
                 }
                 window.toast.success('Updated', 'Tutor updated successfully');
             } else {
-                tutors.push(tutorData);
+                // Insert to Supabase
+                const { error } = await window.supabaseClient
+                    .from('tutors')
+                    .insert([tutorData]);
+
+                if (error) throw error;
+
+                tutors.push({ ...tutorData, ...localExtraData, created_at: new Date().toISOString() });
                 window.toast.success('Added', 'Tutor added successfully');
             }
 
@@ -292,7 +313,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error('Error saving tutor:', error);
-            window.toast.error('Error', 'Failed to save tutor');
+            window.toast.error('Error', 'Failed to save tutor: ' + error.message);
         } finally {
             saveTutorBtn.disabled = false;
             saveTutorBtn.innerHTML = '<i class="fas fa-save"></i> <span>Save Tutor</span>';
@@ -304,11 +325,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ============================================
     async function loadTutors() {
         try {
-            const stored = localStorage.getItem('craftsoft_tutors');
-            tutors = stored ? JSON.parse(stored) : [];
+            // Try loading from Supabase first
+            const { data: supabaseTutors, error } = await window.supabaseClient
+                .from('tutors')
+                .select('*')
+                .order('created_at', { ascending: false });
 
+            if (error) {
+                console.warn('Supabase load failed, using localStorage:', error.message);
+                const stored = localStorage.getItem('craftsoft_tutors');
+                tutors = stored ? JSON.parse(stored) : [];
+            } else if (supabaseTutors && supabaseTutors.length > 0) {
+                tutors = supabaseTutors;
+                saveTutorsToStorage();
+            } else {
+                const stored = localStorage.getItem('craftsoft_tutors');
+                tutors = stored ? JSON.parse(stored) : [];
+            }
+
+            // Seed mock data if empty
             if (tutors.length === 0) {
-                tutors = [
+                const mockTutors = [
                     {
                         id: 'T-ACS-001',
                         name: 'Sneha Reddy',
@@ -318,6 +355,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         linkedin: 'https://linkedin.com/in/snehareddy',
                         teaching_mode: 'both',
                         availability: 'flexible',
+                        status: 'active',
                         notes: 'Design specialist with 5+ years experience',
                         created_at: new Date().toISOString()
                     },
@@ -330,6 +368,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         linkedin: 'https://linkedin.com/in/ravikumar',
                         teaching_mode: 'online',
                         availability: 'weekdays',
+                        status: 'active',
                         notes: 'Full stack expert, MERN specialist',
                         created_at: new Date().toISOString()
                     },
@@ -342,10 +381,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                         linkedin: 'https://linkedin.com/in/arunmehta',
                         teaching_mode: 'both',
                         availability: 'weekends',
+                        status: 'active',
                         notes: 'DevOps & Cloud certified trainer',
                         created_at: new Date().toISOString()
                     }
                 ];
+
+                // Insert mock data to Supabase
+                for (const tutor of mockTutors) {
+                    const { id, name, phone, email, courses, status, notes } = tutor;
+                    await window.supabaseClient
+                        .from('tutors')
+                        .insert([{ id, name, phone, email, courses, status, notes }])
+                        .catch(e => console.warn('Mock insert skipped:', e.message));
+                }
+
+                tutors = mockTutors;
                 saveTutorsToStorage();
             }
 
@@ -354,6 +405,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error('Error loading tutors:', error);
+            const stored = localStorage.getItem('craftsoft_tutors');
+            tutors = stored ? JSON.parse(stored) : [];
+            applyFiltersAndSort();
         }
     }
 
@@ -613,12 +667,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.modal.confirm(
                 'Delete Tutor',
                 `Are you sure you want to delete <strong>${tutor.name}</strong>?`,
-                () => {
-                    tutors = tutors.filter(t => t.id !== id);
-                    saveTutorsToStorage();
-                    applyFiltersAndSort();
-                    updateDashboardStats();
-                    window.toast.success('Deleted', 'Tutor removed successfully');
+                async () => {
+                    try {
+                        const { error } = await window.supabaseClient
+                            .from('tutors')
+                            .delete()
+                            .eq('id', id);
+
+                        if (error) throw error;
+
+                        tutors = tutors.filter(t => t.id !== id);
+                        saveTutorsToStorage();
+                        applyFiltersAndSort();
+                        updateDashboardStats();
+                        window.toast.success('Deleted', 'Tutor removed successfully');
+                    } catch (error) {
+                        console.error('Delete error:', error);
+                        window.toast.error('Error', 'Failed to delete: ' + error.message);
+                    }
                 }
             );
         }
