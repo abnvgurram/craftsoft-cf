@@ -52,9 +52,9 @@ export default function Header({ onMobileToggle }) {
 
     const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-    const confirmLogout = () => {
+    const confirmLogout = async () => {
         setLogoutDialogOpen(false);
-        signOut();
+        await signOut();
         navigate('/signin', { replace: true });
     };
 
@@ -63,9 +63,9 @@ export default function Header({ onMobileToggle }) {
         admin.admin_id !== adminProfile?.admin_id
     );
 
-    const handleSwitchAccount = (identifier) => {
+    const handleSwitchAccount = async (identifier) => {
         handleClose();
-        signOut();
+        await signOut();
         navigate(`/signin?select_account=${identifier}`, { replace: true });
     };
 
@@ -76,10 +76,10 @@ export default function Header({ onMobileToggle }) {
         setSavedAdmins(updated);
     };
 
-    const handleSignOutAll = () => {
+    const handleSignOutAll = async () => {
         handleClose();
         localStorage.removeItem('craftsoft_saved_admins');
-        signOut();
+        await signOut();
         navigate('/signin', { replace: true });
     };
 
