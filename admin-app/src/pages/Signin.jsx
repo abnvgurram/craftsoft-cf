@@ -125,7 +125,8 @@ export default function Signin() {
                 setSavedAdmins(updated);
             }
 
-            // navigate('/') removed to allow useEffect to handle redirect on session change
+            navigate('/', { replace: true });
+
         } catch (err) {
             console.error(err);
             setShake(true);
