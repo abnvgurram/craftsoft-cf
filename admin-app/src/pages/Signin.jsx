@@ -175,6 +175,10 @@ export default function Signin() {
                             value={identifier}
                             onChange={(e) => setIdentifier(e.target.value)}
                             disabled={isReadOnly}
+                            autoComplete="off"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
                             // Important: Force readOnly attribute for true read-only behavior
                             InputProps={{
                                 readOnly: isReadOnly,
@@ -187,6 +191,10 @@ export default function Signin() {
                             variant="outlined" margin="normal"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password"
+                            onCopy={(e) => e.preventDefault()}
+                            onPaste={(e) => e.preventDefault()}
+                            onCut={(e) => e.preventDefault()}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
