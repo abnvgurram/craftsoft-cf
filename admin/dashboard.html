@@ -8,6 +8,11 @@
     <meta name="description" content="Craft Soft Admin Dashboard">
     <meta name="robots" content="noindex, nofollow">
 
+    <!-- Security: No Cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 
@@ -38,10 +43,25 @@
                     <i class="fa-solid fa-shield-halved"></i>
                     <span id="admin-id">Loading...</span>
                 </div>
-                <button class="btn-logout" id="logout-btn">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    Logout
-                </button>
+
+                <!-- Logout Dropdown -->
+                <div class="logout-dropdown" id="logout-dropdown">
+                    <button class="btn-logout-trigger" id="logout-trigger">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                    </button>
+                    <div class="logout-menu" id="logout-menu">
+                        <button class="logout-option" id="logout-current">
+                            <i class="fa-solid fa-user-minus"></i>
+                            <span>Logout</span>
+                        </button>
+                        <button class="logout-option logout-all" id="logout-all">
+                            <i class="fa-solid fa-users-slash"></i>
+                            <span>Logout from All Devices</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -71,13 +91,16 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const { Toast, Modal } = window.AdminUtils;
+            const { Toast, Modal, NavigationSecurity } = window.AdminUtils;
+
+            // Initialize navigation security (back/forward protection)
+            NavigationSecurity.initProtectedPage();
 
             // Check authentication
             const session = await window.supabaseConfig.getSession();
 
             if (!session) {
-                window.location.href = 'login.html';
+                NavigationSecurity.secureRedirect('/admin/login.html');
                 return;
             }
 
@@ -86,30 +109,52 @@
 
             if (!admin || admin.status !== 'ACTIVE') {
                 Toast.error('Access Denied', 'Your account is not active');
-                await window.Auth.logout();
-                window.location.href = 'login.html';
+                await NavigationSecurity.secureLogout();
                 return;
             }
 
             // Display admin info
             document.getElementById('admin-id').textContent = admin.admin_id || 'Admin';
 
-            // Logout handler
-            document.getElementById('logout-btn').addEventListener('click', () => {
+            // Logout dropdown toggle
+            const logoutTrigger = document.getElementById('logout-trigger');
+            const logoutMenu = document.getElementById('logout-menu');
+            const logoutDropdown = document.getElementById('logout-dropdown');
+
+            logoutTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                logoutDropdown.classList.toggle('open');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!logoutDropdown.contains(e.target)) {
+                    logoutDropdown.classList.remove('open');
+                }
+            });
+
+            // Individual Logout
+            document.getElementById('logout-current').addEventListener('click', () => {
+                logoutDropdown.classList.remove('open');
                 Modal.confirm(
                     'Confirm Logout',
-                    'Are you sure you want to logout?',
+                    'Are you sure you want to logout from this device?',
                     async () => {
-                        const result = await window.Auth.logout();
+                        Toast.info('Logging out...', '');
+                        await NavigationSecurity.secureLogout();
+                    }
+                );
+            });
 
-                        if (result.success) {
-                            Toast.success('Logged Out', 'You have been logged out successfully');
-                            setTimeout(() => {
-                                window.location.href = 'login.html';
-                            }, 1000);
-                        } else {
-                            Toast.error('Error', 'Failed to logout. Please try again.');
-                        }
+            // Logout from All Devices
+            document.getElementById('logout-all').addEventListener('click', () => {
+                logoutDropdown.classList.remove('open');
+                Modal.confirm(
+                    'Logout from All Devices',
+                    'This will log you out from ALL devices and sessions. Continue?',
+                    async () => {
+                        Toast.info('Logging out from all devices...', '');
+                        await NavigationSecurity.secureLogoutAll();
                     }
                 );
             });
@@ -117,7 +162,7 @@
             // Listen for auth state changes
             window.supabaseConfig.onAuthStateChange((event, session) => {
                 if (event === 'SIGNED_OUT') {
-                    window.location.href = 'login.html';
+                    NavigationSecurity.secureRedirect('/admin/login.html');
                 }
             });
         });

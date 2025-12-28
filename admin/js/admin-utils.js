@@ -352,6 +352,119 @@ const Security = {
 };
 
 // ============================================
+// Navigation Security (Back/Forward/History)
+// ============================================
+const NavigationSecurity = {
+    // Initialize protection on protected pages
+    initProtectedPage() {
+        // Prevent back navigation by pushing state
+        this.preventBackNavigation();
+
+        // Check session on visibility change (tab focus)
+        this.initVisibilityCheck();
+
+        // Add no-cache meta tags dynamically
+        this.addNoCacheMeta();
+    },
+
+    // Prevent back button after logout
+    preventBackNavigation() {
+        // Push a new state to prevent going back
+        history.pushState(null, '', location.href);
+
+        window.addEventListener('popstate', async (e) => {
+            // Push state again to prevent back
+            history.pushState(null, '', location.href);
+
+            // Check if session is still valid
+            const session = await window.supabaseConfig.getSession();
+            if (!session) {
+                // No session - redirect to login
+                this.secureRedirect('/admin/login.html');
+            }
+        });
+    },
+
+    // Check session when tab becomes visible
+    initVisibilityCheck() {
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState === 'visible') {
+                const session = await window.supabaseConfig.getSession();
+                if (!session) {
+                    this.secureRedirect('/admin/login.html');
+                }
+            }
+        });
+    },
+
+    // Add no-cache meta tags
+    addNoCacheMeta() {
+        const metaTags = [
+            { 'http-equiv': 'Cache-Control', content: 'no-cache, no-store, must-revalidate' },
+            { 'http-equiv': 'Pragma', content: 'no-cache' },
+            { 'http-equiv': 'Expires', content: '0' }
+        ];
+
+        metaTags.forEach(attrs => {
+            const meta = document.createElement('meta');
+            Object.keys(attrs).forEach(key => {
+                meta.setAttribute(key, attrs[key]);
+            });
+            document.head.appendChild(meta);
+        });
+    },
+
+    // Secure redirect (replaces history, prevents back)
+    secureRedirect(url) {
+        // Clear any session data
+        sessionStorage.clear();
+
+        // Replace current history entry
+        history.replaceState(null, '', url);
+
+        // Navigate to new URL
+        window.location.replace(url);
+    },
+
+    // Logout with full security (individual)
+    async secureLogout() {
+        // Sign out from Supabase
+        if (window.supabaseClient) {
+            await window.supabaseClient.auth.signOut();
+        }
+
+        // Clear all storage
+        sessionStorage.clear();
+
+        // Replace history and redirect
+        this.secureRedirect('/admin/login.html');
+    },
+
+    // Logout from ALL sessions (invalidates all tokens)
+    async secureLogoutAll() {
+        if (window.supabaseClient) {
+            // Sign out from all sessions (scope: 'global')
+            await window.supabaseClient.auth.signOut({ scope: 'global' });
+        }
+
+        // Clear all storage
+        sessionStorage.clear();
+
+        // Replace history and redirect
+        this.secureRedirect('/admin/login.html');
+    },
+
+    // Initialize for login page (public page)
+    initPublicPage() {
+        // Add no-cache meta
+        this.addNoCacheMeta();
+
+        // Clear forward history by replacing state
+        history.replaceState(null, '', location.href);
+    }
+};
+
+// ============================================
 // Password Toggle
 // ============================================
 function initPasswordToggles() {
@@ -433,6 +546,7 @@ window.AdminUtils = {
     Validators,
     FormHelpers,
     Security,
+    NavigationSecurity,
     requireAuth,
     requireNoAuth,
     formatAdminId,

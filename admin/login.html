@@ -8,6 +8,11 @@
     <meta name="description" content="Admin login portal for Craft Soft management">
     <meta name="robots" content="noindex, nofollow">
 
+    <!-- Security: No Cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 
@@ -100,7 +105,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const { Toast, Modal, Validators, FormHelpers, Security, clearTempEmail } = window.AdminUtils;
+            const { Toast, Modal, Validators, FormHelpers, Security, NavigationSecurity, clearTempEmail } = window.AdminUtils;
+
+            // Initialize public page security (clear forward history)
+            NavigationSecurity.initPublicPage();
 
             // Clear any temp email from signup
             clearTempEmail();
