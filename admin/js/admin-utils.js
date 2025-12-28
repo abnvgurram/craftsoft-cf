@@ -904,15 +904,36 @@ const AccountManager = {
                 if (currentAccount) {
                     const result = this.removeAccount(currentAccount.id);
 
-                    // Sign out from Supabase
-                    await window.supabaseClient.auth.signOut();
-
                     if (result.accounts.length > 0 && result.newCurrentAccount) {
-                        // Switch to next account
-                        await this.handleSwitchAccount(result.newCurrentAccount.id);
-                    } else {
-                        NavigationSecurity.secureRedirect('/admin/login.html');
+                        // Switch to next account FIRST (before signing out)
+                        // This sets the new session before we lose the current one
+                        const storedSession = this.getStoredSession(result.newCurrentAccount.id);
+
+                        if (storedSession) {
+                            try {
+                                // Set the new session
+                                await window.supabaseClient.auth.setSession({
+                                    access_token: storedSession.access_token,
+                                    refresh_token: storedSession.refresh_token
+                                });
+
+                                Toast.success('Switched Account', `Now logged in as ${result.newCurrentAccount.full_name}`);
+
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 500);
+                                return;
+                            } catch (error) {
+                                console.error('Switch error:', error);
+                                // If switch fails, remove that account too and continue
+                                this.removeAccount(result.newCurrentAccount.id);
+                            }
+                        }
                     }
+
+                    // No other accounts or switch failed - go to login
+                    await window.supabaseClient.auth.signOut();
+                    NavigationSecurity.secureRedirect('/admin/login.html');
                 } else {
                     NavigationSecurity.secureLogout();
                 }
@@ -1000,6 +1021,14 @@ const AccountManager = {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
         });
+
+        // Apply security to inputs (disable paste/copy)
+        const { Security } = window.AdminUtils;
+        const identifierInput = document.getElementById('add-identifier');
+        const passwordInput = document.getElementById('add-password');
+
+        Security.secureInput(identifierInput);
+        Security.secureInput(passwordInput);
 
         // Password toggle
         document.getElementById('add-password-toggle').addEventListener('click', function () {
