@@ -39,29 +39,8 @@
                 <span class="dashboard-title">Admin Panel</span>
             </div>
             <div class="dashboard-header-right">
-                <div class="admin-badge" id="admin-badge">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span id="admin-id">Loading...</span>
-                </div>
-
-                <!-- Logout Dropdown -->
-                <div class="logout-dropdown" id="logout-dropdown">
-                    <button class="btn-logout-trigger" id="logout-trigger">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        <span>Logout</span>
-                        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-                    </button>
-                    <div class="logout-menu" id="logout-menu">
-                        <button class="logout-option" id="logout-current">
-                            <i class="fa-solid fa-user-minus"></i>
-                            <span>Logout</span>
-                        </button>
-                        <button class="logout-option logout-all" id="logout-all">
-                            <i class="fa-solid fa-users-slash"></i>
-                            <span>Logout from All Devices</span>
-                        </button>
-                    </div>
-                </div>
+                <!-- Account Panel will be rendered here -->
+                <div id="account-panel-container"></div>
             </div>
         </header>
 
@@ -91,7 +70,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const { Toast, Modal, NavigationSecurity } = window.AdminUtils;
+            const { Toast, Modal, NavigationSecurity, AccountManager } = window.AdminUtils;
 
             // Initialize navigation security (back/forward protection)
             NavigationSecurity.initProtectedPage();
@@ -113,51 +92,20 @@
                 return;
             }
 
-            // Display admin info
-            document.getElementById('admin-id').textContent = admin.admin_id || 'Admin';
+            // Add/update current account in session storage
+            AccountManager.addAccount({
+                id: session.user.id,
+                admin_id: admin.admin_id,
+                email: admin.email,
+                full_name: admin.full_name,
+                initials: AccountManager.getInitials(admin.full_name)
+            }, true);
 
-            // Logout dropdown toggle
-            const logoutTrigger = document.getElementById('logout-trigger');
-            const logoutMenu = document.getElementById('logout-menu');
-            const logoutDropdown = document.getElementById('logout-dropdown');
+            // Store session tokens for account switching
+            AccountManager.storeSession(session.user.id, session);
 
-            logoutTrigger.addEventListener('click', (e) => {
-                e.stopPropagation();
-                logoutDropdown.classList.toggle('open');
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!logoutDropdown.contains(e.target)) {
-                    logoutDropdown.classList.remove('open');
-                }
-            });
-
-            // Individual Logout
-            document.getElementById('logout-current').addEventListener('click', () => {
-                logoutDropdown.classList.remove('open');
-                Modal.confirm(
-                    'Confirm Logout',
-                    'Are you sure you want to logout from this device?',
-                    async () => {
-                        Toast.info('Logging out...', '');
-                        await NavigationSecurity.secureLogout();
-                    }
-                );
-            });
-
-            // Logout from All Devices
-            document.getElementById('logout-all').addEventListener('click', () => {
-                logoutDropdown.classList.remove('open');
-                Modal.confirm(
-                    'Logout from All Devices',
-                    'This will log you out from ALL devices and sessions. Continue?',
-                    async () => {
-                        Toast.info('Logging out from all devices...', '');
-                        await NavigationSecurity.secureLogoutAll();
-                    }
-                );
-            });
+            // Render the account panel
+            AccountManager.renderAccountPanel('account-panel-container');
 
             // Listen for auth state changes
             window.supabaseConfig.onAuthStateChange((event, session) => {

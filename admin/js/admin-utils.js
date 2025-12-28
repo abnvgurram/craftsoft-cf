@@ -533,6 +533,575 @@ function clearTempEmail() {
 }
 
 // ============================================
+// Account Manager (Gmail-style multi-account)
+// ============================================
+const AccountManager = {
+    STORAGE_KEY: 'admin_accounts',
+
+    // Get all stored accounts
+    getAccounts() {
+        try {
+            const data = sessionStorage.getItem(this.STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        } catch (e) {
+            console.error('Error reading accounts:', e);
+            return [];
+        }
+    },
+
+    // Save accounts to storage
+    saveAccounts(accounts) {
+        try {
+            sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(accounts));
+        } catch (e) {
+            console.error('Error saving accounts:', e);
+        }
+    },
+
+    // Get current active account
+    getCurrentAccount() {
+        const accounts = this.getAccounts();
+        return accounts.find(acc => acc.is_current) || accounts[0] || null;
+    },
+
+    // Generate initials from name
+    getInitials(fullName) {
+        if (!fullName) return '??';
+        const parts = fullName.trim().split(' ');
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        return fullName.substring(0, 2).toUpperCase();
+    },
+
+    // Add or update an account
+    addAccount(accountData, makeCurrent = true) {
+        let accounts = this.getAccounts();
+
+        // Check if account already exists
+        const existingIndex = accounts.findIndex(acc => acc.id === accountData.id);
+
+        if (existingIndex !== -1) {
+            // Update existing account
+            accounts[existingIndex] = {
+                ...accounts[existingIndex],
+                ...accountData,
+                is_current: makeCurrent ? true : accounts[existingIndex].is_current
+            };
+        } else {
+            // Add new account
+            accounts.push({
+                ...accountData,
+                initials: this.getInitials(accountData.full_name),
+                is_current: makeCurrent
+            });
+        }
+
+        // If making current, unset others
+        if (makeCurrent) {
+            accounts = accounts.map(acc => ({
+                ...acc,
+                is_current: acc.id === accountData.id
+            }));
+        }
+
+        this.saveAccounts(accounts);
+        return accounts;
+    },
+
+    // Remove an account
+    removeAccount(accountId) {
+        let accounts = this.getAccounts();
+        const removedAccount = accounts.find(acc => acc.id === accountId);
+        const wasCurrent = removedAccount?.is_current;
+
+        accounts = accounts.filter(acc => acc.id !== accountId);
+
+        // If removed account was current, make first remaining account current
+        if (wasCurrent && accounts.length > 0) {
+            accounts[0].is_current = true;
+        }
+
+        this.saveAccounts(accounts);
+
+        return {
+            accounts,
+            removedAccount,
+            newCurrentAccount: wasCurrent ? accounts[0] : null
+        };
+    },
+
+    // Switch to a different account
+    switchAccount(accountId) {
+        let accounts = this.getAccounts();
+
+        accounts = accounts.map(acc => ({
+            ...acc,
+            is_current: acc.id === accountId
+        }));
+
+        this.saveAccounts(accounts);
+        return accounts.find(acc => acc.id === accountId);
+    },
+
+    // Clear all accounts
+    clearAll() {
+        sessionStorage.removeItem(this.STORAGE_KEY);
+    },
+
+    // Check if account exists
+    hasAccount(accountId) {
+        return this.getAccounts().some(acc => acc.id === accountId);
+    },
+
+    // Get account count
+    getAccountCount() {
+        return this.getAccounts().length;
+    },
+
+    // Store session tokens for an account
+    storeSession(accountId, session) {
+        let accounts = this.getAccounts();
+        const index = accounts.findIndex(acc => acc.id === accountId);
+
+        if (index !== -1 && session) {
+            accounts[index].access_token = session.access_token;
+            accounts[index].refresh_token = session.refresh_token;
+            accounts[index].expires_at = session.expires_at;
+            this.saveAccounts(accounts);
+        }
+    },
+
+    // Get stored session for an account
+    getStoredSession(accountId) {
+        const accounts = this.getAccounts();
+        const account = accounts.find(acc => acc.id === accountId);
+
+        if (account && account.access_token) {
+            return {
+                access_token: account.access_token,
+                refresh_token: account.refresh_token,
+                expires_at: account.expires_at
+            };
+        }
+        return null;
+    },
+
+    // Render account panel HTML
+    renderAccountPanel(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const accounts = this.getAccounts();
+        const currentAccount = this.getCurrentAccount();
+
+        container.innerHTML = `
+            <div class="account-panel">
+                <button class="account-trigger" id="account-trigger">
+                    <div class="account-avatar">
+                        ${currentAccount ? currentAccount.initials : '??'}
+                    </div>
+                    <div class="account-info">
+                        <span class="account-name">${currentAccount?.full_name || 'Loading...'}</span>
+                        <span class="account-id">${currentAccount?.admin_id || ''}</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down account-arrow"></i>
+                </button>
+                
+                <div class="account-dropdown" id="account-dropdown">
+                    <div class="account-dropdown-header">
+                        <span>Manage Accounts</span>
+                    </div>
+                    
+                    <div class="account-list" id="account-list">
+                        ${accounts.map(acc => `
+                            <div class="account-item ${acc.is_current ? 'current' : ''}" data-account-id="${acc.id}">
+                                <div class="account-item-avatar">${acc.initials}</div>
+                                <div class="account-item-details">
+                                    <span class="account-item-name">${acc.full_name}</span>
+                                    <span class="account-item-email">${acc.email}</span>
+                                    <span class="account-item-id">${acc.admin_id || 'Pending'}</span>
+                                </div>
+                                ${acc.is_current ? '<span class="account-current-badge"><i class="fa-solid fa-check"></i></span>' : ''}
+                                <button class="account-remove-btn" data-remove-id="${acc.id}" title="Remove account">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <button class="account-add-btn" id="add-account-btn">
+                        <div class="account-add-icon">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        <span>Add another account</span>
+                    </button>
+                    
+                    <div class="account-actions">
+                        <button class="account-action-btn" id="logout-current-btn">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            Logout
+                        </button>
+                        <button class="account-action-btn logout-all" id="logout-all-btn">
+                            <i class="fa-solid fa-users-slash"></i>
+                            Logout All
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        this.initPanelEvents();
+    },
+
+    // Initialize panel event listeners
+    initPanelEvents() {
+        const trigger = document.getElementById('account-trigger');
+        const dropdown = document.getElementById('account-dropdown');
+
+        if (!trigger || !dropdown) return;
+
+        // Toggle dropdown
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('open');
+            trigger.classList.toggle('open');
+        });
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.account-panel')) {
+                dropdown.classList.remove('open');
+                trigger.classList.remove('open');
+            }
+        });
+
+        // Account item click (switch)
+        document.querySelectorAll('.account-item').forEach(item => {
+            item.addEventListener('click', async (e) => {
+                if (e.target.closest('.account-remove-btn')) return;
+
+                const accountId = item.dataset.accountId;
+                if (!item.classList.contains('current')) {
+                    await this.handleSwitchAccount(accountId);
+                }
+            });
+        });
+
+        // Remove account buttons
+        document.querySelectorAll('.account-remove-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const accountId = btn.dataset.removeId;
+                this.handleRemoveAccount(accountId);
+            });
+        });
+
+        // Add account button
+        document.getElementById('add-account-btn')?.addEventListener('click', () => {
+            dropdown.classList.remove('open');
+            trigger.classList.remove('open');
+            this.showAddAccountModal();
+        });
+
+        // Logout current
+        document.getElementById('logout-current-btn')?.addEventListener('click', () => {
+            this.handleLogoutCurrent();
+        });
+
+        // Logout all
+        document.getElementById('logout-all-btn')?.addEventListener('click', () => {
+            this.handleLogoutAll();
+        });
+    },
+
+    // Handle switching accounts
+    async handleSwitchAccount(accountId) {
+        const { Toast, NavigationSecurity } = window.AdminUtils;
+
+        const storedSession = this.getStoredSession(accountId);
+        if (!storedSession) {
+            Toast.error('Session Expired', 'Please login to this account again');
+            this.removeAccount(accountId);
+            location.reload();
+            return;
+        }
+
+        try {
+            // Set the session in Supabase
+            const { error } = await window.supabaseClient.auth.setSession({
+                access_token: storedSession.access_token,
+                refresh_token: storedSession.refresh_token
+            });
+
+            if (error) throw error;
+
+            // Update current account
+            this.switchAccount(accountId);
+
+            Toast.success('Account Switched', 'Refreshing dashboard...');
+
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+
+        } catch (error) {
+            console.error('Switch account error:', error);
+            Toast.error('Switch Failed', 'Could not switch account. Please login again.');
+            this.removeAccount(accountId);
+            location.reload();
+        }
+    },
+
+    // Handle removing an account
+    handleRemoveAccount(accountId) {
+        const { Modal, Toast, NavigationSecurity } = window.AdminUtils;
+        const accounts = this.getAccounts();
+        const account = accounts.find(acc => acc.id === accountId);
+
+        if (!account) return;
+
+        Modal.show({
+            type: 'warning',
+            title: 'Remove Account',
+            message: `Remove ${account.full_name} (${account.admin_id || account.email}) from this browser?`,
+            buttons: [
+                { text: 'Cancel' },
+                {
+                    text: 'Remove',
+                    primary: true,
+                    onClick: async () => {
+                        const result = this.removeAccount(accountId);
+
+                        if (result.accounts.length === 0) {
+                            // No accounts left, go to login
+                            NavigationSecurity.secureRedirect('/admin/login.html');
+                        } else if (result.newCurrentAccount) {
+                            // Removed current account, switch to new one
+                            await this.handleSwitchAccount(result.newCurrentAccount.id);
+                        } else {
+                            Toast.success('Account Removed', '');
+                            location.reload();
+                        }
+                    }
+                }
+            ]
+        });
+    },
+
+    // Handle logout current
+    handleLogoutCurrent() {
+        const { Modal, Toast, NavigationSecurity } = window.AdminUtils;
+        const currentAccount = this.getCurrentAccount();
+        const accountCount = this.getAccountCount();
+
+        Modal.confirm(
+            'Logout',
+            accountCount > 1
+                ? 'Logout from current account? You will be switched to another account.'
+                : 'Are you sure you want to logout?',
+            async () => {
+                if (currentAccount) {
+                    const result = this.removeAccount(currentAccount.id);
+
+                    // Sign out from Supabase
+                    await window.supabaseClient.auth.signOut();
+
+                    if (result.accounts.length > 0 && result.newCurrentAccount) {
+                        // Switch to next account
+                        await this.handleSwitchAccount(result.newCurrentAccount.id);
+                    } else {
+                        NavigationSecurity.secureRedirect('/admin/login.html');
+                    }
+                } else {
+                    NavigationSecurity.secureLogout();
+                }
+            }
+        );
+    },
+
+    // Handle logout all
+    handleLogoutAll() {
+        const { Modal, NavigationSecurity } = window.AdminUtils;
+
+        Modal.confirm(
+            'Logout All Accounts',
+            'This will sign out from all accounts on this device. Continue?',
+            async () => {
+                this.clearAll();
+                await NavigationSecurity.secureLogoutAll();
+            }
+        );
+    },
+
+    // Show add account modal
+    showAddAccountModal() {
+        const existingModal = document.getElementById('add-account-modal');
+        if (existingModal) existingModal.remove();
+
+        const modal = document.createElement('div');
+        modal.id = 'add-account-modal';
+        modal.className = 'modal-overlay active';
+        modal.innerHTML = `
+            <div class="modal add-account-modal">
+                <button class="modal-close" id="close-add-modal">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                
+                <div class="modal-icon info">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                
+                <h3 class="modal-title">Add Another Account</h3>
+                
+                <form id="add-account-form" class="auth-form" style="margin-top: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="add-identifier">Email or Admin ID</label>
+                        <input type="text" id="add-identifier" class="form-input" placeholder="admin@example.com or ACS-01" required>
+                        <div id="add-identifier-error" class="form-error"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="add-password">Password</label>
+                        <div class="form-input-wrapper">
+                            <input type="password" id="add-password" class="form-input has-icon" placeholder="Enter password" required>
+                            <button type="button" class="password-toggle" id="add-password-toggle">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <div id="add-password-error" class="form-error"></div>
+                    </div>
+                    
+                    <button type="submit" id="add-account-submit" class="btn btn-primary btn-full">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        Sign In
+                    </button>
+                </form>
+                
+                <div class="auth-divider">or</div>
+                
+                <p class="auth-link">
+                    Don't have an account? <a href="/admin/signup.html">Sign Up</a>
+                </p>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+
+        // Close modal
+        const closeModal = () => {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(() => modal.remove(), 300);
+        };
+
+        document.getElementById('close-add-modal').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Password toggle
+        document.getElementById('add-password-toggle').addEventListener('click', function () {
+            const input = document.getElementById('add-password');
+            const icon = this.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        });
+
+        // Form submit
+        document.getElementById('add-account-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.handleAddAccountSubmit(closeModal);
+        });
+    },
+
+    // Handle add account form submission
+    async handleAddAccountSubmit(closeModal) {
+        const { Toast, FormHelpers, Validators } = window.AdminUtils;
+
+        const identifier = document.getElementById('add-identifier').value.trim();
+        const password = document.getElementById('add-password').value;
+        const submitBtn = document.getElementById('add-account-submit');
+
+        // Clear errors
+        document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+
+        // Validate
+        if (!identifier) {
+            document.getElementById('add-identifier-error').innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Please enter email or Admin ID';
+            document.getElementById('add-identifier-error').classList.add('show');
+            return;
+        }
+
+        if (!password) {
+            document.getElementById('add-password-error').innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Please enter password';
+            document.getElementById('add-password-error').classList.add('show');
+            return;
+        }
+
+        // Check if already added
+        const accounts = this.getAccounts();
+        const existing = accounts.find(acc =>
+            acc.email === identifier || acc.admin_id === identifier
+        );
+        if (existing) {
+            Toast.warning('Already Added', 'This account is already in your list');
+            closeModal();
+            return;
+        }
+
+        // Loading state
+        submitBtn.classList.add('btn-loading');
+        submitBtn.disabled = true;
+
+        try {
+            // Login via Auth
+            const result = await window.Auth.login(identifier, password);
+
+            if (!result.success) {
+                throw new Error(result.error);
+            }
+
+            // Get session
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+
+            // Add account
+            this.addAccount({
+                id: result.user.id,
+                admin_id: result.admin.admin_id,
+                email: result.user.email,
+                full_name: result.admin.full_name,
+                initials: this.getInitials(result.admin.full_name)
+            }, true);
+
+            // Store session tokens
+            if (session) {
+                this.storeSession(result.user.id, session);
+            }
+
+            Toast.success('Account Added', `Signed in as ${result.admin.full_name}`);
+            closeModal();
+
+            setTimeout(() => {
+                location.reload();
+            }, 500);
+
+        } catch (error) {
+            console.error('Add account error:', error);
+            Toast.error('Sign In Failed', error.message);
+            submitBtn.classList.remove('btn-loading');
+            submitBtn.disabled = false;
+        }
+    }
+};
+
+// ============================================
 // Initialize on DOM Ready
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -547,6 +1116,7 @@ window.AdminUtils = {
     FormHelpers,
     Security,
     NavigationSecurity,
+    AccountManager,
     requireAuth,
     requireNoAuth,
     formatAdminId,
