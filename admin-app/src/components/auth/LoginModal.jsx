@@ -90,7 +90,7 @@ export default function LoginModal({ open, account, onClose, onSuccess }) {
                         autoComplete="current-password"
                         placeholder="Verify your identity"
                         InputProps={{
-                            sx: { borderRadius: 2, height: 56 }, // Taller input
+                            sx: { borderRadius: 2 },
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
