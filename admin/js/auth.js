@@ -37,7 +37,6 @@ const Auth = {
                     full_name: fullName,
                     email: email,
                     phone: phone,
-                    role: 'OWNER',
                     status: 'PENDING',
                     admin_id: null // Will be assigned after verification
                 })
