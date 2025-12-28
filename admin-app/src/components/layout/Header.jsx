@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
     AppBar, Toolbar, IconButton, Typography, Box, Avatar, Menu, MenuItem, Divider, ListItemIcon, Button, ListItemText,
@@ -10,6 +9,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
+import LoginModal from '../auth/LoginModal';
 
 const DRAWER_WIDTH = 260;
 
@@ -50,6 +50,7 @@ export default function Header({ onMobileToggle }) {
     );
 
     const [logoutType, setLogoutType] = useState(null);
+    const [switchTarget, setSwitchTarget] = useState(null);
 
     const confirmLogout = async () => {
         if (logoutType === 'all') {
@@ -65,10 +66,14 @@ export default function Header({ onMobileToggle }) {
         admin.admin_id !== adminProfile?.admin_id
     );
 
-    const handleSwitchAccount = async (identifier) => {
+    const handleSwitchAccount = (account) => {
         handleClose();
-        await signOut();
-        navigate(`/signin?select_account=${identifier}`, { replace: true });
+        setSwitchTarget(account);
+    };
+
+    const handleLoginSuccess = () => {
+        setSwitchTarget(null);
+        window.location.reload();
     };
 
     const handleRemoveAccount = (e, adminId) => {
@@ -184,7 +189,7 @@ export default function Header({ onMobileToggle }) {
 
                         {/* Other Accounts */}
                         {otherAccounts.map((account, index) => (
-                            <MenuItem key={index} onClick={() => handleSwitchAccount(account.admin_id)} sx={{ py: 1.5 }}>
+                            <MenuItem key={index} onClick={() => handleSwitchAccount(account)} sx={{ py: 1.5 }}>
                                 <ListItemIcon>
                                     <Avatar sx={{ width: 32, height: 32, fontSize: '0.875rem', bgcolor: 'primary.light' }}>
                                         {account.full_name?.charAt(0) || 'A'}
@@ -228,6 +233,13 @@ export default function Header({ onMobileToggle }) {
                             </Button>
                         </MenuItem>
                     </Menu>
+
+                    <LoginModal
+                        open={Boolean(switchTarget)}
+                        account={switchTarget}
+                        onClose={() => setSwitchTarget(null)}
+                        onSuccess={handleLoginSuccess}
+                    />
 
                     <Dialog
                         open={Boolean(logoutType)}
