@@ -242,20 +242,17 @@ function renderCoursesCheckboxes(selectedCourses = []) {
         const isChecked = selectedCourses.includes(c.course_code);
         return `
             <label class="checkbox-item ${isChecked ? 'checked' : ''}" data-code="${c.course_code}">
-                <input type="checkbox" value="${c.course_code}" ${isChecked ? 'checked' : ''}>
+                <input type="checkbox" name="inquiry-courses" value="${c.course_code}" ${isChecked ? 'checked' : ''}>
                 <i class="fa-solid fa-check"></i>
                 <span>${c.course_code}</span>
             </label>
         `;
     }).join('');
 
-    // Toggle checked class on click
-    container.querySelectorAll('.checkbox-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-            if (e.target.tagName === 'INPUT') return;
-            const checkbox = item.querySelector('input');
-            checkbox.checked = !checkbox.checked;
-            item.classList.toggle('checked', checkbox.checked);
+    // Toggle checked class on change
+    container.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            checkbox.closest('.checkbox-item').classList.toggle('checked', checkbox.checked);
         });
     });
 }
@@ -336,10 +333,7 @@ async function saveInquiry() {
     const notes = document.getElementById('inquiry-notes').value.trim();
 
     // Get selected courses
-    const courses = [];
-    document.querySelectorAll('#inquiry-courses-list .checkbox-item input:checked').forEach(cb => {
-        courses.push(cb.value);
-    });
+    const courses = Array.from(document.querySelectorAll('input[name="inquiry-courses"]:checked')).map(cb => cb.value);
 
     // Validation
     if (!name) { Toast.error('Required', 'Name is required'); return; }
