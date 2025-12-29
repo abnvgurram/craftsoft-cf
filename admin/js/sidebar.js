@@ -52,10 +52,6 @@ const AdminSidebar = {
                                 <i class="fa-solid fa-file-invoice"></i>
                                 <span>Receipts</span>
                             </a>
-                            <a href="../payments/tutors/" class="sidebar-subitem ${this.currentPage === 'payments-tutors' ? 'active' : ''}" data-section="payments-tutors">
-                                <i class="fa-solid fa-chalkboard-user"></i>
-                                <span>Tutors</span>
-                            </a>
                         </div>
                     </div>
 
