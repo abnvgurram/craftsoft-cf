@@ -51,18 +51,12 @@
         <!-- Sidebar -->
         <aside class="admin-sidebar" id="admin-sidebar">
             <div class="sidebar-header">
-                <button class="sidebar-close" id="sidebar-close">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <div class="sidebar-handle"></div>
             </div>
             <nav class="sidebar-nav">
                 <a href="#dashboard" class="sidebar-item active" data-section="dashboard">
-                    <i class="fa-solid fa-gauge"></i>
+                    <i class="fa-solid fa-chart-pie"></i>
                     <span>Dashboard</span>
-                </a>
-                <a href="#inquiries" class="sidebar-item" data-section="inquiries">
-                    <i class="fa-solid fa-envelope"></i>
-                    <span>Inquiries</span>
                 </a>
                 <a href="#students" class="sidebar-item" data-section="students">
                     <i class="fa-solid fa-user-graduate"></i>
@@ -72,18 +66,30 @@
                     <i class="fa-solid fa-chalkboard-user"></i>
                     <span>Tutors</span>
                 </a>
+                <a href="#inquiries" class="sidebar-item" data-section="inquiries">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                    <span>Inquiries</span>
+                </a>
                 <a href="#courses" class="sidebar-item" data-section="courses">
-                    <i class="fa-solid fa-book"></i>
+                    <i class="fa-solid fa-book-bookmark"></i>
                     <span>Courses</span>
                 </a>
-                <a href="#payments" class="sidebar-item" data-section="payments">
-                    <i class="fa-solid fa-credit-card"></i>
-                    <span>Payments</span>
-                </a>
-                <a href="#receipts" class="sidebar-item" data-section="receipts">
-                    <i class="fa-solid fa-receipt"></i>
-                    <span>Receipts</span>
-                </a>
+
+                <!-- Payments with Submenu -->
+                <div class="sidebar-group">
+                    <a href="#payments" class="sidebar-item has-submenu" data-section="payments">
+                        <i class="fa-solid fa-money-bill-transfer"></i>
+                        <span>Payments</span>
+                        <i class="fa-solid fa-chevron-down submenu-arrow"></i>
+                    </a>
+                    <div class="sidebar-submenu">
+                        <a href="#receipts" class="sidebar-subitem" data-section="receipts">
+                            <i class="fa-solid fa-file-invoice"></i>
+                            <span>Receipts</span>
+                        </a>
+                    </div>
+                </div>
+
                 <a href="#settings" class="sidebar-item" data-section="settings">
                     <i class="fa-solid fa-gear"></i>
                     <span>Settings</span>
@@ -112,14 +118,9 @@
         // Section data with purposes
         const sections = {
             dashboard: {
-                icon: 'fa-gauge',
+                icon: 'fa-chart-pie',
                 title: 'Dashboard',
                 purpose: 'High-level overview of institute activity'
-            },
-            inquiries: {
-                icon: 'fa-envelope',
-                title: 'Inquiries',
-                purpose: 'View and manage contact form submissions'
             },
             students: {
                 icon: 'fa-user-graduate',
@@ -131,18 +132,23 @@
                 title: 'Tutors',
                 purpose: 'Manage tutor profiles and assignments'
             },
+            inquiries: {
+                icon: 'fa-envelope-open-text',
+                title: 'Inquiries',
+                purpose: 'View and manage contact form submissions'
+            },
             courses: {
-                icon: 'fa-book',
+                icon: 'fa-book-bookmark',
                 title: 'Courses',
                 purpose: 'Course catalog and curriculum management'
             },
             payments: {
-                icon: 'fa-credit-card',
+                icon: 'fa-money-bill-transfer',
                 title: 'Payments',
                 purpose: 'Track payments, dues, and transactions'
             },
             receipts: {
-                icon: 'fa-receipt',
+                icon: 'fa-file-invoice',
                 title: 'Receipts',
                 purpose: 'Generate and manage payment receipts'
             },
@@ -179,15 +185,27 @@
             `;
 
             // Update active state in sidebar
-            document.querySelectorAll('.sidebar-item').forEach(item => {
+            document.querySelectorAll('.sidebar-item, .sidebar-subitem').forEach(item => {
                 item.classList.remove('active');
                 if (item.dataset.section === sectionId) {
                     item.classList.add('active');
                 }
             });
 
-            // Update URL hash
+            // If receipts is selected, expand payments submenu
+            if (sectionId === 'receipts') {
+                document.querySelector('.sidebar-group')?.classList.add('expanded');
+            }
+
             window.location.hash = sectionId;
+        }
+
+        // Close account dropdown (for mutual exclusion)
+        function closeAccountDropdown() {
+            const accountDropdown = document.getElementById('account-dropdown');
+            const accountTrigger = document.getElementById('account-trigger');
+            if (accountDropdown) accountDropdown.classList.remove('open');
+            if (accountTrigger) accountTrigger.classList.remove('open');
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -232,9 +250,9 @@
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
             const sidebar = document.getElementById('admin-sidebar');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
-            const sidebarClose = document.getElementById('sidebar-close');
 
             function openSidebar() {
+                closeAccountDropdown(); // Mutual exclusion
                 sidebar.classList.add('open');
                 sidebarOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
@@ -246,12 +264,28 @@
                 document.body.style.overflow = '';
             }
 
+            // Expose closeSidebar globally for account panel
+            window.closeSidebar = closeSidebar;
+
             mobileMenuBtn.addEventListener('click', openSidebar);
-            sidebarClose.addEventListener('click', closeSidebar);
             sidebarOverlay.addEventListener('click', closeSidebar);
 
+            // Payments submenu toggle
+            const paymentsItem = document.querySelector('.sidebar-item.has-submenu');
+            const sidebarGroup = document.querySelector('.sidebar-group');
+
+            if (paymentsItem && sidebarGroup) {
+                paymentsItem.addEventListener('click', (e) => {
+                    // Toggle submenu on arrow click or if on mobile
+                    if (e.target.closest('.submenu-arrow') || window.innerWidth <= 768) {
+                        e.preventDefault();
+                        sidebarGroup.classList.toggle('expanded');
+                    }
+                });
+            }
+
             // Sidebar navigation
-            document.querySelectorAll('.sidebar-item').forEach(item => {
+            document.querySelectorAll('.sidebar-item:not(.has-submenu), .sidebar-subitem').forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
                     const sectionId = item.dataset.section;
@@ -259,6 +293,20 @@
                     closeSidebar();
                 });
             });
+
+            // Payments item click (navigate to payments)
+            if (paymentsItem) {
+                paymentsItem.addEventListener('click', (e) => {
+                    if (!e.target.closest('.submenu-arrow')) {
+                        renderSection('payments');
+                        if (window.innerWidth <= 768) {
+                            // On mobile, don't close - let user see submenu
+                        } else {
+                            closeSidebar();
+                        }
+                    }
+                });
+            }
 
             // Load initial section from hash or default to dashboard
             const initialSection = window.location.hash.slice(1) || 'dashboard';

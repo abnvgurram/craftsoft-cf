@@ -786,6 +786,12 @@ const AccountManager = {
         // Toggle dropdown
         trigger.addEventListener('click', (e) => {
             e.stopPropagation();
+
+            // Mutual exclusion: close sidebar if open (mobile)
+            if (typeof window.closeSidebar === 'function') {
+                window.closeSidebar();
+            }
+
             dropdown.classList.toggle('open');
             trigger.classList.toggle('open');
         });
