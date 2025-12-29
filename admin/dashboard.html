@@ -154,30 +154,54 @@
             }
         };
 
+        // Skeleton HTML
+        function getSkeletonHTML() {
+            return `
+                <div class="skeleton-header">
+                    <div class="skeleton skeleton-icon"></div>
+                    <div class="skeleton skeleton-title"></div>
+                </div>
+                <div class="skeleton-divider"></div>
+                <div class="skeleton-content">
+                    <div class="skeleton skeleton-circle"></div>
+                    <div class="skeleton skeleton-text skeleton-text-lg"></div>
+                    <div class="skeleton skeleton-text skeleton-text-md"></div>
+                    <div class="skeleton skeleton-text skeleton-text-sm"></div>
+                </div>
+            `;
+        }
+
         // Render section content
         function renderSection(sectionId) {
             const section = sections[sectionId];
             if (!section) return;
 
             const contentArea = document.getElementById('content-area');
-            contentArea.innerHTML = `
-                <div class="section-header">
-                    <div class="section-icon">
-                        <i class="fa-solid ${section.icon}"></i>
+
+            // Show skeleton first
+            contentArea.innerHTML = getSkeletonHTML();
+
+            // Simulate brief load then show actual content
+            setTimeout(() => {
+                contentArea.innerHTML = `
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fa-solid ${section.icon}"></i>
+                        </div>
+                        <h1 class="section-title">${section.title}</h1>
                     </div>
-                    <h1 class="section-title">${section.title}</h1>
-                </div>
-                <div class="section-divider"></div>
-                <div class="section-maintenance">
-                    <div class="maintenance-icon">
-                        <i class="fa-solid fa-wrench"></i>
+                    <div class="section-divider"></div>
+                    <div class="section-maintenance">
+                        <div class="maintenance-icon">
+                            <i class="fa-solid fa-wrench"></i>
+                        </div>
+                        <h2 class="maintenance-title">Under Maintenance</h2>
+                        <p class="maintenance-purpose">
+                            <strong>Purpose:</strong> ${section.purpose}
+                        </p>
                     </div>
-                    <h2 class="maintenance-title">Under Maintenance</h2>
-                    <p class="maintenance-purpose">
-                        <strong>Purpose:</strong> ${section.purpose}
-                    </p>
-                </div>
-            `;
+                `;
+            }, 300);
 
             // Update active state in sidebar
             document.querySelectorAll('.sidebar-item, .sidebar-subitem').forEach(item => {
