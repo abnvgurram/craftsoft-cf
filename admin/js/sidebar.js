@@ -16,11 +16,6 @@ const AdminSidebar = {
     render() {
         const sidebarHTML = `
             <aside class="admin-sidebar" id="admin-sidebar">
-                <div class="sidebar-header">
-                    <span class="sidebar-logo-text">CraftSoft</span>
-                    <span class="sidebar-logo-short">CS</span>
-                </div>
-
                 <nav class="sidebar-nav">
                     ${this.navItem('dashboard', 'Dashboard', 'fa-chart-pie')}
                     ${this.navItem('students', 'Students', 'fa-user-graduate')}
@@ -46,11 +41,6 @@ const AdminSidebar = {
 
                     ${this.navItem('settings', 'Settings', 'fa-gear')}
                 </nav>
-
-                <!-- Sidebar Toggle Button (for mobile) -->
-                <button class="sidebar-toggle-btn" id="sidebar-toggle-btn">
-                    <i class="fa-solid fa-bars-staggered"></i>
-                </button>
             </aside>
 
             <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -96,9 +86,9 @@ const AdminSidebar = {
     bindEvents() {
         const overlay = document.getElementById('sidebar-overlay');
 
-        // Sidebar toggle button
+        // Mobile hamburger menu button (in header)
         document.addEventListener('click', (e) => {
-            if (e.target.closest('#sidebar-toggle-btn')) {
+            if (e.target.closest('.mobile-menu-btn')) {
                 e.stopPropagation();
                 this.closeAccountDropdowns();
                 this.toggleSidebar();

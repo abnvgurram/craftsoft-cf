@@ -1363,6 +1363,7 @@ window.AdminUtils = {
     NavigationSecurity,
     AccountManager,
     SessionTimeout,
+    Skeleton,
     requireAuth,
     requireNoAuth,
     formatAdminId,
@@ -1370,4 +1371,54 @@ window.AdminUtils = {
     setTempEmail,
     getTempEmail,
     clearTempEmail
+};
+
+// ============================================
+// Skeleton Loading Helper
+// ============================================
+const Skeleton = {
+    // Generate table skeleton rows
+    tableRows(count = 5, columns = 4) {
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += '<div class="skeleton-row">';
+            for (let j = 0; j < columns; j++) {
+                html += '<div class="skeleton skeleton-cell"></div>';
+            }
+            html += '</div>';
+        }
+        return html;
+    },
+
+    // Generate card skeleton
+    cards(count = 3) {
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += `
+                <div class="skeleton-card">
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text" style="width: 50%"></div>
+                    <div class="skeleton-actions">
+                        <div class="skeleton skeleton-btn"></div>
+                        <div class="skeleton skeleton-btn"></div>
+                        <div class="skeleton skeleton-btn"></div>
+                    </div>
+                </div>
+            `;
+        }
+        return html;
+    },
+
+    // Show skeleton in container
+    show(containerId, type = 'table', count = 5) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        if (type === 'table') {
+            container.innerHTML = this.tableRows(count);
+        } else if (type === 'cards') {
+            container.innerHTML = this.cards(count);
+        }
+    }
 };

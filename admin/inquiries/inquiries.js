@@ -54,7 +54,13 @@ async function loadCourses() {
 // Load Inquiries
 // =====================
 async function loadInquiries() {
+    const { Skeleton } = window.AdminUtils;
     const content = document.getElementById('inquiries-content');
+
+    // Show skeleton loading
+    if (Skeleton) {
+        Skeleton.show('inquiries-content', 'table', 5);
+    }
 
     try {
         const { data, error } = await window.supabaseClient

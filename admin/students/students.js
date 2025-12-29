@@ -98,8 +98,13 @@ async function loadTutorsForStudents() {
 }
 
 async function loadStudents() {
-    const { Toast } = window.AdminUtils;
+    const { Toast, Skeleton } = window.AdminUtils;
     const content = document.getElementById('students-content');
+
+    // Show skeleton loading
+    if (Skeleton) {
+        Skeleton.show('students-content', 'table', 5);
+    }
 
     try {
         const { data: students, error } = await window.supabaseClient

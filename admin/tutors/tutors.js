@@ -43,8 +43,13 @@ async function loadCoursesForTutors() {
 }
 
 async function loadTutors() {
-    const { Toast } = window.AdminUtils;
+    const { Toast, Skeleton } = window.AdminUtils;
     const content = document.getElementById('tutors-content');
+
+    // Show skeleton loading
+    if (Skeleton) {
+        Skeleton.show('tutors-content', 'table', 5);
+    }
 
     try {
         const { data: tutors, error } = await window.supabaseClient
