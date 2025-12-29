@@ -866,8 +866,14 @@
                 document.body.style.overflow = '';
             };
 
-            closeBtn.addEventListener('click', closeModal);
-            cancelBtn.addEventListener('click', closeModal);
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal();
+            });
+            cancelBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal();
+            });
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeModal();
             });
@@ -1001,8 +1007,14 @@
                 document.body.style.overflow = '';
             };
 
-            closeBtn.addEventListener('click', closeModal);
-            cancelBtn.addEventListener('click', closeModal);
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal();
+            });
+            cancelBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal();
+            });
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeModal();
             });
@@ -1082,11 +1094,11 @@
             });
         }
 
-        // Load courses for student form
+        // Load courses for student form (including fee)
         async function loadCoursesForStudents() {
             const { data, error } = await window.supabaseClient
                 .from('courses')
-                .select('course_code, course_name')
+                .select('course_code, course_name, fee')
                 .eq('status', 'ACTIVE')
                 .order('course_code');
 
@@ -1469,7 +1481,26 @@
                 updateTutorCheckboxes(student.courses, student.tutors || []);
             }
 
-            // Handle course checkbox changes
+            // Calculate fee from selected courses
+            const calculateFeeFromCourses = () => {
+                const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
+                    .map(cb => cb.value);
+                let totalFee = 0;
+                selectedCourses.forEach(code => {
+                    const course = allCoursesForStudents.find(c => c.course_code === code);
+                    if (course && course.fee) {
+                        totalFee += parseFloat(course.fee);
+                    }
+                });
+                const feeInput = document.getElementById('student-fee');
+                const discountInput = document.getElementById('student-discount');
+                const finalFeeInput = document.getElementById('student-final-fee');
+                feeInput.value = totalFee;
+                const discount = parseFloat(discountInput.value) || 0;
+                finalFeeInput.value = Math.max(0, totalFee - discount);
+            };
+
+            // Handle course checkbox changes - update tutors AND fee
             document.querySelectorAll('input[name="student-courses"]').forEach(cb => {
                 cb.addEventListener('change', () => {
                     const selectedCourses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked'))
@@ -1477,22 +1508,21 @@
                     const currentTutors = Array.from(document.querySelectorAll('input[name="student-tutors"]:checked'))
                         .map(t => t.value);
                     updateTutorCheckboxes(selectedCourses, currentTutors);
+                    calculateFeeFromCourses();
                 });
             });
 
             // Handle demo radio change
             document.querySelectorAll('input[name="demo-scheduled"]').forEach(radio => {
                 radio.addEventListener('change', (e) => {
-                    const demoFields = document.querySelector('.demo-fields');
-                    if (e.target.value === 'yes') {
-                        demoFields.style.display = '';
-                    } else {
-                        demoFields.style.display = 'none';
+                    const demoFields = modal.querySelector('.demo-fields');
+                    if (demoFields) {
+                        demoFields.style.display = e.target.value === 'yes' ? '' : 'none';
                     }
                 });
             });
 
-            // Handle fee calculation
+            // Handle fee calculation (when discount changes)
             const feeInput = document.getElementById('student-fee');
             const discountInput = document.getElementById('student-discount');
             const finalFeeInput = document.getElementById('student-final-fee');
@@ -1506,13 +1536,21 @@
             feeInput.addEventListener('input', calculateFinalFee);
             discountInput.addEventListener('input', calculateFinalFee);
 
+            // Close modal function
             const closeModal = () => {
                 modal.remove();
                 document.body.style.overflow = '';
             };
 
-            closeBtn.addEventListener('click', closeModal);
-            cancelBtn.addEventListener('click', closeModal);
+            // Bind close events
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal();
+            });
+            cancelBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal();
+            });
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeModal();
             });
@@ -1681,8 +1719,14 @@
                 document.body.style.overflow = '';
             };
 
-            closeBtn.addEventListener('click', closeModal);
-            cancelBtn.addEventListener('click', closeModal);
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal();
+            });
+            cancelBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeModal();
+            });
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) closeModal();
             });
