@@ -771,6 +771,14 @@
             const isEdit = !!tutorId;
             let tutor = null;
 
+            // Reload courses for the select
+            await loadCoursesForTutors();
+
+            if (allCoursesForTutors.length === 0) {
+                Toast.error('No Courses', 'Please sync courses first before adding tutors');
+                return;
+            }
+
             if (isEdit) {
                 const { data, error } = await window.supabaseClient
                     .from('tutors')
