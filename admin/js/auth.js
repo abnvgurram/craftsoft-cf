@@ -143,7 +143,9 @@ const Auth = {
             // Delete current session record
             await this.deleteCurrentSession();
 
-            const { error } = await supabase.auth.signOut();
+            // Use 'local' scope to only logout the current tab
+            // This prevents other tabs with the same user from being logged out
+            const { error } = await supabase.auth.signOut({ scope: 'local' });
 
             if (error) {
                 throw error;
@@ -192,7 +194,9 @@ const Auth = {
             }
 
             // No existing session, create a new one
-            const sessionToken = accessToken || crypto.randomUUID();
+            // ALWAYS use a random UUID for the session token to ensure tab-independence
+            // Even if the user is the same across tabs, they get different tracking tokens
+            const sessionToken = crypto.randomUUID();
             sessionStorage.setItem('session_token', sessionToken);
 
             const { error } = await supabase
@@ -554,8 +558,8 @@ const Auth = {
             window.supabaseClient.removeChannel(this.sessionChannel);
         }
 
-        // Sign out
-        await window.supabaseClient.auth.signOut();
+        // Sign out only locally
+        await window.supabaseClient.auth.signOut({ scope: 'local' });
 
         // Show message and redirect using custom modal
         const { Modal } = window.AdminUtils || {};

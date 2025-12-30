@@ -426,14 +426,15 @@ const NavigationSecurity = {
         window.location.replace(url);
     },
 
-    // Logout with full security (individual)
+    // Logout with full security (individual tab)
     async secureLogout() {
-        // Sign out from Supabase
+        // Sign out from Supabase with LOCAL scope only
+        // This ensures other tabs stay logged in
         if (window.supabaseClient) {
-            await window.supabaseClient.auth.signOut();
+            await window.supabaseClient.auth.signOut({ scope: 'local' });
         }
 
-        // Clear all storage
+        // Clear only this tab's session data
         sessionStorage.clear();
 
         // Replace history and redirect
