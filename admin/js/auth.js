@@ -305,15 +305,21 @@ const Auth = {
 
     async updateSessionActivity() {
         const supabase = window.supabaseClient;
-        const sessionToken = sessionStorage.getItem('tab_id');
 
-        if (!sessionToken) return;
+        // Use THIS_TAB_ID from memory
+        const tabId = THIS_TAB_ID || sessionStorage.getItem('tab_id');
+        if (!tabId) return;
+
+        // Get current admin
+        const admin = await this.getCurrentAdmin();
+        if (!admin) return;
 
         try {
             await supabase
                 .from('user_sessions')
                 .update({ last_active: new Date().toISOString() })
-                .eq('session_token', sessionToken);
+                .eq('admin_id', admin.id)
+                .eq('session_token', tabId);
         } catch (err) {
             console.error('Update session activity error:', err);
         }
