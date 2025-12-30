@@ -488,9 +488,16 @@ const Auth = {
                 // Sign out and redirect
                 await window.supabaseClient.auth.signOut();
 
-                // Show message and redirect
-                alert('Your session was logged out from another device.');
-                window.location.href = '/admin/login.html';
+                // Show message and redirect using custom modal
+                const { Modal } = window.AdminUtils || {};
+                if (Modal && typeof Modal.alert === 'function') {
+                    Modal.alert('warning', 'Session Ended', 'Your session was logged out from another device.', () => {
+                        window.location.href = '/admin/login.html';
+                    });
+                } else {
+                    // Fallback if Modal not available
+                    window.location.href = '/admin/login.html';
+                }
             }
         }, 30000); // 30 seconds
     }

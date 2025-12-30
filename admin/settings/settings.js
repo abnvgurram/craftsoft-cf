@@ -701,50 +701,58 @@ async function savePassword() {
 // Logout All Sessions
 // =====================
 async function logoutAllSessions() {
-    const { Toast } = window.AdminUtils;
+    const { Toast, Modal } = window.AdminUtils;
 
-    if (!confirm('Are you sure you want to logout from all sessions? This will log you out from all devices.')) return;
+    Modal.confirm(
+        'Logout All Sessions',
+        'Are you sure you want to logout from all sessions? This will log you out from all devices.',
+        async () => {
+            try {
+                // Delete all sessions from database
+                await window.Auth.deleteAllSessions(currentAdmin.id);
 
-    try {
-        // Delete all sessions from database
-        await window.Auth.deleteAllSessions(currentAdmin.id);
+                // Sign out globally
+                const { error } = await window.supabaseClient.auth.signOut({ scope: 'global' });
+                if (error) throw error;
 
-        // Sign out globally
-        const { error } = await window.supabaseClient.auth.signOut({ scope: 'global' });
-        if (error) throw error;
-
-        Toast.success('Done', 'Logged out from all sessions');
-        setTimeout(() => {
-            window.location.href = '../login.html';
-        }, 1000);
-    } catch (err) {
-        console.error(err);
-        Toast.error('Error', err.message);
-    }
+                Toast.success('Done', 'Logged out from all sessions');
+                setTimeout(() => {
+                    window.location.href = '../login.html';
+                }, 1000);
+            } catch (err) {
+                console.error(err);
+                Toast.error('Error', err.message);
+            }
+        }
+    );
 }
 
 // =====================
 // Logout Single Session
 // =====================
 async function logoutSession(sessionId) {
-    const { Toast } = window.AdminUtils;
+    const { Toast, Modal } = window.AdminUtils;
 
-    if (!confirm('Logout this device?')) return;
+    Modal.confirm(
+        'Logout Device',
+        'Are you sure you want to logout this device?',
+        async () => {
+            try {
+                const result = await window.Auth.deleteSession(sessionId);
+                if (!result.success) throw new Error(result.error);
 
-    try {
-        const result = await window.Auth.deleteSession(sessionId);
-        if (!result.success) throw new Error(result.error);
+                Toast.success('Done', 'Session logged out');
 
-        Toast.success('Done', 'Session logged out');
-
-        // Refresh sessions list
-        await loadSessions();
-        renderSettings();
-        bindEvents();
-    } catch (err) {
-        console.error(err);
-        Toast.error('Error', err.message);
-    }
+                // Refresh sessions list
+                await loadSessions();
+                renderSettings();
+                bindEvents();
+            } catch (err) {
+                console.error(err);
+                Toast.error('Error', err.message);
+            }
+        }
+    );
 }
 
 // =====================
