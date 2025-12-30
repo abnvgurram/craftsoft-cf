@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Debug</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: sans-serif;
+        }
+
+        .debug-info {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .debug-info h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .test-btn {
+            padding: 10px 20px;
+            background: #2896cd;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>CSS Debug Page</h1>
+
+    <div class="debug-info">
+        <h3>Screen Info:</h3>
+        <p id="screen-info"></p>
+    </div>
+
+    <div class="debug-info">
+        <h3>Mobile Menu Button Test:</h3>
+        <button class="mobile-menu-btn" id="test-btn">
+            <i class="fa-solid fa-bars">☰</i>
+        </button>
+        <p id="btn-style"></p>
+    </div>
+
+    <div class="debug-info">
+        <h3>CSS Files Loaded:</h3>
+        <ul id="css-list"></ul>
+    </div>
+
+    <script>
+        // Screen info
+        document.getElementById('screen-info').innerHTML = `
+            Window Width: ${window.innerWidth}px<br>
+            Window Height: ${window.innerHeight}px<br>
+            Is Mobile (<768px): ${window.innerWidth < 768 ? 'YES' : 'NO'}
+        `;
+
+        // Button computed style
+        const btn = document.getElementById('test-btn');
+        const style = window.getComputedStyle(btn);
+        document.getElementById('btn-style').innerHTML = `
+            display: <strong>${style.display}</strong><br>
+            width: ${style.width}<br>
+            height: ${style.height}<br>
+            background: ${style.background}<br>
+        `;
+
+        // List loaded stylesheets
+        const cssList = document.getElementById('css-list');
+        Array.from(document.styleSheets).forEach((sheet, i) => {
+            try {
+                const href = sheet.href || '(inline)';
+                const rulesCount = sheet.cssRules ? sheet.cssRules.length : 'N/A';
+                const li = document.createElement('li');
+                li.innerHTML = `${i + 1}. ${href.split('/').pop()} - ${rulesCount} rules`;
+                cssList.appendChild(li);
+            } catch (e) {
+                const li = document.createElement('li');
+                li.innerHTML = `${i + 1}. (cross-origin blocked)`;
+                cssList.appendChild(li);
+            }
+        });
+    </script>
+</body>
+
+</html>
