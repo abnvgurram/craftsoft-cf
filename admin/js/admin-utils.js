@@ -416,8 +416,8 @@ const NavigationSecurity = {
 
     // Secure redirect (replaces history, prevents back)
     secureRedirect(url) {
-        // Clear any session data
-        sessionStorage.clear();
+        // Only clear tab_id, not everything
+        sessionStorage.removeItem('tab_id');
 
         // Replace current history entry
         history.replaceState(null, '', url);
@@ -426,33 +426,45 @@ const NavigationSecurity = {
         window.location.replace(url);
     },
 
-    // Logout with full security (individual tab)
+    // Logout with full security (individual tab - NO signOut)
     async secureLogout() {
-        // Sign out from Supabase with LOCAL scope only
-        // This ensures other tabs stay logged in
-        if (window.supabaseClient) {
-            await window.supabaseClient.auth.signOut({ scope: 'local' });
+        // Delete session from database
+        if (window.Auth) {
+            await window.Auth.deleteCurrentSession();
         }
 
-        // Clear only this tab's session data
-        sessionStorage.clear();
+        // DO NOT call supabase.auth.signOut() here!
+        // This allows other tabs to remain logged in
+
+        // Clear only this tab's tab_id
+        sessionStorage.removeItem('tab_id');
 
         // Replace history and redirect
-        this.secureRedirect('/admin/login.html');
+        history.replaceState(null, '', '/admin/login.html');
+        window.location.replace('/admin/login.html');
     },
 
-    // Logout from ALL sessions (invalidates all tokens)
+    // Logout from ALL sessions (DOES call signOut)
     async secureLogoutAll() {
-        if (window.supabaseClient) {
-            // Sign out from all sessions (scope: 'global')
-            await window.supabaseClient.auth.signOut({ scope: 'global' });
+        // Get current admin first
+        const admin = window.Auth ? await window.Auth.getCurrentAdmin() : null;
+
+        if (admin && window.Auth) {
+            // Delete ALL sessions for this admin
+            await window.Auth.deleteAllSessions(admin.id);
         }
 
-        // Clear all storage
-        sessionStorage.clear();
+        if (window.supabaseClient) {
+            // Sign out globally - this invalidates tokens
+            await window.supabaseClient.auth.signOut();
+        }
+
+        // Clear tab_id
+        sessionStorage.removeItem('tab_id');
 
         // Replace history and redirect
-        this.secureRedirect('/admin/login.html');
+        history.replaceState(null, '', '/admin/login.html');
+        window.location.replace('/admin/login.html');
     },
 
     // Initialize for login page (public page)

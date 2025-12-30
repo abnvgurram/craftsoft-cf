@@ -134,22 +134,15 @@ const Auth = {
     },
 
     // ============================================
-    // LOGOUT
+    // LOGOUT (Single Tab - does NOT call signOut)
     // ============================================
     async logout() {
-        const supabase = window.supabaseClient;
-
         try {
-            // Delete current session record
+            // Delete current session record (by admin_id + tab_id)
             await this.deleteCurrentSession();
 
-            // Use 'local' scope to only logout the current tab
-            // This prevents other tabs with the same user from being logged out
-            const { error } = await supabase.auth.signOut({ scope: 'local' });
-
-            if (error) {
-                throw error;
-            }
+            // DO NOT call supabase.auth.signOut() here!
+            // This allows other tabs to remain logged in
 
             return { success: true };
 
@@ -160,50 +153,72 @@ const Auth = {
     },
 
     // ============================================
-    // SESSION MANAGEMENT
+    // LOGOUT ALL (Hard logout - DOES call signOut)
     // ============================================
-    async createSession(adminId, accessToken) {
+    async logoutAll(adminId) {
         const supabase = window.supabaseClient;
 
         try {
-            const existingToken = sessionStorage.getItem('session_token');
+            // Delete ALL sessions for this admin
+            await this.deleteAllSessions(adminId);
+
+            // Call signOut to invalidate tokens globally
+            await supabase.auth.signOut();
+
+            return { success: true };
+
+        } catch (error) {
+            console.error('Logout all error:', error);
+            return { success: false, error: error.message };
+        }
+    },
+
+    // ============================================
+    // SESSION MANAGEMENT
+    // ============================================
+    async createSession(adminId) {
+        const supabase = window.supabaseClient;
+
+        try {
+            const existingTabId = sessionStorage.getItem('tab_id');
             const deviceInfo = this.getDeviceInfo();
             const ipAddress = await this.getIPAddress();
 
-            // Check if this browser already has a valid session in the database
-            if (existingToken) {
+            // Check if this tab already has a valid session in the database
+            if (existingTabId) {
                 const { data: existingSession } = await supabase
                     .from('user_sessions')
                     .select('id')
-                    .eq('session_token', existingToken)
+                    .eq('admin_id', adminId)
+                    .eq('session_token', existingTabId)
                     .single();
 
                 if (existingSession) {
-                    // Session exists, just update last_active
+                    // Session exists for this tab, just update last_active
                     await supabase
                         .from('user_sessions')
                         .update({
                             last_active: new Date().toISOString(),
                             ip_address: ipAddress
                         })
-                        .eq('session_token', existingToken);
+                        .eq('admin_id', adminId)
+                        .eq('session_token', existingTabId);
 
-                    console.log('Existing session updated');
+                    console.log('Existing tab session updated');
                     return;
                 }
             }
 
-            // No existing session, create a new one
-            // ALWAYS use a random UUID for the session token to ensure tab-independence
-            // Even if the user is the same across tabs, they get different tracking tokens
-            const sessionToken = crypto.randomUUID();
-            sessionStorage.setItem('session_token', sessionToken);
+            // Generate new TAB_ID for this tab
+            const tabId = crypto.randomUUID();
+            sessionStorage.setItem('tab_id', tabId);
 
+            // Insert new session row
             const { error } = await supabase
                 .from('user_sessions')
                 .insert({
                     admin_id: adminId,
-                    session_token: sessionToken,
+                    session_token: tabId,
                     device_info: deviceInfo,
                     ip_address: ipAddress
                 });
@@ -211,7 +226,7 @@ const Auth = {
             if (error) {
                 console.error('Error creating session:', error);
             } else {
-                console.log('New session created');
+                console.log('New tab session created:', tabId);
             }
         } catch (err) {
             console.error('Create session error:', err);
@@ -220,17 +235,22 @@ const Auth = {
 
     async deleteCurrentSession() {
         const supabase = window.supabaseClient;
-        const sessionToken = sessionStorage.getItem('session_token');
+        const tabId = sessionStorage.getItem('tab_id');
 
-        if (!sessionToken) return;
+        if (!tabId) return;
+
+        // Get current admin to delete by (admin_id + tab_id)
+        const admin = await this.getCurrentAdmin();
+        if (!admin) return;
 
         try {
             await supabase
                 .from('user_sessions')
                 .delete()
-                .eq('session_token', sessionToken);
+                .eq('admin_id', admin.id)
+                .eq('session_token', tabId);
 
-            sessionStorage.removeItem('session_token');
+            sessionStorage.removeItem('tab_id');
         } catch (err) {
             console.error('Delete session error:', err);
         }
@@ -263,7 +283,7 @@ const Auth = {
                 .eq('admin_id', adminId);
 
             if (error) throw error;
-            sessionStorage.removeItem('session_token');
+            sessionStorage.removeItem('tab_id');
             return { success: true };
         } catch (err) {
             console.error('Delete all sessions error:', err);
@@ -273,7 +293,7 @@ const Auth = {
 
     async updateSessionActivity() {
         const supabase = window.supabaseClient;
-        const sessionToken = sessionStorage.getItem('session_token');
+        const sessionToken = sessionStorage.getItem('tab_id');
 
         if (!sessionToken) return;
 
@@ -478,19 +498,24 @@ const Auth = {
     // ============================================
     async isCurrentSessionValid() {
         const supabase = window.supabaseClient;
-        const sessionToken = sessionStorage.getItem('session_token');
+        const tabId = sessionStorage.getItem('tab_id');
 
-        // If no session token stored, consider valid (unregistered session)
-        if (!sessionToken) return true;
+        // If no tab_id stored, consider invalid (not properly logged in)
+        if (!tabId) return false;
+
+        // Get current admin
+        const admin = await this.getCurrentAdmin();
+        if (!admin) return false;
 
         try {
             const { data, error } = await supabase
                 .from('user_sessions')
                 .select('id')
-                .eq('session_token', sessionToken)
+                .eq('admin_id', admin.id)
+                .eq('session_token', tabId)
                 .single();
 
-            // If session not found in database, it was deleted remotely
+            // If session not found in database, it was deleted
             if (error || !data) {
                 return false;
             }
@@ -504,30 +529,30 @@ const Auth = {
 
     // Start realtime session monitoring (instant logout detection)
     startSessionValidityCheck() {
-        const sessionToken = sessionStorage.getItem('session_token');
-        if (!sessionToken) return;
+        const tabId = sessionStorage.getItem('tab_id');
+        if (!tabId) return;
 
         const supabase = window.supabaseClient;
 
-        // Subscribe to DELETE events on user_sessions
+        // Subscribe to DELETE events on user_sessions for THIS TAB's session only
         const channel = supabase
-            .channel('session-monitor')
+            .channel('session-monitor-' + tabId)
             .on(
                 'postgres_changes',
                 {
                     event: 'DELETE',
                     schema: 'public',
                     table: 'user_sessions',
-                    filter: `session_token=eq.${sessionToken}`
+                    filter: `session_token=eq.${tabId}`
                 },
                 (payload) => {
-                    console.log('Session deleted remotely, logging out instantly...');
+                    console.log('This tab session deleted, logging out...');
                     this.handleRemoteLogout();
                 }
             )
             .subscribe((status) => {
                 if (status === 'SUBSCRIBED') {
-                    console.log('Realtime session monitoring active');
+                    console.log('Realtime session monitoring active for tab:', tabId);
                 }
             });
 
@@ -540,26 +565,25 @@ const Auth = {
             if (!isValid) {
                 this.handleRemoteLogout();
             }
-        }, 5000); // 5 seconds fallback
+        }, 5000);
     },
 
-    // Handle remote logout
+    // Handle remote logout (when this tab's session is deleted)
     async handleRemoteLogout() {
         // Prevent multiple triggers
         if (this.isLoggingOut) return;
         this.isLoggingOut = true;
 
-        // Clear local data
-        sessionStorage.removeItem('session_token');
-        sessionStorage.removeItem('admin_accounts');
+        // Clear only tab_id (not everything)
+        sessionStorage.removeItem('tab_id');
 
         // Unsubscribe from realtime
         if (this.sessionChannel) {
             window.supabaseClient.removeChannel(this.sessionChannel);
         }
 
-        // Sign out only locally
-        await window.supabaseClient.auth.signOut({ scope: 'local' });
+        // DO NOT call signOut() - this is a remote logout for this tab only
+        // Other tabs should remain unaffected
 
         // Show message and redirect using custom modal
         const { Modal } = window.AdminUtils || {};

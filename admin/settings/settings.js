@@ -2,7 +2,7 @@
 let settingsData = {};
 let currentAdmin = null;
 let sessionsData = [];
-let currentSessionToken = null;
+let currentTabId = null;
 let sessionsChannel = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     currentAdmin = await window.Auth.getCurrentAdmin();
-    currentSessionToken = sessionStorage.getItem('session_token');
+    currentTabId = sessionStorage.getItem('tab_id');
     await AdminSidebar.renderAccountPanel(session, currentAdmin);
 
     await loadSettings();
@@ -111,7 +111,7 @@ function subscribeToSessionUpdates() {
                 }
 
                 // Show toast for new sessions
-                if (payload.eventType === 'INSERT' && payload.new.session_token !== currentSessionToken) {
+                if (payload.eventType === 'INSERT' && payload.new.session_token !== currentTabId) {
                     const { Toast } = window.AdminUtils;
                     Toast.info('New Login', `New session detected: ${payload.new.device_info || 'Unknown device'}`);
                 }
@@ -446,7 +446,7 @@ function renderSessionsList() {
     }
 
     return sessionsData.map(session => {
-        const isCurrent = session.session_token === currentSessionToken;
+        const isCurrent = session.session_token === currentTabId;
         const icon = session.device_info?.includes('Android') || session.device_info?.includes('iOS')
             ? 'fa-mobile' : 'fa-desktop';
 
@@ -844,8 +844,8 @@ async function registerCurrentSession() {
         // Create session for current device
         const session = await window.supabaseConfig.getSession();
         if (session) {
-            await window.Auth.createSession(currentAdmin.id, session.access_token);
-            currentSessionToken = sessionStorage.getItem('session_token');
+            await window.Auth.createSession(currentAdmin.id);
+            currentTabId = sessionStorage.getItem('tab_id');
         }
 
         Toast.success('Registered', 'Session is now being tracked');
