@@ -218,3 +218,9 @@
     background: var(--gray-300);
     border-radius: 2px;
 }
+
+/* Mobile Nav Sheet - Hidden on Desktop */
+.mobile-nav-overlay,
+.mobile-nav-sheet {
+    display: none !important;
+}
