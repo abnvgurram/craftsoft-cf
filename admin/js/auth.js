@@ -118,6 +118,9 @@ const Auth = {
                 return { success: false, error: 'Account is not active. Please verify your email first.' };
             }
 
+            // Create session record
+            await this.createSession(authData.user.id, authData.session?.access_token);
+
             return {
                 success: true,
                 user: authData.user,
@@ -137,6 +140,9 @@ const Auth = {
         const supabase = window.supabaseClient;
 
         try {
+            // Delete current session record
+            await this.deleteCurrentSession();
+
             const { error } = await supabase.auth.signOut();
 
             if (error) {
@@ -148,6 +154,155 @@ const Auth = {
         } catch (error) {
             console.error('Logout error:', error);
             return { success: false, error: error.message };
+        }
+    },
+
+    // ============================================
+    // SESSION MANAGEMENT
+    // ============================================
+    async createSession(adminId, accessToken) {
+        const supabase = window.supabaseClient;
+
+        try {
+            const sessionToken = accessToken || crypto.randomUUID();
+            const deviceInfo = this.getDeviceInfo();
+
+            // Store session token in localStorage
+            localStorage.setItem('session_token', sessionToken);
+
+            const { error } = await supabase
+                .from('user_sessions')
+                .insert({
+                    admin_id: adminId,
+                    session_token: sessionToken,
+                    device_info: deviceInfo,
+                    ip_address: await this.getIPAddress()
+                });
+
+            if (error) {
+                console.error('Error creating session:', error);
+            }
+        } catch (err) {
+            console.error('Create session error:', err);
+        }
+    },
+
+    async deleteCurrentSession() {
+        const supabase = window.supabaseClient;
+        const sessionToken = localStorage.getItem('session_token');
+
+        if (!sessionToken) return;
+
+        try {
+            await supabase
+                .from('user_sessions')
+                .delete()
+                .eq('session_token', sessionToken);
+
+            localStorage.removeItem('session_token');
+        } catch (err) {
+            console.error('Delete session error:', err);
+        }
+    },
+
+    async deleteSession(sessionId) {
+        const supabase = window.supabaseClient;
+
+        try {
+            const { error } = await supabase
+                .from('user_sessions')
+                .delete()
+                .eq('id', sessionId);
+
+            if (error) throw error;
+            return { success: true };
+        } catch (err) {
+            console.error('Delete session error:', err);
+            return { success: false, error: err.message };
+        }
+    },
+
+    async deleteAllSessions(adminId) {
+        const supabase = window.supabaseClient;
+
+        try {
+            const { error } = await supabase
+                .from('user_sessions')
+                .delete()
+                .eq('admin_id', adminId);
+
+            if (error) throw error;
+            localStorage.removeItem('session_token');
+            return { success: true };
+        } catch (err) {
+            console.error('Delete all sessions error:', err);
+            return { success: false, error: err.message };
+        }
+    },
+
+    async updateSessionActivity() {
+        const supabase = window.supabaseClient;
+        const sessionToken = localStorage.getItem('session_token');
+
+        if (!sessionToken) return;
+
+        try {
+            await supabase
+                .from('user_sessions')
+                .update({ last_active: new Date().toISOString() })
+                .eq('session_token', sessionToken);
+        } catch (err) {
+            console.error('Update session activity error:', err);
+        }
+    },
+
+    async getSessions(adminId) {
+        const supabase = window.supabaseClient;
+
+        try {
+            const { data, error } = await supabase
+                .from('user_sessions')
+                .select('*')
+                .eq('admin_id', adminId)
+                .order('last_active', { ascending: false });
+
+            if (error) throw error;
+            return data || [];
+        } catch (err) {
+            console.error('Get sessions error:', err);
+            return [];
+        }
+    },
+
+    getDeviceInfo() {
+        const ua = navigator.userAgent;
+        let browser = 'Unknown';
+        let os = 'Unknown';
+
+        // Detect browser
+        if (ua.includes('Chrome') && !ua.includes('Edg')) browser = 'Chrome';
+        else if (ua.includes('Firefox')) browser = 'Firefox';
+        else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
+        else if (ua.includes('Edg')) browser = 'Edge';
+        else if (ua.includes('Opera') || ua.includes('OPR')) browser = 'Opera';
+
+        // Detect OS
+        if (ua.includes('Windows')) os = 'Windows';
+        else if (ua.includes('Mac')) os = 'macOS';
+        else if (ua.includes('Linux') && !ua.includes('Android')) os = 'Linux';
+        else if (ua.includes('Android')) os = 'Android';
+        else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+
+        return `${browser} – ${os}`;
+    },
+
+    async getIPAddress() {
+        try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+        } catch {
+            return 'Unknown';
         }
     },
 

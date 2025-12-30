@@ -1,6 +1,8 @@
 // Settings Module
 let settingsData = {};
 let currentAdmin = null;
+let sessionsData = [];
+let currentSessionToken = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
@@ -17,12 +19,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     currentAdmin = await window.Auth.getCurrentAdmin();
+    currentSessionToken = localStorage.getItem('session_token');
     await AdminSidebar.renderAccountPanel(session, currentAdmin);
 
     await loadSettings();
+    await loadSessions();
     renderSettings();
     bindEvents();
 });
+
 
 // =====================
 // Load Settings
@@ -43,6 +48,20 @@ async function loadSettings() {
     } catch (err) {
         console.error('Error loading settings:', err);
         settingsData = {};
+    }
+}
+
+// =====================
+// Load Sessions
+// =====================
+async function loadSessions() {
+    if (!currentAdmin) return;
+
+    try {
+        sessionsData = await window.Auth.getSessions(currentAdmin.id);
+    } catch (err) {
+        console.error('Error loading sessions:', err);
+        sessionsData = [];
     }
 }
 
@@ -244,25 +263,14 @@ function renderSettings() {
             </div>
             <div class="settings-section-body">
                 <h4 style="font-size: 0.9rem; color: var(--admin-text-secondary); margin-bottom: 1rem;">Active Sessions</h4>
-                <div class="sessions-list">
-                    <div class="session-item current">
-                        <div class="session-info">
-                            <div class="session-icon">
-                                <i class="fa-solid fa-desktop"></i>
-                            </div>
-                            <div class="session-details">
-                                <span class="session-device">
-                                    ${getBrowserName()} – ${getOSName()}
-                                    <span class="session-badge">This Device</span>
-                                </span>
-                                <span class="session-meta">Current session</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="sessions-list" id="sessions-list">
+                    ${renderSessionsList()}
                 </div>
-                <button class="logout-all-btn" id="logout-all-sessions-btn">
-                    <i class="fa-solid fa-right-from-bracket"></i> Logout All Sessions
-                </button>
+                ${sessionsData.length > 1 ? `
+                    <button class="logout-all-btn" id="logout-all-sessions-btn">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout All Sessions
+                    </button>
+                ` : ''}
 
                 <div class="section-divider" style="margin: 1.5rem 0;"></div>
 
@@ -341,6 +349,75 @@ function getOSName() {
     return 'Unknown';
 }
 
+function renderSessionsList() {
+    if (sessionsData.length === 0) {
+        return `
+            <div class="session-item current">
+                <div class="session-info">
+                    <div class="session-icon">
+                        <i class="fa-solid fa-desktop"></i>
+                    </div>
+                    <div class="session-details">
+                        <span class="session-device">
+                            ${getBrowserName()} – ${getOSName()}
+                            <span class="session-badge">This Device</span>
+                        </span>
+                        <span class="session-meta">Current session</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    return sessionsData.map(session => {
+        const isCurrent = session.session_token === currentSessionToken;
+        const icon = session.device_info?.includes('Android') || session.device_info?.includes('iOS')
+            ? 'fa-mobile' : 'fa-desktop';
+
+        return `
+            <div class="session-item ${isCurrent ? 'current' : ''}" data-session-id="${session.id}">
+                <div class="session-info">
+                    <div class="session-icon">
+                        <i class="fa-solid ${icon}"></i>
+                    </div>
+                    <div class="session-details">
+                        <span class="session-device">
+                            ${session.device_info || 'Unknown Device'}
+                            ${isCurrent ? '<span class="session-badge">This Device</span>' : ''}
+                        </span>
+                        <span class="session-meta">
+                            ${isCurrent ? 'Current session' : formatTimeAgo(session.last_active)}
+                            ${session.ip_address ? ` • ${session.ip_address}` : ''}
+                        </span>
+                    </div>
+                </div>
+                ${!isCurrent ? `
+                    <button class="session-logout-btn" data-session-id="${session.id}">
+                        Logout
+                    </button>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+function formatTimeAgo(dateString) {
+    if (!dateString) return '';
+
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+}
+
 // =====================
 // Bind Events
 // =====================
@@ -417,6 +494,11 @@ function bindEvents() {
 
     // Logout all sessions
     document.getElementById('logout-all-sessions-btn')?.addEventListener('click', logoutAllSessions);
+
+    // Individual session logout
+    document.querySelectorAll('.session-logout-btn').forEach(btn => {
+        btn.addEventListener('click', () => logoutSession(btn.dataset.sessionId));
+    });
 }
 
 // =====================
@@ -615,9 +697,13 @@ async function savePassword() {
 async function logoutAllSessions() {
     const { Toast } = window.AdminUtils;
 
-    if (!confirm('Are you sure you want to logout from all sessions?')) return;
+    if (!confirm('Are you sure you want to logout from all sessions? This will log you out from all devices.')) return;
 
     try {
+        // Delete all sessions from database
+        await window.Auth.deleteAllSessions(currentAdmin.id);
+
+        // Sign out globally
         const { error } = await window.supabaseClient.auth.signOut({ scope: 'global' });
         if (error) throw error;
 
@@ -625,6 +711,30 @@ async function logoutAllSessions() {
         setTimeout(() => {
             window.location.href = '../login.html';
         }, 1000);
+    } catch (err) {
+        console.error(err);
+        Toast.error('Error', err.message);
+    }
+}
+
+// =====================
+// Logout Single Session
+// =====================
+async function logoutSession(sessionId) {
+    const { Toast } = window.AdminUtils;
+
+    if (!confirm('Logout this device?')) return;
+
+    try {
+        const result = await window.Auth.deleteSession(sessionId);
+        if (!result.success) throw new Error(result.error);
+
+        Toast.success('Done', 'Session logged out');
+
+        // Refresh sessions list
+        await loadSessions();
+        renderSettings();
+        bindEvents();
     } catch (err) {
         console.error(err);
         Toast.error('Error', err.message);

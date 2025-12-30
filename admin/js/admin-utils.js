@@ -1151,22 +1151,53 @@ const AccountManager = {
 // Session Timeout (Inactivity Lock)
 // ============================================
 const SessionTimeout = {
-    INACTIVITY_TIMEOUT: 5 * 60 * 1000, // 5 minutes in ms
+    INACTIVITY_TIMEOUT: 30 * 60 * 1000, // Default 30 minutes in ms
     WARNING_DURATION: 15, // 15 seconds countdown
+    ACTIVITY_UPDATE_INTERVAL: 60 * 1000, // Update DB every 60 seconds
 
     inactivityTimer: null,
     countdownTimer: null,
+    activityUpdateTimer: null,
     countdownSeconds: 15,
     isWarningShown: false,
     modalElement: null,
+    lastActivityUpdate: 0,
 
     // Activity events to track
     activityEvents: ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'],
 
     // Initialize session timeout
-    init() {
-        this.resetTimer();
-        this.bindActivityListeners();
+    async init() {
+        // Fetch timeout setting from database
+        await this.loadTimeoutSetting();
+
+        // Only run if timeout is not 'never' (0)
+        if (this.INACTIVITY_TIMEOUT > 0) {
+            this.resetTimer();
+            this.bindActivityListeners();
+        }
+    },
+
+    // Load timeout setting from database
+    async loadTimeoutSetting() {
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('settings')
+                .select('setting_value')
+                .eq('setting_key', 'inactivity_timeout')
+                .single();
+
+            if (!error && data && data.setting_value) {
+                const minutes = parseInt(data.setting_value, 10);
+                if (minutes === 0) {
+                    this.INACTIVITY_TIMEOUT = 0; // Never timeout
+                } else {
+                    this.INACTIVITY_TIMEOUT = minutes * 60 * 1000;
+                }
+            }
+        } catch (err) {
+            console.log('Using default timeout setting');
+        }
     },
 
     // Bind activity listeners
@@ -1187,6 +1218,20 @@ const SessionTimeout = {
     handleActivity() {
         if (!this.isWarningShown) {
             this.resetTimer();
+
+            // Update session activity in DB (throttled)
+            const now = Date.now();
+            if (now - this.lastActivityUpdate > this.ACTIVITY_UPDATE_INTERVAL) {
+                this.lastActivityUpdate = now;
+                this.updateSessionActivity();
+            }
+        }
+    },
+
+    // Update session activity in database
+    async updateSessionActivity() {
+        if (window.Auth && typeof window.Auth.updateSessionActivity === 'function') {
+            await window.Auth.updateSessionActivity();
         }
     },
 
@@ -1195,6 +1240,8 @@ const SessionTimeout = {
         if (this.inactivityTimer) {
             clearTimeout(this.inactivityTimer);
         }
+
+        if (this.INACTIVITY_TIMEOUT <= 0) return; // Never timeout
 
         this.inactivityTimer = setTimeout(() => {
             this.showWarning();
