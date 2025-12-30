@@ -164,10 +164,35 @@ const Auth = {
         const supabase = window.supabaseClient;
 
         try {
-            const sessionToken = accessToken || crypto.randomUUID();
+            const existingToken = localStorage.getItem('session_token');
             const deviceInfo = this.getDeviceInfo();
+            const ipAddress = await this.getIPAddress();
 
-            // Store session token in localStorage
+            // Check if this browser already has a valid session in the database
+            if (existingToken) {
+                const { data: existingSession } = await supabase
+                    .from('user_sessions')
+                    .select('id')
+                    .eq('session_token', existingToken)
+                    .single();
+
+                if (existingSession) {
+                    // Session exists, just update last_active
+                    await supabase
+                        .from('user_sessions')
+                        .update({
+                            last_active: new Date().toISOString(),
+                            ip_address: ipAddress
+                        })
+                        .eq('session_token', existingToken);
+
+                    console.log('Existing session updated');
+                    return;
+                }
+            }
+
+            // No existing session, create a new one
+            const sessionToken = accessToken || crypto.randomUUID();
             localStorage.setItem('session_token', sessionToken);
 
             const { error } = await supabase
@@ -176,11 +201,13 @@ const Auth = {
                     admin_id: adminId,
                     session_token: sessionToken,
                     device_info: deviceInfo,
-                    ip_address: await this.getIPAddress()
+                    ip_address: ipAddress
                 });
 
             if (error) {
                 console.error('Error creating session:', error);
+            } else {
+                console.log('New session created');
             }
         } catch (err) {
             console.error('Create session error:', err);
