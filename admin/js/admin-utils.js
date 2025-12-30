@@ -1259,6 +1259,7 @@ const SessionTimeout = {
         this.countdownSeconds = this.WARNING_DURATION;
 
         // Create modal
+        const inactivityMinutes = Math.round(this.INACTIVITY_TIMEOUT / 60000);
         this.modalElement = document.createElement('div');
         this.modalElement.id = 'session-timeout-modal';
         this.modalElement.className = 'session-timeout-overlay';
@@ -1269,7 +1270,7 @@ const SessionTimeout = {
                 </div>
                 <h3 class="session-timeout-title">Session Expiring</h3>
                 <p class="session-timeout-message">
-                    You've been inactive for 5 minutes.<br>
+                    You've been inactive for ${inactivityMinutes} minute${inactivityMinutes !== 1 ? 's' : ''}.<br>
                     For security, you'll be logged out in:
                 </p>
                 <div class="session-timeout-countdown" id="timeout-countdown">

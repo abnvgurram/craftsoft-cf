@@ -344,7 +344,7 @@ function renderSettings() {
                 </div>
                 <div class="settings-edit-form" id="timeout-edit-form" style="display: none; margin-top: 1rem;">
                     <div class="timeout-options" id="timeout-options">
-                        ${['15', '30', '60', '0'].map(val => `
+                        ${['2', '5', '15', '30', '60', '0'].map(val => `
                             <button class="timeout-option ${settingsData.inactivity_timeout === val ? 'selected' : ''}" data-value="${val}">
                                 ${getTimeoutLabel(val)}
                             </button>

@@ -491,4 +491,20 @@
     .timeout-option {
         text-align: center;
     }
+
+    /* Fix for timeout row alignment on mobile */
+    .settings-field-row[style*="align-items: center"] {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .settings-field-row[style*="align-items: center"] .settings-field-label {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+
+    .settings-field-row[style*="align-items: center"]>div {
+        width: 100%;
+    }
 }
