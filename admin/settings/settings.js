@@ -330,20 +330,34 @@ function renderSettings() {
                         <i class="fa-solid fa-right-from-bracket"></i> Logout All Sessions
                     </button>
                 ` : ''}
+            </div>
+        </div>
 
-                <div class="section-divider" style="margin: 1.5rem 0;"></div>
-
-                <div class="settings-field-row" style="align-items: center;">
-                    <span class="settings-field-label">Inactivity Timeout</span>
-                    <div style="flex: 1; display: flex; align-items: center; justify-content: space-between;">
-                        <span class="settings-field-value" id="timeout-display">${getTimeoutLabel(settingsData.inactivity_timeout || '30')}</span>
-                        <button class="settings-edit-btn" data-section="timeout" style="margin-left: auto;">
-                            <i class="fa-solid fa-pen"></i> Edit
-                        </button>
+        <!-- Session Timeout Section -->
+        <div class="settings-section" id="section-timeout">
+            <div class="settings-section-header">
+                <h3 class="settings-section-title">
+                    <i class="fa-regular fa-clock"></i>
+                    Session Timeout
+                </h3>
+            </div>
+            <div class="settings-section-body">
+                <p class="settings-section-description">
+                    Automatically lock your session after a period of inactivity for enhanced security.
+                </p>
+                
+                <div class="timeout-display-row" id="timeout-display-row">
+                    <div class="timeout-current">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        <span id="timeout-display">${getTimeoutLabel(settingsData.inactivity_timeout || '30')}</span>
                     </div>
+                    <button class="settings-edit-btn" data-section="timeout">
+                        <i class="fa-solid fa-pen"></i> Edit
+                    </button>
                 </div>
-                <div class="settings-edit-form" id="timeout-edit-form" style="display: none; margin-top: 1rem;">
-                    <div class="timeout-options" id="timeout-options">
+                
+                <div class="settings-edit-form" id="timeout-edit-form" style="display: none;">
+                    <div class="timeout-options-grid" id="timeout-options">
                         ${['2', '5', '15', '30', '60', '0'].map(val => `
                             <button class="timeout-option ${settingsData.inactivity_timeout === val ? 'selected' : ''}" data-value="${val}">
                                 ${getTimeoutLabel(val)}

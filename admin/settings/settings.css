@@ -378,34 +378,76 @@
     border-color: #ef4444;
 }
 
-/* Timeout Options */
-.timeout-options {
+/* ============================================
+   Session Timeout Section
+   ============================================ */
+.settings-section-description {
+    font-size: 0.875rem;
+    color: var(--admin-text-secondary, #64748b);
+    margin: 0 0 1.25rem 0;
+    line-height: 1.5;
+}
+
+.timeout-display-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: var(--gray-50, #f8fafc);
+    border: 1px solid var(--admin-input-border, #e2e8f0);
+    border-radius: 12px;
+}
+
+.timeout-current {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.timeout-current i {
+    font-size: 1.25rem;
+    color: var(--primary-500, #2896cd);
+}
+
+.timeout-current span {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--admin-text-primary, #0f172a);
+}
+
+/* Timeout Options Grid */
+.timeout-options,
+.timeout-options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 1rem;
 }
 
 .timeout-option {
-    padding: 0.625rem 1.25rem;
+    padding: 0.875rem 1rem;
     background: var(--gray-50, #f8fafc);
     border: 1.5px solid var(--admin-input-border, #e2e8f0);
-    border-radius: 8px;
+    border-radius: 10px;
     color: var(--admin-text-secondary, #64748b);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
+    text-align: center;
 }
 
 .timeout-option:hover {
     background: var(--primary-50, #edf6fb);
     border-color: var(--primary-300, #7dd3fc);
+    color: var(--primary-600, #1a7eb0);
 }
 
 .timeout-option.selected {
-    background: var(--primary-500, #2896cd);
-    border-color: var(--primary-500, #2896cd);
+    background: var(--accent-gradient);
+    border-color: transparent;
     color: #fff;
+    font-weight: 600;
 }
 
 /* ============================================
@@ -484,27 +526,25 @@
         text-align: center;
     }
 
-    .timeout-options {
+    /* Timeout section mobile */
+    .timeout-display-row {
         flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .timeout-display-row .settings-edit-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .timeout-options,
+    .timeout-options-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .timeout-option {
-        text-align: center;
-    }
-
-    /* Fix for timeout row alignment on mobile */
-    .settings-field-row[style*="align-items: center"] {
-        flex-direction: row !important;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-
-    .settings-field-row[style*="align-items: center"] .settings-field-label {
-        width: 100%;
-        margin-bottom: 0.25rem;
-    }
-
-    .settings-field-row[style*="align-items: center"]>div {
-        width: 100%;
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
     }
 }
