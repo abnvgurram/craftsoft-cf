@@ -196,8 +196,10 @@ const Auth = {
             await this.deleteCurrentSession();
 
             // 🔑 CRITICAL: Clear auth session ONLY in this tab
-            // setSession(null) does NOT broadcast to other tabs (unlike signOut)
-            await window.supabaseClient.auth.setSession(null);
+            // We configured Supabase to use sessionStorage, so just clear it directly
+            // This does NOT affect other tabs (unlike signOut which broadcasts)
+            sessionStorage.removeItem('sb-auth-token');
+            sessionStorage.removeItem('tab_id');
 
             // Redirect to login
             window.location.replace('/admin/login.html');
