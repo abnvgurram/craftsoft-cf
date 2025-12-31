@@ -28,6 +28,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load data
     await loadStudents();
 
+    // Set default date to today
+    const dateInput = document.getElementById('payment-date');
+    if (dateInput) {
+        dateInput.value = new Date().toISOString().slice(0, 10);
+    }
+
     // Bind events
     bindEvents();
 });
@@ -269,15 +275,17 @@ async function handlePayment(e) {
 // =====================
 async function processCashPayment(amount) {
     const { Toast } = window.AdminUtils;
+    const paymentDate = document.getElementById('payment-date').value;
 
     // Generate reference ID: PAY-CASH-YYYYMMDD-XXX
-    const today = new Date();
-    const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+    const dateObj = new Date(paymentDate);
+    const dateStr = dateObj.toISOString().slice(0, 10).replace(/-/g, '');
 
-    // Get count of cash payments today for sequence
+    // Get count of cash payments for this specific date for sequence
     const { count } = await window.supabaseClient
         .from('payments')
         .select('*', { count: 'exact', head: true })
+        .eq('payment_date', paymentDate)
         .like('reference_id', `PAY-CASH-${dateStr}%`);
 
     const seq = String((count || 0) + 1).padStart(3, '0');
@@ -292,7 +300,8 @@ async function processCashPayment(amount) {
             amount_paid: amount,
             payment_mode: 'CASH',
             reference_id: referenceId,
-            status: 'SUCCESS'
+            status: 'SUCCESS',
+            payment_date: paymentDate
         })
         .select()
         .single();
@@ -366,7 +375,8 @@ async function createReceipt(payment) {
                 amount_paid: payment.amount_paid,
                 payment_mode: payment.payment_mode,
                 reference_id: payment.reference_id,
-                balance_due: newBalance > 0 ? newBalance : 0
+                balance_due: balanceDue - payment.amount_paid,
+                payment_date: payment.payment_date
             });
 
         if (error) throw error;

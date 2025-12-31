@@ -17,12 +17,14 @@ CREATE TABLE IF NOT EXISTS payments (
     payment_mode TEXT NOT NULL CHECK (payment_mode IN ('CASH', 'ONLINE')),
     reference_id TEXT UNIQUE NOT NULL,
     status TEXT NOT NULL DEFAULT 'SUCCESS',
+    payment_date DATE DEFAULT CURRENT_DATE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Index for faster queries
 CREATE INDEX IF NOT EXISTS idx_payments_student ON payments(student_id);
 CREATE INDEX IF NOT EXISTS idx_payments_course ON payments(course_id);
+CREATE INDEX IF NOT EXISTS idx_payments_date ON payments(payment_date DESC);
 CREATE INDEX IF NOT EXISTS idx_payments_created ON payments(created_at DESC);
 
 -- Enable RLS
@@ -48,12 +50,14 @@ CREATE TABLE IF NOT EXISTS receipts (
     payment_mode TEXT NOT NULL,
     reference_id TEXT NOT NULL,
     balance_due DECIMAL(10,2) DEFAULT 0,
+    payment_date DATE DEFAULT CURRENT_DATE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Index for faster queries
 CREATE INDEX IF NOT EXISTS idx_receipts_student ON receipts(student_id);
 CREATE INDEX IF NOT EXISTS idx_receipts_course ON receipts(course_id);
+CREATE INDEX IF NOT EXISTS idx_receipts_date ON receipts(payment_date DESC);
 CREATE INDEX IF NOT EXISTS idx_receipts_created ON receipts(created_at DESC);
 
 -- Enable RLS
