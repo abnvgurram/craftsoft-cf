@@ -67,9 +67,11 @@ const AdminSidebar = {
                             <i class="fa-solid fa-chevron-right mobile-nav-arrow"></i>
                         </button>
                         <div class="mobile-nav-children">
-                            ${this.mobileNavItemChild('record-payment', 'Record Payment', 'fa-money-bill-1', 'payments/record-payment')}
-                            ${this.mobileNavItemChild('all-payments', 'All Payments', 'fa-money-bill-transfer', 'payments/all-payments')}
-                            ${this.mobileNavItemChild('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
+                            <div style="min-height: 0;">
+                                ${this.mobileNavItemChild('record-payment', 'Record Payment', 'fa-money-bill-1', 'payments/record-payment')}
+                                ${this.mobileNavItemChild('all-payments', 'All Payments', 'fa-money-bill-transfer', 'payments/all-payments')}
+                                ${this.mobileNavItemChild('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
+                            </div>
                         </div>
                     </div>
                     

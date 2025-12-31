@@ -330,16 +330,12 @@
     .mobile-nav-children {
         display: grid;
         grid-template-rows: 0fr;
-        transition: grid-template-rows 0.2s ease;
+        transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
     }
 
     .mobile-nav-parent.expanded .mobile-nav-children {
         grid-template-rows: 1fr;
-    }
-
-    .mobile-nav-children>a {
-        min-height: 0;
     }
 
     /* Child items */
