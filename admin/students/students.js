@@ -148,40 +148,45 @@ function renderStudentsList(students) {
     }
 
     content.innerHTML = `
-        <div class="data-table-wrapper">
-            <table class="data-table">
+        <div class="table-container">
+            <table class="premium-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Course(s)</th>
-                        <th>Fee</th>
-                        <th>Actions</th>
+                        <th width="30%">ID / NAME</th>
+                        <th width="15%">PHONE</th>
+                        <th width="30%">COURSE(S)</th>
+                        <th width="12%">FEE</th>
+                        <th width="13%" class="text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${students.map(s => `
                         <tr>
-                            <td><span class="badge badge-primary">${s.student_id}</span></td>
-                            <td><strong>${s.first_name} ${s.last_name}</strong></td>
-                            <td>${s.phone}</td>
                             <td>
-                                <div class="student-courses-list">
+                                <div class="cell-primary-info">
+                                    <span class="cell-badge">${s.student_id}</span>
+                                    <span class="cell-title">${s.first_name} ${s.last_name}</span>
+                                </div>
+                            </td>
+                            <td><span class="cell-phone">${s.phone}</span></td>
+                            <td>
+                                <div class="cell-tags">
                                     ${(s.courses || []).map(code => {
         const tutorId = s.course_tutors?.[code];
         const tutor = allTutorsForStudents.find(t => t.tutor_id === tutorId);
-        return `<div class="course-tag-item" title="${tutor ? `Tutor: ${tutor.full_name}` : 'No tutor assigned'}">
-                                            ${code}${tutor ? ` <span>(${tutor.full_name})</span>` : ''}
-                                        </div>`;
+        return `<span class="glass-tag" title="${tutor ? `Tutor: ${tutor.full_name}` : 'No tutor assigned'}">
+                                            ${code}${tutor ? ` (${tutor.full_name.split(' ')[0]})` : ''}
+                                        </span>`;
     }).join('')}
                                 </div>
                             </td>
-                            <td class="fee-cell">₹${formatNumber(s.final_fee || 0)}</td>
-                            <td class="actions-cell">
-                                <button class="btn-icon btn-edit-student" data-id="${s.id}"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn-icon btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}"><i class="fa-solid fa-trash"></i></button>
-                                <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="btn-icon btn-whatsapp-student"><i class="fa-brands fa-whatsapp"></i></a>
+                            <td><span class="cell-fee">₹${formatNumber(s.final_fee || 0)}</span></td>
+                            <td class="text-right">
+                                <div class="cell-actions">
+                                    <button class="action-btn edit btn-edit-student" data-id="${s.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                    <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="action-btn whatsapp" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                                    <button class="action-btn delete btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                </div>
                             </td>
                         </tr>
                     `).join('')}
@@ -190,37 +195,51 @@ function renderStudentsList(students) {
         </div>
         <div class="data-cards">
             ${students.map(s => `
-                <div class="data-card">
-                    <div class="data-card-header"><span class="badge badge-primary">${s.student_id}</span></div>
-                    <div class="data-card-body">
-                        <h4>${s.first_name} ${s.last_name}</h4>
-                        <p class="data-card-meta"><i class="fa-solid fa-phone"></i> ${s.phone}</p>
-                        <div class="data-card-meta">
-                            <i class="fa-solid fa-book"></i> 
-                            <div class="course-tag-container">
-                                ${(s.courses || []).map(code => {
+                <div class="premium-card">
+                    <div class="card-header">
+                        <span class="card-id-badge">${s.student_id}</span>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-name">${s.first_name} ${s.last_name}</h4>
+                        <div class="card-info-row">
+                            <span class="card-info-item"><i class="fa-solid fa-phone"></i> ${s.phone}</span>
+                            <div class="card-info-item">
+                                <i class="fa-solid fa-book-open"></i> 
+                                <div class="cell-tags">
+                                    ${(s.courses || []).map(code => {
         const tutorId = s.course_tutors?.[code];
         const tutor = allTutorsForStudents.find(t => t.tutor_id === tutorId);
-        return `<span class="course-tag-item">${code}${tutor ? ` (${tutor.full_name})` : ''}</span>`;
+        return `<span class="glass-tag">${code}${tutor ? ` (${tutor.full_name.split(' ')[0]})` : ''}</span>`;
     }).join('')}
+                                </div>
                             </div>
+                            <span class="card-info-item"><i class="fa-solid fa-indian-rupee-sign"></i> ₹${formatNumber(s.final_fee || 0)}</span>
                         </div>
-                        <p class="data-card-meta"><i class="fa-solid fa-indian-rupee-sign"></i> ${formatNumber(s.final_fee || 0)}</p>
                     </div>
-                    <div class="data-card-actions">
-                        <button class="btn btn-sm btn-outline btn-edit-student" data-id="${s.id}"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button class="btn btn-sm btn-outline btn-danger btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}"><i class="fa-solid fa-trash"></i></button>
+                    <div class="card-actions">
+                        <button class="card-action-btn edit btn-edit-student" data-id="${s.id}">
+                            <i class="fa-solid fa-pen"></i> <span>Edit</span>
+                        </button>
+                        <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
+                            <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
+                        </a>
+                        <button class="card-action-btn delete btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}">
+                            <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                        </button>
                     </div>
                 </div>
             `).join('')}
         </div>
-        <div class="table-footer"><span>${students.length} student${students.length !== 1 ? 's' : ''}</span></div>`;
+        <div class="table-footer">
+            <span>Total Students: <strong>${students.length}</strong></span>
+        </div>`;
 
     document.querySelectorAll('.btn-edit-student').forEach(btn =>
         btn.addEventListener('click', () => openForm(btn.dataset.id)));
     document.querySelectorAll('.btn-delete-student').forEach(btn =>
         btn.addEventListener('click', () => showDeleteConfirm(btn.dataset.id, btn.dataset.name)));
 }
+
 
 function filterStudents(query) {
     const filtered = allStudents.filter(s =>

@@ -78,34 +78,43 @@ function renderTutorsList(tutors) {
             <div class="empty-state">
                 <div class="empty-state-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
                 <h3>No tutors yet</h3>
-                <p>Click "Add Tutor" to add your first tutor</p>
+                <p>Click "Add Tutor" to register your first tutor</p>
             </div>`;
         return;
     }
 
     content.innerHTML = `
-        <div class="data-table-wrapper">
-            <table class="data-table">
+        <div class="table-container">
+            <table class="premium-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Courses</th>
-                        <th>Actions</th>
+                        <th width="30%">ID / NAME</th>
+                        <th width="20%">PHONE</th>
+                        <th width="35%">COURSES</th>
+                        <th width="15%" class="text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${tutors.map(t => `
                         <tr>
-                            <td><span class="badge badge-primary">${t.tutor_id}</span></td>
-                            <td><strong>${t.full_name}</strong></td>
-                            <td>${t.phone}</td>
-                            <td>${(t.courses || []).join(', ') || '-'}</td>
-                            <td class="actions-cell">
-                                <button class="btn-icon btn-edit-tutor" data-id="${t.id}"><i class="fa-solid fa-pen"></i></button>
-                                <button class="btn-icon btn-delete-tutor" data-id="${t.id}" data-name="${t.full_name}"><i class="fa-solid fa-trash"></i></button>
-                                <a href="https://wa.me/91${t.phone.replace(/\D/g, '')}" target="_blank" class="btn-icon btn-whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+                            <td>
+                                <div class="cell-primary-info">
+                                    <span class="cell-badge">${t.tutor_id}</span>
+                                    <span class="cell-title">${t.full_name}</span>
+                                </div>
+                            </td>
+                            <td><span class="cell-phone">${t.phone}</span></td>
+                            <td>
+                                <div class="cell-tags">
+                                    ${(t.courses || []).map(c => `<span class="glass-tag">${c}</span>`).join('')}
+                                </div>
+                            </td>
+                            <td class="text-right">
+                                <div class="cell-actions">
+                                    <button class="action-btn edit btn-edit-tutor" data-id="${t.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                    <a href="https://wa.me/91${t.phone.replace(/\D/g, '')}" target="_blank" class="action-btn whatsapp" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                                    <button class="action-btn delete btn-delete-tutor" data-id="${t.id}" data-name="${t.full_name}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                </div>
                             </td>
                         </tr>
                     `).join('')}
@@ -114,21 +123,34 @@ function renderTutorsList(tutors) {
         </div>
         <div class="data-cards">
             ${tutors.map(t => `
-                <div class="data-card">
-                    <div class="data-card-header"><span class="badge badge-primary">${t.tutor_id}</span></div>
-                    <div class="data-card-body">
-                        <h4>${t.full_name}</h4>
-                        <p class="data-card-meta"><i class="fa-solid fa-phone"></i> ${t.phone}</p>
-                        <p class="data-card-meta"><i class="fa-solid fa-book"></i> ${(t.courses || []).join(', ') || 'No courses'}</p>
+                <div class="premium-card">
+                    <div class="card-header">
+                        <span class="card-id-badge">${t.tutor_id}</span>
                     </div>
-                    <div class="data-card-actions">
-                        <button class="btn btn-sm btn-outline btn-edit-tutor" data-id="${t.id}"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button class="btn btn-sm btn-outline btn-danger btn-delete-tutor" data-id="${t.id}" data-name="${t.full_name}"><i class="fa-solid fa-trash"></i></button>
+                    <div class="card-body">
+                        <h4 class="card-name">${t.full_name}</h4>
+                        <div class="card-info-row">
+                            <span class="card-info-item"><i class="fa-solid fa-phone"></i> ${t.phone}</span>
+                            <span class="card-info-item"><i class="fa-solid fa-book-open-reader"></i> ${(t.courses || []).join(', ') || 'No courses'}</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="card-action-btn edit btn-edit-tutor" data-id="${t.id}">
+                            <i class="fa-solid fa-pen"></i> <span>Edit</span>
+                        </button>
+                        <a href="https://wa.me/91${t.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
+                            <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
+                        </a>
+                        <button class="card-action-btn delete btn-delete-tutor" data-id="${t.id}" data-name="${t.full_name}">
+                            <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                        </button>
                     </div>
                 </div>
             `).join('')}
         </div>
-        <div class="table-footer"><span>${tutors.length} tutor${tutors.length !== 1 ? 's' : ''}</span></div>`;
+        <div class="table-footer">
+            <span>Total Tutors: <strong>${tutors.length}</strong></span>
+        </div>`;
 
     document.querySelectorAll('.btn-edit-tutor').forEach(btn =>
         btn.addEventListener('click', () => openForm(btn.dataset.id)));
@@ -161,10 +183,10 @@ function bindFormEvents() {
 function renderCoursesCheckboxes(selectedCourses = []) {
     const list = document.getElementById('tutor-courses-list');
     list.innerHTML = allCoursesForTutors.map(c => `
-        <label class="checkbox-item">
-            <input type="checkbox" name="tutor-courses" value="${c.course_code}" ${selectedCourses.includes(c.course_code) ? 'checked' : ''}>
-            <span>${c.course_code} - ${c.course_name}</span>
-        </label>
+    < label class= "checkbox-item" >
+    <input type="checkbox" name="tutor-courses" value="${c.course_code}" ${selectedCourses.includes(c.course_code) ? 'checked' : ''}>
+        <span>${c.course_code} - ${c.course_name}</span>
+    </label>
     `).join('');
 }
 
@@ -210,7 +232,7 @@ async function openForm(tutorId = null) {
     renderCoursesCheckboxes(tutor?.courses || []);
 
     formTitle.textContent = isEdit ? 'Edit Tutor' : 'Add Tutor';
-    saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update' : 'Save'} Tutor`;
+    saveBtn.innerHTML = `< i class= "fa-solid fa-check" ></i > ${isEdit ? 'Update' : 'Save'} Tutor`;
 
     container.style.display = 'block';
     container.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -257,7 +279,7 @@ async function saveTutor() {
                 const m = maxData[0].tutor_id.match(/Tr-ACS-(\d+)/);
                 if (m) nextNum = parseInt(m[1]) + 1;
             }
-            const newId = `Tr-ACS-${String(nextNum).padStart(3, '0')}`;
+            const newId = `Tr - ACS - ${String(nextNum).padStart(3, '0')}`;
 
             const { error } = await window.supabaseClient.from('tutors').insert({
                 tutor_id: newId, full_name: name, phone, email: email || null,
@@ -278,7 +300,7 @@ async function saveTutor() {
         Toast.error('Error', err.message);
     } finally {
         saveBtn.disabled = false;
-        saveBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isEdit ? 'Update' : 'Save'} Tutor`;
+        saveBtn.innerHTML = `< i class= "fa-solid fa-check" ></i > ${isEdit ? 'Update' : 'Save'} Tutor`;
     }
 }
 
