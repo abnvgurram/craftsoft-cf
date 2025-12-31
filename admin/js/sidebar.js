@@ -20,7 +20,7 @@ const AdminSidebar = {
 
     render() {
         // Check if current page is a Payments child
-        const isPaymentsChild = ['add-payment', 'payments', 'receipts'].includes(this.currentPage);
+        const isPaymentsChild = ['record-payment', 'all-payments', 'receipts'].includes(this.currentPage);
 
         // Desktop sidebar (always expanded)
         const sidebarHTML = `
@@ -32,15 +32,15 @@ const AdminSidebar = {
                     ${this.navItem('inquiries', 'Inquiries', 'fa-phone-volume')}
                     ${this.navItem('courses', 'Courses', 'fa-book-bookmark')}
                     
-                    <!-- Payments Parent (always expanded on desktop) -->
-                    <div class="sidebar-parent ${isPaymentsChild ? 'active' : ''}">
-                        <div class="sidebar-parent-label">
-                            <i class="fa-solid fa-credit-card"></i>
+                    <!-- Payments Section (no parent label on desktop, just children) -->
+                    <div class="sidebar-section ${isPaymentsChild ? 'active' : ''}">
+                        <div class="sidebar-section-label">
+                            <i class="fa-solid fa-money-bill-wave"></i>
                             <span>Payments</span>
                         </div>
-                        <div class="sidebar-children">
-                            ${this.navItemChild('add-payment', 'Add Payment', 'fa-plus', 'payments/add-payment')}
-                            ${this.navItemChild('payments', 'Payments', 'fa-list', 'payments/payments')}
+                        <div class="sidebar-section-items">
+                            ${this.navItemChild('record-payment', 'Record Payment', 'fa-money-bill-1', 'payments/record-payment')}
+                            ${this.navItemChild('all-payments', 'All Payments', 'fa-money-bill-transfer', 'payments/all-payments')}
                             ${this.navItemChild('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
                         </div>
                     </div>
@@ -70,13 +70,13 @@ const AdminSidebar = {
                     <!-- Payments Parent (collapsible on mobile) -->
                     <div class="mobile-nav-parent ${isPaymentsChild ? 'expanded' : ''}" id="mobile-payments-parent">
                         <button class="mobile-nav-parent-btn" id="mobile-payments-toggle">
-                            <i class="fa-solid fa-credit-card"></i>
+                            <i class="fa-solid fa-money-bill-wave"></i>
                             <span>Payments</span>
                             <i class="fa-solid fa-chevron-right mobile-nav-arrow"></i>
                         </button>
                         <div class="mobile-nav-children">
-                            ${this.mobileNavItemChild('add-payment', 'Add Payment', 'fa-plus', 'payments/add-payment')}
-                            ${this.mobileNavItemChild('payments', 'Payments', 'fa-list', 'payments/payments')}
+                            ${this.mobileNavItemChild('record-payment', 'Record Payment', 'fa-money-bill-1', 'payments/record-payment')}
+                            ${this.mobileNavItemChild('all-payments', 'All Payments', 'fa-money-bill-transfer', 'payments/all-payments')}
                             ${this.mobileNavItemChild('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
                         </div>
                     </div>

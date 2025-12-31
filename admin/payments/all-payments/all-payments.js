@@ -1,4 +1,4 @@
-// Payments List Module
+// All Payments List Module
 let payments = [];
 let filteredPayments = [];
 
@@ -10,11 +10,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Initialize sidebar with correct page name
-    AdminSidebar.init('payments', '../../');
+    AdminSidebar.init('all-payments', '../../');
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
-        headerContainer.innerHTML = AdminHeader.render('Payments');
+        headerContainer.innerHTML = AdminHeader.render('All Payments');
     }
 
     const currentAdmin = await window.Auth.getCurrentAdmin();
@@ -43,7 +43,8 @@ async function loadPayments() {
                 created_at,
                 student:student_id (
                     id,
-                    full_name
+                    first_name,
+                    last_name
                 ),
                 course:course_id (
                     id,
@@ -87,7 +88,7 @@ function renderPayments() {
     tbody.innerHTML = filteredPayments.map(p => `
         <tr>
             <td>${formatDate(p.created_at)}</td>
-            <td>${p.student?.full_name || 'Unknown'}</td>
+            <td>${p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown'}</td>
             <td>${p.course?.course_name || 'Unknown'}</td>
             <td class="amount-cell">${formatCurrency(p.amount_paid)}</td>
             <td>
@@ -104,7 +105,7 @@ function renderPayments() {
     cards.innerHTML = filteredPayments.map(p => `
         <div class="payment-card">
             <div class="payment-card-header">
-                <span class="payment-card-student">${p.student?.full_name || 'Unknown'}</span>
+                <span class="payment-card-student">${p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown'}</span>
                 <span class="payment-card-amount">${formatCurrency(p.amount_paid)}</span>
             </div>
             <div class="payment-card-details">
@@ -154,7 +155,7 @@ function bindEvents() {
             filteredPayments = payments;
         } else {
             filteredPayments = payments.filter(p =>
-                p.student?.full_name?.toLowerCase().includes(query) ||
+                (p.student ? `${p.student.first_name} ${p.student.last_name}`.toLowerCase().includes(query) : false) ||
                 p.course?.course_name?.toLowerCase().includes(query) ||
                 p.reference_id?.toLowerCase().includes(query)
             );

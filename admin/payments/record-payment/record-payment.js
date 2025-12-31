@@ -1,4 +1,4 @@
-// Add Payment Module
+// Record Payment Module
 let students = [];
 let courses = [];
 let selectedStudent = null;
@@ -15,11 +15,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Initialize sidebar with correct page name
-    AdminSidebar.init('add-payment', '../../');
+    AdminSidebar.init('record-payment', '../../');
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
-        headerContainer.innerHTML = AdminHeader.render('Add Payment');
+        headerContainer.innerHTML = AdminHeader.render('Record Payment');
     }
 
     const currentAdmin = await window.Auth.getCurrentAdmin();
@@ -39,8 +39,8 @@ async function loadStudents() {
     try {
         const { data, error } = await window.supabaseClient
             .from('students')
-            .select('id, full_name, phone')
-            .order('full_name');
+            .select('id, first_name, last_name, phone')
+            .order('first_name');
 
         if (error) throw error;
         students = data || [];
@@ -49,7 +49,7 @@ async function loadStudents() {
         select.innerHTML = '<option value="">Select a student</option>';
 
         students.forEach(s => {
-            select.innerHTML += `<option value="${s.id}">${s.full_name} (${s.phone || 'No phone'})</option>`;
+            select.innerHTML += `<option value="${s.id}">${s.first_name} ${s.last_name} (${s.phone || 'No phone'})</option>`;
         });
     } catch (err) {
         console.error('Error loading students:', err);
@@ -320,7 +320,7 @@ async function createReceipt(payment) {
         // Get student and course info for receipt ID
         const { data: student } = await window.supabaseClient
             .from('students')
-            .select('full_name')
+            .select('first_name, last_name')
             .eq('id', payment.student_id)
             .single();
 
@@ -333,7 +333,7 @@ async function createReceipt(payment) {
         // Generate receipt ID using the database function
         const { data: receiptIdData } = await window.supabaseClient
             .rpc('generate_receipt_id', {
-                p_student_name: student?.full_name || 'Unknown',
+                p_student_name: student ? `${student.first_name} ${student.last_name}` : 'Unknown',
                 p_course_name: course?.course_name || 'Unknown'
             });
 

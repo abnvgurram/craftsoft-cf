@@ -45,7 +45,8 @@ async function loadReceipts() {
                 created_at,
                 student:student_id (
                     id,
-                    full_name,
+                    first_name,
+                    last_name,
                     phone
                 ),
                 course:course_id (
@@ -91,7 +92,7 @@ function renderReceipts() {
         <tr>
             <td class="receipt-id-cell">${r.receipt_id}</td>
             <td>${formatDate(r.created_at)}</td>
-            <td>${r.student?.full_name || 'Unknown'}</td>
+            <td>${r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown'}</td>
             <td>${r.course?.course_name || 'Unknown'}</td>
             <td class="amount-cell">${formatCurrency(r.amount_paid)}</td>
             <td>
@@ -126,7 +127,7 @@ function renderReceipts() {
                 <span class="receipt-card-amount">${formatCurrency(r.amount_paid)}</span>
             </div>
             <div class="receipt-card-details">
-                <span><i class="fa-solid fa-user"></i> ${r.student?.full_name || 'Unknown'}</span>
+                <span><i class="fa-solid fa-user"></i> ${r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown'}</span>
                 <span><i class="fa-solid fa-book"></i> ${r.course?.course_name || 'Unknown'}</span>
             </div>
             <div class="receipt-card-footer">
@@ -175,7 +176,7 @@ function viewReceipt(receiptId) {
                 </div>
                 <div class="receipt-row">
                     <span class="receipt-label">Student</span>
-                    <span class="receipt-value">${currentReceipt.student?.full_name || 'Unknown'}</span>
+                    <span class="receipt-value">${currentReceipt.student ? `${currentReceipt.student.first_name} ${currentReceipt.student.last_name}` : 'Unknown'}</span>
                 </div>
                 <div class="receipt-row">
                     <span class="receipt-label">Course</span>
@@ -273,7 +274,7 @@ function sendWhatsApp(receiptId) {
     }
 
     // Create message
-    const studentName = receipt.student?.full_name || 'Student';
+    const studentName = receipt.student ? `${receipt.student.first_name} ${receipt.student.last_name}` : 'Student';
     const courseName = receipt.course?.course_name || 'Course';
     const amount = formatCurrency(receipt.amount_paid);
     const balance = receipt.balance_due <= 0 ? '₹0' : formatCurrency(receipt.balance_due);
@@ -335,7 +336,7 @@ function bindEvents() {
         } else {
             filteredReceipts = receipts.filter(r =>
                 r.receipt_id?.toLowerCase().includes(query) ||
-                r.student?.full_name?.toLowerCase().includes(query) ||
+                (r.student ? `${r.student.first_name} ${r.student.last_name}`.toLowerCase().includes(query) : false) ||
                 r.course?.course_name?.toLowerCase().includes(query)
             );
         }
