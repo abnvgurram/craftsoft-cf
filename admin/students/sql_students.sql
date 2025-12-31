@@ -35,22 +35,22 @@ DROP POLICY IF EXISTS "Active admins can delete students" ON students;
 
 CREATE POLICY "Active admins can read students" ON students
     FOR SELECT USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can insert students" ON students
     FOR INSERT WITH CHECK (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can update students" ON students
     FOR UPDATE USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can delete students" ON students
     FOR DELETE USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE INDEX IF NOT EXISTS idx_students_status ON students(status);

@@ -21,17 +21,17 @@ DROP POLICY IF EXISTS "Active admins can update courses" ON courses;
 
 CREATE POLICY "Active admins can read courses" ON courses
     FOR SELECT USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can insert courses" ON courses
     FOR INSERT WITH CHECK (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can update courses" ON courses
     FOR UPDATE USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE INDEX IF NOT EXISTS idx_courses_code ON courses(course_code);

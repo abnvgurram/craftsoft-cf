@@ -16,17 +16,17 @@ DROP POLICY IF EXISTS "Active admins can update settings" ON settings;
 
 CREATE POLICY "Active admins can read settings" ON settings
     FOR SELECT USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can insert settings" ON settings
     FOR INSERT WITH CHECK (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can update settings" ON settings
     FOR UPDATE USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE INDEX IF NOT EXISTS idx_settings_key ON settings(setting_key);

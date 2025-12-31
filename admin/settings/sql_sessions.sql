@@ -41,16 +41,16 @@ DROP POLICY IF EXISTS "Admins can update own sessions" ON user_sessions;
 DROP POLICY IF EXISTS "Admins can delete own sessions" ON user_sessions;
 
 CREATE POLICY "Admins can read own sessions" ON user_sessions
-    FOR SELECT USING (admin_id = auth.uid());
+    FOR SELECT USING (admin_id = (select auth.uid()));
 
 CREATE POLICY "Admins can insert own sessions" ON user_sessions
-    FOR INSERT WITH CHECK (admin_id = auth.uid());
+    FOR INSERT WITH CHECK (admin_id = (select auth.uid()));
 
 CREATE POLICY "Admins can update own sessions" ON user_sessions
-    FOR UPDATE USING (admin_id = auth.uid());
+    FOR UPDATE USING (admin_id = (select auth.uid()));
 
 CREATE POLICY "Admins can delete own sessions" ON user_sessions
-    FOR DELETE USING (admin_id = auth.uid());
+    FOR DELETE USING (admin_id = (select auth.uid()));
 
 -- ============================================
 -- INDEXES

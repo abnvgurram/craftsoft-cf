@@ -27,22 +27,22 @@ DROP POLICY IF EXISTS "Active admins can delete inquiries" ON inquiries;
 
 CREATE POLICY "Active admins can read inquiries" ON inquiries
     FOR SELECT USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can insert inquiries" ON inquiries
     FOR INSERT WITH CHECK (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can update inquiries" ON inquiries
     FOR UPDATE USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can delete inquiries" ON inquiries
     FOR DELETE USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE INDEX IF NOT EXISTS idx_inquiries_status ON inquiries(status);

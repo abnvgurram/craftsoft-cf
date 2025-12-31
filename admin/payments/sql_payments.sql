@@ -42,7 +42,7 @@ ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 -- DROP first to avoid "already exists" error if running multiple times
 DROP POLICY IF EXISTS "Allow all for authenticated users" ON payments;
 CREATE POLICY "Allow all for authenticated users" ON payments
-    FOR ALL USING (auth.role() = 'authenticated');
+    FOR ALL USING ((select auth.role()) = 'authenticated');
 
 -- Enable Realtime
 -- This might error if already added, but it's usually safe in SQL editor or wrapped in a block
@@ -93,7 +93,7 @@ ALTER TABLE receipts ENABLE ROW LEVEL SECURITY;
 -- RLS Policies (allow all for authenticated users)
 DROP POLICY IF EXISTS "Allow all for authenticated users" ON receipts;
 CREATE POLICY "Allow all for authenticated users" ON receipts
-    FOR ALL USING (auth.role() = 'authenticated');
+    FOR ALL USING ((select auth.role()) = 'authenticated');
 
 -- Enable Realtime
 DO $$

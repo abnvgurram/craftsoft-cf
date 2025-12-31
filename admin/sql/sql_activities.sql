@@ -18,17 +18,17 @@ DROP POLICY IF EXISTS "Active admins can delete activities" ON activities;
 
 CREATE POLICY "Active admins can read activities" ON activities
     FOR SELECT USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can insert activities" ON activities
     FOR INSERT WITH CHECK (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE POLICY "Active admins can delete activities" ON activities
     FOR DELETE USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
+        EXISTS (SELECT 1 FROM admins WHERE id = (select auth.uid()) AND status = 'ACTIVE')
     );
 
 CREATE INDEX IF NOT EXISTS idx_activities_created ON activities(created_at DESC);
