@@ -3,24 +3,38 @@
 -- Run this in the Supabase SQL Editor to resolve performance warnings.
 -- ============================================
 
--- 1. FIX: Consolidate multiple permissive policies on 'admins' table
--- Redundant policies: "Allow lookup by admin_id", "Allow read own record", "admins_select"
--- Redundant policies: "Allow update own record", "admins_update"
+-- 1. FIX: Consolidate policies on 'admins' table
+-- This restores the "Login by Admin ID" functionality which was broken.
 
--- Consolidate SELECT policies
+-- Drop all old/redundant policies
 DROP POLICY IF EXISTS "Allow lookup by admin_id" ON admins;
 DROP POLICY IF EXISTS "Allow read own record" ON admins;
 DROP POLICY IF EXISTS "admins_select" ON admins;
+DROP POLICY IF EXISTS "Admins can read own record" ON admins;
+DROP POLICY IF EXISTS "Allow public lookup" ON admins;
+DROP POLICY IF EXISTS "Enable public lookup by admin_id" ON admins;
 
+-- Policy for login lookup (allows anon to resolve admin_id -> email)
+CREATE POLICY "Allow login lookup" ON admins
+    FOR SELECT
+    TO anon
+    USING (true);
+
+-- Policy for logged-in admins (allows reading own full record)
 CREATE POLICY "Admins can read own record" ON admins
-    FOR SELECT USING (id = (select auth.uid()));
+    FOR SELECT
+    TO authenticated
+    USING (id = (select auth.uid()));
 
 -- Consolidate UPDATE policies
 DROP POLICY IF EXISTS "Allow update own record" ON admins;
 DROP POLICY IF EXISTS "admins_update" ON admins;
+DROP POLICY IF EXISTS "Admins can update own record" ON admins;
 
 CREATE POLICY "Admins can update own record" ON admins
-    FOR UPDATE USING (id = (select auth.uid()))
+    FOR UPDATE 
+    TO authenticated
+    USING (id = (select auth.uid()))
     WITH CHECK (id = (select auth.uid()));
 
 
