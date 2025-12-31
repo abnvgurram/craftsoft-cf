@@ -492,7 +492,7 @@ function renderSessionsList() {
                     </div>
                 </div>
                 ${!isCurrent ? `
-                    <button class="session-logout-btn" data-session-id="${session.id}">
+                    <button class="session-logout-btn" data-device-info="${encodeURIComponent(session.device_info || 'Unknown Device')}">
                         Logout
                     </button>
                 ` : ''}
@@ -595,9 +595,9 @@ function bindEvents() {
     // Logout all sessions
     document.getElementById('logout-all-sessions-btn')?.addEventListener('click', logoutAllSessions);
 
-    // Individual session logout
+    // Individual session logout (by device)
     document.querySelectorAll('.session-logout-btn').forEach(btn => {
-        btn.addEventListener('click', () => logoutSession(btn.dataset.sessionId));
+        btn.addEventListener('click', () => logoutSessionsByDevice(decodeURIComponent(btn.dataset.deviceInfo)));
     });
 
     // Register session button
@@ -825,8 +825,44 @@ async function logoutAllSessions() {
 }
 
 // =====================
-// Logout Single Session
+// Logout All Sessions for a Device
 // =====================
+async function logoutSessionsByDevice(deviceInfo) {
+    const { Toast, Modal } = window.AdminUtils;
+
+    Modal.confirm(
+        'Logout Device',
+        `Are you sure you want to logout all "${deviceInfo}" sessions?`,
+        async () => {
+            try {
+                // Get all sessions for this admin
+                const allSessions = await window.Auth.getSessions(currentAdmin.id);
+
+                // Filter sessions matching this device_info
+                const sessionsToDelete = allSessions.filter(s =>
+                    (s.device_info || 'Unknown Device') === deviceInfo
+                );
+
+                // Delete each session
+                for (const session of sessionsToDelete) {
+                    await window.Auth.deleteSession(session.id);
+                }
+
+                Toast.success('Done', `Logged out ${sessionsToDelete.length} session(s)`);
+
+                // Refresh sessions list
+                await loadSessions();
+                renderSettings();
+                bindEvents();
+            } catch (err) {
+                console.error(err);
+                Toast.error('Error', err.message);
+            }
+        }
+    );
+}
+
+// Legacy function (kept for compatibility)
 async function logoutSession(sessionId) {
     const { Toast, Modal } = window.AdminUtils;
 
@@ -840,7 +876,6 @@ async function logoutSession(sessionId) {
 
                 Toast.success('Done', 'Session logged out');
 
-                // Refresh sessions list
                 await loadSessions();
                 renderSettings();
                 bindEvents();
