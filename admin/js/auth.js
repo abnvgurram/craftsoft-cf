@@ -679,11 +679,19 @@ const Auth = {
         // Store channel reference for cleanup
         this.sessionChannel = channel;
 
-        // Fallback: Also check every 5 seconds in case realtime misses something
+        // Fallback: Check every 30 seconds in case realtime misses something
+        // (increased from 5s to reduce unnecessary checks)
         this.validityInterval = setInterval(async () => {
             // Skip if we're logging out ourselves
             if (isSelfLogout) {
                 console.log('⏭️ Skipping interval check: self logout');
+                return;
+            }
+
+            // Skip if page is hidden (laptop locked, tab backgrounded)
+            // This prevents false logouts when waking from sleep
+            if (document.hidden) {
+                console.log('⏭️ Skipping interval check: page hidden');
                 return;
             }
 
@@ -693,7 +701,7 @@ const Auth = {
                 window.__DEBUG_LOGOUT('FALLBACK_INTERVAL', { THIS_TAB_ID });
                 this.handleRemoteLogout();
             }
-        }, 5000);
+        }, 30000); // 30 seconds
     },
 
     // Handle remote logout (when this tab's session is deleted)
