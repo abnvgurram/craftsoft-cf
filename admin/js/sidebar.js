@@ -32,18 +32,10 @@ const AdminSidebar = {
                     ${this.navItem('inquiries', 'Inquiries', 'fa-phone-volume')}
                     ${this.navItem('courses', 'Courses', 'fa-book-bookmark')}
                     
-                    <!-- Payments Section (no parent label on desktop, just children) -->
-                    <div class="sidebar-section ${isPaymentsChild ? 'active' : ''}">
-                        <div class="sidebar-section-label">
-                            <i class="fa-solid fa-money-bill-wave"></i>
-                            <span>Payments</span>
-                        </div>
-                        <div class="sidebar-section-items">
-                            ${this.navItemChild('record-payment', 'Record Payment', 'fa-money-bill-1', 'payments/record-payment')}
-                            ${this.navItemChild('all-payments', 'All Payments', 'fa-money-bill-transfer', 'payments/all-payments')}
-                            ${this.navItemChild('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
-                        </div>
-                    </div>
+                    <!-- Payments Section (No parent label on desktop/tablet) -->
+                    ${this.navItem('record-payment', 'Record Payment', 'fa-money-bill-1', 'payments/record-payment')}
+                    ${this.navItem('all-payments', 'All Payments', 'fa-money-bill-transfer', 'payments/all-payments')}
+                    ${this.navItem('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
                     
                     ${this.navItem('settings', 'Settings', 'fa-gear')}
                 </nav>
