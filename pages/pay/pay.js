@@ -31,7 +31,7 @@ function bindEvents() {
 async function lookupStudent() {
     const input = document.getElementById('student-id-input');
     const btn = document.getElementById('lookup-btn');
-    const studentId = input.value.trim().toUpperCase();
+    const studentId = input.value.trim();
 
     if (!studentId) {
         showToast('Please enter your Student ID');
@@ -42,11 +42,11 @@ async function lookupStudent() {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Looking up...';
 
     try {
-        // Fetch student by student_id
+        // Fetch student by student_id (case-insensitive)
         const { data: student, error } = await supabase
             .from('students')
             .select('id, student_id, first_name, last_name, phone, courses, course_discounts')
-            .eq('student_id', studentId)
+            .ilike('student_id', studentId)
             .maybeSingle();
 
         if (error) throw error;
