@@ -87,6 +87,21 @@
                     <div class="inline-form-body">
                         <input type="hidden" id="edit-inquiry-id">
 
+                        <!-- Inquiry Type Toggle -->
+                        <div class="form-group">
+                            <label>Inquiry Type</label>
+                            <div class="toggle-group type-toggle">
+                                <label class="toggle-item">
+                                    <input type="radio" name="inquiry-type" value="course" checked>
+                                    <span>Course</span>
+                                </label>
+                                <label class="toggle-item">
+                                    <input type="radio" name="inquiry-type" value="service">
+                                    <span>Service</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <!-- Basic Info -->
                         <div class="form-row">
                             <div class="form-group">
@@ -112,73 +127,76 @@
                             </div>
                         </div>
 
-                        <!-- Courses Selection -->
+                        <!-- Courses/Services Selection -->
                         <div class="form-group">
-                            <label>Interested Courses <span class="required">*</span></label>
+                            <label id="interest-label">Interested Courses <span class="required">*</span></label>
                             <div class="checkbox-list" id="inquiry-courses-list">
-                                <p class="text-muted">Loading courses...</p>
+                                <p class="text-muted">Loading...</p>
                             </div>
                         </div>
 
-                        <!-- Source & Status -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Source</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-location-dot input-icon"></i>
-                                    <select id="inquiry-source">
-                                        <option value="Walk-in">Walk-in</option>
-                                        <option value="Website">Website</option>
-                                        <option value="Call">Call</option>
-                                        <option value="WhatsApp">WhatsApp</option>
-                                        <option value="Instagram">Instagram</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Status</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-flag input-icon"></i>
-                                    <select id="inquiry-status">
-                                        <option value="New">New</option>
-                                        <option value="Contacted">Contacted</option>
-                                        <option value="Demo Scheduled">Demo Scheduled</option>
-                                        <option value="Converted">Converted</option>
-                                        <option value="Closed">Closed</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Demo Section -->
-                        <div class="form-section">
-                            <div class="form-section-header">
-                                <label>Demo Required?</label>
-                                <div class="toggle-group">
-                                    <label class="toggle-item">
-                                        <input type="radio" name="demo-required" value="no" checked>
-                                        <span>No</span>
-                                    </label>
-                                    <label class="toggle-item">
-                                        <input type="radio" name="demo-required" value="yes">
-                                        <span>Yes</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="demo-fields" style="display: none;">
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Demo Date</label>
-                                        <div class="input-with-icon">
-                                            <i class="fa-solid fa-calendar input-icon"></i>
-                                            <input type="date" id="inquiry-demo-date">
-                                        </div>
+                        <!-- Course Specific Fields (Hide for Service) -->
+                        <div id="course-only-fields">
+                            <!-- Source & Status -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Source</label>
+                                    <div class="input-with-icon">
+                                        <i class="fa-solid fa-location-dot input-icon"></i>
+                                        <select id="inquiry-source">
+                                            <option value="Walk-in">Walk-in</option>
+                                            <option value="Website">Website</option>
+                                            <option value="Call">Call</option>
+                                            <option value="WhatsApp">WhatsApp</option>
+                                            <option value="Instagram">Instagram</option>
+                                        </select>
                                     </div>
-                                    <div class="form-group">
-                                        <label>Demo Time</label>
-                                        <div class="input-with-icon">
-                                            <i class="fa-solid fa-clock input-icon"></i>
-                                            <input type="time" id="inquiry-demo-time">
+                                </div>
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <div class="input-with-icon">
+                                        <i class="fa-solid fa-flag input-icon"></i>
+                                        <select id="inquiry-status">
+                                            <option value="New">New</option>
+                                            <option value="Contacted">Contacted</option>
+                                            <option value="Demo Scheduled">Demo Scheduled</option>
+                                            <option value="Converted">Converted</option>
+                                            <option value="Closed">Closed</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Demo Section -->
+                            <div class="form-section">
+                                <div class="form-section-header">
+                                    <label>Demo Required?</label>
+                                    <div class="toggle-group">
+                                        <label class="toggle-item">
+                                            <input type="radio" name="demo-required" value="no" checked>
+                                            <span>No</span>
+                                        </label>
+                                        <label class="toggle-item">
+                                            <input type="radio" name="demo-required" value="yes">
+                                            <span>Yes</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="demo-fields" style="display: none;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Demo Date</label>
+                                            <div class="input-with-icon">
+                                                <i class="fa-solid fa-calendar input-icon"></i>
+                                                <input type="date" id="inquiry-demo-date">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Demo Time</label>
+                                            <div class="input-with-icon">
+                                                <i class="fa-solid fa-clock input-icon"></i>
+                                                <input type="time" id="inquiry-demo-time">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

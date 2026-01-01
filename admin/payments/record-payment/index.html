@@ -68,6 +68,21 @@
                     </div>
 
                     <form id="payment-form" class="payment-form">
+                        <!-- Payment Type Toggle -->
+                        <div class="form-group">
+                            <label class="form-label">Payment Type</label>
+                            <div class="toggle-group type-toggle" style="margin-bottom: 20px;">
+                                <label class="toggle-item">
+                                    <input type="radio" name="payment-type" value="course" checked>
+                                    <span>Course</span>
+                                </label>
+                                <label class="toggle-item">
+                                    <input type="radio" name="payment-type" value="service">
+                                    <span>Service</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <!-- Student Selection -->
                         <div class="form-group">
                             <label class="form-label">Student <span class="required">*</span></label>
@@ -76,9 +91,9 @@
                             </select>
                         </div>
 
-                        <!-- Course Selection -->
+                        <!-- Course/Service Selection -->
                         <div class="form-group">
-                            <label class="form-label">Course <span class="required">*</span></label>
+                            <label class="form-label" id="item-label">Course <span class="required">*</span></label>
                             <select id="course-select" class="form-select" required disabled>
                                 <option value="">Select student first</option>
                             </select>

@@ -485,11 +485,11 @@ function setupFormSync(form) {
 
                     let nextNum = 1;
                     if (maxData && maxData.length > 0) {
-                        const m = maxData[0].inquiry_id.match(/INQ-ACS-(\d+)/);
+                        const m = maxData[0].inquiry_id.match(/Sr-ACS-(\d+)/);
                         if (m) nextNum = parseInt(m[1]) + 1;
                     }
 
-                    inquiryId = `INQ-ACS-${String(nextNum).padStart(3, '0')}`;
+                    inquiryId = `Sr-ACS-${String(nextNum).padStart(3, '0')}`;
 
                     // Insert into Supabase
                     const { error: inqError } = await window.supabaseClient

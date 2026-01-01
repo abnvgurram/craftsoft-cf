@@ -1,8 +1,10 @@
 // Record Payment Module
 let students = [];
-let courses = [];
+let masterItems = []; // Can be courses or services
 let selectedStudent = null;
-let selectedCourse = null;
+let selectedItem = null; // Can be course_id (UUID) or service_id (BigInt)
+let isServiceMode = false;
+
 let totalFee = 0;
 let paidSoFar = 0;
 let balanceDue = 0;
@@ -14,257 +16,206 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Initialize sidebar with correct page name
     AdminSidebar.init('record-payment', '../../');
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
-        headerContainer.innerHTML = AdminHeader.render('Record Payment');
+        headerContainer.innerHTML = window.AdminHeader.render('Record Payment');
     }
 
     const currentAdmin = await window.Auth.getCurrentAdmin();
     await AdminSidebar.renderAccountPanel(session, currentAdmin);
 
-    // Load data
     await loadStudents();
 
-    // Set default date to today
+    // Set default date
     const dateInput = document.getElementById('payment-date');
-    if (dateInput) {
-        dateInput.value = new Date().toISOString().slice(0, 10);
-    }
+    if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
 
-    // Bind events
     bindEvents();
+    bindTypeToggle();
 });
 
-// =====================
-// Load Students
-// =====================
+function bindTypeToggle() {
+    document.querySelectorAll('input[name="payment-type"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            isServiceMode = radio.value === 'service';
+            const label = document.getElementById('item-label');
+            label.innerHTML = isServiceMode ? 'Service <span class="required">*</span>' : 'Course <span class="required">*</span>';
+
+            resetForm();
+            if (selectedStudent) {
+                if (isServiceMode) loadMasterServices();
+                else loadStudentCourses(selectedStudent);
+            }
+        });
+    });
+}
+
+function resetForm() {
+    selectedItem = null;
+    document.getElementById('fee-summary').style.display = 'none';
+    document.getElementById('amount-input').value = '';
+    document.getElementById('amount-input').disabled = !isServiceMode; // Services allow manual entry
+    document.getElementById('course-select').innerHTML = '<option value="">Select student first</option>';
+    document.getElementById('course-select').disabled = true;
+    updateProceedButton();
+}
+
 async function loadStudents() {
     try {
-        const { data, error } = await window.supabaseClient
-            .from('students')
-            .select('id, first_name, last_name, phone')
-            .order('first_name');
-
+        const { data, error } = await window.supabaseClient.from('students').select('id, first_name, last_name, phone').order('first_name');
         if (error) throw error;
         students = data || [];
-
         const select = document.getElementById('student-select');
-        select.innerHTML = '<option value="">Select a student</option>';
-
-        students.forEach(s => {
-            select.innerHTML += `<option value="${s.id}">${s.first_name} ${s.last_name} (${s.phone || 'No phone'})</option>`;
-        });
+        select.innerHTML = '<option value="">Select a student</option>' +
+            students.map(s => `<option value="${s.id}">${s.first_name} ${s.last_name} (${s.phone || '-'})</option>`).join('');
     } catch (err) {
-        console.error('Error loading students:', err);
-        window.AdminUtils.Toast.error('Error', 'Failed to load students');
+        console.error(err);
     }
 }
 
-// =====================
-// Load Student's Courses
-// =====================
 async function loadStudentCourses(studentId) {
-    const courseSelect = document.getElementById('course-select');
-    courseSelect.disabled = true;
-    courseSelect.innerHTML = '<option value="">Loading...</option>';
+    const select = document.getElementById('course-select');
+    select.disabled = true;
+    select.innerHTML = '<option value="">Loading...</option>';
 
     try {
-        // 1. Get student's enrolled course codes and discounts
-        const { data: student, error: studentError } = await window.supabaseClient
-            .from('students')
-            .select('courses, course_discounts')
-            .eq('id', studentId)
-            .single();
+        const { data: student, error: sErr } = await window.supabaseClient.from('students').select('courses, course_discounts').eq('id', studentId).single();
+        if (sErr) throw sErr;
 
-        if (studentError) throw studentError;
-        const enrolledCodes = student.courses || [];
+        const enrolled = student.courses || [];
         const discounts = student.course_discounts || {};
 
-        if (enrolledCodes.length === 0) {
-            courseSelect.innerHTML = '<option value="">No courses found</option>';
+        if (enrolled.length === 0) {
+            select.innerHTML = '<option value="">No courses found</option>';
             return;
         }
 
-        // 2. Get details for these courses from the courses table
-        const { data: courseDetails, error: courseError } = await window.supabaseClient
-            .from('courses')
-            .select('id, course_code, course_name, fee')
-            .in('course_code', enrolledCodes);
+        const { data: details, error: cErr } = await window.supabaseClient.from('courses').select('id, course_code, course_name, fee').in('course_code', enrolled);
+        if (cErr) throw cErr;
 
-        if (courseError) throw courseError;
+        masterItems = details.map(c => ({
+            id: c.id,
+            code: c.course_code,
+            name: c.course_name,
+            final_fee: (parseFloat(c.fee) || 0) - (parseFloat(discounts[c.course_code]) || 0)
+        }));
 
-        // 3. Map details and prepare the 'courses' array for UI
-        courses = courseDetails.map(c => {
-            const disc = parseFloat(discounts[c.course_code] || 0);
-            return {
-                id: c.id, // Supabase UUID
-                course_code: c.course_code,
-                course_name: c.course_name,
-                original_fee: parseFloat(c.fee) || 0,
-                discount: disc,
-                final_fee: (parseFloat(c.fee) || 0) - disc
-            };
-        });
-
-        courseSelect.innerHTML = '<option value="">Select a course</option>';
-        courses.forEach(c => {
-            courseSelect.innerHTML += `<option value="${c.id}">${c.course_name} (${c.course_code})</option>`;
-        });
-
-        courseSelect.disabled = false;
+        select.innerHTML = '<option value="">Select a course</option>' +
+            masterItems.map(c => `<option value="${c.id}">${c.name} (${c.code})</option>`).join('');
+        select.disabled = false;
     } catch (err) {
-        console.error('Error loading courses:', err);
-        courseSelect.innerHTML = '<option value="">Error loading courses</option>';
+        console.error(err);
     }
 }
 
-// =====================
-// Calculate Fee Summary
-// =====================
-async function calculateFeeSummary(courseId) {
-    const course = courses.find(c => c.id === courseId);
-    if (!course) return;
+async function loadMasterServices() {
+    const select = document.getElementById('course-select');
+    select.disabled = true;
+    select.innerHTML = '<option value="">Loading services...</option>';
 
-    totalFee = course.final_fee;
-
-    // Get total payments made for this student-course
     try {
-        const { data: payments, error } = await window.supabaseClient
-            .from('payments')
-            .select('amount_paid')
-            .eq('student_id', selectedStudent)
-            .eq('course_id', course.id);
-
+        const { data, error } = await window.supabaseClient.from('services').select('id, service_code, name').order('service_code');
         if (error) throw error;
 
-        paidSoFar = (payments || []).reduce((sum, p) => sum + parseFloat(p.amount_paid || 0), 0);
-        balanceDue = totalFee - paidSoFar;
+        masterItems = data.map(s => ({
+            id: s.id,
+            code: s.service_code,
+            name: s.name,
+            final_fee: 0 // Services have variable fees
+        }));
 
-        // Update UI
-        document.getElementById('total-fee').textContent = formatCurrency(totalFee);
-        document.getElementById('paid-so-far').textContent = formatCurrency(paidSoFar);
-        document.getElementById('balance-due').textContent = formatCurrency(balanceDue);
-        document.getElementById('fee-summary').style.display = 'block';
-
-        // Set default amount to balance due
-        const amountInput = document.getElementById('amount-input');
-        amountInput.value = balanceDue > 0 ? balanceDue : '';
-        amountInput.max = balanceDue;
-        amountInput.disabled = balanceDue <= 0;
-
-        // Enable proceed button if balance due
-        updateProceedButton();
-
+        select.innerHTML = '<option value="">Select a service</option>' +
+            masterItems.map(s => `<option value="${s.id}">${s.name} (${s.code})</option>`).join('');
+        select.disabled = false;
     } catch (err) {
-        console.error('Error calculating fees:', err);
+        console.error(err);
     }
 }
 
-// =====================
-// Format Currency
-// =====================
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0
-    }).format(amount);
+async function calculateFeeSummary(itemId) {
+    const item = masterItems.find(i => i.id == itemId); // Using == for BigInt/String match
+    if (!item) return;
+
+    if (!isServiceMode) {
+        totalFee = item.final_fee;
+        try {
+            const { data: payments } = await window.supabaseClient.from('payments').select('amount_paid').eq('student_id', selectedStudent).eq('course_id', item.id);
+            paidSoFar = (payments || []).reduce((sum, p) => sum + parseFloat(p.amount_paid || 0), 0);
+            balanceDue = totalFee - paidSoFar;
+
+            document.getElementById('total-fee').textContent = formatCurrency(totalFee);
+            document.getElementById('paid-so-far').textContent = formatCurrency(paidSoFar);
+            document.getElementById('balance-due').textContent = formatCurrency(balanceDue);
+            document.getElementById('fee-summary').style.display = 'block';
+
+            const amountInput = document.getElementById('amount-input');
+            amountInput.value = balanceDue > 0 ? balanceDue : '';
+            amountInput.disabled = balanceDue <= 0;
+        } catch (err) { console.error(err); }
+    } else {
+        // Service mode: No fixed fee summary
+        document.getElementById('fee-summary').style.display = 'none';
+        document.getElementById('amount-input').disabled = false;
+        document.getElementById('amount-input').value = '';
+    }
+    updateProceedButton();
 }
 
-// =====================
-// Update Proceed Button
-// =====================
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
+}
+
 function updateProceedButton() {
     const btn = document.getElementById('proceed-btn');
     const amount = parseFloat(document.getElementById('amount-input').value) || 0;
     const mode = document.querySelector('input[name="payment-mode"]:checked')?.value;
     const utr = document.getElementById('utr-input')?.value?.trim() || '';
-
-    // For Offline UPI, require UTR
     const utrValid = mode === 'OFFLINE_UPI' ? utr.length > 5 : true;
 
-    btn.disabled = !(selectedStudent && selectedCourse && amount > 0 && amount <= balanceDue && mode && utrValid);
+    const isValid = selectedStudent && selectedItem && amount > 0 && mode && utrValid;
+    btn.disabled = !isValid;
 }
 
-// =====================
-// Bind Events
-// =====================
 function bindEvents() {
-    // Student selection
     document.getElementById('student-select').addEventListener('change', async (e) => {
         selectedStudent = e.target.value;
-        selectedCourse = null;
-
-        // Reset fee summary
-        document.getElementById('fee-summary').style.display = 'none';
-        document.getElementById('amount-input').value = '';
-        document.getElementById('amount-input').disabled = true;
-
+        resetForm();
         if (selectedStudent) {
-            await loadStudentCourses(selectedStudent);
-        } else {
-            const courseSelect = document.getElementById('course-select');
-            courseSelect.disabled = true;
-            courseSelect.innerHTML = '<option value="">Select student first</option>';
+            if (isServiceMode) await loadMasterServices();
+            else await loadStudentCourses(selectedStudent);
         }
-
-        updateProceedButton();
     });
 
-    // Course selection
     document.getElementById('course-select').addEventListener('change', async (e) => {
-        selectedCourse = e.target.value;
-
-        if (selectedCourse) {
-            await calculateFeeSummary(selectedCourse);
-        } else {
-            document.getElementById('fee-summary').style.display = 'none';
-            document.getElementById('amount-input').value = '';
-            document.getElementById('amount-input').disabled = true;
-        }
-
-        updateProceedButton();
+        selectedItem = e.target.value;
+        if (selectedItem) await calculateFeeSummary(selectedItem);
+        else resetForm();
     });
 
-    // Amount input
     document.getElementById('amount-input').addEventListener('input', updateProceedButton);
 
-    // Payment mode change
     document.querySelectorAll('input[name="payment-mode"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            const utrGroup = document.getElementById('utr-group');
-            if (e.target.value === 'OFFLINE_UPI') {
-                utrGroup.style.display = 'block';
-            } else {
-                utrGroup.style.display = 'none';
-                document.getElementById('utr-input').value = '';
-            }
+        radio.onchange = () => {
+            document.getElementById('utr-group').style.display = radio.value === 'OFFLINE_UPI' ? 'block' : 'none';
+            if (radio.value !== 'OFFLINE_UPI') document.getElementById('utr-input').value = '';
             updateProceedButton();
-        });
+        };
     });
 
-    // UTR input change
     document.getElementById('utr-input').addEventListener('input', updateProceedButton);
-
-    // Form submission
     document.getElementById('payment-form').addEventListener('submit', handlePayment);
 }
 
-// =====================
-// Handle Payment
-// =====================
 async function handlePayment(e) {
     e.preventDefault();
-
-    const { Toast, Modal } = window.AdminUtils;
+    const { Toast } = window.AdminUtils;
     const amount = parseFloat(document.getElementById('amount-input').value);
     const mode = document.querySelector('input[name="payment-mode"]:checked').value;
     const btn = document.getElementById('proceed-btn');
 
-    if (amount > balanceDue) {
+    if (!isServiceMode && amount > balanceDue) {
         Toast.error('Invalid', 'Amount cannot exceed balance due');
         return;
     }
@@ -273,163 +224,63 @@ async function handlePayment(e) {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
 
     try {
+        const paymentDate = document.getElementById('payment-date').value;
+        const utr = mode === 'OFFLINE_UPI' ? document.getElementById('utr-input').value.trim() : null;
+
+        let referenceId = utr;
         if (mode === 'CASH') {
-            await processCashPayment(amount);
-        } else if (mode === 'OFFLINE_UPI') {
-            const utr = document.getElementById('utr-input').value.trim();
-            await processOfflineUPIPayment(amount, utr);
+            const dateStr = paymentDate.replace(/-/g, '');
+            const { count } = await window.supabaseClient.from('payments').select('*', { count: 'exact', head: true }).eq('payment_date', paymentDate).eq('payment_mode', 'CASH');
+            referenceId = `PAY-CASH-${dateStr}-${String((count || 0) + 1).padStart(3, '0')}`;
         }
+
+        const payload = {
+            student_id: selectedStudent,
+            [isServiceMode ? 'service_id' : 'course_id']: selectedItem,
+            amount_paid: amount,
+            payment_mode: mode === 'OFFLINE_UPI' ? 'UPI' : 'CASH',
+            reference_id: referenceId,
+            status: 'SUCCESS',
+            payment_date: paymentDate
+        };
+
+        const { data: payment, error } = await window.supabaseClient.from('payments').insert(payload).select().single();
+        if (error) throw error;
+
+        // Create Receipt
+        await createReceipt(payment);
+
+        Toast.success('Success', 'Payment recorded');
+        setTimeout(() => window.location.href = '../receipts/', 1500);
     } catch (err) {
-        console.error('Payment error:', err);
-        Toast.error('Error', err.message || 'Payment failed');
+        Toast.error('Error', err.message);
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Proceed';
     }
 }
 
-// =====================
-// Process Cash Payment
-// =====================
-async function processCashPayment(amount) {
-    const { Toast } = window.AdminUtils;
-    const paymentDate = document.getElementById('payment-date').value;
-
-    // Generate reference ID: PAY-CASH-YYYYMMDD-XXX
-    const dateObj = new Date(paymentDate);
-    const dateStr = dateObj.toISOString().slice(0, 10).replace(/-/g, '');
-
-    // Get count of cash payments for this specific date for sequence
-    const { count } = await window.supabaseClient
-        .from('payments')
-        .select('*', { count: 'exact', head: true })
-        .eq('payment_date', paymentDate)
-        .like('reference_id', `PAY-CASH-${dateStr}%`);
-
-    const seq = String((count || 0) + 1).padStart(3, '0');
-    const referenceId = `PAY-CASH-${dateStr}-${seq}`;
-
-    // Insert payment
-    const { data: payment, error: paymentError } = await window.supabaseClient
-        .from('payments')
-        .insert({
-            student_id: selectedStudent,
-            course_id: selectedCourse,
-            amount_paid: amount,
-            payment_mode: 'CASH',
-            reference_id: referenceId,
-            status: 'SUCCESS',
-            payment_date: paymentDate
-        })
-        .select()
-        .single();
-
-    if (paymentError) throw paymentError;
-
-    // Auto-create receipt
-    await createReceipt(payment);
-
-    // Log activity
-    const student = students.find(s => s.id === selectedStudent);
-    const studentName = student ? `${student.first_name} ${student.last_name}` : 'Unknown Student';
-    await window.AdminUtils.Activity.add('fee_recorded', studentName, '../payments/receipts/');
-
-    Toast.success('Success', 'Payment recorded successfully');
-
-    // Redirect to receipts
-    setTimeout(() => {
-        window.location.href = '../receipts/';
-    }, 1500);
-}
-
-// =====================
-// Process Offline UPI Payment (Manual Entry)
-// =====================
-async function processOfflineUPIPayment(amount, utr) {
-    const { Toast } = window.AdminUtils;
-    const paymentDate = document.getElementById('payment-date').value;
-
-    // Insert payment with mode = 'UPI' but reference = admin-entered UTR
-    const { data: payment, error: paymentError } = await window.supabaseClient
-        .from('payments')
-        .insert({
-            student_id: selectedStudent,
-            course_id: selectedCourse,
-            amount_paid: amount,
-            payment_mode: 'UPI',
-            reference_id: utr,
-            status: 'SUCCESS',
-            payment_date: paymentDate
-        })
-        .select()
-        .single();
-
-    if (paymentError) throw paymentError;
-
-    // Auto-create receipt
-    await createReceipt(payment);
-
-    // Log activity
-    const student = students.find(s => s.id === selectedStudent);
-    const studentName = student ? `${student.first_name} ${student.last_name}` : 'Unknown Student';
-    await window.AdminUtils.Activity.add('fee_recorded', studentName, '../payments/receipts/');
-
-    Toast.success('Success', 'Offline UPI payment recorded');
-
-    // Redirect to receipts
-    setTimeout(() => {
-        window.location.href = '../receipts/';
-    }, 1500);
-}
-
-// =====================
-// Create Receipt (Auto after payment success)
-// =====================
 async function createReceipt(payment) {
     try {
-        // Get student and course info for receipt ID
-        const { data: student } = await window.supabaseClient
-            .from('students')
-            .select('first_name, last_name')
-            .eq('id', payment.student_id)
-            .single();
+        const { data: student } = await window.supabaseClient.from('students').select('first_name, last_name').eq('id', payment.student_id).single();
+        const itemName = masterItems.find(i => i.id == selectedItem)?.name || 'Unknown';
 
-        const { data: course } = await window.supabaseClient
-            .from('courses')
-            .select('course_name')
-            .eq('id', payment.course_id)
-            .single();
+        const { data: receiptId } = await window.supabaseClient.rpc('generate_receipt_id', {
+            p_student_name: `${student.first_name} ${student.last_name}`,
+            p_course_name: itemName
+        });
 
-        // Generate receipt ID using the database function
-        const { data: receiptIdData } = await window.supabaseClient
-            .rpc('generate_receipt_id', {
-                p_student_name: student ? `${student.first_name} ${student.last_name}` : 'Unknown',
-                p_course_name: course?.course_name || 'Unknown'
-            });
+        const receiptPayload = {
+            receipt_id: receiptId || `${Date.now()}-ACS`,
+            payment_id: payment.id,
+            student_id: payment.student_id,
+            [isServiceMode ? 'service_id' : 'course_id']: selectedItem,
+            amount_paid: payment.amount_paid,
+            payment_mode: payment.payment_mode,
+            reference_id: payment.reference_id,
+            balance_due: isServiceMode ? 0 : (balanceDue - payment.amount_paid),
+            payment_date: payment.payment_date
+        };
 
-        const receiptId = receiptIdData || `${Date.now()}-ACS`;
-
-        // Calculate new balance
-        const newBalance = balanceDue - payment.amount_paid;
-
-        // Insert receipt
-        const { error } = await window.supabaseClient
-            .from('receipts')
-            .insert({
-                receipt_id: receiptId,
-                payment_id: payment.id,
-                student_id: payment.student_id,
-                course_id: payment.course_id,
-                amount_paid: payment.amount_paid,
-                payment_mode: payment.payment_mode,
-                reference_id: payment.reference_id,
-                balance_due: balanceDue - payment.amount_paid,
-                payment_date: payment.payment_date
-            });
-
-        if (error) throw error;
-
-    } catch (err) {
-        console.error('Error creating receipt:', err);
-        // Don't throw - payment is still successful even if receipt creation fails
-    }
+        await window.supabaseClient.from('receipts').insert(receiptPayload);
+    } catch (err) { console.error('Receipt error:', err); }
 }

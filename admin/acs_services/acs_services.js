@@ -1,11 +1,11 @@
 // ACS Services Module - Website Sync Approach
 const websiteServices = [
-    { name: 'Graphic Design', category: 'Design' },
-    { name: 'UI/UX Design', category: 'Design' },
-    { name: 'Website Development', category: 'Tech' },
-    { name: 'Cloud & DevOps', category: 'Cloud' },
-    { name: 'Branding & Marketing', category: 'Branding' },
-    { name: 'Career Services', category: 'Branding' }
+    { code: 'GD', name: 'Graphic Design', category: 'Design' },
+    { code: 'UX', name: 'UI/UX Design', category: 'Design' },
+    { code: 'WEB', name: 'Website Development', category: 'Tech' },
+    { code: 'CLOUD', name: 'Cloud & DevOps', category: 'Cloud' },
+    { code: 'BM', name: 'Branding & Marketing', category: 'Branding' },
+    { code: 'CS', name: 'Career Services', category: 'Branding' }
 ];
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
-        headerContainer.innerHTML = window.AdminHeader.render('ACS Services');
+        headerContainer.innerHTML = window.AdminHeader.render('Services');
 
         // Load admin profile to render account panel
         const { data: admin } = await window.supabaseClient
@@ -63,7 +63,7 @@ async function loadServices() {
 
     } catch (err) {
         console.error('Error loading services:', err);
-        container.innerHTML = '<div class="empty-state"><p>Error loading services.</p></div>';
+        container.innerHTML = '<div class="empty-state"><p>Error loading services. Make sure the table exists.</p></div>';
     }
 }
 
@@ -89,6 +89,7 @@ function renderServicesLayout(services) {
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Code</th>
                         <th>Service Name</th>
                         <th>Category</th>
                     </tr>
@@ -97,6 +98,7 @@ function renderServicesLayout(services) {
                     ${services.map(srv => `
                         <tr>
                             <td><span class="badge badge-primary">${srv.service_id}</span></td>
+                            <td><span class="badge badge-outline">${srv.service_code || '-'}</span></td>
                             <td class="font-medium">${srv.name}</td>
                             <td><span class="badge badge-secondary">${srv.category}</span></td>
                         </tr>
@@ -106,17 +108,18 @@ function renderServicesLayout(services) {
         </div>
     `;
 
-    // Mobile Card View (for optimization)
+    // Mobile Card View
     const cardView = `
         <div class="data-cards">
             ${services.map(srv => `
                 <div class="data-card">
                     <div class="data-card-header">
                         <span class="badge badge-primary">${srv.service_id}</span>
-                        <span class="badge badge-secondary">${srv.category}</span>
+                        <span class="badge badge-outline">${srv.service_code || '-'}</span>
                     </div>
                     <div class="data-card-body">
                         <h4 class="data-card-title">${srv.name}</h4>
+                        <span class="badge badge-secondary">${srv.category}</span>
                     </div>
                 </div>
             `).join('')}
@@ -143,28 +146,30 @@ async function syncFromWebsite() {
 
             try {
                 // 1. Get existing services
-                const { data: existing } = await window.supabaseClient.from('services').select('name');
-                const existingNames = new Set(existing?.map(s => s.name) || []);
+                const { data: existing } = await window.supabaseClient.from('services').select('service_code');
+                const existingCodes = new Set(existing?.map(s => s.service_code) || []);
 
-                // 2. Get highest sequence
+                // 2. Get highest sequence for Serv-XXX
                 const { data: lastSrv } = await window.supabaseClient
                     .from('services')
                     .select('service_id')
+                    .like('service_id', 'Serv-%')
                     .order('service_id', { ascending: false })
                     .limit(1);
 
                 let nextNum = 1;
                 if (lastSrv?.length > 0) {
-                    const match = lastSrv[0].service_id.match(/Sr-ACS-(\d+)/);
+                    const match = lastSrv[0].service_id.match(/Serv-(\d+)/);
                     if (match) nextNum = parseInt(match[1]) + 1;
                 }
 
                 let addedCount = 0;
                 for (const s of websiteServices) {
-                    if (!existingNames.has(s.name)) {
-                        const newId = `Sr-ACS-${String(nextNum).padStart(3, '0')}`;
+                    if (!existingCodes.has(s.code)) {
+                        const newId = `Serv-${String(nextNum).padStart(3, '0')}`;
                         const { error } = await window.supabaseClient.from('services').insert({
                             service_id: newId,
+                            service_code: s.code,
                             name: s.name,
                             category: s.category
                         });

@@ -103,36 +103,8 @@
     color: var(--admin-text-primary);
 }
 
-.toggle-group {
-    display: flex;
-    gap: 0.5rem;
-}
+/* Toggle group and form-row inherited from shared forms.css */
 
-.toggle-item {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    cursor: pointer;
-}
-
-.toggle-item input {
-    display: none;
-}
-
-.toggle-item span {
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    background: var(--gray-100);
-    color: var(--admin-text-secondary);
-    transition: all 0.15s;
-}
-
-.toggle-item input:checked+span {
-    background: var(--primary-500);
-    color: #fff;
-}
 
 .demo-fields {
     margin-top: 1rem;

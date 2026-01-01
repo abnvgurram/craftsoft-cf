@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
-        headerContainer.innerHTML = AdminHeader.render('Receipts');
+        headerContainer.innerHTML = window.AdminHeader.render('Receipts');
     }
 
     const currentAdmin = await window.Auth.getCurrentAdmin();
@@ -52,6 +52,10 @@ async function loadReceipts() {
                 course:course_id (
                     id,
                     course_name
+                ),
+                service:service_id (
+                    id,
+                    name
                 )
             `)
             .order('created_at', { ascending: false });
@@ -88,12 +92,19 @@ function renderReceipts() {
     emptyState.style.display = 'none';
 
     // Desktop table
-    tbody.innerHTML = filteredReceipts.map(r => `
+    tbody.innerHTML = filteredReceipts.map(r => {
+        const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
+        const isService = !!r.service;
+
+        return `
         <tr>
             <td class="receipt-id-cell">${r.receipt_id}</td>
             <td>${formatDate(r.created_at)}</td>
             <td>${r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown'}</td>
-            <td>${r.course?.course_name || 'Unknown'}</td>
+            <td>
+                <span class="item-name">${itemName}</span>
+                ${isService ? '<span class="badge badge-outline" style="font-size: 0.6rem; margin-left: 5px;">Service</span>' : ''}
+            </td>
             <td class="amount-cell">${formatCurrency(r.amount_paid)}</td>
             <td>
                 <span class="mode-badge ${r.payment_mode.toLowerCase()}">
@@ -117,10 +128,12 @@ function renderReceipts() {
                 </div>
             </td>
         </tr>
-    `).join('');
+    `}).join('');
 
     // Mobile cards
-    cards.innerHTML = filteredReceipts.map(r => `
+    cards.innerHTML = filteredReceipts.map(r => {
+        const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
+        return `
         <div class="receipt-card">
             <div class="receipt-card-header">
                 <span class="receipt-card-id">${r.receipt_id}</span>
@@ -128,7 +141,7 @@ function renderReceipts() {
             </div>
             <div class="receipt-card-details">
                 <span><i class="fa-solid fa-user"></i> ${r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown'}</span>
-                <span><i class="fa-solid fa-book"></i> ${r.course?.course_name || 'Unknown'}</span>
+                <span><i class="fa-solid fa-tag"></i> ${itemName}</span>
             </div>
             <div class="receipt-card-footer">
                 <span class="balance-cell ${r.balance_due <= 0 ? 'paid' : 'due'}">
@@ -147,7 +160,7 @@ function renderReceipts() {
                 </div>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 // =====================
@@ -156,6 +169,9 @@ function renderReceipts() {
 function viewReceipt(receiptId) {
     currentReceipt = receipts.find(r => r.receipt_id === receiptId);
     if (!currentReceipt) return;
+
+    const itemName = currentReceipt.course?.course_name || currentReceipt.service?.name || 'Unknown Item';
+    const itemLabel = currentReceipt.course ? 'Course' : 'Service';
 
     const content = document.getElementById('receipt-content');
     content.innerHTML = `
@@ -179,8 +195,8 @@ function viewReceipt(receiptId) {
                     <span class="receipt-value">${currentReceipt.student ? `${currentReceipt.student.first_name} ${currentReceipt.student.last_name}` : 'Unknown'}</span>
                 </div>
                 <div class="receipt-row">
-                    <span class="receipt-label">Course</span>
-                    <span class="receipt-value">${currentReceipt.course?.course_name || 'Unknown'}</span>
+                    <span class="receipt-label">${itemLabel}</span>
+                    <span class="receipt-value">${itemName}</span>
                 </div>
                 <div class="receipt-row receipt-amount-row">
                     <span class="receipt-label">Amount Paid</span>
@@ -188,7 +204,7 @@ function viewReceipt(receiptId) {
                 </div>
                 <div class="receipt-row">
                     <span class="receipt-label">Payment Mode</span>
-                    <span class="receipt-value">${currentReceipt.payment_mode === 'CASH' ? 'Cash' : 'Online (Razorpay)'}</span>
+                    <span class="receipt-value">${currentReceipt.payment_mode === 'CASH' ? 'Cash' : 'Online (UPI)'}</span>
                 </div>
                 <div class="receipt-row">
                     <span class="receipt-label">Reference ID</span>
@@ -223,10 +239,7 @@ async function downloadReceipt(receiptId) {
     Toast.info('Generating', 'Creating PDF...');
 
     try {
-        // Open view first to render
         viewReceipt(receiptId);
-
-        // Wait for render
         await new Promise(resolve => setTimeout(resolve, 300));
 
         const element = document.getElementById('receipt-printable');
@@ -255,7 +268,7 @@ async function downloadReceipt(receiptId) {
 }
 
 // =====================
-// Send WhatsApp Message (NO PDF ATTACHMENT)
+// Send WhatsApp Message
 // =====================
 function sendWhatsApp(receiptId) {
     const receipt = receipts.find(r => r.receipt_id === receiptId);
@@ -267,44 +280,30 @@ function sendWhatsApp(receiptId) {
         return;
     }
 
-    // Format phone (remove +91 if present, then add it)
     let formattedPhone = phone.replace(/\D/g, '');
-    if (!formattedPhone.startsWith('91')) {
-        formattedPhone = '91' + formattedPhone;
-    }
+    if (!formattedPhone.startsWith('91')) formattedPhone = '91' + formattedPhone;
 
-    // Create message
     const studentName = receipt.student ? `${receipt.student.first_name} ${receipt.student.last_name}` : 'Student';
-    const courseName = receipt.course?.course_name || 'Course';
+    const itemName = receipt.course?.course_name || receipt.service?.name || 'Item';
     const amount = formatCurrency(receipt.amount_paid);
     const balance = receipt.balance_due <= 0 ? '₹0' : formatCurrency(receipt.balance_due);
 
     const message = `Hi ${studentName},
 
-We have received ${amount} for ${courseName} course.
+We have received ${amount} for ${itemName}.
 Receipt ID: ${receipt.receipt_id}
 Balance Due: ${balance}
 
 – Abhi's Craftsoft`;
 
-    // Open WhatsApp
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
-
-    window.open(whatsappUrl, '_blank');
+    window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`, '_blank');
 }
 
-// =====================
-// Close Modal
-// =====================
 function closeReceiptModal() {
     document.getElementById('receipt-modal').classList.remove('active');
     currentReceipt = null;
 }
 
-// =====================
-// Format Helpers
-// =====================
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-IN', {
         style: 'currency',
@@ -323,34 +322,27 @@ function formatDate(dateStr) {
     });
 }
 
-// =====================
-// Bind Events
-// =====================
 function bindEvents() {
-    // Search
     document.getElementById('search-input').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase();
-
         if (!query) {
             filteredReceipts = receipts;
         } else {
             filteredReceipts = receipts.filter(r =>
                 r.receipt_id?.toLowerCase().includes(query) ||
                 (r.student ? `${r.student.first_name} ${r.student.last_name}`.toLowerCase().includes(query) : false) ||
-                r.course?.course_name?.toLowerCase().includes(query)
+                r.course?.course_name?.toLowerCase().includes(query) ||
+                r.service?.name?.toLowerCase().includes(query)
             );
         }
-
         renderReceipts();
     });
 
-    // Close modal
     document.getElementById('close-receipt-modal').addEventListener('click', closeReceiptModal);
     document.getElementById('receipt-modal').addEventListener('click', (e) => {
         if (e.target.id === 'receipt-modal') closeReceiptModal();
     });
 
-    // Modal buttons
     document.getElementById('receipt-download-btn').addEventListener('click', () => {
         if (currentReceipt) downloadReceipt(currentReceipt.receipt_id);
     });

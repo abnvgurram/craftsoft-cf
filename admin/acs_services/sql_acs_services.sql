@@ -1,8 +1,11 @@
--- Create Service Management Table
--- Prefix: Sr-ACS-XXX
-CREATE TABLE IF NOT EXISTS services (
+-- Update Service Management Table
+-- Prefix: Serv-XXX
+-- Added service_code
+DROP TABLE IF EXISTS services;
+CREATE TABLE services (
     id BIGSERIAL PRIMARY KEY,
-    service_id TEXT UNIQUE, -- e.g. Sr-ACS-001
+    service_id TEXT UNIQUE, -- e.g. Serv-001
+    service_code TEXT UNIQUE, -- e.g. GD, UXD
     name TEXT NOT NULL,
     category TEXT,
     description TEXT,
