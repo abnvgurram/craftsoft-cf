@@ -141,7 +141,9 @@ function renderInquiries(items) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${items.map(inq => `
+                     ${items.map(inq => {
+        const isSrv = (inq.courses || []).some(c => allServicesForInquiries.some(s => s.service_code === c));
+        return `
                         <tr>
                             <td><span class="inquiry-id">${inq.inquiry_id || '---'}</span></td>
                             <td><span class="inquiry-name">${inq.name}</span></td>
@@ -156,12 +158,13 @@ function renderInquiries(items) {
                                 <div class="action-btns">
                                     <button class="action-btn edit-btn" data-id="${inq.id}"><i class="fa-solid fa-pen"></i></button>
                                     <button class="action-btn whatsapp" data-phone="${inq.phone}"><i class="fa-brands fa-whatsapp"></i></button>
-                                    <button class="action-btn convert" data-id="${inq.id}"><i class="fa-solid fa-repeat"></i></button>
+                                    ${!isSrv ? `<button class="action-btn convert" data-id="${inq.id}" title="Convert to Student"><i class="fa-solid fa-repeat"></i></button>` : ''}
                                     <button class="action-btn delete" data-id="${inq.id}" data-name="${inq.name}"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
-                    `).join('')}
+                    `;
+    }).join('')}
                 </tbody>
             </table>
         </div>
@@ -170,7 +173,9 @@ function renderInquiries(items) {
     // Re-using the mobile cards block from inquiries.css
     const cardsHTML = `
         <div class="inquiry-cards">
-            ${items.map(inq => `
+            ${items.map(inq => {
+        const isSrv = (inq.courses || []).some(c => allServicesForInquiries.some(s => s.service_code === c));
+        return `
                 <div class="inquiry-card">
                     <div class="inquiry-card-header">
                         <span class="inquiry-card-id">${inq.inquiry_id || '---'}</span>
@@ -188,11 +193,12 @@ function renderInquiries(items) {
                     <div class="inquiry-card-actions">
                         <button class="action-btn edit-btn" data-id="${inq.id}"><i class="fa-solid fa-pen"></i></button>
                         <button class="action-btn whatsapp" data-phone="${inq.phone}"><i class="fa-brands fa-whatsapp"></i></button>
-                        <button class="action-btn convert" data-id="${inq.id}"><i class="fa-solid fa-repeat"></i></button>
+                        ${!isSrv ? `<button class="action-btn convert" data-id="${inq.id}"><i class="fa-solid fa-repeat"></i> Convert</button>` : ''}
                         <button class="action-btn delete" data-id="${inq.id}" data-name="${inq.name}"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
-            `).join('')}
+            `;
+    }).join('')}
         </div>
     `;
 
