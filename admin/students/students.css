@@ -204,6 +204,31 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+/* Scheduling Fields - side by side on desktop */
+.scheduling-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.batch-section,
+.demo-section {
+    margin: 0;
+}
+
+.batch-section .form-row {
+    margin-bottom: 0;
+}
+
+/* Mobile: Stack scheduling sections */
+@media (max-width: 768px) {
+    .scheduling-fields {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+}
+
 /* Demo Fields */
 .demo-fields {
     margin-top: 1rem;
