@@ -300,6 +300,9 @@ async function openForm(isEdit = false, id = null) {
 
     let selected = [];
 
+    // Enable/Disable type toggle based on mode
+    document.querySelectorAll('input[name="inquiry-type"]').forEach(r => r.disabled = isEdit);
+
     if (isEdit && id) {
         document.getElementById('form-title').textContent = 'Edit Inquiry';
         const { data, error } = await window.supabaseClient.from('inquiries').select('*').eq('id', id).single();
