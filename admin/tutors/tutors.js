@@ -1,7 +1,11 @@
-// Tutors Module - Inline Form Approach
 let allTutors = [];
 let allCoursesForTutors = [];
 let deleteTargetId = null;
+
+// Pagination State
+let currentPage = 1;
+const itemsPerPage = 10;
+let selectedTutors = new Set();
 
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
@@ -83,11 +87,17 @@ function renderTutorsList(tutors) {
         return;
     }
 
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginatedTutors = tutors.slice(start, start + itemsPerPage);
+
     content.innerHTML = `
         <div class="table-container">
             <table class="premium-table">
                 <thead>
                     <tr>
+                        <th width="40px">
+                            <input type="checkbox" id="select-all-tutors">
+                        </th>
                         <th width="12%">TUTOR ID</th>
                         <th width="20%">NAME</th>
                         <th width="18%">PHONE</th>
@@ -96,8 +106,11 @@ function renderTutorsList(tutors) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${tutors.map(t => `
+                    ${paginatedTutors.map(t => `
                         <tr>
+                            <td>
+                                <input type="checkbox" class="tutor-checkbox" data-id="${t.id}" ${selectedTutors.has(t.id) ? 'checked' : ''}>
+                            </td>
                             <td><span class="cell-badge">${t.tutor_id}</span></td>
                             <td><span class="cell-title">${t.full_name}</span></td>
                             <td><span class="cell-phone">${t.phone}</span></td>
@@ -119,10 +132,13 @@ function renderTutorsList(tutors) {
             </table>
         </div>
         <div class="data-cards">
-            ${tutors.map(t => `
+            ${paginatedTutors.map(t => `
                 <div class="premium-card">
                     <div class="card-header">
-                        <span class="card-id-badge">${t.tutor_id}</span>
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <input type="checkbox" class="tutor-checkbox" data-id="${t.id}" ${selectedTutors.has(t.id) ? 'checked' : ''}>
+                            <span class="card-id-badge">${t.tutor_id}</span>
+                        </div>
                     </div>
                     <div class="card-body">
                         <h4 class="card-name">${t.full_name}</h4>
@@ -149,10 +165,98 @@ function renderTutorsList(tutors) {
             <span>Total Tutors: <strong>${tutors.length}</strong></span>
         </div>`;
 
+    // Render pagination
+    window.AdminUtils.Pagination.render('pagination-container', tutors.length, currentPage, itemsPerPage, (page) => {
+        currentPage = page;
+        renderTutorsList(allTutors);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
     document.querySelectorAll('.btn-edit-tutor').forEach(btn =>
         btn.addEventListener('click', () => openForm(btn.dataset.id)));
     document.querySelectorAll('.btn-delete-tutor').forEach(btn =>
         btn.addEventListener('click', () => showDeleteConfirm(btn.dataset.id, btn.dataset.name)));
+
+    bindBulkActions();
+}
+
+function bindBulkActions() {
+    const selectAll = document.getElementById('select-all-tutors');
+    const checkboxes = document.querySelectorAll('.tutor-checkbox');
+    const bulkBar = document.getElementById('bulk-actions-container');
+    const selectedCountText = document.getElementById('selected-count');
+    const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+
+    if (selectAll) {
+        selectAll.onchange = (e) => {
+            const start = (currentPage - 1) * itemsPerPage;
+            const currentItems = allTutors.slice(start, start + itemsPerPage);
+            currentItems.forEach(t => {
+                if (e.target.checked) selectedTutors.add(t.id);
+                else selectedTutors.delete(t.id);
+            });
+            renderTutorsList(allTutors);
+            updateBulkBar();
+        };
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const currentItems = allTutors.slice(start, start + itemsPerPage);
+        const allSelected = currentItems.length > 0 && currentItems.every(t => selectedTutors.has(t.id));
+        selectAll.checked = allSelected;
+    }
+
+    checkboxes.forEach(cb => {
+        cb.onchange = (e) => {
+            const id = cb.dataset.id;
+            if (e.target.checked) selectedTutors.add(id);
+            else selectedTutors.delete(id);
+            updateBulkBar();
+
+            if (selectAll) {
+                const start = (currentPage - 1) * itemsPerPage;
+                const currentItems = allTutors.slice(start, start + itemsPerPage);
+                selectAll.checked = currentItems.every(t => selectedTutors.has(t.id));
+            }
+        };
+    });
+
+    if (bulkDeleteBtn) {
+        bulkDeleteBtn.onclick = async () => {
+            if (selectedTutors.size === 0) return;
+
+            window.AdminUtils.Modal.confirm(
+                'Bulk Delete',
+                `Are you sure you want to delete ${selectedTutors.size} selected tutors?`,
+                async () => {
+                    try {
+                        const ids = Array.from(selectedTutors);
+                        await window.supabaseClient.from('tutors').delete().in('id', ids);
+
+                        window.AdminUtils.Toast.success('Deleted', `${ids.length} tutors removed`);
+                        selectedTutors.clear();
+                        updateBulkBar();
+                        await loadTutors();
+                    } catch (e) {
+                        console.error(e);
+                        window.AdminUtils.Toast.error('Error', 'Failed to delete tutors');
+                    }
+                }
+            );
+        };
+    }
+
+    function updateBulkBar() {
+        if (bulkBar && selectedCountText) {
+            if (selectedTutors.size > 0) {
+                bulkBar.style.display = 'block';
+                selectedCountText.textContent = selectedTutors.size;
+            } else {
+                bulkBar.style.display = 'none';
+            }
+        }
+    }
+
+    updateBulkBar();
 }
 
 function filterTutors(query) {

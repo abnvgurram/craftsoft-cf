@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 let allServices = [];
+let currentPage = 1;
+const itemsPerPage = 10;
 
 async function initServices() {
     await loadServices();
@@ -82,6 +84,9 @@ function renderServicesLayout(services) {
         return;
     }
 
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginatedServices = services.slice(start, start + itemsPerPage);
+
     // Desktop Table View
     const tableView = `
         <div class="data-table-wrapper">
@@ -95,7 +100,7 @@ function renderServicesLayout(services) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${services.map(srv => `
+                    ${paginatedServices.map(srv => `
                         <tr>
                             <td><span class="badge badge-primary">${srv.service_id}</span></td>
                             <td><span class="badge badge-outline">${srv.service_code || '-'}</span></td>
@@ -111,7 +116,7 @@ function renderServicesLayout(services) {
     // Mobile Card View
     const cardView = `
         <div class="data-cards">
-            ${services.map(srv => `
+            ${paginatedServices.map(srv => `
                 <div class="data-card">
                     <div class="data-card-header">
                         <span class="badge badge-primary">${srv.service_id}</span>
@@ -127,6 +132,13 @@ function renderServicesLayout(services) {
     `;
 
     container.innerHTML = tableView + cardView;
+
+    // Render pagination
+    window.AdminUtils.Pagination.render('pagination-container', services.length, currentPage, itemsPerPage, (page) => {
+        currentPage = page;
+        renderServicesLayout(allServices);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 }
 
 function bindEvents() {

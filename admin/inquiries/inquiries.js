@@ -1,8 +1,12 @@
-// Inquiries Module
 let allInquiries = [];
 let allCoursesForInquiries = [];
 let allServicesForInquiries = [];
 let inquiryToDelete = null;
+
+// Pagination State
+let currentPage = 1;
+const itemsPerPage = 10;
+let selectedInquiries = new Set();
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Inquiries: DOMContentLoaded started');
@@ -127,11 +131,17 @@ function renderInquiries(items) {
         return;
     }
 
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginatedItems = items.slice(start, start + itemsPerPage);
+
     const tableHTML = `
         <div class="table-container">
             <table class="inquiries-table">
                 <thead>
                     <tr>
+                        <th style="width: 40px;">
+                            <input type="checkbox" id="select-all-inquiries">
+                        </th>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Phone</th>
@@ -141,10 +151,14 @@ function renderInquiries(items) {
                     </tr>
                 </thead>
                 <tbody>
-                     ${items.map(inq => {
+                    ${paginatedItems.map(inq => {
         const isSrv = (inq.courses || []).some(c => allServicesForInquiries.some(s => s.service_code === c));
+        const isSelected = selectedInquiries.has(inq.id);
         return `
                         <tr>
+                            <td>
+                                <input type="checkbox" class="inquiry-checkbox" data-id="${inq.id}" ${isSelected ? 'checked' : ''}>
+                            </td>
                             <td><span class="inquiry-id">${inq.inquiry_id || '---'}</span></td>
                             <td><span class="inquiry-name">${inq.name}</span></td>
                             <td><span class="inquiry-phone">${inq.phone}</span></td>
@@ -170,15 +184,18 @@ function renderInquiries(items) {
         </div>
     `;
 
-    // Re-using the mobile cards block from inquiries.css
     const cardsHTML = `
         <div class="inquiry-cards">
-            ${items.map(inq => {
+            ${paginatedItems.map(inq => {
         const isSrv = (inq.courses || []).some(c => allServicesForInquiries.some(s => s.service_code === c));
+        const isSelected = selectedInquiries.has(inq.id);
         return `
                 <div class="inquiry-card">
                     <div class="inquiry-card-header">
-                        <span class="inquiry-card-id">${inq.inquiry_id || '---'}</span>
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <input type="checkbox" class="inquiry-checkbox" data-id="${inq.id}" ${isSelected ? 'checked' : ''}>
+                            <span class="inquiry-card-id">${inq.inquiry_id || '---'}</span>
+                        </div>
                         ${getStatusBadge(inq.status || 'New')}
                     </div>
                     <div class="inquiry-card-body">
@@ -193,7 +210,7 @@ function renderInquiries(items) {
                     <div class="inquiry-card-actions">
                         <button class="action-btn edit-btn" data-id="${inq.id}"><i class="fa-solid fa-pen"></i></button>
                         <button class="action-btn whatsapp" data-phone="${inq.phone}"><i class="fa-brands fa-whatsapp"></i></button>
-                        ${!isSrv ? `<button class="action-btn convert" data-id="${inq.id}"><i class="fa-solid fa-repeat"></i> Convert</button>` : ''}
+                        ${!isSrv ? `<button class="action-btn convert" data-id="${inq.id}"><i class="fa-solid fa-repeat"></i></button>` : ''}
                         <button class="action-btn delete" data-id="${inq.id}" data-name="${inq.name}"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
@@ -203,7 +220,97 @@ function renderInquiries(items) {
     `;
 
     content.innerHTML = tableHTML + cardsHTML;
+
+    // Render pagination
+    window.AdminUtils.Pagination.render('pagination-container', items.length, currentPage, itemsPerPage, (page) => {
+        currentPage = page;
+        renderInquiries(allInquiries);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
     bindTableActions();
+    bindBulkActions();
+}
+
+function bindBulkActions() {
+    const selectAll = document.getElementById('select-all-inquiries');
+    const checkboxes = document.querySelectorAll('.inquiry-checkbox');
+    const bulkBar = document.getElementById('bulk-actions-container');
+    const selectedCount = document.getElementById('selected-count');
+    const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+
+    if (selectAll) {
+        selectAll.onchange = (e) => {
+            const start = (currentPage - 1) * itemsPerPage;
+            const currentItems = allInquiries.slice(start, start + itemsPerPage);
+            currentItems.forEach(inq => {
+                if (e.target.checked) selectedInquiries.add(inq.id);
+                else selectedInquiries.delete(inq.id);
+            });
+            renderInquiries(allInquiries);
+            updateBulkBar();
+        };
+
+        // Update select all state
+        const start = (currentPage - 1) * itemsPerPage;
+        const currentItems = allInquiries.slice(start, start + itemsPerPage);
+        const allSelected = currentItems.length > 0 && currentItems.every(inq => selectedInquiries.has(inq.id));
+        selectAll.checked = allSelected;
+    }
+
+    checkboxes.forEach(cb => {
+        cb.onchange = (e) => {
+            const id = cb.dataset.id;
+            if (e.target.checked) selectedInquiries.add(id);
+            else selectedInquiries.delete(id);
+            updateBulkBar();
+
+            // Update select all state without full re-render
+            if (selectAll) {
+                const start = (currentPage - 1) * itemsPerPage;
+                const currentItems = allInquiries.slice(start, start + itemsPerPage);
+                selectAll.checked = currentItems.every(inq => selectedInquiries.has(inq.id));
+            }
+        };
+    });
+
+    if (bulkDeleteBtn) {
+        bulkDeleteBtn.onclick = async () => {
+            if (selectedInquiries.size === 0) return;
+
+            window.AdminUtils.Modal.confirm(
+                'Bulk Delete',
+                `Are you sure you want to delete ${selectedInquiries.size} selected inquiries?`,
+                async () => {
+                    try {
+                        const ids = Array.from(selectedInquiries);
+                        await window.supabaseClient.from('inquiries').delete().in('id', ids);
+
+                        window.AdminUtils.Toast.success('Deleted', `${ids.length} inquiries removed`);
+                        selectedInquiries.clear();
+                        updateBulkBar();
+                        await loadInquiries();
+                    } catch (e) {
+                        console.error(e);
+                        window.AdminUtils.Toast.error('Error', 'Failed to delete inquiries');
+                    }
+                }
+            );
+        };
+    }
+
+    function updateBulkBar() {
+        if (bulkBar && selectedCount) {
+            if (selectedInquiries.size > 0) {
+                bulkBar.style.display = 'block';
+                selectedCount.textContent = selectedInquiries.size;
+            } else {
+                bulkBar.style.display = 'none';
+            }
+        }
+    }
+
+    updateBulkBar();
 }
 
 function getStatusBadge(status) {

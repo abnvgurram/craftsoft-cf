@@ -1,4 +1,3 @@
-// Courses Module - Inline Form Approach
 const websiteCourses = [
     { code: 'GD', name: 'Graphic Design' },
     { code: 'UX', name: 'UI/UX Design' },
@@ -21,6 +20,10 @@ const websiteCourses = [
     { code: 'RESUME', name: 'Resume Writing & Interview Prep' },
     { code: 'HW', name: 'Handwriting Improvement' }
 ];
+
+let allCourses = []; // Store fetched courses
+let currentPage = 1;
+const itemsPerPage = 10;
 
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
@@ -58,69 +61,84 @@ async function loadCourses() {
             .order('course_id', { ascending: true });
 
         if (error) throw error;
-
-        if (!courses || courses.length === 0) {
-            content.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon"><i class="fa-solid fa-book-bookmark"></i></div>
-                    <h3>No courses yet</h3>
-                    <p>Click "Sync from Website" to populate courses</p>
-                </div>`;
-            return;
-        }
-
-        content.innerHTML = `
-            <div class="data-table-wrapper">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th><th>Code</th><th>Name</th><th>Fee</th><th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${courses.map(c => `
-                            <tr>
-                                <td><span class="badge badge-primary">${c.course_id}</span></td>
-                                <td><strong>${c.course_code}</strong></td>
-                                <td>${c.course_name}</td>
-                                <td class="fee-cell">₹${formatNumber(c.fee || 0)}</td>
-                                <td>
-                                    <button class="btn-icon btn-edit-fee" data-id="${c.id}" data-code="${c.course_code}" data-name="${c.course_name}" data-fee="${c.fee || 0}" title="Edit Fee">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-            <div class="data-cards">
-                ${courses.map(c => `
-                    <div class="data-card">
-                        <div class="data-card-header">
-                            <span class="badge badge-primary">${c.course_id}</span>
-                            <span class="data-card-code">${c.course_code}</span>
-                        </div>
-                        <div class="data-card-body">
-                            <h4>${c.course_name}</h4>
-                            <p class="data-card-fee">₹${formatNumber(c.fee || 0)}</p>
-                        </div>
-                        <div class="data-card-actions">
-                            <button class="btn btn-sm btn-outline btn-edit-fee" data-id="${c.id}" data-code="${c.course_code}" data-name="${c.course_name}" data-fee="${c.fee || 0}"><i class="fa-solid fa-pen"></i> Edit Fee</button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-            <div class="table-footer"><span>${courses.length} course${courses.length !== 1 ? 's' : ''} synced</span></div>
-        `;
-
-        document.querySelectorAll('.btn-edit-fee').forEach(btn =>
-            btn.addEventListener('click', () => openFeeForm(btn.dataset.id, btn.dataset.code, btn.dataset.name, btn.dataset.fee)));
-
+        allCourses = courses || [];
+        renderCoursesList(allCourses);
     } catch (error) {
         console.error(error);
         content.innerHTML = '<div class="error-state"><i class="fa-solid fa-exclamation-triangle"></i><p>Failed to load courses.</p></div>';
     }
+}
+
+function renderCoursesList(courses) {
+    const content = document.getElementById('courses-content');
+
+    if (!courses || courses.length === 0) {
+        content.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon"><i class="fa-solid fa-book-bookmark"></i></div>
+                <h3>No courses yet</h3>
+                <p>Click "Sync from Website" to populate courses</p>
+            </div>`;
+        return;
+    }
+
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginatedCourses = courses.slice(start, start + itemsPerPage);
+
+    content.innerHTML = `
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Code</th><th>Name</th><th>Fee</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${paginatedCourses.map(c => `
+                        <tr>
+                            <td><span class="badge badge-primary">${c.course_id}</span></td>
+                            <td><strong>${c.course_code}</strong></td>
+                            <td>${c.course_name}</td>
+                            <td class="fee-cell">₹${formatNumber(c.fee || 0)}</td>
+                            <td>
+                                <button class="btn-icon btn-edit-fee" data-id="${c.id}" data-code="${c.course_code}" data-name="${c.course_name}" data-fee="${c.fee || 0}" title="Edit Fee">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+        <div class="data-cards">
+            ${paginatedCourses.map(c => `
+                <div class="data-card">
+                    <div class="data-card-header">
+                        <span class="badge badge-primary">${c.course_id}</span>
+                        <span class="data-card-code">${c.course_code}</span>
+                    </div>
+                    <div class="data-card-body">
+                        <h4>${c.course_name}</h4>
+                        <p class="data-card-fee">₹${formatNumber(c.fee || 0)}</p>
+                    </div>
+                    <div class="data-card-actions">
+                        <button class="btn btn-sm btn-outline btn-edit-fee" data-id="${c.id}" data-code="${c.course_code}" data-name="${c.course_name}" data-fee="${c.fee || 0}"><i class="fa-solid fa-pen"></i> Edit Fee</button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        <div class="table-footer"><span>${courses.length} course${courses.length !== 1 ? 's' : ''} synced</span></div>
+    `;
+
+    // Render pagination
+    window.AdminUtils.Pagination.render('pagination-container', courses.length, currentPage, itemsPerPage, (page) => {
+        currentPage = page;
+        renderCoursesList(allCourses);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.querySelectorAll('.btn-edit-fee').forEach(btn =>
+        btn.addEventListener('click', () => openFeeForm(btn.dataset.id, btn.dataset.code, btn.dataset.name, btn.dataset.fee)));
 }
 
 function formatNumber(num) {

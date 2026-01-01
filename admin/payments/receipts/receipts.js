@@ -2,6 +2,8 @@
 let receipts = [];
 let filteredReceipts = [];
 let currentReceipt = null;
+let currentPage = 1;
+const itemsPerPage = 10;
 
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
@@ -91,8 +93,11 @@ function renderReceipts() {
 
     emptyState.style.display = 'none';
 
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginatedReceipts = filteredReceipts.slice(start, start + itemsPerPage);
+
     // Desktop table
-    tbody.innerHTML = filteredReceipts.map(r => {
+    tbody.innerHTML = paginatedReceipts.map(r => {
         const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
         const isService = !!r.service;
 
@@ -131,7 +136,7 @@ function renderReceipts() {
     `}).join('');
 
     // Mobile cards
-    cards.innerHTML = filteredReceipts.map(r => {
+    cards.innerHTML = paginatedReceipts.map(r => {
         const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
         return `
         <div class="receipt-card">
@@ -161,6 +166,13 @@ function renderReceipts() {
             </div>
         </div>
     `}).join('');
+
+    // Render pagination
+    window.AdminUtils.Pagination.render('pagination-container', filteredReceipts.length, currentPage, itemsPerPage, (page) => {
+        currentPage = page;
+        renderReceipts();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 }
 
 // =====================

@@ -27,9 +27,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadStats();
     await loadNotifications();
 
+    // Bind navigation to stat cards
+    bindStatCardLinks();
+
     // Subscribe to real-time updates
     subscribeToActivities();
 });
+
+function bindStatCardLinks() {
+    document.getElementById('stat-students')?.addEventListener('click', () => {
+        window.location.href = '../students/';
+    });
+    document.getElementById('stat-courses')?.addEventListener('click', () => {
+        window.location.href = '../courses/';
+    });
+    document.getElementById('stat-tutors')?.addEventListener('click', () => {
+        window.location.href = '../tutors/';
+    });
+}
 
 // =====================
 // Skeleton Loading

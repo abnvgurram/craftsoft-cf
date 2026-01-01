@@ -1493,12 +1493,63 @@ const Activity = {
     }
 };
 
+// ============================================
+// Pagination Helper
+// ============================================
+const Pagination = {
+    render(containerId, totalItems, currentPage, itemsPerPage, onPageChange) {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        if (totalPages <= 1) {
+            const container = document.getElementById(containerId);
+            if (container) container.innerHTML = '';
+            return;
+        }
+
+        let html = `
+            <div class="pagination">
+                <button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+        `;
+
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            } else if (i === currentPage - 2 || i === currentPage + 2) {
+                html += `<span class="pagination-dots">...</span>`;
+            }
+        }
+
+        html += `
+                <button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        `;
+
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = html;
+            container.querySelectorAll('.pagination-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const page = parseInt(btn.dataset.page);
+                    if (page >= 1 && page <= totalPages && page !== currentPage) {
+                        onPageChange(page);
+                    }
+                };
+            });
+        }
+    }
+};
+
 // Export utilities
 window.AdminUtils = {
     Toast,
     Modal,
     Validators,
     Activity,
+    Pagination,
     FormHelpers,
     Security,
     NavigationSecurity,

@@ -1,6 +1,8 @@
 // All Payments List Module
 let payments = [];
 let filteredPayments = [];
+let currentPage = 1;
+const itemsPerPage = 10;
 
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
@@ -84,8 +86,11 @@ function renderPayments() {
 
     emptyState.style.display = 'none';
 
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginatedPayments = filteredPayments.slice(start, start + itemsPerPage);
+
     // Desktop table
-    tbody.innerHTML = filteredPayments.map(p => `
+    tbody.innerHTML = paginatedPayments.map(p => `
         <tr>
             <td>${formatDate(p.created_at)}</td>
             <td>${p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown'}</td>
@@ -102,7 +107,7 @@ function renderPayments() {
     `).join('');
 
     // Mobile cards
-    cards.innerHTML = filteredPayments.map(p => `
+    cards.innerHTML = paginatedPayments.map(p => `
         <div class="payment-card">
             <div class="payment-card-header">
                 <span class="payment-card-student">${p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown'}</span>
@@ -120,6 +125,13 @@ function renderPayments() {
             </div>
         </div>
     `).join('');
+
+    // Render pagination
+    window.AdminUtils.Pagination.render('pagination-container', filteredPayments.length, currentPage, itemsPerPage, (page) => {
+        currentPage = page;
+        renderPayments();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 }
 
 // =====================

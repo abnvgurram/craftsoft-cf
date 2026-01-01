@@ -1,9 +1,13 @@
-// Students Module - With Time Pickers and Per-Course Discount
 let allStudents = [];
 let allCoursesForStudents = [];
 let allTutorsForStudents = [];
 let deleteTargetId = null;
 let courseDiscounts = {}; // Store per-course discounts { courseCode: discount }
+
+// Pagination State
+let currentPage = 1;
+const itemsPerPage = 10;
+let selectedStudents = new Set();
 
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
@@ -147,11 +151,17 @@ function renderStudentsList(students) {
         return;
     }
 
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginatedStudents = students.slice(start, start + itemsPerPage);
+
     content.innerHTML = `
         <div class="table-container">
             <table class="premium-table">
                 <thead>
                     <tr>
+                        <th width="40px">
+                            <input type="checkbox" id="select-all-students">
+                        </th>
                         <th width="12%">STUDENT ID</th>
                         <th width="20%">NAME</th>
                         <th width="15%">PHONE</th>
@@ -161,8 +171,11 @@ function renderStudentsList(students) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${students.map(s => `
+                    ${paginatedStudents.map(s => `
                         <tr>
+                            <td>
+                                <input type="checkbox" class="student-checkbox" data-id="${s.id}" ${selectedStudents.has(s.id) ? 'checked' : ''}>
+                            </td>
                             <td><span class="cell-badge">${s.student_id}</span></td>
                             <td><span class="cell-title">${s.first_name} ${s.last_name}</span></td>
                             <td><span class="cell-phone">${s.phone}</span></td>
@@ -191,10 +204,13 @@ function renderStudentsList(students) {
             </table>
         </div>
         <div class="data-cards">
-            ${students.map(s => `
+            ${paginatedStudents.map(s => `
                 <div class="premium-card">
                     <div class="card-header">
-                        <span class="card-id-badge">${s.student_id}</span>
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <input type="checkbox" class="student-checkbox" data-id="${s.id}" ${selectedStudents.has(s.id) ? 'checked' : ''}>
+                            <span class="card-id-badge">${s.student_id}</span>
+                        </div>
                     </div>
                     <div class="card-body">
                         <h4 class="card-name">${s.first_name} ${s.last_name}</h4>
@@ -231,10 +247,98 @@ function renderStudentsList(students) {
             <span>Total Students: <strong>${students.length}</strong></span>
         </div>`;
 
+    // Render pagination
+    window.AdminUtils.Pagination.render('pagination-container', students.length, currentPage, itemsPerPage, (page) => {
+        currentPage = page;
+        renderStudentsList(allStudents);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
     document.querySelectorAll('.btn-edit-student').forEach(btn =>
         btn.addEventListener('click', () => openForm(btn.dataset.id)));
     document.querySelectorAll('.btn-delete-student').forEach(btn =>
         btn.addEventListener('click', () => showDeleteConfirm(btn.dataset.id, btn.dataset.name)));
+
+    bindBulkActions();
+}
+
+function bindBulkActions() {
+    const selectAll = document.getElementById('select-all-students');
+    const checkboxes = document.querySelectorAll('.student-checkbox');
+    const bulkBar = document.getElementById('bulk-actions-container');
+    const selectedCountText = document.getElementById('selected-count');
+    const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+
+    if (selectAll) {
+        selectAll.onchange = (e) => {
+            const start = (currentPage - 1) * itemsPerPage;
+            const currentItems = allStudents.slice(start, start + itemsPerPage);
+            currentItems.forEach(s => {
+                if (e.target.checked) selectedStudents.add(s.id);
+                else selectedStudents.delete(s.id);
+            });
+            renderStudentsList(allStudents);
+            updateBulkBar();
+        };
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const currentItems = allStudents.slice(start, start + itemsPerPage);
+        const allSelected = currentItems.length > 0 && currentItems.every(s => selectedStudents.has(s.id));
+        selectAll.checked = allSelected;
+    }
+
+    checkboxes.forEach(cb => {
+        cb.onchange = (e) => {
+            const id = cb.dataset.id;
+            if (e.target.checked) selectedStudents.add(id);
+            else selectedStudents.delete(id);
+            updateBulkBar();
+
+            if (selectAll) {
+                const start = (currentPage - 1) * itemsPerPage;
+                const currentItems = allStudents.slice(start, start + itemsPerPage);
+                selectAll.checked = currentItems.every(s => selectedStudents.has(s.id));
+            }
+        };
+    });
+
+    if (bulkDeleteBtn) {
+        bulkDeleteBtn.onclick = async () => {
+            if (selectedStudents.size === 0) return;
+
+            window.AdminUtils.Modal.confirm(
+                'Bulk Delete',
+                `Are you sure you want to delete ${selectedStudents.size} selected students?`,
+                async () => {
+                    try {
+                        const ids = Array.from(selectedStudents);
+                        await window.supabaseClient.from('students').delete().in('id', ids);
+
+                        window.AdminUtils.Toast.success('Deleted', `${ids.length} students removed`);
+                        selectedStudents.clear();
+                        updateBulkBar();
+                        await loadStudents();
+                    } catch (e) {
+                        console.error(e);
+                        window.AdminUtils.Toast.error('Error', 'Failed to delete students');
+                    }
+                }
+            );
+        };
+    }
+
+    function updateBulkBar() {
+        if (bulkBar && selectedCountText) {
+            if (selectedStudents.size > 0) {
+                bulkBar.style.display = 'block';
+                selectedCountText.textContent = selectedStudents.size;
+            } else {
+                bulkBar.style.display = 'none';
+            }
+        }
+    }
+
+    updateBulkBar();
 }
 
 
