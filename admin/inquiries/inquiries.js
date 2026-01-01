@@ -1,42 +1,67 @@
 // Inquiries Module
+let allInquiries = [];
 let allCoursesForInquiries = [];
 let allServicesForInquiries = [];
 let inquiryToDelete = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const session = await window.supabaseConfig.getSession();
-    if (!session) {
-        window.location.href = '../login.html';
-        return;
+    console.log('Inquiries: DOMContentLoaded started');
+    try {
+        // 1. Check Auth
+        const session = await window.supabaseConfig.getSession();
+        if (!session) {
+            console.log('Inquiries: No session, redirecting to login');
+            window.location.href = '../login.html';
+            return;
+        }
+
+        // 2. Initialize Sidebar & Header (CRITICAL for UI)
+        if (window.AdminSidebar) {
+            console.log('Inquiries: Initializing sidebar');
+            window.AdminSidebar.init('inquiries');
+        }
+
+        const headerCont = document.getElementById('header-container');
+        if (headerCont && window.AdminHeader) {
+            console.log('Inquiries: Rendering header');
+            headerCont.innerHTML = window.AdminHeader.render('Inquiries');
+        }
+
+        const admin = await window.Auth.getCurrentAdmin();
+        if (admin && window.AdminSidebar && window.AdminSidebar.renderAccountPanel) {
+            console.log('Inquiries: Rendering account panel');
+            await window.AdminSidebar.renderAccountPanel(session, admin);
+        }
+
+        // 3. Load Data
+        console.log('Inquiries: Loading master data');
+        await Promise.all([loadCourses(), loadServices()]);
+
+        console.log('Inquiries: Loading inquiries');
+        await loadInquiries();
+
+        // 4. Bind UI Events
+        console.log('Inquiries: Binding events');
+        bindFormEvents();
+        bindDeleteEvents();
+        bindSearchEvents();
+        bindTypeToggle();
+
+        console.log('Inquiries: Initialization complete');
+
+    } catch (err) {
+        console.error('Inquiries: Initialization fatal error:', err);
+        const content = document.getElementById('inquiries-content');
+        if (content) {
+            content.innerHTML = `<div class="p-4 text-center text-danger">
+                <i class="fa-solid fa-circle-exclamation mb-2" style="font-size: 2rem;"></i>
+                <p>Failed to initialize page. Error: ${err.message}</p>
+                <button class="btn btn-primary mt-2" onclick="location.reload()">Retry</button>
+            </div>`;
+        }
     }
-
-    AdminSidebar.init('inquiries');
-
-    const headerContainer = document.getElementById('header-container');
-    if (headerContainer) {
-        headerContainer.innerHTML = window.AdminHeader.render('Inquiries');
-    }
-
-    const admin = await window.Auth.getCurrentAdmin();
-    await AdminSidebar.renderAccountPanel(session, admin);
-
-    // Load master data
-    await loadCourses();
-    await loadServices();
-
-    // Load inquiries
-    await loadInquiries();
-
-    // Bind events
-    bindFormEvents();
-    bindDeleteEvents();
-    bindSearchEvents();
-    bindTypeToggle();
 });
 
-// =====================
-// Load Master Data
-// =====================
 async function loadCourses() {
     try {
         const { data, error } = await window.supabaseClient
@@ -44,11 +69,10 @@ async function loadCourses() {
             .select('course_code, course_name')
             .eq('status', 'ACTIVE')
             .order('course_code');
-
         if (error) throw error;
         allCoursesForInquiries = data || [];
-    } catch (error) {
-        console.error('Error loading courses:', error);
+    } catch (e) {
+        console.error('Inquiries: Error loading courses:', e);
     }
 }
 
@@ -58,22 +82,18 @@ async function loadServices() {
             .from('services')
             .select('service_code, name')
             .order('service_code');
-
         if (error) throw error;
         allServicesForInquiries = data || [];
-    } catch (error) {
-        console.error('Error loading services:', error);
+    } catch (e) {
+        console.error('Inquiries: Error loading services:', e);
     }
 }
 
-// =====================
-// Load Inquiries
-// =====================
 async function loadInquiries() {
-    const { Skeleton } = window.AdminUtils;
     const content = document.getElementById('inquiries-content');
-
-    if (Skeleton) Skeleton.show('inquiries-content', 'table', 5);
+    if (window.AdminUtils?.Skeleton) {
+        window.AdminUtils.Skeleton.show('inquiries-content', 'table', 5);
+    }
 
     try {
         const { data, error } = await window.supabaseClient
@@ -83,56 +103,61 @@ async function loadInquiries() {
 
         if (error) throw error;
 
-        if (!data || data.length === 0) {
-            content.innerHTML = `
-                <div class="empty-state">
-                    <i class="fa-solid fa-phone-volume"></i>
-                    <p>No inquiries yet</p>
-                </div>`;
-            return;
+        allInquiries = data || [];
+        renderInquiries(allInquiries);
+    } catch (e) {
+        console.error('Inquiries: Error loading inquiries:', e);
+        if (content) {
+            content.innerHTML = '<div class="p-4 text-center text-muted">Error loading data.</div>';
         }
-
-        renderInquiries(data);
-    } catch (error) {
-        console.error('Error loading inquiries:', error);
-        content.innerHTML = '<p class="text-muted">Error loading inquiries</p>';
     }
 }
 
-function renderInquiries(inquiries) {
+function renderInquiries(items) {
     const content = document.getElementById('inquiries-content');
+    if (!content) return;
+
+    if (!items || items.length === 0) {
+        content.innerHTML = `
+            <div class="empty-state py-5 text-center">
+                <i class="fa-solid fa-phone-volume fa-3x text-muted mb-3"></i>
+                <h3>No inquiries found</h3>
+                <p>All incoming inquiries will appear here.</p>
+            </div>`;
+        return;
+    }
 
     const tableHTML = `
-        <div class="data-table-wrapper">
-            <table class="data-table">
+        <div class="table-container">
+            <table class="inquiries-table">
                 <thead>
                     <tr>
-                        <th>Inquiry ID</th>
+                        <th>ID</th>
                         <th>Name</th>
                         <th>Phone</th>
-                        <th>Interests</th>
+                        <th>Interest</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${inquiries.map(inq => `
+                    ${items.map(inq => `
                         <tr>
-                            <td><span class="badge badge-primary">${inq.inquiry_id}</span></td>
-                            <td><strong>${inq.name}</strong></td>
-                            <td>${inq.phone}</td>
+                            <td><span class="inquiry-id">${inq.inquiry_id || '---'}</span></td>
+                            <td><span class="inquiry-name">${inq.name}</span></td>
+                            <td><span class="inquiry-phone">${inq.phone}</span></td>
                             <td>
                                 <div class="inquiry-courses">
-                                    ${(inq.courses || []).map(c => `<span class="badge badge-outline">${c}</span>`).join('')}
+                                    ${(inq.courses || []).map(c => `<span class="course-tag">${c}</span>`).join('')}
                                 </div>
                             </td>
                             <td>${getStatusBadge(inq.status || 'New')}</td>
                             <td>
                                 <div class="action-btns">
-                                    <button class="btn-icon edit-btn" data-id="${inq.id}"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="btn-icon whatsapp" data-phone="${inq.phone}"><i class="fa-brands fa-whatsapp"></i></button>
-                                    <button class="btn-icon convert" data-id="${inq.id}"><i class="fa-solid fa-repeat"></i></button>
-                                    <button class="btn-icon delete" data-id="${inq.id}" data-name="${inq.name}"><i class="fa-solid fa-trash"></i></button>
+                                    <button class="action-btn edit-btn" data-id="${inq.id}"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="action-btn whatsapp" data-phone="${inq.phone}"><i class="fa-brands fa-whatsapp"></i></button>
+                                    <button class="action-btn convert" data-id="${inq.id}"><i class="fa-solid fa-repeat"></i></button>
+                                    <button class="action-btn delete" data-id="${inq.id}" data-name="${inq.name}"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -142,28 +167,29 @@ function renderInquiries(inquiries) {
         </div>
     `;
 
+    // Re-using the mobile cards block from inquiries.css
     const cardsHTML = `
-        <div class="data-cards">
-            ${inquiries.map(inq => `
-                <div class="data-card">
-                    <div class="data-card-header">
-                        <span class="badge badge-primary">${inq.inquiry_id}</span>
+        <div class="inquiry-cards">
+            ${items.map(inq => `
+                <div class="inquiry-card">
+                    <div class="inquiry-card-header">
+                        <span class="inquiry-card-id">${inq.inquiry_id || '---'}</span>
                         ${getStatusBadge(inq.status || 'New')}
                     </div>
-                    <div class="data-card-body">
-                        <h4 class="data-card-title">${inq.name}</h4>
-                        <div class="data-card-info">
-                            <p><i class="fa-solid fa-phone"></i> ${inq.phone}</p>
-                            <div class="badge-list">
-                                ${(inq.courses || []).map(c => `<span class="badge badge-outline">${c}</span>`).join('')}
+                    <div class="inquiry-card-body">
+                        <h4 class="inquiry-card-name">${inq.name}</h4>
+                        <div class="inquiry-card-info">
+                            <span><i class="fa-solid fa-phone"></i> ${inq.phone}</span>
+                            <div class="inquiry-courses">
+                                ${(inq.courses || []).map(c => `<span class="course-tag">${c}</span>`).join('')}
                             </div>
                         </div>
                     </div>
-                    <div class="data-card-actions">
-                        <button class="btn-icon edit-btn" data-id="${inq.id}"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn-icon whatsapp" data-phone="${inq.phone}"><i class="fa-brands fa-whatsapp"></i></button>
-                        <button class="btn-icon convert" data-id="${inq.id}"><i class="fa-solid fa-repeat"></i></button>
-                        <button class="btn-icon delete" data-id="${inq.id}" data-name="${inq.name}"><i class="fa-solid fa-trash"></i></button>
+                    <div class="inquiry-card-actions">
+                        <button class="action-btn edit-btn" data-id="${inq.id}"><i class="fa-solid fa-pen"></i></button>
+                        <button class="action-btn whatsapp" data-phone="${inq.phone}"><i class="fa-brands fa-whatsapp"></i></button>
+                        <button class="action-btn convert" data-id="${inq.id}"><i class="fa-solid fa-repeat"></i></button>
+                        <button class="action-btn delete" data-id="${inq.id}" data-name="${inq.name}"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `).join('')}
@@ -171,50 +197,51 @@ function renderInquiries(inquiries) {
     `;
 
     content.innerHTML = tableHTML + cardsHTML;
-    bindActionButtons();
+    bindTableActions();
 }
 
 function getStatusBadge(status) {
-    if (!status) return `<span class="badge badge-secondary">New</span>`;
-    const classes = {
-        'New': 'badge-secondary',
-        'Contacted': 'badge-info',
-        'Demo Scheduled': 'badge-warning',
-        'Converted': 'badge-success',
-        'Closed': 'badge-danger'
-    };
-    return `<span class="badge ${classes[status] || 'badge-secondary'}">${status}</span>`;
+    const s = status ? status.toLowerCase() : 'new';
+    let cls = 'status-new';
+    if (s.includes('contact')) cls = 'status-contacted';
+    if (s.includes('demo')) cls = 'status-demo';
+    if (s.includes('convert')) cls = 'status-converted';
+    if (s.includes('close')) cls = 'status-closed';
+
+    return `<span class="status-badge ${cls}">${status || 'New'}</span>`;
 }
 
-function bindActionButtons() {
-    document.querySelectorAll('.edit-btn').forEach(btn => btn.onclick = () => openForm(true, btn.dataset.id));
-    document.querySelectorAll('.whatsapp').forEach(btn => btn.onclick = () => window.open(`https://wa.me/91${btn.dataset.phone}`, '_blank'));
-    document.querySelectorAll('.convert').forEach(btn => btn.onclick = () => convertToStudent(btn.dataset.id));
-    document.querySelectorAll('.delete').forEach(btn => btn.onclick = () => showDeleteConfirm(btn.dataset.id, btn.dataset.name));
+function bindTableActions() {
+    document.querySelectorAll('.edit-btn').forEach(b => b.onclick = () => openForm(true, b.dataset.id));
+    document.querySelectorAll('.whatsapp').forEach(b => b.onclick = () => {
+        const p = b.dataset.phone.replace(/\D/g, '');
+        window.open(`https://wa.me/91${p}`, '_blank');
+    });
+    document.querySelectorAll('.convert').forEach(b => b.onclick = () => convertToStudent(b.dataset.id));
+    document.querySelectorAll('.delete').forEach(b => b.onclick = () => showDeleteConfirm(b.dataset.id, b.dataset.name));
 }
 
-// =====================
-// Form Handling
-// =====================
 function bindTypeToggle() {
     document.querySelectorAll('input[name="inquiry-type"]').forEach(radio => {
-        radio.addEventListener('change', () => {
+        radio.onchange = () => {
             const isService = radio.value === 'service';
             const label = document.getElementById('interest-label');
             const courseFields = document.getElementById('course-only-fields');
 
-            label.innerHTML = isService ? 'Interested Services <span class="required">*</span>' : 'Interested Courses <span class="required">*</span>';
-            courseFields.style.display = isService ? 'none' : 'block';
+            if (label) label.innerHTML = isService ? 'Interested Services <span class="required">*</span>' : 'Interested Courses <span class="required">*</span>';
+            if (courseFields) courseFields.style.display = isService ? 'none' : 'block';
 
             renderCheckboxes(isService ? allServicesForInquiries : allCoursesForInquiries, isService);
-        });
+        };
     });
 }
 
 function renderCheckboxes(items, isService = false, selected = []) {
     const container = document.getElementById('inquiry-courses-list');
-    if (!items.length) {
-        container.innerHTML = `<p class="text-muted">No ${isService ? 'services' : 'courses'} available</p>`;
+    if (!container) return;
+
+    if (!items || items.length === 0) {
+        container.innerHTML = `<p class="text-muted p-2">No data available.</p>`;
         return;
     }
 
@@ -241,31 +268,34 @@ function bindFormEvents() {
     document.getElementById('cancel-form-btn')?.addEventListener('click', closeForm);
     document.getElementById('save-inquiry-btn')?.addEventListener('click', saveInquiry);
 
-    document.querySelectorAll('input[name="demo-required"]').forEach(radio => {
-        radio.onchange = () => document.querySelector('.demo-fields').style.display = radio.value === 'yes' ? 'block' : 'none';
+    document.querySelectorAll('input[name="demo-required"]').forEach(r => {
+        r.onchange = () => {
+            const el = document.querySelector('.demo-fields');
+            if (el) el.style.display = r.value === 'yes' ? 'block' : 'none';
+        }
     });
 }
 
 async function openForm(isEdit = false, id = null) {
     const container = document.getElementById('inquiry-form-container');
-    const typeLabel = document.getElementById('interest-label');
-    const courseFields = document.getElementById('course-only-fields');
+    if (!container) return;
 
-    // Reset Form
+    // Reset basics
     document.getElementById('edit-inquiry-id').value = '';
     document.getElementById('inquiry-name').value = '';
     document.getElementById('inquiry-phone').value = '';
     document.getElementById('inquiry-email').value = '';
     document.getElementById('inquiry-notes').value = '';
+
     document.querySelector('input[name="inquiry-type"][value="course"]').checked = true;
     document.querySelector('input[name="demo-required"][value="no"]').checked = true;
-    document.querySelector('.demo-fields').style.display = 'none';
-
-    typeLabel.innerHTML = 'Interested Courses <span class="required">*</span>';
-    courseFields.style.display = 'block';
+    const demoFields = document.querySelector('.demo-fields');
+    if (demoFields) demoFields.style.display = 'none';
 
     let selected = [];
-    if (isEdit) {
+
+    if (isEdit && id) {
+        document.getElementById('form-title').textContent = 'Edit Inquiry';
         const { data, error } = await window.supabaseClient.from('inquiries').select('*').eq('id', id).single();
         if (data) {
             document.getElementById('edit-inquiry-id').value = data.id;
@@ -275,19 +305,21 @@ async function openForm(isEdit = false, id = null) {
             document.getElementById('inquiry-notes').value = data.notes || '';
             selected = data.courses || [];
 
-            // If it has services (identified by inquiry_id prefix or presence in services list)
-            // Simplified: we'll check if the saved codes exist in the services list
-            const foundInServices = selected.some(code => allServicesForInquiries.some(s => s.service_code === code));
-            if (foundInServices) {
+            // Check if service
+            const isSrv = selected.some(c => allServicesForInquiries.some(s => s.service_code === c));
+            if (isSrv) {
                 document.querySelector('input[name="inquiry-type"][value="service"]').checked = true;
-                typeLabel.innerHTML = 'Interested Services <span class="required">*</span>';
-                courseFields.style.display = 'none';
+                const label = document.getElementById('interest-label');
+                const courseFields = document.getElementById('course-only-fields');
+                if (label) label.innerHTML = 'Interested Services <span class="required">*</span>';
+                if (courseFields) courseFields.style.display = 'none';
                 renderCheckboxes(allServicesForInquiries, true, selected);
             } else {
                 renderCheckboxes(allCoursesForInquiries, false, selected);
             }
         }
     } else {
+        document.getElementById('form-title').textContent = 'Add Inquiry';
         renderCheckboxes(allCoursesForInquiries, false);
     }
 
@@ -296,99 +328,116 @@ async function openForm(isEdit = false, id = null) {
 }
 
 function closeForm() {
-    document.getElementById('inquiry-form-container').style.display = 'none';
+    const el = document.getElementById('inquiry-form-container');
+    if (el) el.style.display = 'none';
 }
 
 async function saveInquiry() {
-    const { Toast } = window.AdminUtils;
+    const { Toast } = window.AdminUtils || {};
     const btn = document.getElementById('save-inquiry-btn');
     const editId = document.getElementById('edit-inquiry-id').value;
-    const isService = document.querySelector('input[name="inquiry-type"]:checked').value === 'service';
+    const type = document.querySelector('input[name="inquiry-type"]:checked')?.value || 'course';
+    const isService = type === 'service';
 
     const name = document.getElementById('inquiry-name').value.trim();
     const phone = document.getElementById('inquiry-phone').value.trim();
-    const interests = Array.from(document.querySelectorAll('input[name="inquiry-interests"]:checked')).map(cb => cb.value);
+    const interests = Array.from(document.querySelectorAll('input[name="inquiry-interests"]:checked')).map(c => c.value);
 
     if (!name || !phone || interests.length === 0) {
-        Toast.error('Validation', 'Please fill all required fields');
+        if (Toast) Toast.error('Required Fields', 'Please fill name, phone and select one item.');
         return;
     }
 
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+    if (btn) btn.disabled = true;
 
     try {
         const payload = {
             name,
             phone,
-            email: document.getElementById('inquiry-email').value.trim() || null,
+            email: document.getElementById('inquiry-email').value || null,
             courses: interests,
-            notes: document.getElementById('inquiry-notes').value.trim() || null,
-            source: isService ? 'Walk-in' : document.getElementById('inquiry-source').value,
-            status: isService ? 'New' : document.getElementById('inquiry-status').value,
-            demo_required: isService ? false : (document.querySelector('input[name="demo-required"]:checked').value === 'yes'),
-            demo_date: isService ? null : (document.getElementById('inquiry-demo-date').value || null),
-            demo_time: isService ? null : (document.getElementById('inquiry-demo-time').value || null)
+            notes: document.getElementById('inquiry-notes').value || null,
+            source: isService ? 'Walk-in' : (document.getElementById('inquiry-source')?.value || 'Walk-in'),
+            status: isService ? 'New' : (document.getElementById('inquiry-status')?.value || 'New'),
+            demo_required: isService ? false : (document.querySelector('input[name="demo-required"]:checked')?.value === 'yes'),
+            demo_date: isService ? null : (document.getElementById('inquiry-demo-date')?.value || null),
+            demo_time: isService ? null : (document.getElementById('inquiry-demo-time')?.value || null)
         };
 
         if (editId) {
-            const { error } = await window.supabaseClient.from('inquiries').update(payload).eq('id', editId);
-            if (error) throw error;
+            await window.supabaseClient.from('inquiries').update(payload).eq('id', editId);
         } else {
-            // New Inquiry ID: Sr-ACS-XXX
-            const { data: max } = await window.supabaseClient.from('inquiries').select('inquiry_id').order('inquiry_id', { ascending: false }).limit(1);
-            let next = 1;
-            if (max?.[0]?.inquiry_id) {
-                const match = max[0].inquiry_id.match(/Sr-ACS-(\d+)/);
-                if (match) next = parseInt(match[1]) + 1;
+            // New Sequence
+            const { data: maxItems } = await window.supabaseClient.from('inquiries').select('inquiry_id').order('inquiry_id', { ascending: false }).limit(1);
+            let nextNum = 1;
+            if (maxItems?.[0]?.inquiry_id) {
+                const m = maxItems[0].inquiry_id.match(/Sr-ACS-(\d+)/);
+                if (m) nextNum = parseInt(m[1]) + 1;
             }
-            payload.inquiry_id = `Sr-ACS-${String(next).padStart(3, '0')}`;
-
-            const { error } = await window.supabaseClient.from('inquiries').insert(payload);
-            if (error) throw error;
+            payload.inquiry_id = `Sr-ACS-${String(nextNum).padStart(3, '0')}`;
+            await window.supabaseClient.from('inquiries').insert(payload);
         }
 
-        Toast.success('Success', `Inquiry ${editId ? 'updated' : 'added'}`);
+        if (Toast) Toast.success('Success', 'Inquiry saved successfully.');
         closeForm();
         await loadInquiries();
-    } catch (err) {
-        Toast.error('Save error', err.message);
+    } catch (e) {
+        console.error(e);
+        if (Toast) Toast.error('Error', e.message);
     } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> Save Inquiry';
+        if (btn) btn.disabled = false;
     }
 }
 
-// ... Rest of the helper functions from original file ...
 async function convertToStudent(id) {
-    const { data } = await window.supabaseClient.from('inquiries').select('*').eq('id', id).single();
-    if (data) {
-        const params = new URLSearchParams({ prefill: '1', name: data.name, phone: data.phone, email: data.email || '', interests: data.courses.join(',') });
-        window.location.href = `../students/?${params.toString()}`;
-    }
+    try {
+        const { data } = await window.supabaseClient.from('inquiries').select('*').eq('id', id).single();
+        if (data) {
+            const p = new URLSearchParams({
+                prefill: '1',
+                name: data.name,
+                phone: data.phone,
+                email: data.email || '',
+                courses: (data.courses || []).join(','),
+                inquiry_id: data.id
+            });
+            window.location.href = `../students/?${p.toString()}`;
+        }
+    } catch (e) { console.error(e); }
 }
+
 function showDeleteConfirm(id, name) {
     inquiryToDelete = id;
-    document.getElementById('delete-name').textContent = name;
-    document.getElementById('delete-overlay').style.display = 'flex';
+    const el = document.getElementById('delete-name');
+    if (el) el.textContent = name;
+    const over = document.getElementById('delete-overlay');
+    if (over) over.style.display = 'flex';
 }
+
 function hideDeleteConfirm() {
-    document.getElementById('delete-overlay').style.display = 'none';
+    const over = document.getElementById('delete-overlay');
+    if (over) over.style.display = 'none';
 }
+
 async function confirmDelete() {
-    await window.supabaseClient.from('inquiries').delete().eq('id', inquiryToDelete);
-    hideDeleteConfirm();
-    loadInquiries();
+    if (!inquiryToDelete) return;
+    try {
+        await window.supabaseClient.from('inquiries').delete().eq('id', inquiryToDelete);
+        hideDeleteConfirm();
+        await loadInquiries();
+    } catch (e) { console.error(e); }
 }
+
 function bindDeleteEvents() {
-    document.getElementById('cancel-delete-btn')?.onclick = hideDeleteConfirm;
-    document.getElementById('confirm-delete-btn')?.onclick = confirmDelete;
+    document.getElementById('cancel-delete-btn')?.addEventListener('click', hideDeleteConfirm);
+    document.getElementById('confirm-delete-btn')?.addEventListener('click', confirmDelete);
 }
+
 function bindSearchEvents() {
-    document.getElementById('inquiry-search')?.oninput = (e) => {
+    document.getElementById('inquiry-search')?.addEventListener('input', (e) => {
         const q = e.target.value.toLowerCase();
-        document.querySelectorAll('.data-table tbody tr, .data-card').forEach(el => {
-            el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+        document.querySelectorAll('.inquiries-table tbody tr, .inquiry-card').forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
         });
-    }
+    });
 }
