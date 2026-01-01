@@ -126,6 +126,13 @@ function renderPayments() {
         </div>
     `).join('');
 
+    // Update footer count
+    const footer = document.getElementById('payments-footer');
+    if (footer) {
+        footer.innerHTML = `<span>Total Payments: <strong>${filteredPayments.length}</strong></span>`;
+        footer.style.display = 'block';
+    }
+
     // Render pagination
     window.AdminUtils.Pagination.render('pagination-container', filteredPayments.length, currentPage, itemsPerPage, (page) => {
         currentPage = page;

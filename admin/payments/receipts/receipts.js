@@ -167,6 +167,13 @@ function renderReceipts() {
         </div>
     `}).join('');
 
+    // Update footer count
+    const footer = document.getElementById('receipts-footer');
+    if (footer) {
+        footer.innerHTML = `<span>Total Receipts: <strong>${filteredReceipts.length}</strong></span>`;
+        footer.style.display = 'block';
+    }
+
     // Render pagination
     window.AdminUtils.Pagination.render('pagination-container', filteredReceipts.length, currentPage, itemsPerPage, (page) => {
         currentPage = page;

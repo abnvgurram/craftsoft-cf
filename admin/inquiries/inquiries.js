@@ -219,7 +219,13 @@ function renderInquiries(items) {
         </div>
     `;
 
-    content.innerHTML = tableHTML + cardsHTML;
+    const footerHTML = `
+        <div class="table-footer">
+            <span>Total Inquiries: <strong>${items.length}</strong></span>
+        </div>
+    `;
+
+    content.innerHTML = tableHTML + cardsHTML + footerHTML;
 
     // Render pagination
     window.AdminUtils.Pagination.render('pagination-container', items.length, currentPage, itemsPerPage, (page) => {

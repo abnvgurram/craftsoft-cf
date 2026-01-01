@@ -131,7 +131,14 @@ function renderServicesLayout(services) {
         </div>
     `;
 
-    container.innerHTML = tableView + cardView;
+    // Footer with count
+    const footerView = `
+        <div class="table-footer">
+            <span>Total Services: <strong>${services.length}</strong></span>
+        </div>
+    `;
+
+    container.innerHTML = tableView + cardView + footerView;
 
     // Render pagination
     window.AdminUtils.Pagination.render('pagination-container', services.length, currentPage, itemsPerPage, (page) => {
