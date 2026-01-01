@@ -318,17 +318,17 @@
     flex-shrink: 0;
 }
 
-/* WhatsApp Button - Outline style matching primary colors */
+/* WhatsApp Button - Same style as primary button */
 .btn-whatsapp {
-    background: transparent;
-    color: var(--primary-500) !important;
-    border: 2px solid var(--primary-500);
+    background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+    color: white !important;
+    border: none;
 }
 
 .btn-whatsapp:hover {
-    background: var(--primary-500);
-    color: white !important;
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, var(--primary-600), var(--accent-600));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(108, 92, 231, 0.35);
 }
 
 .btn-whatsapp i {
