@@ -69,7 +69,7 @@ exports.handler = async (event) => {
             student_id,
             course_id,
             amount_paid: amountPaid,
-            payment_mode: 'ONLINE',
+            payment_mode: 'UPI',
             reference_id: razorpay_payment_id,
             status: 'SUCCESS',
             payment_date: paymentDate
@@ -119,7 +119,7 @@ exports.handler = async (event) => {
             student_id,
             course_id,
             amount_paid: amountPaid,
-            payment_mode: 'ONLINE',
+            payment_mode: 'UPI',
             reference_id: razorpay_payment_id,
             balance_due: balanceDue > 0 ? balanceDue : 0,
             payment_date: paymentDate

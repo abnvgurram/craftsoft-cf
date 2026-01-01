@@ -259,8 +259,8 @@ async function handlePayment(e) {
     try {
         if (mode === 'CASH') {
             await processCashPayment(amount);
-        } else {
-            await processOnlinePayment(amount);
+        } else if (mode === 'UPI') {
+            await processUPIPayment(amount);
         }
     } catch (err) {
         console.error('Payment error:', err);
@@ -325,9 +325,9 @@ async function processCashPayment(amount) {
 }
 
 // =====================
-// Process Online Payment (Razorpay)
+// Process UPI Payment (Razorpay)
 // =====================
-async function processOnlinePayment(amount) {
+async function processUPIPayment(amount) {
     const { Toast } = window.AdminUtils;
     const btn = document.getElementById('proceed-btn');
 
@@ -355,8 +355,8 @@ async function processOnlinePayment(amount) {
         const student = students.find(s => s.id === selectedStudent);
         const course = courses.find(c => c.id === selectedCourse);
 
-        // Step 3: Open Razorpay Checkout
-        btn.innerHTML = '<i class="fa-solid fa-credit-card"></i> Complete payment...';
+        // Step 3: Open Razorpay Checkout (UPI only)
+        btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> Complete UPI payment...';
 
         const razorpayOptions = {
             key: orderData.key_id,
@@ -368,6 +368,12 @@ async function processOnlinePayment(amount) {
             prefill: {
                 name: student ? `${student.first_name} ${student.last_name}` : '',
                 contact: student?.phone || ''
+            },
+            method: {
+                upi: true,
+                card: false,
+                netbanking: false,
+                wallet: false
             },
             theme: {
                 color: '#2896cd'
