@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay Your Fees - Abhi's Craftsoft</title>
+    <meta name="description" content="Pay your course fees securely via UPI">
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Page Styles -->
+    <link rel="stylesheet" href="pay.css">
+</head>
+
+<body>
+    <div class="pay-container">
+        <!-- Header -->
+        <header class="pay-header">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Abhi's Craftsoft</span>
+            </div>
+            <h1>Pay Your Fees</h1>
+            <p>Secure UPI payment</p>
+        </header>
+
+        <!-- Step 1: Enter Student ID -->
+        <div id="step-lookup" class="pay-card">
+            <div class="card-header">
+                <i class="fa-solid fa-user-check"></i>
+                <h2>Find Your Account</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Student ID</label>
+                    <input type="text" id="student-id-input" class="form-input" placeholder="e.g., STU-001"
+                        autocomplete="off">
+                    <span class="form-hint">Enter the Student ID provided by Craftsoft</span>
+                </div>
+                <button id="lookup-btn" class="btn btn-primary btn-block">
+                    <i class="fa-solid fa-search"></i> Find My Account
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Show Courses & Pay -->
+        <div id="step-pay" class="pay-card" style="display: none;">
+            <div class="card-header">
+                <i class="fa-solid fa-user"></i>
+                <div class="student-info">
+                    <h2 id="student-name">—</h2>
+                    <span id="student-id-display" class="student-id-badge">—</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <h3 class="section-label">Your Courses</h3>
+                <div id="courses-list" class="courses-list">
+                    <!-- Courses will be rendered here -->
+                </div>
+            </div>
+            <div class="card-footer">
+                <button id="back-btn" class="btn btn-ghost">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </button>
+            </div>
+        </div>
+
+        <!-- Success State -->
+        <div id="step-success" class="pay-card success-card" style="display: none;">
+            <div class="success-icon">
+                <i class="fa-solid fa-check-circle"></i>
+            </div>
+            <h2>Payment Successful!</h2>
+            <p id="success-message">Your payment has been recorded.</p>
+            <div class="receipt-info">
+                <span class="label">Receipt ID</span>
+                <span id="receipt-id" class="value">—</span>
+            </div>
+            <button id="done-btn" class="btn btn-primary btn-block">
+                <i class="fa-solid fa-home"></i> Done
+            </button>
+        </div>
+
+        <!-- Error Toast -->
+        <div id="toast" class="toast" style="display: none;">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <span id="toast-message">Error message</span>
+        </div>
+
+        <!-- Footer -->
+        <footer class="pay-footer">
+            <p>Powered by <strong>Razorpay</strong> • Secure & Encrypted</p>
+        </footer>
+    </div>
+
+    <!-- Razorpay Checkout -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <!-- Supabase (for initial lookup only - backend handles sensitive ops) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Page Script -->
+    <script src="pay.js"></script>
+</body>
+
+</html>
