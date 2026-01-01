@@ -96,6 +96,11 @@
         opacity: 1;
         visibility: visible;
     }
+
+    /* Content Card - Tablet */
+    .content-card {
+        padding: 1.5rem;
+    }
 }
 
 /* Form Rows Tablet */

@@ -5,7 +5,7 @@
 /* Page Header */
 .page-header {
     background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 50%, var(--primary-100) 100%);
-    padding: 160px 0 80px;
+    padding: 140px 0 70px;
     position: relative;
     overflow: hidden;
 }
