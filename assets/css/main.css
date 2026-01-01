@@ -18,6 +18,7 @@
 @import url('components/floating.css');
 @import url('components/extras.css');
 @import url('components/unified-cards.css');
+@import url('components/custom-select.css');
 
 /* Sections */
 @import url('sections/hero.css');
