@@ -30,6 +30,12 @@ body {
     color: var(--text);
     min-height: 100vh;
     line-height: 1.5;
+    /* Security: Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 /* Container */
@@ -156,6 +162,9 @@ body {
     font-size: 16px;
     font-family: inherit;
     transition: all 0.2s;
+    /* Allow selection in inputs */
+    -webkit-user-select: text;
+    user-select: text;
 }
 
 .form-input:focus {

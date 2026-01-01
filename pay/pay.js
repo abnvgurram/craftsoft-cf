@@ -13,7 +13,58 @@ let coursesData = [];
 document.addEventListener('DOMContentLoaded', () => {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     bindEvents();
+    initSecurity();
 });
+
+// =====================
+// Security Features
+// =====================
+function initSecurity() {
+    // 1. Disable back/forward navigation
+    history.pushState(null, null, location.href);
+    window.addEventListener('popstate', () => {
+        history.pushState(null, null, location.href);
+    });
+
+    // 2. Blur page when tab loses focus (screenshot protection)
+    document.addEventListener('visibilitychange', () => {
+        const overlay = document.getElementById('blur-overlay');
+        if (document.hidden) {
+            if (!overlay) {
+                const div = document.createElement('div');
+                div.id = 'blur-overlay';
+                div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,15,26,0.95);backdrop-filter:blur(20px);z-index:9999;display:flex;align-items:center;justify-content:center;';
+                div.innerHTML = '<div style="text-align:center;color:#fff;"><i class="fa-solid fa-lock" style="font-size:48px;margin-bottom:16px;color:#2896cd;"></i><p style="font-size:16px;">Switch back to continue</p></div>';
+                document.body.appendChild(div);
+            }
+        } else {
+            if (overlay) overlay.remove();
+        }
+    });
+
+    // 3. Disable right-click context menu
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // 4. Disable keyboard shortcuts for screenshots/dev tools
+    document.addEventListener('keydown', (e) => {
+        // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        if (e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+            (e.ctrlKey && e.key === 'u')) {
+            e.preventDefault();
+        }
+        // Disable Print Screen (limited browser support)
+        if (e.key === 'PrintScreen') {
+            navigator.clipboard.writeText('');
+        }
+    });
+
+    // 5. Clear sensitive data on page unload
+    window.addEventListener('beforeunload', () => {
+        currentStudent = null;
+        coursesData = [];
+    });
+}
 
 // Bind Events
 function bindEvents() {
