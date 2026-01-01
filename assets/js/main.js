@@ -437,8 +437,16 @@ function initTestimonialsSlider() {
    CONTACT FORM HANDLER
    ============================================ */
 function initContactForm() {
-    const form = document.getElementById('contactForm') || document.getElementById('service-contact-form');
-    if (!form) return;
+    // Select all potential inquiry forms across the site
+    const forms = document.querySelectorAll('#contactForm, #service-contact-form, #courses-inquiry-form');
+    if (forms.length === 0) return;
+
+    forms.forEach(form => {
+        setupFormSync(form);
+    });
+}
+
+function setupFormSync(form) {
 
     // Phone number validation logic
     const phoneInput = form.querySelector('input[type="tel"]');
@@ -449,15 +457,12 @@ function initContactForm() {
     }
 
     form.addEventListener('submit', async function (e) {
-        // We let the form continue to Formspree for email notification, 
-        // but we sync to Supabase first
+        e.preventDefault();
+
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
 
         try {
-            // Prevent default just for the sync part
-            e.preventDefault();
-
             submitBtn.disabled = true;
             submitBtn.classList.add('btn-loading');
             submitBtn.setAttribute('data-original-text', originalText);
@@ -465,27 +470,49 @@ function initContactForm() {
 
             const formData = new FormData(form);
 
-            // Determine type based on form ID or page
-            const isServiceForm = form.id === 'service-contact-form';
-            const inquiryType = isServiceForm ? 'service' : 'course';
+            // 1. SYNC TO SUPABASE (Directly into inquiries table)
+            let supabaseSuccess = false;
+            let inquiryId = 'WEB-' + Date.now(); // Fallback ID
 
-            const inquiryData = {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                phone: formData.get('phone') || '-',
-                subject: formData.get('interest') || (isServiceForm ? 'Service Inquiry' : 'Course Inquiry'),
-                course: formData.get('interest'), // Mapping interest to course field for consistency with legacy
-                service: isServiceForm ? formData.get('interest') : null, // Explicit service field
-                message: formData.get('message'),
-                status: 'new', // Default status for admin panel
-                type: inquiryType, // New type field for routing
-                source: 'website',
-                createdAt: new Date().toISOString()
-            };
+            if (window.supabaseClient) {
+                try {
+                    // Get next ID sequence (Match Admin Panel Logic)
+                    const { data: maxData } = await window.supabaseClient
+                        .from('inquiries')
+                        .select('inquiry_id')
+                        .order('inquiry_id', { ascending: false })
+                        .limit(1);
 
-            // Submission via Formspree handled below
+                    let nextNum = 1;
+                    if (maxData && maxData.length > 0) {
+                        const m = maxData[0].inquiry_id.match(/INQ-ACS-(\d+)/);
+                        if (m) nextNum = parseInt(m[1]) + 1;
+                    }
 
-            // Also submit to Formspree for email notification
+                    inquiryId = `INQ-ACS-${String(nextNum).padStart(3, '0')}`;
+
+                    // Insert into Supabase
+                    const { error: inqError } = await window.supabaseClient
+                        .from('inquiries')
+                        .insert({
+                            inquiry_id: inquiryId,
+                            name: formData.get('name'),
+                            email: formData.get('email'),
+                            phone: formData.get('phone') || '-',
+                            courses: formData.get('interest') ? [formData.get('interest')] : [],
+                            source: 'Website',
+                            status: 'New',
+                            notes: `Message: ${formData.get('message')}`
+                        });
+
+                    if (inqError) throw inqError;
+                    supabaseSuccess = true;
+                } catch (sbError) {
+                    console.error('Supabase Sync Error:', sbError);
+                }
+            }
+
+            // 2. SUBMIT TO FORMSPREE (Keep email notifications)
             let formspreeSuccess = false;
             try {
                 const formspreeResponse = await fetch(form.action, {
@@ -498,12 +525,13 @@ function initContactForm() {
                 console.error('Formspree submission failed:', fetchError);
             }
 
-            // Show success UI (even if one method failed, as long as we tried)
+            // 3. SHOW SUCCESS UI
             const formCard = form.closest('.contact-form-card') || document.querySelector('.contact-form-wrapper');
             if (formCard) {
-                const successMessage = formspreeSuccess
-                    ? `Thank you for reaching out, <strong>${inquiryData.name}</strong>. Your inquiry has been received and we'll get back to you shortly.`
-                    : `Thank you for reaching out, <strong>${inquiryData.name}</strong>. If you don't hear from us soon, please contact us directly via WhatsApp or phone.`;
+                const name = formData.get('name');
+                const successMessage = (supabaseSuccess || formspreeSuccess)
+                    ? `Thank you for reaching out, <strong>${name}</strong>. Your inquiry has been received (ID: ${inquiryId}) and we'll get back to you shortly.`
+                    : `Thank you for reaching out, <strong>${name}</strong>. If you don't hear from us soon, please contact us directly via WhatsApp.`;
 
                 formCard.innerHTML = `
                     <div class="success-message-container" style="text-align: center; padding: 40px; animation: fadeIn 0.5s ease;">
@@ -514,7 +542,7 @@ function initContactForm() {
                         <p style="color: var(--text-light); line-height: 1.6; margin-bottom: 20px;">${successMessage}</p>
                         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                             <button class="btn btn-outline" style="margin-top: 0;" onclick="window.location.reload()">Send Another Message</button>
-                            <a href="https://wa.me/917842239090?text=Hi! I just submitted an inquiry." target="_blank" class="btn btn-primary" style="margin-top: 0;">
+                            <a href="https://wa.me/917842239090?text=Hi! I just submitted an inquiry (ID: ${inquiryId})." target="_blank" class="btn btn-primary" style="margin-top: 0;">
                                 <i class="fab fa-whatsapp"></i> Contact on WhatsApp
                             </a>
                         </div>

@@ -31,6 +31,7 @@ const AdminSidebar = {
                     ${this.navItem('tutors', 'Tutors', 'fa-chalkboard-user')}
                     ${this.navItem('inquiries', 'Inquiries', 'fa-phone-volume')}
                     ${this.navItem('courses', 'Courses', 'fa-book-bookmark')}
+                    ${this.navItem('acs_services', 'Services', 'fa-briefcase')}
                     
                     <!-- Payments Section (No parent label on desktop/tablet) -->
                     ${this.navItem('record-payment', 'Record Payment', 'fa-money-bill-1', 'payments/record-payment')}
@@ -58,6 +59,7 @@ const AdminSidebar = {
                     ${this.mobileNavItem('tutors', 'Tutors', 'fa-chalkboard-user')}
                     ${this.mobileNavItem('inquiries', 'Inquiries', 'fa-phone-volume')}
                     ${this.mobileNavItem('courses', 'Courses', 'fa-book-bookmark')}
+                    ${this.mobileNavItem('acs_services', 'Services', 'fa-briefcase')}
                     
                     <!-- Payments Parent (collapsible on mobile) -->
                     <div class="mobile-nav-parent ${isPaymentsChild ? 'expanded' : ''}" id="mobile-payments-parent">
