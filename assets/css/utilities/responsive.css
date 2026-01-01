@@ -33,6 +33,10 @@
         padding: var(--spacing-lg) 0;
     }
 
+    .faq-section {
+        padding: var(--spacing-lg) 0;
+    }
+
     .contact-section {
         padding: var(--spacing-lg) 0;
     }
@@ -151,6 +155,10 @@
     }
 
     .about-detailed {
+        padding: var(--spacing-md) 0;
+    }
+
+    .faq-section {
         padding: var(--spacing-md) 0;
     }
 
