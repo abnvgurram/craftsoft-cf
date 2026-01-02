@@ -523,7 +523,7 @@
 /* Individual Course Page */
 .course-detail-page {
     padding: var(--spacing-xl) 0;
-    /* Reduced from 3xl */
+    background: var(--primary-50);
 }
 
 .course-detail-header {
