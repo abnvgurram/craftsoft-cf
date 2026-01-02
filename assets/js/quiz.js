@@ -149,17 +149,18 @@ function renderInlineResult() {
 
     quizBody.innerHTML = `
         <div class="inline-quiz-result">
-            <div class="result-badge">🎉 Perfect Match Found!</div>
+            <div class="result-badge">🎉 Perfect match found!</div>
             <div class="result-icon"><i class="${recommendation.icon}"></i></div>
-            <h2>We Recommend: ${recommendation.title}</h2>
+            <h2>We recommend: ${recommendation.title}</h2>
             <p>${recommendation.desc}</p>
             <div class="result-actions">
                 <a href="https://wa.me/917842239090?text=I'd like to enroll in ${recommendation.title}!" target="_blank" class="btn btn-primary">
                     <i class="fab fa-whatsapp"></i> Enroll via WhatsApp
                 </a>
-                <a href="${recommendation.url}" class="btn btn-secondary">View Course Details</a>
+                <span class="result-divider">or</span>
+                <a href="${recommendation.url}" class="btn btn-secondary">View course details</a>
             </div>
-            <button class="quiz-restart" id="inlineRestartBtn">← Take Another Quiz</button>
+            <button class="quiz-restart" id="inlineRestartBtn"><i class="fas fa-dice"></i> Take another quiz</button>
         </div>
     `;
 
@@ -426,10 +427,75 @@ function injectQuizStyles() {
         .quiz-cta-card.quiz-active .quiz-cta-image { display: none; }
         
         .inline-quiz-question h3 { color: #1e293b; margin-bottom: 20px; font-size: 1.25rem; line-height: 1.5; }
-        .inline-quiz-result { text-align: center; padding: 20px 0; }
-        .inline-quiz-result h2 { color: #1e293b; font-size: 1.5rem; margin-bottom: 15px; }
-        .inline-quiz-result p { color: #64748b; margin-bottom: 20px; }
-        .inline-quiz-result .result-actions { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+        .inline-quiz-result { 
+            text-align: center; 
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+        }
+        .inline-quiz-result .result-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .inline-quiz-result .result-icon {
+            font-size: 3rem;
+            color: white;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        .inline-quiz-result h2 { color: white; font-size: 1.5rem; margin-bottom: 10px; }
+        .inline-quiz-result p { color: rgba(255, 255, 255, 0.85); margin-bottom: 25px; }
+        .inline-quiz-result .result-actions { 
+            display: flex; 
+            flex-direction: row; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .inline-quiz-result .result-divider {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        .inline-quiz-result .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+        .inline-quiz-result .btn-secondary {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        .inline-quiz-result .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+        .inline-quiz-result .quiz-restart {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .inline-quiz-result .quiz-restart:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
         
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     `;
