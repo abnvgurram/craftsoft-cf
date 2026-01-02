@@ -125,9 +125,11 @@
     }
 
     // Initialize
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initTransitions);
-    } else {
-        initTransitions();
+    if (window.innerWidth > 768) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTransitions);
+        } else {
+            initTransitions();
+        }
     }
 })();
