@@ -140,6 +140,11 @@
         align-items: center;
     }
 
+    .footer-links h4,
+    .footer-contact h4 {
+        text-align: center;
+    }
+
     .footer-contact {
         grid-column: 1 / -1;
     }
