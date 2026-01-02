@@ -366,95 +366,7 @@
                     >Plot no. 163, Vijayasree Colony, Vanasthalipuram, Hyderabad
                     500070</span
                   >
-                  <a
-                    href="https://maps.app.goo.gl/uiTwuixvPKM8oJ9b8"
-                    target="_blank"
-                    class="directions-link"
-                    >Get Directions →</a
-                  >
-                </div>
-              </div>
-              <div class="method-item">
-                <div class="method-icon"><i class="fab fa-instagram"></i></div>
-                <div class="method-info">
-                  <h3>Instagram</h3>
-                  <a href="https://instagram.com/craftsoft_" target="_blank"
-                    >@craftsoft_</a
-                  >
-                </div>
-              </div>
-              <div class="method-item">
-                <div class="method-icon"><i class="fab fa-linkedin"></i></div>
-                <div class="method-info">
-                  <h3>LinkedIn</h3>
-                  <a
-                    href="https://linkedin.com/company/abhis-craftsoft"
-                    target="_blank"
-                    >Abhi's Craftsoft</a
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="contact-form-side">
-            <div class="contact-form-card">
-              <h3>We are a message away!</h3>
-              <form
-                id="service-contact-form"
-                action="https://formspree.io/f/mdandkry"
-                method="POST"
-              >
-                <div class="form-group">
-                  <label for="name">Name</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Your Name"
-                    required
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Your Email"
-                    required
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="phone">Phone</label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    placeholder="10-digit number"
-                    maxlength="10"
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="service">Interested In</label>
-                  <input type="text" id="service" name="courses" value="Website Development" readonly style="background: #f8fafc; cursor: not-allowed;" />
-                </div>
-                <div class="form-group">
-                  <label for="message">Message</label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    placeholder="Briefly describe your requirements..."
-                    rows="4"
-                    required
-                  ></textarea>
-                </div>
-                <div class="form-buttons">
-                <button type="submit" class="btn-form btn-blue">Book Free Session</button>
-                <span class="divider-or">or</span>
-                <a href="https://wa.me/917842239090?text=Hi!%20I'm%20interested%20in%20your%20Website%20Development%20services.%20Please%20share%20the%20details."
-                  target="_blank" class="btn-form btn-green">
-                  <i class="fab fa-whatsapp"></i> Chat on WhatsApp
-                </a>
+                  
               </div>
                 <p class="form-footer-legal">
                   By submitting this form, you agree to our
@@ -557,6 +469,17 @@
       </button>
     </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../assets/js/supabase-website-config.js?v=1.0"></script>
+    <script src="../../assets/js/inquiry-sync.js?v=2.0"></script>
     <script src="../../assets/js/main.js?v=1.1"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.InquirySync) {
+                window.InquirySync.initServiceForm('service-contact-form');
+            }
+        });
+    </script>
 </body>
 </html>

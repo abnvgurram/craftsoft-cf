@@ -298,7 +298,7 @@
         <div class="contact-form-side">
           <div class="contact-form-card">
             <h3>We are a message away!</h3>
-            <form id="service-contact-form" action="https://formspree.io/f/mdandkry" method="POST">
+            <form id="service-contact-form"  >
               <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" placeholder="Your Name" required />
@@ -313,7 +313,7 @@
               </div>
               <div class="form-group">
                 <label for="service">Interested In</label>
-                <input type="text" id="service" name="courses" value="Branding & Marketing" readonly
+                <input type="text" id="service" name="courses" value="S-BM" readonly
                   style="background: #f8fafc; cursor: not-allowed;" />
               </div>
               <div class="form-group">
@@ -431,7 +431,18 @@
     </button>
   </div>
 
-  <script src="../../assets/js/main.js?v=1.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../assets/js/supabase-website-config.js?v=1.0"></script>
+    <script src="../../assets/js/inquiry-sync.js?v=2.0"></script>
+    <script src="../../assets/js/main.js?v=1.1"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.InquirySync) {
+                window.InquirySync.initServiceForm('service-contact-form');
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -1,6 +1,7 @@
 /**
- * Inquiry Sync Module
+ * Inquiry Sync Module v2
  * Syncs form submissions to Supabase inquiries table
+ * Formspree removed - Supabase only
  */
 
 const InquirySync = {
@@ -36,26 +37,52 @@ const InquirySync = {
         'Resume & Interview': 'RESUME',
         'Resume & Interview Prep': 'RESUME',
         'Handwriting': 'HW',
-        'Handwriting Improvement': 'HW'
+        'Handwriting Improvement': 'HW',
+        // Direct code mappings (from dropdowns)
+        'GD': 'GD',
+        'UX': 'UX',
+        'MERN': 'MERN',
+        'PYFS': 'PYFS',
+        'JAVA': 'JAVA',
+        'DSA': 'DSA',
+        'DA': 'DA',
+        'SF': 'SF',
+        'PY': 'PY',
+        'REACT': 'REACT',
+        'GIT': 'GIT',
+        'DEVOPS': 'DEVOPS',
+        'AWS': 'AWS',
+        'DEVSEC': 'DEVSEC',
+        'AZURE': 'AZURE',
+        'AUTOPY': 'AUTOPY',
+        'ENG': 'ENG',
+        'SOFT': 'SOFT',
+        'RESUME': 'RESUME',
+        'HW': 'HW'
     },
 
-    // Service name to code mapping
+    // Service codes (with S- prefix to distinguish from courses)
     serviceCodeMap: {
-        'Web Development': 'WEB',
-        'Web Development Service': 'WEB',
-        'Website Development': 'WEB',
-        'UI/UX Design': 'UX',
-        'UI/UX Design Service': 'UX',
-        'UI/UX Design Services': 'UX',
-        'Graphic Design': 'GD',
-        'Graphic Design Service': 'GD',
-        'Graphic Design Services': 'GD',
-        'Branding & Marketing': 'BM',
-        'Cloud & DevOps': 'CLOUD',
-        'Cloud & DevOps Service': 'CLOUD',
-        'Cloud & DevOps Solutions': 'CLOUD',
-        'Career Services': 'CAREER',
-        'Career & Placement Services': 'CAREER'
+        'Web Development': 'S-WEB',
+        'Web Development Service': 'S-WEB',
+        'Website Development': 'S-WEB',
+        'UI/UX Design Service': 'S-UX',
+        'UI/UX Design Services': 'S-UX',
+        'Graphic Design Service': 'S-GD',
+        'Graphic Design Services': 'S-GD',
+        'Branding & Marketing': 'S-BM',
+        'Cloud & DevOps': 'S-CLOUD',
+        'Cloud & DevOps Service': 'S-CLOUD',
+        'Cloud & DevOps Solutions': 'S-CLOUD',
+        'Career Services': 'S-CAREER',
+        'Career & Placement Services': 'S-CAREER',
+        // Direct code mappings (from dropdowns)
+        'S-GD': 'S-GD',
+        'S-UX': 'S-UX',
+        'S-WEB': 'S-WEB',
+        'S-CLOUD': 'S-CLOUD',
+        'S-BM': 'S-BM',
+        'S-CAREER': 'S-CAREER'
     },
 
     // Get course code from name
@@ -66,6 +93,11 @@ const InquirySync = {
     // Get service code from name
     getServiceCode(name) {
         return this.serviceCodeMap[name] || name;
+    },
+
+    // Check if code is a service code
+    isServiceCode(code) {
+        return code && code.startsWith('S-');
     },
 
     // Generate next inquiry ID
@@ -92,8 +124,33 @@ const InquirySync = {
         }
     },
 
+    // Show success message
+    showSuccess(form, message = 'Thank you! Your inquiry has been submitted successfully.') {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'form-success-message';
+        successDiv.innerHTML = `
+            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.5rem; border-radius: 1rem; text-align: center; margin-top: 1rem;">
+                <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                <p style="margin: 0; font-weight: 600;">${message}</p>
+                <p style="margin: 0.5rem 0 0; font-size: 0.9rem; opacity: 0.9;">We'll get back to you soon!</p>
+            </div>
+        `;
+        form.innerHTML = '';
+        form.appendChild(successDiv);
+    },
+
+    // Show error message
+    showError(form, message = 'Something went wrong. Please try again.') {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'form-error-message';
+        errorDiv.style.cssText = 'background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; text-align: center;';
+        errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+        form.appendChild(errorDiv);
+        setTimeout(() => errorDiv.remove(), 5000);
+    },
+
     // Create inquiry from course page
-    async createCourseInquiry(formData) {
+    async createCourseInquiry(formData, form = null) {
         try {
             const inquiryId = await this.getNextInquiryId();
             const courseCode = this.getCourseCode(formData.interest || formData.courses);
@@ -104,7 +161,7 @@ const InquirySync = {
                 email: formData.email || null,
                 phone: formData.phone || null,
                 courses: [courseCode],
-                notes: formData.message || null,
+                notes: formData.message || formData.query || null,
                 source: 'Website',
                 status: 'New',
                 demo_required: false
@@ -117,25 +174,32 @@ const InquirySync = {
             if (error) throw error;
 
             console.log('Course inquiry created:', inquiryId);
+            if (form) this.showSuccess(form);
             return { success: true, inquiryId };
         } catch (e) {
             console.error('Error creating course inquiry:', e);
+            if (form) this.showError(form, e.message);
             return { success: false, error: e.message };
         }
     },
 
     // Create inquiry from service page
-    async createServiceInquiry(formData) {
+    async createServiceInquiry(formData, form = null) {
         try {
             const inquiryId = await this.getNextInquiryId();
-            const serviceCode = formData.courses || this.getServiceCode(formData.interest);
+            let serviceCode = formData.courses || this.getServiceCode(formData.interest);
+
+            // Ensure service code has S- prefix
+            if (!this.isServiceCode(serviceCode)) {
+                serviceCode = 'S-' + serviceCode;
+            }
 
             const payload = {
                 inquiry_id: inquiryId,
                 name: formData.name,
                 email: formData.email || null,
                 phone: formData.phone || null,
-                courses: [serviceCode], // Services are stored in courses array too
+                courses: [serviceCode],
                 notes: formData.message || null,
                 source: 'Website',
                 status: 'New',
@@ -149,23 +213,24 @@ const InquirySync = {
             if (error) throw error;
 
             console.log('Service inquiry created:', inquiryId);
+            if (form) this.showSuccess(form);
             return { success: true, inquiryId };
         } catch (e) {
             console.error('Error creating service inquiry:', e);
+            if (form) this.showError(form, e.message);
             return { success: false, error: e.message };
         }
     },
 
     // Create inquiry from contact page (mixed)
-    async createContactInquiry(formData, type = 'course') {
+    async createContactInquiry(formData, type = 'course', form = null) {
         try {
             const inquiryId = await this.getNextInquiryId();
-            let code;
+            let code = formData.courses;
 
-            if (type === 'service') {
-                code = this.getServiceCode(formData.courses);
-            } else {
-                code = this.getCourseCode(formData.courses);
+            // If it's a service, ensure S- prefix
+            if (type === 'service' && !this.isServiceCode(code)) {
+                code = 'S-' + code;
             }
 
             const payload = {
@@ -187,9 +252,11 @@ const InquirySync = {
             if (error) throw error;
 
             console.log('Contact inquiry created:', inquiryId);
+            if (form) this.showSuccess(form);
             return { success: true, inquiryId };
         } catch (e) {
             console.error('Error creating contact inquiry:', e);
+            if (form) this.showError(form, e.message);
             return { success: false, error: e.message };
         }
     },
@@ -204,18 +271,23 @@ const InquirySync = {
         return data;
     },
 
-    // Initialize form handlers
+    // Initialize form handlers - NO FORMSPREE, SUPABASE ONLY
     initCourseForm(formId, courseName) {
         const form = document.getElementById(formId);
         if (!form) return;
 
+        // Remove Formspree action
+        form.removeAttribute('action');
+        form.removeAttribute('method');
+
         form.addEventListener('submit', async (e) => {
-            // Don't prevent default - let Formspree handle it too
+            e.preventDefault(); // Prevent form submission
+
             const formData = this.extractFormData(form);
             formData.interest = courseName;
 
-            // Sync to Supabase in background
-            this.createCourseInquiry(formData);
+            // Submit to Supabase only
+            await this.createCourseInquiry(formData, form);
         });
     },
 
@@ -223,11 +295,17 @@ const InquirySync = {
         const form = document.getElementById(formId);
         if (!form) return;
 
+        // Remove Formspree action
+        form.removeAttribute('action');
+        form.removeAttribute('method');
+
         form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
             const formData = this.extractFormData(form);
 
-            // Sync to Supabase in background
-            this.createServiceInquiry(formData);
+            // Submit to Supabase only
+            await this.createServiceInquiry(formData, form);
         });
     },
 
@@ -235,7 +313,13 @@ const InquirySync = {
         const form = document.getElementById(formId);
         if (!form) return;
 
+        // Remove Formspree action
+        form.removeAttribute('action');
+        form.removeAttribute('method');
+
         form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
             const formData = this.extractFormData(form);
             const selectEl = form.querySelector('select[name="courses"]');
 
@@ -245,8 +329,8 @@ const InquirySync = {
                 type = selected.dataset.type || 'course';
             }
 
-            // Sync to Supabase in background
-            this.createContactInquiry(formData, type);
+            // Submit to Supabase only
+            await this.createContactInquiry(formData, type, form);
         });
     }
 };
