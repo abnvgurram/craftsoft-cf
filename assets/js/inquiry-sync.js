@@ -134,14 +134,17 @@ const InquirySync = {
         return { success: false, error: 'Maximum retries reached' };
     },
 
-    showSuccess(form, message = 'Thank you! Your inquiry has been submitted successfully.') {
+    showSuccess(form, inquiryId, message = 'Thank you! Your inquiry has been submitted successfully.') {
         const successDiv = document.createElement('div');
         successDiv.className = 'form-success-message';
         successDiv.innerHTML = `
             <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.5rem; border-radius: 1rem; text-align: center; margin-top: 1rem;">
                 <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
                 <p style="margin: 0; font-weight: 600;">${message}</p>
-                <p style="margin: 0.5rem 0 0; font-size: 0.9rem; opacity: 0.9;">We'll get back to you soon!</p>
+                <div style="margin: 0.8rem 0; padding: 0.5rem; background: rgba(0,0,0,0.1); border-radius: 0.5rem; font-family: monospace; font-size: 1.1rem; letter-spacing: 1px;">
+                    ID: ${inquiryId}
+                </div>
+                <p style="margin: 0.5rem 0 0; font-size: 0.9rem; opacity: 0.9;">Please keep this ID for your reference.</p>
             </div>
         `;
         form.innerHTML = '';
@@ -159,7 +162,8 @@ const InquirySync = {
 
     async createCourseInquiry(formData, form = null) {
         try {
-            const courseCode = this.getCourseCode(formData.interest || formData.courses || formData.course);
+            const rawInterest = formData.courses || formData.interest || formData.course;
+            const courseCode = this.getCourseCode(rawInterest);
 
             const payload = {
                 name: formData.name,
@@ -176,7 +180,7 @@ const InquirySync = {
             if (!result.success) throw new Error(result.error);
 
             console.log('Course inquiry created:', result.inquiryId);
-            if (form) this.showSuccess(form);
+            if (form) this.showSuccess(form, result.inquiryId);
             return result;
         } catch (e) {
             console.error('Error creating course inquiry:', e);
@@ -187,7 +191,8 @@ const InquirySync = {
 
     async createServiceInquiry(formData, form = null) {
         try {
-            let serviceCode = formData.courses || this.getServiceCode(formData.interest);
+            const rawService = formData.courses || formData.interest;
+            let serviceCode = this.getServiceCode(rawService);
 
             if (!this.isServiceCode(serviceCode)) {
                 serviceCode = 'S-' + serviceCode;
@@ -208,7 +213,7 @@ const InquirySync = {
             if (!result.success) throw new Error(result.error);
 
             console.log('Service inquiry created:', result.inquiryId);
-            if (form) this.showSuccess(form);
+            if (form) this.showSuccess(form, result.inquiryId);
             return result;
         } catch (e) {
             console.error('Error creating service inquiry:', e);
@@ -246,7 +251,7 @@ const InquirySync = {
             if (!result.success) throw new Error(result.error);
 
             console.log('Contact inquiry created:', result.inquiryId);
-            if (form) this.showSuccess(form);
+            if (form) this.showSuccess(form, result.inquiryId);
             return result;
         } catch (e) {
             console.error('Error creating contact inquiry:', e);
