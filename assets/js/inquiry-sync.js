@@ -169,7 +169,8 @@ const InquirySync = {
                 notes: formData.message || formData.query || null,
                 source: 'Website',
                 status: 'New',
-                demo_required: false
+                demo_required: false,
+                inquiry_type: 'Course'
             };
 
             const result = await this.insertInquiry(payload);
@@ -201,7 +202,8 @@ const InquirySync = {
                 notes: formData.message || null,
                 source: 'Website',
                 status: 'New',
-                demo_required: false
+                demo_required: false,
+                inquiry_type: 'Service'
             };
 
             const result = await this.insertInquiry(payload);
@@ -221,8 +223,14 @@ const InquirySync = {
         try {
             let code = formData.courses;
 
-            if (type === 'service' && !this.isServiceCode(code)) {
-                code = 'S-' + code;
+            // Map full names to codes if necessary
+            if (type === 'course') {
+                code = this.getCourseCode(code);
+            } else if (type === 'service') {
+                code = this.getServiceCode(code);
+                if (!this.isServiceCode(code)) {
+                    code = 'S-' + code;
+                }
             }
 
             const payload = {
@@ -233,7 +241,8 @@ const InquirySync = {
                 notes: formData.message || null,
                 source: 'Website',
                 status: 'New',
-                demo_required: false
+                demo_required: false,
+                inquiry_type: type === 'service' ? 'Service' : 'Course' // Adding a type hint
             };
 
             const result = await this.insertInquiry(payload);

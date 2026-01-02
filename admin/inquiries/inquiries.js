@@ -152,7 +152,9 @@ function renderInquiries(items) {
                 </thead>
                 <tbody>
                     ${paginatedItems.map(inq => {
-        const isSrv = (inq.courses || []).some(c => allServicesForInquiries.some(s => s.service_code === c));
+        // High-confidence check: use the explicit inquiry_type field if present
+        const isSrv = inq.inquiry_type === 'Service' ||
+            (!inq.inquiry_type && (inq.courses || []).some(c => allServicesForInquiries.some(s => s.service_code === c)));
         const isSelected = selectedInquiries.has(inq.id);
         return `
                         <tr>
@@ -187,7 +189,8 @@ function renderInquiries(items) {
     const cardsHTML = `
         <div class="inquiry-cards">
             ${paginatedItems.map(inq => {
-        const isSrv = (inq.courses || []).some(c => allServicesForInquiries.some(s => s.service_code === c));
+        const isSrv = inq.inquiry_type === 'Service' ||
+            (!inq.inquiry_type && (inq.courses || []).some(c => allServicesForInquiries.some(s => s.service_code === c)));
         const isSelected = selectedInquiries.has(inq.id);
         return `
                 <div class="inquiry-card">
