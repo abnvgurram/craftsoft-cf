@@ -172,6 +172,7 @@ function initFAQ() {
 function initActiveNavLink() {
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
+    const path = window.location.pathname;
 
     window.addEventListener('scroll', () => {
         let current = '';
@@ -190,8 +191,24 @@ function initActiveNavLink() {
             link.classList.remove('active');
             const href = link.getAttribute('href');
 
-            if (href === `#${current}` || (href.includes('#') && href.endsWith(`#${current}`))) {
+            // 1. Check if it's a simple local hash link (e.g., "#about")
+            if (href === `#${current}`) {
                 link.classList.add('active');
+            }
+            // 2. Check if it's a cross-page hash link (e.g., "../../#contact")
+            // Only highlight if we are on the homepage or the target path
+            else if (href.includes('#') && current) {
+                const [hrefPath, hash] = href.split('#');
+                if (hash === current) {
+                    // Only highlight if the path is basically empty or matches (for home)
+                    if (hrefPath === '' || hrefPath === 'index.html' || hrefPath === './' || hrefPath.endsWith('/')) {
+                        // Check if we are at the root or current path matches
+                        const isAtBase = path === '/' || path.endsWith('/index.html') || path === '/Website/';
+                        if (isAtBase) {
+                            link.classList.add('active');
+                        }
+                    }
+                }
             }
         });
     });
