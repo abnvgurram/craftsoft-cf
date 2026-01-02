@@ -20,48 +20,66 @@
     Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  for = "*.html"
+  for = "*/index.html"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
-# Redirect favicon.ico to favicon.svg
+# Redirect favicon.ico to master favicon.svg
 [[redirects]]
   from = "/favicon.ico"
   to = "/favicon.svg"
   status = 200
 
-# Blocked / Non-existent paths redirects to 404
+# Legacy HTML to Clean URL Redirects
+[[redirects]]
+  from = "/about.html"
+  to = "/about/"
+  status = 301
+
+[[redirects]]
+  from = "/contact.html"
+  to = "/contact/"
+  status = 301
+
+[[redirects]]
+  from = "/courses.html"
+  to = "/courses/"
+  status = 301
+
+[[redirects]]
+  from = "/services.html"
+  to = "/services/"
+  status = 301
+
+[[redirects]]
+  from = "/privacy-policy.html"
+  to = "/privacy-policy/"
+  status = 301
+
+[[redirects]]
+  from = "/terms-of-service.html"
+  to = "/terms-of-service/"
+  status = 301
+
+# Subpage Redirects (Old pages/ structure)
+[[redirects]]
+  from = "/pages/courses/*"
+  to = "/courses/:splat/"
+  status = 301
+
+[[redirects]]
+  from = "/pages/services/*"
+  to = "/services/:splat/"
+  status = 301
+
+# Blocked / Non-existent paths
 [[redirects]]
   from = "/pay/*"
-  to = "/404.html"
-  status = 404
-  force = true
-
-[[redirects]]
-  from = "/pay"
-  to = "/404.html"
-  status = 404
-  force = true
-
-[[redirects]]
-  from = "/admin/*"
-  to = "/404.html"
+  to = "/404/"
   status = 404
   force = true
 
 [[redirects]]
   from = "/admin"
-  to = "/404.html"
-  status = 404
-  force = true
-
-# URL Restructuring Redirects
-[[redirects]]
-  from = "/pages/courses.html"
-  to = "/courses.html"
-  status = 301
-
-[[redirects]]
-  from = "/pages/services.html"
-  to = "/services.html"
+  to = "/admin/"
   status = 301
