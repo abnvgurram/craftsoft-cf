@@ -78,7 +78,7 @@ const InquirySync = {
         return code && code.startsWith('S-');
     },
 
-    // Generate unique inquiry ID with timestamp to prevent duplicates
+    // Generate unique inquiry ID (INQ-ACS-001 style)
     async getNextInquiryId() {
         try {
             const { data, error } = await window.supabaseClient
@@ -91,17 +91,47 @@ const InquirySync = {
 
             let nextNum = 1;
             if (data && data[0] && data[0].inquiry_id) {
+                // Handle various ID formats we might have used
                 const match = data[0].inquiry_id.match(/INQ-ACS-(\d+)/);
-                if (match) nextNum = parseInt(match[1]) + 1;
+                if (match) {
+                    nextNum = parseInt(match[1]) + 1;
+                }
             }
 
-            // Add timestamp suffix for uniqueness
-            const timestamp = Date.now().toString().slice(-4);
-            return `INQ-ACS-${String(nextNum).padStart(3, '0')}-${timestamp}`;
+            return `INQ-ACS-${String(nextNum).padStart(3, '0')}`;
         } catch (e) {
             console.error('Error getting next inquiry ID:', e);
             return `INQ-ACS-${Date.now()}`;
         }
+    },
+
+    // Insert with retry to handle race conditions for sequential IDs
+    async insertInquiry(payload, maxRetries = 3) {
+        for (let i = 0; i < maxRetries; i++) {
+            try {
+                // Refresh ID on each attempt to get the latest sequence
+                payload.inquiry_id = await this.getNextInquiryId();
+
+                const { data, error } = await window.supabaseClient
+                    .from('inquiries')
+                    .insert(payload);
+
+                if (error) {
+                    // Check for duplicate key error (23505)
+                    if (error.code === '23505' && i < maxRetries - 1) {
+                        console.warn(`Duplicate ID ${payload.inquiry_id}, retrying... (${i + 1})`);
+                        await new Promise(resolve => setTimeout(resolve, 100 * (i + 1))); // Small backoff
+                        continue;
+                    }
+                    throw error;
+                }
+
+                return { success: true, inquiryId: payload.inquiry_id };
+            } catch (e) {
+                if (i === maxRetries - 1) throw e;
+            }
+        }
+        return { success: false, error: 'Maximum retries reached' };
     },
 
     showSuccess(form, message = 'Thank you! Your inquiry has been submitted successfully.') {
@@ -129,11 +159,9 @@ const InquirySync = {
 
     async createCourseInquiry(formData, form = null) {
         try {
-            const inquiryId = await this.getNextInquiryId();
             const courseCode = this.getCourseCode(formData.interest || formData.courses || formData.course);
 
             const payload = {
-                inquiry_id: inquiryId,
                 name: formData.name,
                 email: formData.email || null,
                 phone: formData.phone || null,
@@ -144,15 +172,12 @@ const InquirySync = {
                 demo_required: false
             };
 
-            const { data, error } = await window.supabaseClient
-                .from('inquiries')
-                .insert(payload);
+            const result = await this.insertInquiry(payload);
+            if (!result.success) throw new Error(result.error);
 
-            if (error) throw error;
-
-            console.log('Course inquiry created:', inquiryId);
+            console.log('Course inquiry created:', result.inquiryId);
             if (form) this.showSuccess(form);
-            return { success: true, inquiryId };
+            return result;
         } catch (e) {
             console.error('Error creating course inquiry:', e);
             if (form) this.showError(form, e.message);
@@ -162,7 +187,6 @@ const InquirySync = {
 
     async createServiceInquiry(formData, form = null) {
         try {
-            const inquiryId = await this.getNextInquiryId();
             let serviceCode = formData.courses || this.getServiceCode(formData.interest);
 
             if (!this.isServiceCode(serviceCode)) {
@@ -170,7 +194,6 @@ const InquirySync = {
             }
 
             const payload = {
-                inquiry_id: inquiryId,
                 name: formData.name,
                 email: formData.email || null,
                 phone: formData.phone || null,
@@ -181,15 +204,12 @@ const InquirySync = {
                 demo_required: false
             };
 
-            const { data, error } = await window.supabaseClient
-                .from('inquiries')
-                .insert(payload);
+            const result = await this.insertInquiry(payload);
+            if (!result.success) throw new Error(result.error);
 
-            if (error) throw error;
-
-            console.log('Service inquiry created:', inquiryId);
+            console.log('Service inquiry created:', result.inquiryId);
             if (form) this.showSuccess(form);
-            return { success: true, inquiryId };
+            return result;
         } catch (e) {
             console.error('Error creating service inquiry:', e);
             if (form) this.showError(form, e.message);
@@ -199,7 +219,6 @@ const InquirySync = {
 
     async createContactInquiry(formData, type = 'course', form = null) {
         try {
-            const inquiryId = await this.getNextInquiryId();
             let code = formData.courses;
 
             if (type === 'service' && !this.isServiceCode(code)) {
@@ -207,7 +226,6 @@ const InquirySync = {
             }
 
             const payload = {
-                inquiry_id: inquiryId,
                 name: formData.name,
                 email: formData.email || null,
                 phone: formData.phone || null,
@@ -218,15 +236,12 @@ const InquirySync = {
                 demo_required: false
             };
 
-            const { data, error } = await window.supabaseClient
-                .from('inquiries')
-                .insert(payload);
+            const result = await this.insertInquiry(payload);
+            if (!result.success) throw new Error(result.error);
 
-            if (error) throw error;
-
-            console.log('Contact inquiry created:', inquiryId);
+            console.log('Contact inquiry created:', result.inquiryId);
             if (form) this.showSuccess(form);
-            return { success: true, inquiryId };
+            return result;
         } catch (e) {
             console.error('Error creating contact inquiry:', e);
             if (form) this.showError(form, e.message);

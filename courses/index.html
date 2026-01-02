@@ -612,15 +612,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Initialize courses inquiry form with dynamic course selection
-            const form = document.getElementById('courses-inquiry-form');
-            if (form && window.InquirySync) {
-                form.addEventListener('submit', async function (e) {
-                    e.preventDefault();
-                    const formData = window.InquirySync.extractFormData(form);
-                    // Use selected course code from dropdown
-                    await window.InquirySync.createCourseInquiry(formData, form);
-                });
+            if (window.InquirySync) {
+                window.InquirySync.initCourseForm('courses-inquiry-form');
             }
         });
     </script>
