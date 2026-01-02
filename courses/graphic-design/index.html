@@ -14,7 +14,7 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
-  <link rel="stylesheet" href="../../assets/css/master.css?v=2.0" />
+  <link rel="stylesheet" href="../../assets/css/main.css" />
   <!-- FOUC Protection -->
   <style>
     .no-fouc {
@@ -63,7 +63,7 @@
         <li><a href="../../services/" class="nav-link">Services</a></li>
         <li><a href="../../portfolio/" class="nav-link">Portfolio</a></li>
         <li>
-          <a href="../../contact/" class="nav-link">Contact</a>
+          <a href="../../#contact" class="nav-link">Contact</a>
         </li>
       </ul>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu">
@@ -156,12 +156,13 @@
                   class="fab fa-whatsapp"></i></a>
               <a href="#" class="share-icon linkedin" data-share="linkedin" title="Share on LinkedIn"><i
                   class="fab fa-linkedin-in"></i></a>
-              
+              <a href="#" class="share-icon instagram" data-share="instagram" title="Share on Instagram"><i
+                  class="fab fa-instagram"></i></a>
               <a href="#" class="share-icon twitter" data-share="twitter" title="Share on X/Twitter">
                 <i class="fab fa-x-twitter"></i>
               </a>
               <a href="#" class="share-icon copy" data-share="copy" title="Copy Link">
-                <i class="far fa-copy"></i>
+                <i class="fas fa-link"></i>
               </a>
             </div>
           </div>
@@ -331,7 +332,7 @@
         <div class="contact-form-side">
           <div class="contact-form-card">
             <h3>Book Free Counseling</h3>
-            <form id="course-contact-form"  >
+            <form id="course-contact-form">
               <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" placeholder="Your Name" required />
@@ -377,7 +378,9 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-brand">
-          <a href="../../" class="logo"><span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
+          <a href="../../" class="logo">
+            <div class="logo-placeholder"><i class="fas fa-graduation-cap"></i></div>
+            <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
                 Soft</span></span>
           </a>
           <p>Empowering careers through quality education and professional IT services. Your journey to excellence
@@ -401,7 +404,7 @@
           <ul id="footer-services"></ul>
         </div>
         <div class="footer-contact">
-          <h4>Contact Us</h4>
+          <h4>Get in touch</h4>
           <ul>
             <li><i class="fas fa-map-marker-alt"></i><a href="https://maps.app.goo.gl/uiTwuixvPKM8oJ9b8"
                 target="_blank">Plot No. 163, Vijayasree Colony,<br>Vanasthalipuram, Hyderabad 500070</a></li>
@@ -467,17 +470,17 @@
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../../assets/js/supabase-website-config.js?v=1.0"></script>
-    <script src="../../assets/js/inquiry-sync.js?v=2.0"></script>
+  <script src="../../assets/js/inquiry-sync.js?v=3.0"></script>
 
   <script src="../../assets/js/main.js?v=1.1"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (window.InquirySync) {
-                window.InquirySync.initCourseForm('course-contact-form', 'Graphic Design');
-            }
-        });
-    </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.InquirySync) {
+        window.InquirySync.initCourseForm('course-contact-form', 'Graphic Design');
+      }
+    });
+  </script>
 </body>
 
 </html>
