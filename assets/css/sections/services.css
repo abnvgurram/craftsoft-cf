@@ -8,14 +8,14 @@
 .services-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-xl);
-    margin-bottom: var(--spacing-2xl);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
 }
 
 .service-card {
     background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 100%);
     border-radius: var(--radius-xl);
-    padding: var(--spacing-2xl);
+    padding: var(--spacing-lg);
     border: 1px solid var(--primary-100);
     transition: var(--transition-base);
 }
