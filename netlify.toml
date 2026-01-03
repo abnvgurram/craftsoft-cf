@@ -33,14 +33,14 @@
 # Block /admin/* on main domain - must only be accessed via subdomain
 [[redirects]]
   from = "/admin"
-  to = "/404/"
+  to = "/404/website/"
   status = 404
   force = true
   conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in", "abhiscraftsoft.netlify.app", "abhis-craftsoft.netlify.app"]}
 
 [[redirects]]
   from = "/admin/*"
-  to = "/404/"
+  to = "/404/website/"
   status = 404
   force = true
   conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in", "abhiscraftsoft.netlify.app", "abhis-craftsoft.netlify.app"]}
@@ -103,13 +103,13 @@
 [[redirects]]
   host = "pay-fee.craftsoft.co.in"
   from = "/*"
-  to = "/404/subdomain.html"
+  to = "/404/pay/"
   status = 404
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/signup/*"
-  to = "/404/subdomain.html"
+  to = "/404/admin/"
   status = 404
   force = true
 
@@ -128,7 +128,7 @@
 [[redirects]]
   host = "signup.craftsoft.co.in"
   from = "/*"
-  to = "/404/subdomain.html"
+  to = "/404/signup/"
   status = 404
 
 [[redirects]]
@@ -152,24 +152,24 @@
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/*"
-  to = "/404/subdomain.html"
+  to = "/404/admin/"
   status = 404
 
 # Blocked / Non-existent paths
 [[redirects]]
   from = "/pay/*"
-  to = "/404/"
+  to = "/404/website/"
   status = 404
   force = true
 
 [[redirects]]
   from = "/admin/signup/*"
-  to = "/404/"
+  to = "/404/website/"
   status = 404
   force = true
 
 # Global 404 catch-all - any unavailable page uses our custom 404
 [[redirects]]
   from = "/*"
-  to = "/404/"
+  to = "/404/website/"
   status = 404
