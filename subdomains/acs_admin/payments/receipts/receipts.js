@@ -52,6 +52,13 @@ async function loadReceipts() {
                     last_name,
                     phone
                 ),
+                client:student_id (
+                    id,
+                    client_id,
+                    first_name,
+                    last_name,
+                    phone
+                ),
                 course:course_id (
                     id,
                     course_code,
@@ -100,15 +107,17 @@ function renderReceipts() {
     const tbody = document.getElementById('receipts-tbody');
     if (tbody) {
         tbody.innerHTML = paginatedReceipts.map(r => {
-            const studentName = r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown';
+            const entity = r.student || r.client;
+            const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}` : 'Unknown';
+            const displayId = entity ? (entity.student_id || entity.client_id || '-') : '-';
             const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
             return `
                 <tr>
                     <td><span class="cell-badge">${r.receipt_id}</span></td>
                     <td>
                         <div class="student-cell">
-                            <span class="cell-title">${studentName}</span>
-                            <span class="cell-id-small">${r.student?.student_id || '-'}</span>
+                            <span class="cell-title">${entityName}</span>
+                            <span class="cell-id-small">${displayId}</span>
                         </div>
                     </td>
                     <td><span class="cell-title">${itemName}</span></td>
@@ -128,6 +137,9 @@ function renderReceipts() {
 
     // Cards layout (Mobile/Tablet)
     cards.innerHTML = paginatedReceipts.map(r => {
+        const entity = r.student || r.client;
+        const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}` : 'Unknown';
+        const displayId = entity ? (entity.student_id || entity.client_id || '-') : '-';
         const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
         return `
         <div class="premium-card">
@@ -142,7 +154,7 @@ function renderReceipts() {
                 <div class="card-info-row">
                     <span class="card-info-item">
                         <i class="fa-solid fa-user"></i> 
-                        ${r.student ? `${r.student.first_name} ${r.student.last_name} (${r.student.student_id})` : 'Unknown'}
+                        ${entityName} (${displayId})
                     </span>
                     <span class="card-info-item"><i class="fa-solid fa-book"></i> ${itemName}</span>
                     <span class="card-info-item ${r.balance_due <= 0 ? 'text-success' : 'text-danger'}">

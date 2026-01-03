@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const currentAdmin = await window.Auth.getCurrentAdmin();
     await AdminSidebar.renderAccountPanel(session, currentAdmin);
 
-    await loadStudents();
+    await loadEntities();
 
     // Set default date
     const dateInput = document.getElementById('payment-date');
@@ -40,14 +40,15 @@ function bindTypeToggle() {
     document.querySelectorAll('input[name="payment-type"]').forEach(radio => {
         radio.addEventListener('change', () => {
             isServiceMode = radio.value === 'service';
+
             const label = document.getElementById('item-label');
             label.innerHTML = isServiceMode ? 'Service <span class="required">*</span>' : 'Course <span class="required">*</span>';
 
+            const defaultPrompt = isServiceMode ? 'Select client first' : 'Select student first';
+            document.getElementById('course-select').innerHTML = `<option value="">${defaultPrompt}</option>`;
+
             resetForm();
-            if (selectedStudent) {
-                if (isServiceMode) loadMasterServices();
-                else loadStudentCourses(selectedStudent);
-            }
+            loadEntities(); // Reload entities based on mode
         });
     });
 }
@@ -62,23 +63,31 @@ function resetForm() {
     updateProceedButton();
 }
 
-async function loadStudents() {
+async function loadEntities() {
+    const select = document.getElementById('student-select');
+    const entityLabel = document.getElementById('entity-label');
+    const table = isServiceMode ? 'clients' : 'students';
+    const label = isServiceMode ? 'Client' : 'Student';
+
+    entityLabel.innerHTML = `${label} <span class="required">*</span>`;
+    select.innerHTML = `<option value="">Loading ${label.toLowerCase()}s...</option>`;
+
     try {
-        const { data, error } = await window.supabaseClient.from('students').select('id, first_name, last_name, phone').order('first_name');
+        const { data, error } = await window.supabaseClient.from(table).select('id, first_name, last_name, phone').order('first_name');
         if (error) throw error;
-        students = data || [];
-        const select = document.getElementById('student-select');
-        select.innerHTML = '<option value="">Select a student</option>' +
-            students.map(s => `<option value="${s.id}">${s.first_name} ${s.last_name} (${s.phone || '-'})</option>`).join('');
+        students = data || []; // Reusing 'students' array for simplicity
+        select.innerHTML = `<option value="">Select a ${label.toLowerCase()}</option>` +
+            students.map(s => `<option value="${s.id}">${s.first_name} ${s.last_name || ''} (${s.phone || '-'})</option>`).join('');
     } catch (err) {
         console.error(err);
+        select.innerHTML = `<option value="">Error loading ${label.toLowerCase()}s</option>`;
     }
 }
 
 async function loadStudentCourses(studentId) {
     const select = document.getElementById('course-select');
     select.disabled = true;
-    select.innerHTML = '<option value="">Loading...</option>';
+    select.innerHTML = '<option value="">Loading courses...</option>';
 
     try {
         const { data: student, error: sErr } = await window.supabaseClient.from('students').select('courses, course_discounts').eq('id', studentId).single();
@@ -110,20 +119,31 @@ async function loadStudentCourses(studentId) {
     }
 }
 
-async function loadMasterServices() {
+async function loadClientServices(clientId) {
     const select = document.getElementById('course-select');
     select.disabled = true;
     select.innerHTML = '<option value="">Loading services...</option>';
 
     try {
-        const { data, error } = await window.supabaseClient.from('services').select('id, service_code, name').order('service_code');
-        if (error) throw error;
+        const { data: client, error: cErr } = await window.supabaseClient.from('clients').select('services, service_fees').eq('id', clientId).single();
+        if (cErr) throw cErr;
 
-        masterItems = data.map(s => ({
+        const enrolled = client.services || [];
+        const feesMap = client.service_fees || {};
+
+        if (enrolled.length === 0) {
+            select.innerHTML = '<option value="">No services found</option>';
+            return;
+        }
+
+        const { data: details, error: sErr } = await window.supabaseClient.from('services').select('id, service_code, name').in('service_code', enrolled);
+        if (sErr) throw sErr;
+
+        masterItems = details.map(s => ({
             id: s.id,
             code: s.service_code,
             name: s.name,
-            final_fee: 0 // Services have variable fees
+            final_fee: parseFloat(feesMap[s.service_code]) || 0
         }));
 
         select.innerHTML = '<option value="">Select a service</option>' +
@@ -135,36 +155,35 @@ async function loadMasterServices() {
 }
 
 async function calculateFeeSummary(itemId) {
-    const item = masterItems.find(i => i.id == itemId); // Using == for BigInt/String match
+    const item = masterItems.find(i => i.id == itemId);
     if (!item) return;
 
-    if (!isServiceMode) {
-        totalFee = item.final_fee;
-        try {
-            const { data: payments } = await window.supabaseClient
-                .from('payments')
-                .select('amount_paid')
-                .eq('student_id', selectedStudent)
-                .eq('course_id', item.id)
-                .eq('status', 'SUCCESS');
-            paidSoFar = (payments || []).reduce((sum, p) => sum + parseFloat(p.amount_paid || 0), 0);
-            balanceDue = totalFee - paidSoFar;
+    totalFee = item.final_fee;
+    try {
+        const query = window.supabaseClient
+            .from('payments')
+            .select('amount_paid')
+            .eq(isServiceMode ? 'service_id' : 'course_id', item.id)
+            .eq('status', 'SUCCESS');
 
-            document.getElementById('total-fee').textContent = formatCurrency(totalFee);
-            document.getElementById('paid-so-far').textContent = formatCurrency(paidSoFar);
-            document.getElementById('balance-due').textContent = formatCurrency(balanceDue);
-            document.getElementById('fee-summary').style.display = 'block';
+        // Use student_id OR client_id if we want to be safe, but for now we follow the existing pattern
+        // which likely reuses the column or we'll add client_id in handlePayment
+        query.eq('student_id', selectedStudent);
 
-            const amountInput = document.getElementById('amount-input');
-            amountInput.value = balanceDue > 0 ? balanceDue : '';
-            amountInput.disabled = balanceDue <= 0;
-        } catch (err) { console.error(err); }
-    } else {
-        // Service mode: No fixed fee summary
-        document.getElementById('fee-summary').style.display = 'none';
-        document.getElementById('amount-input').disabled = false;
-        document.getElementById('amount-input').value = '';
-    }
+        const { data: payments } = await query;
+        paidSoFar = (payments || []).reduce((sum, p) => sum + parseFloat(p.amount_paid || 0), 0);
+        balanceDue = totalFee - paidSoFar;
+
+        document.getElementById('total-fee').textContent = formatCurrency(totalFee);
+        document.getElementById('paid-so-far').textContent = formatCurrency(paidSoFar);
+        document.getElementById('balance-due').textContent = formatCurrency(balanceDue);
+        document.getElementById('fee-summary').style.display = 'block';
+
+        const amountInput = document.getElementById('amount-input');
+        amountInput.value = balanceDue > 0 ? balanceDue : '';
+        amountInput.disabled = balanceDue <= 0 && !isServiceMode; // Let services overpay if needed
+    } catch (err) { console.error(err); }
+
     updateProceedButton();
 }
 
@@ -188,7 +207,7 @@ function bindEvents() {
         selectedStudent = e.target.value;
         resetForm();
         if (selectedStudent) {
-            if (isServiceMode) await loadMasterServices();
+            if (isServiceMode) await loadClientServices(selectedStudent);
             else await loadStudentCourses(selectedStudent);
         }
     });
@@ -240,7 +259,7 @@ async function handlePayment(e) {
         }
 
         const payload = {
-            student_id: selectedStudent,
+            student_id: selectedStudent, // We continue using this column for the entity ID
             [isServiceMode ? 'service_id' : 'course_id']: selectedItem,
             amount_paid: amount,
             payment_mode: mode === 'OFFLINE_UPI' ? 'ONLINE' : 'CASH',
@@ -258,6 +277,7 @@ async function handlePayment(e) {
         Toast.success('Success', 'Payment recorded');
         setTimeout(() => window.location.href = '../receipts/', 1500);
     } catch (err) {
+        console.error(err);
         Toast.error('Error', err.message);
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> Proceed';
@@ -266,8 +286,12 @@ async function handlePayment(e) {
 
 async function createReceipt(payment) {
     try {
-        const { data: student } = await window.supabaseClient.from('students').select('first_name, last_name').eq('id', payment.student_id).single();
+        const table = isServiceMode ? 'clients' : 'students';
+        const { data: entity } = await window.supabaseClient.from(table).select('first_name, last_name, any_id:client_id, student_id').eq('id', payment.student_id).single();
+
         const itemName = masterItems.find(i => i.id == selectedItem)?.name || 'Unknown';
+        const entityName = `${entity.first_name || ''} ${entity.last_name || ''}`.trim();
+        const initials = entityName.split(' ').map(w => w[0]?.toUpperCase() || '').join('');
 
         // Generate consistent Receipt ID (Format: 001-ACS-NA-GD)
         const { data: lastReceipt } = await window.supabaseClient
@@ -283,11 +307,9 @@ async function createReceipt(payment) {
             if (match) seq = parseInt(match[1]) + 1;
         }
 
-        const studentName = `${student.first_name || ''} ${student.last_name || ''}`.trim();
-        const initials = studentName.split(' ').map(w => w[0]?.toUpperCase() || '').join('');
-        const courseRef = masterItems.find(i => i.id == selectedItem);
-        const courseCode = courseRef?.code || 'NA';
-        const receiptId = `${String(seq).padStart(3, '0')}-ACS-${initials}-${courseCode}`;
+        const itemRef = masterItems.find(i => i.id == selectedItem);
+        const itemCode = itemRef?.code || 'NA';
+        const receiptId = `${String(seq).padStart(3, '0')}-ACS-${initials}-${itemCode}`;
 
         const receiptPayload = {
             receipt_id: receiptId || `${Date.now()}-ACS`,
@@ -297,7 +319,7 @@ async function createReceipt(payment) {
             amount_paid: payment.amount_paid,
             payment_mode: payment.payment_mode,
             reference_id: payment.reference_id,
-            balance_due: isServiceMode ? 0 : (balanceDue - payment.amount_paid),
+            balance_due: isServiceMode ? (totalFee - paidSoFar - payment.amount_paid) : (balanceDue - payment.amount_paid),
             payment_date: payment.payment_date
         };
 
@@ -306,7 +328,7 @@ async function createReceipt(payment) {
         // Record Activity
         await window.supabaseClient.from('activities').insert({
             activity_type: 'fee_recorded',
-            activity_name: `${student.first_name} ${student.last_name}`,
+            activity_name: entityName,
             activity_link: '/admin/payments/receipts/',
             activity_time: new Date().toISOString()
         });

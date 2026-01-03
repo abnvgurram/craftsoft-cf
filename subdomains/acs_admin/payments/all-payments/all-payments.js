@@ -49,9 +49,19 @@ async function loadPayments() {
                     first_name,
                     last_name
                 ),
+                client:student_id (
+                    id,
+                    client_id,
+                    first_name,
+                    last_name
+                ),
                 course:course_id (
                     id,
                     course_name
+                ),
+                service:service_id (
+                    id,
+                    name
                 )
             `)
             .order('created_at', { ascending: false });
@@ -92,16 +102,17 @@ function renderPayments() {
     const tbody = document.getElementById('payments-tbody');
     if (tbody) {
         tbody.innerHTML = paginatedPayments.map(p => {
-            const studentName = p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown';
-            const studentId = p.student?.student_id || '-';
-            const itemName = p.course?.course_name || 'Unknown';
+            const entity = p.student || p.client;
+            const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}` : 'Unknown';
+            const displayId = entity ? (entity.student_id || entity.client_id || '-') : '-';
+            const itemName = p.course?.course_name || p.service?.name || 'Unknown';
             return `
                 <tr>
                     <td><span class="cell-badge">${formatDate(p.created_at)}</span></td>
                     <td>
                         <div class="student-cell">
-                            <span class="cell-title">${studentName}</span>
-                            <span class="cell-id-small">${studentId}</span>
+                            <span class="cell-title">${entityName}</span>
+                            <span class="cell-id-small">${displayId}</span>
                         </div>
                     </td>
                     <td><span class="cell-title">${itemName}</span></td>
@@ -113,7 +124,12 @@ function renderPayments() {
     }
 
     // Cards layout (Mobile/Tablet)
-    cards.innerHTML = paginatedPayments.map(p => `
+    cards.innerHTML = paginatedPayments.map(p => {
+        const entity = p.student || p.client;
+        const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}` : 'Unknown';
+        const displayId = entity ? (entity.student_id || entity.client_id || '-') : '-';
+        const itemName = p.course?.course_name || p.service?.name || 'Unknown';
+        return `
         <div class="premium-card">
             <div class="card-header">
                 <span class="card-id-badge">${formatDate(p.created_at)}</span>
@@ -123,9 +139,9 @@ function renderPayments() {
                 <div class="card-info-row">
                     <span class="card-info-item">
                         <i class="fa-solid fa-user"></i> 
-                        ${p.student ? `${p.student.first_name} ${p.student.last_name} (${p.student.student_id})` : 'Unknown'}
+                        ${entityName} (${displayId})
                     </span>
-                    <span class="card-info-item"><i class="fa-solid fa-book"></i> ${p.course?.course_name || 'Unknown'}</span>
+                    <span class="card-info-item"><i class="fa-solid fa-book"></i> ${itemName}</span>
                     <span class="card-info-item"><i class="fa-solid fa-hashtag"></i> ${p.reference_id}</span>
                 </div>
             </div>
@@ -133,7 +149,7 @@ function renderPayments() {
                 <span class="glass-tag ${p.payment_mode.toLowerCase()}">${p.payment_mode}</span>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 
     // Update footer count
     const footer = document.getElementById('payments-footer');
