@@ -118,6 +118,9 @@ async function syncServices() {
         const existingByCode = new Map(existing?.map(s => [s.service_code, s]) || []);
         const existingByName = new Map(existing?.map(s => [s.name?.toLowerCase(), s]) || []);
 
+        let synced = 0;
+        let updated = 0;
+
         for (const svc of websiteServices) {
             // Find ALL matches by code or name
             const matches = existing.filter(ex =>
