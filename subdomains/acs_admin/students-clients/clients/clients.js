@@ -115,8 +115,11 @@ async function loadServicesForClients() {
 // Load Clients
 // =====================
 async function loadClients() {
-    const container = document.getElementById('clients-content');
-    container.innerHTML = `<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading clients...</div>`;
+    const tableContainer = document.getElementById('clients-table-container');
+    const cardsContainer = document.getElementById('clients-cards');
+
+    // Show spinners if containers exist
+    if (tableContainer) tableContainer.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading clients...</div>';
 
     try {
         const { data, error } = await window.supabaseClient
@@ -129,7 +132,7 @@ async function loadClients() {
         renderClients(allClients);
     } catch (e) {
         console.error('Error loading clients:', e);
-        container.innerHTML = `<p class="text-error">Failed to load clients.</p>`;
+        if (tableContainer) tableContainer.innerHTML = `<p class="text-error">Failed to load clients.</p>`;
     }
 }
 
@@ -254,6 +257,20 @@ function renderClients(clients) {
         `;
     }).join('');
     if (cardsContainer) cardsContainer.innerHTML = cardsHtml;
+
+    // Common Footer (shows on both mobile & desktop)
+    const footerContainer = document.querySelector('.pagination-container');
+    const existingFooter = document.getElementById('clients-footer');
+    if (existingFooter) existingFooter.remove();
+
+    const footer = document.createElement('div');
+    footer.id = 'clients-footer';
+    footer.className = 'table-footer';
+    footer.style.marginTop = '1rem';
+    footer.innerHTML = `<span>Total Clients: <strong>${clients.length}</strong></span>`;
+
+    // Insert before pagination
+    footerContainer.parentNode.insertBefore(footer, footerContainer);
 
     renderPagination(totalPages);
     bindTableActions();

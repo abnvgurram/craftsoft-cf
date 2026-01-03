@@ -97,7 +97,6 @@ function renderServicesList(services) {
                     </tbody>
                 </table>
             </div>
-            <div class="table-footer"><span>${services.length} service${services.length !== 1 ? 's' : ''} synced</span></div>
         `;
     }
 
@@ -116,6 +115,18 @@ function renderServicesList(services) {
             </div>
         `).join('');
     }
+
+    // Common Footer
+    const footerContainer = document.getElementById('pagination-container');
+    const existingFooter = document.getElementById('services-footer');
+    if (existingFooter) existingFooter.remove();
+
+    const footer = document.createElement('div');
+    footer.id = 'services-footer';
+    footer.className = 'table-footer';
+    footer.style.marginTop = '1rem';
+    footer.innerHTML = `<span>${services.length} service${services.length !== 1 ? 's' : ''} synced</span>`;
+    footerContainer.parentNode.insertBefore(footer, footerContainer);
 
     // Render pagination
     window.AdminUtils.Pagination.render('pagination-container', services.length, currentPage, itemsPerPage, (page) => {
