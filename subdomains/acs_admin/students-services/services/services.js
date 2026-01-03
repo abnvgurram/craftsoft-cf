@@ -8,6 +8,16 @@ let serviceFees = {}; // Store per-service fees { serviceCode: fee }
 let currentPage = 1;
 const itemsPerPage = 10;
 
+// Website Services (for sync)
+const websiteServices = [
+    { code: 'S-WDEV', name: 'Website Development', base_price: 15000 },
+    { code: 'S-UIUX', name: 'UI/UX Design Services', base_price: 10000 },
+    { code: 'S-GD', name: 'Graphic Design Services', base_price: 5000 },
+    { code: 'S-BRND', name: 'Branding & Marketing', base_price: 8000 },
+    { code: 'S-CLOUD', name: 'Cloud & DevOps Solutions', base_price: 20000 },
+    { code: 'S-CAREER', name: 'Career & Placement Services', base_price: 3000 }
+];
+
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
@@ -33,10 +43,66 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('add-client-btn')?.addEventListener('click', () => openForm());
     document.getElementById('client-search')?.addEventListener('input', (e) => filterClients(e.target.value));
+    document.getElementById('sync-services-btn')?.addEventListener('click', syncServices);
 
     // Check for prefill from inquiry conversion
     checkPrefill();
 });
+
+// =====================
+// Sync Services from Website
+// =====================
+async function syncServices() {
+    const { Toast } = window.AdminUtils;
+    const btn = document.getElementById('sync-services-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing...';
+
+    try {
+        const { data: existing, error: fetchError } = await window.supabaseClient
+            .from('acs_services')
+            .select('service_code, base_price');
+        if (fetchError) throw fetchError;
+
+        const existingMap = new Map(existing?.map(s => [s.service_code, s.base_price]) || []);
+
+        let synced = 0;
+        for (let i = 0; i < websiteServices.length; i++) {
+            const svc = websiteServices[i];
+            const sid = `SV-${String(i + 1).padStart(3, '0')}`;
+
+            if (existingMap.has(svc.code)) {
+                // Update name but preserve custom price
+                await window.supabaseClient.from('acs_services')
+                    .update({
+                        service_id: sid,
+                        name: svc.name,
+                        status: 'ACTIVE'
+                    })
+                    .eq('service_code', svc.code);
+            } else {
+                // Insert new
+                await window.supabaseClient.from('acs_services').insert({
+                    service_id: sid,
+                    service_code: svc.code,
+                    name: svc.name,
+                    base_price: svc.base_price,
+                    status: 'ACTIVE'
+                });
+            }
+            synced++;
+        }
+
+        Toast.success('Synced', `${synced} services synced from website`);
+        await loadServicesForClients();
+    } catch (e) {
+        console.error('Sync error:', e);
+        Toast.error('Error', e.message || 'Failed to sync services');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sync Services';
+    }
+}
 
 // =====================
 // Load Services Master Data
