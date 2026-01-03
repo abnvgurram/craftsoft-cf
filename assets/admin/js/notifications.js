@@ -278,12 +278,11 @@ function setupRealtimeSubscriptions() {
         })
         .subscribe();
 
-    // Subscribe to payments
     supabaseClient
         .channel('payments-changes')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'payments' }, (payload) => {
             const data = payload.new;
-            addNotification('payment', 'Payment Received', `₹${data.amount || 0} received`, root + 'payments/all-payments/');
+            addNotification('payment', 'Payment Received', `₹${data.amount_paid || 0} received`, root + 'payments/all-payments/');
             triggerTableRefresh('payments');
         })
         .subscribe();

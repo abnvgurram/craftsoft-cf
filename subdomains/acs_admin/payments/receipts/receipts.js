@@ -237,7 +237,6 @@ async function viewReceipt(receiptId) {
         content.innerHTML = `
             <div class="receipt-view" id="receipt-printable">
                 <div class="receipt-header">
-                    <div class="receipt-logo">Abhi's Craftsoft</div>
                     <div class="receipt-subtitle">Payment Receipt</div>
                 </div>
                 
@@ -417,18 +416,13 @@ function bindEvents() {
     });
 
     document.getElementById('close-receipt-modal').addEventListener('click', closeReceiptModal);
+    document.getElementById('receipt-cancel-btn').addEventListener('click', closeReceiptModal);
     document.getElementById('receipt-modal').addEventListener('click', (e) => {
         if (e.target.id === 'receipt-modal') closeReceiptModal();
     });
 
     document.getElementById('receipt-download-btn').addEventListener('click', () => {
-        if (currentReceipt) downloadReceipt(currentReceipt.receipt_id);
-    });
-
-    document.getElementById('receipt-whatsapp-btn').addEventListener('click', () => {
-        if (currentReceipt) {
-            sendWhatsApp(currentReceipt.receipt_id);
-            closeReceiptModal();
-        }
+        // Disabled for now
+        // if (currentReceipt) downloadReceipt(currentReceipt.receipt_id);
     });
 }

@@ -128,6 +128,18 @@
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/shared/*"
+  to = "/shared/:splat"
+  status = 200
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
   from = "/"
   to = "/subdomains/acs_admin/index.html"
   status = 200

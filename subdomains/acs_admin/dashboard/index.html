@@ -18,44 +18,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Admin Styles - Base -->
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/css/base/variables.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/base/variables.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/base/reset.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/base/typography.css">
+    <link rel="stylesheet" href="../../assets/css/base/variables.css">
+    <link rel="stylesheet" href="../../assets/admin/css/base/variables.css">
+    <link rel="stylesheet" href="../../assets/admin/css/base/reset.css">
+    <link rel="stylesheet" href="../../assets/admin/css/base/typography.css">
     <!-- Admin Styles - Layout -->
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/layout/auth.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/layout/dashboard.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/layout/header.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/layout/sidebar.css">
+    <link rel="stylesheet" href="../../assets/admin/css/layout/auth.css">
+    <link rel="stylesheet" href="../../assets/admin/css/layout/dashboard.css">
+    <link rel="stylesheet" href="../../assets/admin/css/layout/header.css">
+    <link rel="stylesheet" href="../../assets/admin/css/layout/sidebar.css">
     <!-- Admin Styles - Components -->
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/buttons.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/forms.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/modals.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/toasts.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/tables.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/cards.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/badges.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/account-panel.css">
+    <link rel="stylesheet" href="../../assets/admin/css/components/buttons.css">
+    <link rel="stylesheet" href="../../assets/admin/css/components/forms.css">
+    <link rel="stylesheet" href="../../assets/admin/css/components/modals.css">
+    <link rel="stylesheet" href="../../assets/admin/css/components/toasts.css">
+    <link rel="stylesheet" href="../../assets/admin/css/components/tables.css">
+    <link rel="stylesheet" href="../../assets/admin/css/components/cards.css">
+    <link rel="stylesheet" href="../../assets/admin/css/components/badges.css">
+    <link rel="stylesheet" href="../../assets/admin/css/components/account-panel.css">
     <!-- Admin Styles - Utilities -->
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/utilities/skeleton.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/utilities/helpers.css">
+    <link rel="stylesheet" href="../../assets/admin/css/utilities/skeleton.css">
+    <link rel="stylesheet" href="../../assets/admin/css/utilities/helpers.css">
     <!-- Admin Styles - Responsive -->
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/responsive/tablet.css">
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/responsive/mobile.css">
+    <link rel="stylesheet" href="../../assets/admin/css/responsive/tablet.css">
+    <link rel="stylesheet" href="../../assets/admin/css/responsive/mobile.css">
     <!-- Page Specific -->
-    <link rel="stylesheet" href="https://craftsoft.co.in/assets/admin/css/components/notifications.css">
+    <link rel="stylesheet" href="../../assets/admin/css/components/notifications.css">
     <link rel="stylesheet" href="dashboard.css">
     <!-- FOUC Protection -->
     <style>
-        .no-fouc { opacity: 0; }
-        body { transition: opacity 0.3s ease; }
+        .no-fouc {
+            opacity: 0;
+        }
+
+        body {
+            transition: opacity 0.3s ease;
+        }
     </style>
     <script>
         document.documentElement.className += ' no-fouc';
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.documentElement.classList.remove('no-fouc');
         });
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             document.documentElement.classList.remove('no-fouc');
         });
     </script>
@@ -73,7 +78,8 @@
                 <div class="stats-row stats-row-3">
                     <div class="stat-card" id="stat-students">
                         <div class="stat-icon stat-icon-students">
-                            <i class="fa-solid fa-user-graduate"></i> </div>
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
                         <div class="stat-info">
                             <div class="stat-value" id="total-students" Data-target="0">0</div>
                             <div class="stat-label">Total Students</div>
@@ -81,7 +87,8 @@
                     </div>
                     <div class="stat-card" id="stat-courses">
                         <div class="stat-icon stat-icon-courses">
-                            <i class="fa-solid fa-book-bookmark"></i> </div>
+                            <i class="fa-solid fa-book-bookmark"></i>
+                        </div>
                         <div class="stat-info">
                             <div class="stat-value" id="total-courses" Data-target="0">0</div>
                             <div class="stat-label">Active Courses</div>
@@ -89,7 +96,8 @@
                     </div>
                     <div class="stat-card" id="stat-tutors">
                         <div class="stat-icon stat-icon-tutors">
-                            <i class="fa-solid fa-chalkboard-user"></i> </div>
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
                         <div class="stat-info">
                             <div class="stat-value" id="total-tutors" Data-target="0">0</div>
                             <div class="stat-label">Total Tutors</div>
@@ -101,7 +109,8 @@
                 <div class="stats-row stats-row-2">
                     <div class="stat-card stat-card-secondary">
                         <div class="stat-icon stat-icon-demos">
-                            <i class="fa-solid fa-calendar-check"></i> </div>
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
                         <div class="stat-info">
                             <div class="stat-value" id="demos-today" Data-target="0">0</div>
                             <div class="stat-label">Demos Today</div>
@@ -109,7 +118,8 @@
                     </div>
                     <div class="stat-card stat-card-secondary">
                         <div class="stat-icon stat-icon-joined">
-                            <i class="fa-solid fa-user-plus"></i> </div>
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
                         <div class="stat-info">
                             <div class="stat-value" id="joined-week" Data-target="0">0</div>
                             <div class="stat-label">Joined This Week</div>
@@ -123,16 +133,16 @@
                         <h3><i class="fa-solid fa-bolt"></i> Quick Actions</h3>
                     </div>
                     <div class="quick-actions">
-                        <a href="students/" class="quick-action-btn">
+                        <a href="../students/" class="quick-action-btn">
                             <i class="fa-solid fa-user-plus"></i> <span>Add Student</span>
                         </a>
-                        <a href="payments/record-payment/" class="quick-action-btn">
+                        <a href="../payments/record-payment/" class="quick-action-btn">
                             <i class="fa-solid fa-money-bill-1"></i> <span>Record Payment</span>
                         </a>
-                        <a href="tutors/" class="quick-action-btn">
+                        <a href="../tutors/" class="quick-action-btn">
                             <i class="fa-solid fa-chalkboard-user"></i> <span>Add Tutor</span>
                         </a>
-                        <a href="inquiries/" class="quick-action-btn">
+                        <a href="../inquiries/" class="quick-action-btn">
                             <i class="fa-solid fa-phone-volume"></i> <span>Add Inquiry</span>
                         </a>
                     </div>
@@ -143,15 +153,12 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://craftsoft.co.in/assets/admin/js/supabase-config.js"></script>
-    <script src="https://craftsoft.co.in/assets/admin/js/admin-utils.js"></script>
-    <script src="https://craftsoft.co.in/assets/admin/js/auth.js"></script>
-    <script src="https://craftsoft.co.in/assets/admin/js/sidebar.js"></script>
-    <script src="https://craftsoft.co.in/assets/admin/js/notifications.js"></script>
+    <script src="../../assets/admin/js/supabase-config.js"></script>
+    <script src="../../assets/admin/js/admin-utils.js"></script>
+    <script src="../../assets/admin/js/auth.js"></script>
+    <script src="../../assets/admin/js/sidebar.js"></script>
+    <script src="../../assets/admin/js/notifications.js"></script>
     <script src="dashboard.js"></script>
 </body>
 
 </html>
-
-
-
