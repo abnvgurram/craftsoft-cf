@@ -202,6 +202,12 @@ async function viewReceipt(receiptId) {
     if (!currentReceipt) return;
 
     const { Toast } = window.AdminUtils;
+    const isSrv = !!currentReceipt.service;
+    const entity = currentReceipt.student || currentReceipt.client;
+    const table = isSrv ? 'clients' : 'students';
+    const idCol = isSrv ? 'client_id' : 'student_id';
+    const itemIdCol = isSrv ? 'service_id' : 'course_id';
+    const item = isSrv ? currentReceipt.service : currentReceipt.course;
 
     // Show loading state in modal first
     const content = document.getElementById('receipt-content');
@@ -213,22 +219,26 @@ async function viewReceipt(receiptId) {
         const { data: history, error: hErr } = await window.supabaseClient
             .from('receipts')
             .select('amount_paid')
-            .eq('student_id', currentReceipt.student?.id)
-            .eq(currentReceipt.course ? 'course_id' : 'service_id', currentReceipt.course?.id || currentReceipt.service?.id);
+            .eq(idCol, entity?.id)
+            .eq(itemIdCol, item?.id);
 
         if (hErr) throw hErr;
 
-        // 2. Get Course Fee (to handle discounts correctly from student record)
-        const { data: studentRecord } = await window.supabaseClient
-            .from('students')
-            .select('course_discounts, final_fee')
-            .eq('id', currentReceipt.student?.id)
+        // 2. Get Fee info
+        const { data: record } = await window.supabaseClient
+            .from(table)
+            .select(isSrv ? 'service_fees, total_fee' : 'course_discounts, final_fee')
+            .eq('id', entity?.id)
             .single();
 
         let totalItemFee = 0;
-        if (currentReceipt.course) {
-            const { data: courseData } = await window.supabaseClient.from('courses').select('fee').eq('id', currentReceipt.course.id).single();
-            const discount = (studentRecord?.course_discounts || {})[currentReceipt.course.course_code] || 0;
+        if (isSrv) {
+            totalItemFee = (record?.service_fees || {})[item.service_code || item.code] || 0;
+            // Fallback if not found in map
+            if (!totalItemFee) totalItemFee = currentReceipt.amount_paid + (currentReceipt.balance_due || 0);
+        } else {
+            const { data: courseData } = await window.supabaseClient.from('courses').select('fee').eq('id', item.id).single();
+            const discount = (record?.course_discounts || {})[item.course_code] || 0;
             totalItemFee = (courseData?.fee || 0) - discount;
         }
 
@@ -236,15 +246,18 @@ async function viewReceipt(receiptId) {
         const pendingForItem = Math.max(0, totalItemFee - totalPaidForItem);
 
         // 3. Global Summary
-        const { data: allStudentReceipts } = await window.supabaseClient
+        const { data: allReceipts } = await window.supabaseClient
             .from('receipts')
             .select('amount_paid')
-            .eq('student_id', currentReceipt.student?.id);
-        const globalPaid = allStudentReceipts.reduce((sum, r) => sum + (r.amount_paid || 0), 0);
-        const globalPending = Math.max(0, (studentRecord?.final_fee || 0) - globalPaid);
+            .eq(idCol, entity?.id);
+        const globalPaid = (allReceipts || []).reduce((sum, r) => sum + (r.amount_paid || 0), 0);
+        const globalTotal = isSrv ? (record?.total_fee || 0) : (record?.final_fee || 0);
+        const globalPending = Math.max(0, globalTotal - globalPaid);
 
-        const itemName = currentReceipt.course?.course_name || currentReceipt.service?.name || 'Unknown Item';
-        const itemLabel = currentReceipt.course ? 'Course' : 'Service';
+        const entityLabel = isSrv ? 'Client' : 'Student';
+        const entityName = entity ? `${entity.first_name} ${entity.last_name || ''} (${entity.student_id || entity.client_id || '-'})` : 'Unknown';
+        const itemName = item?.name || item?.course_name || 'Unknown Item';
+        const itemLabel = isSrv ? 'Service' : 'Course';
 
         content.innerHTML = `
             <div class="receipt-view" id="receipt-printable">
@@ -262,8 +275,8 @@ async function viewReceipt(receiptId) {
                         <span class="receipt-value">${formatDate(currentReceipt.created_at)}</span>
                     </div>
                     <div class="receipt-row">
-                        <span class="receipt-label">Student</span>
-                        <span class="receipt-value">${currentReceipt.student ? `${currentReceipt.student.first_name} ${currentReceipt.student.last_name} (${currentReceipt.student.student_id})` : 'Unknown'}</span>
+                        <span class="receipt-label">${entityLabel}</span>
+                        <span class="receipt-value">${entityName}</span>
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">${itemLabel}</span>
@@ -279,14 +292,14 @@ async function viewReceipt(receiptId) {
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">Reference ID</span>
-                        <span class="receipt-value" style="font-size: 0.75rem; font-family: monospace;">${currentReceipt.reference_id}</span>
+                        <span class="receipt-value" style="font-size: 0.75rem; font-family: monospace;">${currentReceipt.reference_id || '-'}</span>
                     </div>
                 </div>
 
                 <div class="receipt-ledger">
-                    <div class="ledger-header">LEDGER STATUS (${currentReceipt.course?.course_code || 'Service'})</div>
+                    <div class="ledger-header">ITEM LEDGER (${item.service_code || item.course_code || 'NA'})</div>
                     <div class="ledger-row">
-                        <span>Fee: ${formatCurrency(totalItemFee)}</span>
+                        <span>Total: ${formatCurrency(totalItemFee)}</span>
                         <span>Paid: ${formatCurrency(totalPaidForItem)}</span>
                         <strong class="${pendingForItem <= 0 ? 'text-success' : 'text-danger'}">
                             Pending: ${formatCurrency(pendingForItem)}
@@ -296,22 +309,22 @@ async function viewReceipt(receiptId) {
 
                 ${globalPending > 0 ? `
                 <div class="receipt-global-summary">
-                    <div class="ledger-header">GLOBAL PENDING (All Courses)</div>
+                    <div class="ledger-header">GLOBAL PENDING (Total Account)</div>
                     <div class="ledger-row">
-                        <strong class="text-danger">Total Outstanding: ${formatCurrency(globalPending)}</strong>
+                        <strong class="text-danger">Outstanding: ${formatCurrency(globalPending)}</strong>
                     </div>
                 </div>
                 ` : ''}
                 
                 <div class="receipt-footer">
                     <p>This is a system-generated receipt.</p>
-                    <p>No signature required.</p>
+                    <p>Abhi's Craftsoft</p>
                 </div>
             </div>
         `;
     } catch (err) {
         console.error(err);
-        Toast.error('Load Error', 'Failed to fetch live balance');
+        Toast.error('Load Error', 'Failed to fetch ledger details');
         closeReceiptModal();
     }
 }
@@ -362,21 +375,22 @@ function sendWhatsApp(receiptId) {
     const receipt = receipts.find(r => r.receipt_id === receiptId);
     if (!receipt) return;
 
-    const phone = receipt.student?.phone;
+    const entity = receipt.student || receipt.client;
+    const phone = entity?.phone;
     if (!phone) {
-        window.AdminUtils.Toast.error('No Phone', 'Student phone number not available');
+        window.AdminUtils.Toast.error('No Phone', 'Representative phone number not available');
         return;
     }
 
     let formattedPhone = phone.replace(/\D/g, '');
     if (!formattedPhone.startsWith('91')) formattedPhone = '91' + formattedPhone;
 
-    const studentName = receipt.student ? `${receipt.student.first_name} ${receipt.student.last_name}` : 'Student';
+    const name = entity ? `${entity.first_name} ${entity.last_name || ''}`.trim() : 'Customer';
     const itemName = receipt.course?.course_name || receipt.service?.name || 'Item';
     const amount = formatCurrency(receipt.amount_paid);
     const balance = receipt.balance_due <= 0 ? '₹0' : formatCurrency(receipt.balance_due);
 
-    const message = `Hi ${studentName},
+    const message = `Hi ${name},
 
 We have received ${amount} for ${itemName}.
 Receipt ID: ${receipt.receipt_id}
@@ -411,34 +425,37 @@ function formatDate(dateStr) {
 }
 
 function bindEvents() {
-    document.getElementById('search-input').addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
-        if (!query) {
-            filteredReceipts = receipts;
-        } else {
-            filteredReceipts = receipts.filter(r => {
-                const entity = r.student || r.client;
-                const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}`.toLowerCase() : '';
-                const displayId = (entity?.student_id || entity?.client_id || '').toLowerCase();
-                const itemName = (r.course?.course_name || r.service?.name || '').toLowerCase();
-                const receiptId = (r.receipt_id || '').toLowerCase();
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            if (!query) {
+                filteredReceipts = receipts;
+            } else {
+                filteredReceipts = receipts.filter(r => {
+                    const entity = r.student || r.client;
+                    const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}`.toLowerCase() : '';
+                    const displayId = (entity?.student_id || entity?.client_id || '').toLowerCase();
+                    const itemName = (r.course?.course_name || r.service?.name || '').toLowerCase();
+                    const receiptId = (r.receipt_id || '').toLowerCase();
 
-                return entityName.includes(query) ||
-                    displayId.includes(query) ||
-                    itemName.includes(query) ||
-                    receiptId.includes(query);
-            });
-        }
-        renderReceipts();
-    });
+                    return entityName.includes(query) ||
+                        displayId.includes(query) ||
+                        itemName.includes(query) ||
+                        receiptId.includes(query);
+                });
+            }
+            renderReceipts();
+        });
+    }
 
-    document.getElementById('close-receipt-modal').addEventListener('click', closeReceiptModal);
-    document.getElementById('receipt-cancel-btn').addEventListener('click', closeReceiptModal);
-    document.getElementById('receipt-modal').addEventListener('click', (e) => {
+    document.getElementById('close-receipt-modal')?.addEventListener('click', closeReceiptModal);
+    document.getElementById('receipt-cancel-btn')?.addEventListener('click', closeReceiptModal);
+    document.getElementById('receipt-modal')?.addEventListener('click', (e) => {
         if (e.target.id === 'receipt-modal') closeReceiptModal();
     });
 
-    document.getElementById('receipt-download-btn').addEventListener('click', () => {
+    document.getElementById('receipt-download-btn')?.addEventListener('click', () => {
         // Disabled for now
         // if (currentReceipt) downloadReceipt(currentReceipt.receipt_id);
     });

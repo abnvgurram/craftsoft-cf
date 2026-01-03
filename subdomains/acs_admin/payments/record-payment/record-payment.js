@@ -289,7 +289,8 @@ async function handlePayment(e) {
 async function createReceipt(payment) {
     try {
         const table = isServiceMode ? 'clients' : 'students';
-        const { data: entity } = await window.supabaseClient.from(table).select('first_name, last_name, any_id:client_id, student_id').eq('id', selectedStudent).single();
+        const displayIdCol = isServiceMode ? 'client_id' : 'student_id';
+        const { data: entity } = await window.supabaseClient.from(table).select(`first_name, last_name, ${displayIdCol}`).eq('id', selectedStudent).single();
 
         const itemName = masterItems.find(i => i.id == selectedItem)?.name || 'Unknown';
         const entityName = `${entity.first_name || ''} ${entity.last_name || ''}`.trim();
