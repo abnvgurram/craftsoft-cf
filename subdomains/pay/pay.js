@@ -257,7 +257,7 @@ async function payForCourse(courseId) {
 
     try {
         // Step 1: Create Razorpay order
-        const orderResponse = await fetch('https://www.craftsoft.co.in/.netlify/functions/create-razorpay-order', {
+        const orderResponse = await fetch('https://craftsoft.co.in/.netlify/functions/pay-create-order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -326,7 +326,7 @@ async function payForCourse(courseId) {
 // Verify Payment
 async function verifyPayment(razorpayResponse, courseId) {
     try {
-        const verifyResponse = await fetch('https://www.craftsoft.co.in/.netlify/functions/verify-razorpay-payment', {
+        const verifyResponse = await fetch('https://craftsoft.co.in/.netlify/functions/pay-verify-payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
