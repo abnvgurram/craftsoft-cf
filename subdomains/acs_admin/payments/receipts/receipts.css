@@ -153,10 +153,10 @@
 }
 
 /* ============================================
-   Mobile Cards
+   Cards Layout (Desktop & Mobile)
    ============================================ */
 .data-cards {
-    display: none;
+    display: flex;
     flex-direction: column;
     gap: 1rem;
 }

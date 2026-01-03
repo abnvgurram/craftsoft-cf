@@ -81,12 +81,10 @@ async function loadReceipts() {
 // Render Receipts
 // =====================
 function renderReceipts() {
-    const tbody = document.getElementById('receipts-tbody');
     const cards = document.getElementById('receipts-cards');
     const emptyState = document.getElementById('empty-state');
 
     if (filteredReceipts.length === 0) {
-        tbody.innerHTML = '';
         cards.innerHTML = '';
         emptyState.style.display = 'block';
         return;
@@ -97,46 +95,7 @@ function renderReceipts() {
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedReceipts = filteredReceipts.slice(start, start + itemsPerPage);
 
-    // Desktop table
-    tbody.innerHTML = paginatedReceipts.map(r => {
-        const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
-        const isService = !!r.service;
-
-        return `
-        <tr>
-            <td><span class="cell-badge">${r.receipt_id}</span></td>
-            <td>${formatDate(r.created_at)}</td>
-            <td><span class="cell-title">${r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown'}</span></td>
-            <td>
-                <span class="cell-title">${itemName}</span>
-                ${isService ? '<span class="glass-tag" style="font-size: 0.6rem; margin-left: 5px;">Service</span>' : ''}
-            </td>
-            <td><span class="cell-amount">${formatCurrency(r.amount_paid)}</span></td>
-            <td>
-                <span class="glass-tag ${r.payment_mode.toLowerCase()}">
-                    ${r.payment_mode}
-                </span>
-            </td>
-            <td class="${r.balance_due <= 0 ? 'text-success' : 'text-danger'}">
-                ${r.balance_due <= 0 ? 'Paid' : formatCurrency(r.balance_due)}
-            </td>
-            <td class="text-right">
-                <div class="cell-actions">
-                    <button class="action-btn view" title="View" onclick="viewReceipt('${r.receipt_id}')">
-                        <i class="fa-solid fa-eye"></i>
-                    </button>
-                    <button class="action-btn download" title="Download" onclick="downloadReceipt('${r.receipt_id}')">
-                        <i class="fa-solid fa-download"></i>
-                    </button>
-                    <button class="action-btn whatsapp" title="WhatsApp" onclick="sendWhatsApp('${r.receipt_id}')">
-                        <i class="fa-brands fa-whatsapp"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `}).join('');
-
-    // Mobile cards
+    // Cards layout
     cards.innerHTML = paginatedReceipts.map(r => {
         const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
         return `
