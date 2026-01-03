@@ -298,13 +298,20 @@
   status = 200
   force = true
 
-# Catch-all for other files in acs_admin (MUST be last for admin subdomain)
-# This handles JS, CSS, images and other static files
+# Catch-all for files in acs_admin (Static assets)
+# This handles JS, CSS, images - does NOT use force so it only serves if file exists
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/*"
   to = "/subdomains/acs_admin/:splat"
   status = 200
+
+# Admin Subdomain 404 (MUST follow assets catch-all)
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/*"
+  to = "/subdomains/acs_admin/404/index.html"
+  status = 404
   force = true
 
 # ============================================
@@ -405,5 +412,6 @@
 # Global 404 catch-all
 [[redirects]]
   from = "/*"
-  to = "/404/website/"
+  to = "/404/website/index.html"
   status = 404
+  force = true

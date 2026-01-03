@@ -54,12 +54,21 @@ function bindTypeToggle() {
 }
 
 function resetForm() {
+    selectedStudent = null;
     selectedItem = null;
+    totalFee = 0;
+    paidSoFar = 0;
+    balanceDue = 0;
+
+    const select = document.getElementById('course-select');
+    const prompt = isServiceMode ? 'Select client first' : 'Select student first';
+    select.innerHTML = `<option value="">${prompt}</option>`;
+    select.disabled = true;
+
     document.getElementById('fee-summary').style.display = 'none';
     document.getElementById('amount-input').value = '';
-    document.getElementById('amount-input').disabled = !isServiceMode; // Services allow manual entry
-    document.getElementById('course-select').innerHTML = '<option value="">Select student first</option>';
-    document.getElementById('course-select').disabled = true;
+    document.getElementById('amount-input').disabled = true;
+    document.getElementById('utr-group').style.display = 'none'; // Assuming 'utr-input-container' is 'utr-group'
     updateProceedButton();
 }
 

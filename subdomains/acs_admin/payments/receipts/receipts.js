@@ -66,6 +66,7 @@ async function loadReceipts() {
                 ),
                 service:service_id (
                     id,
+                    service_code,
                     name
                 )
             `)
