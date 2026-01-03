@@ -171,13 +171,28 @@ async function syncCourses() {
         await window.supabaseClient.from('courses').delete().eq('course_name', 'Career Counselling').neq('course_code', 'CAREER');
 
         let synced = 0;
-        for (const c of websiteCourses) {
+        for (let i = 0; i < websiteCourses.length; i++) {
+            const c = websiteCourses[i];
+            const cid = `C-${String(i + 1).padStart(3, '0')}`;
+
             if (existingMap.has(c.code)) {
-                await window.supabaseClient.from('courses').update({ course_name: c.name, synced_at: new Date().toISOString() }).eq('course_code', c.code);
+                // Update everything including ID to ensure order is fixed
+                await window.supabaseClient.from('courses')
+                    .update({
+                        course_id: cid,
+                        course_name: c.name,
+                        synced_at: new Date().toISOString()
+                    })
+                    .eq('course_code', c.code);
             } else {
-                const cid = `C-${String(nextNum).padStart(3, '0')}`;
-                await window.supabaseClient.from('courses').insert({ course_id: cid, course_code: c.code, course_name: c.name, fee: 0, status: 'ACTIVE' });
-                nextNum++;
+                await window.supabaseClient.from('courses')
+                    .insert({
+                        course_id: cid,
+                        course_code: c.code,
+                        course_name: c.name,
+                        fee: 0,
+                        status: 'ACTIVE'
+                    });
             }
             synced++;
         }
