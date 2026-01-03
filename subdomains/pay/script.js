@@ -174,12 +174,15 @@ async function initiatePayment(courseId, courseName) {
             config: {
                 display: {
                     blocks: {
-                        utib: { // UPI & PayLater block
-                            name: "Pay via UPI or PayLater",
-                            methods: ["upi", "paylater"]
+                        banks: {
+                            name: "Select Payment Method",
+                            instruments: [
+                                { method: "upi" },
+                                { method: "paylater" }
+                            ]
                         }
                     },
-                    sequence: ["block.utib"],
+                    sequence: ["block.banks"],
                     preferences: {
                         show_default_blocks: false
                     }
@@ -192,8 +195,7 @@ async function initiatePayment(courseId, courseName) {
                 name: `${currentStudent.first_name} ${currentStudent.last_name}`,
                 contact: currentStudent.phone,
                 email: currentStudent.email || "",
-                method: "upi",
-                "vpa": "phonepe" // Suggesting phonepe flow
+                method: "upi"
             },
             theme: { color: "#2896cd" },
             modal: {
