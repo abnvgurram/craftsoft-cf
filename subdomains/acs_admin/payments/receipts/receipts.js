@@ -140,24 +140,27 @@ function renderReceipts() {
     cards.innerHTML = paginatedReceipts.map(r => {
         const itemName = r.course?.course_name || r.service?.name || 'Unknown Item';
         return `
-        <div class="receipt-card">
-            <div class="receipt-card-header">
-                <span class="receipt-card-id">${r.receipt_id}</span>
-                <span class="receipt-card-amount">${formatCurrency(r.amount_paid)}</span>
+        <div class="premium-card">
+            <div class="card-header">
+                <span class="card-id-badge">${r.receipt_id}</span>
+                <span class="card-amount">${formatCurrency(r.amount_paid)}</span>
             </div>
-            <div class="receipt-card-details">
-                <span><i class="fa-solid fa-user"></i> ${r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown'}</span>
-                <span><i class="fa-solid fa-tag"></i> ${itemName}</span>
+            <div class="card-body">
+                <div class="card-info-row">
+                    <span class="card-info-item"><i class="fa-solid fa-user"></i> ${r.student ? `${r.student.first_name} ${r.student.last_name}` : 'Unknown'}</span>
+                    <span class="card-info-item"><i class="fa-solid fa-book"></i> ${itemName}</span>
+                    <span class="card-info-item ${r.balance_due <= 0 ? 'text-success' : 'text-danger'}">
+                        <i class="fa-solid fa-coins"></i> ${r.balance_due <= 0 ? 'Fully Paid' : `Due: ${formatCurrency(r.balance_due)}`}
+                    </span>
+                </div>
             </div>
-            <div class="receipt-card-footer">
-                <span class="balance-cell ${r.balance_due <= 0 ? 'paid' : 'due'}">
-                    ${r.balance_due <= 0 ? '✓ Paid' : `Due: ${formatCurrency(r.balance_due)}`}
-                </span>
-                <div class="receipt-card-actions">
-                    <button class="action-btn view" onclick="viewReceipt('${r.receipt_id}')">
+            <div class="card-footer">
+                <span class="glass-tag ${r.payment_mode.toLowerCase()}">${r.payment_mode}</span>
+                <div class="card-actions">
+                    <button class="action-btn" onclick="viewReceipt('${r.receipt_id}')">
                         <i class="fa-solid fa-eye"></i>
                     </button>
-                    <button class="action-btn download" onclick="downloadReceipt('${r.receipt_id}')">
+                    <button class="action-btn" onclick="downloadReceipt('${r.receipt_id}')">
                         <i class="fa-solid fa-download"></i>
                     </button>
                     <button class="action-btn whatsapp" onclick="sendWhatsApp('${r.receipt_id}')">

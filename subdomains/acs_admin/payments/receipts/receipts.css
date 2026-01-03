@@ -1,9 +1,10 @@
 /* ============================================
-   Receipts List Page Styles
+   Receipts Page Styles
+   Rebuilt based on Tutors page structure
    ============================================ */
 
 /* ============================================
-   Premium Data Table (Web)
+   Premium Data Table (Desktop)
    ============================================ */
 .table-container {
     background: #fff;
@@ -53,7 +54,7 @@
     font-family: 'SF Mono', 'Monaco', monospace;
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--primary-600);
+    color: var(--primary-600, #1a7eb0);
 }
 
 .cell-title {
@@ -64,7 +65,7 @@
 
 .cell-amount {
     font-weight: 700;
-    color: var(--admin-text-primary);
+    color: var(--admin-text-primary, #0f172a);
 }
 
 /* Glass Tags */
@@ -80,15 +81,31 @@
 }
 
 .glass-tag.cash {
-    background: var(--success-50, #f0fdf4);
-    color: var(--success-600, #16a34a);
+    background: #f0fdf4;
+    color: #16a34a;
     border-color: #bbf7d0;
 }
 
+.glass-tag.offline_upi,
 .glass-tag.upi {
-    background: var(--primary-50);
-    color: var(--primary-600);
-    border-color: var(--primary-100);
+    background: var(--primary-50, #edf6fb);
+    color: var(--primary-600, #1a7eb0);
+    border-color: var(--primary-100, #cfe7f5);
+}
+
+/* Text Helpers */
+.text-right {
+    text-align: right !important;
+}
+
+.text-success {
+    color: #16a34a !important;
+    font-weight: 600;
+}
+
+.text-danger {
+    color: #dc2626 !important;
+    font-weight: 600;
 }
 
 /* Actions */
@@ -98,134 +115,130 @@
     gap: 0.5rem;
 }
 
-/* Text Helpers */
-.text-right {
-    text-align: right !important;
-}
-
-.text-success {
-    color: var(--success-600, #16a34a) !important;
-    font-weight: 600;
-}
-
-.text-danger {
-    color: var(--danger-600, #dc2626) !important;
-    font-weight: 600;
-}
-
-/* Page specific styles below */
-/* Search */
-.search-wrapper {
-    margin-bottom: 1.5rem;
-}
-
-/* Receipt ID */
-.receipt-id-cell {
-    font-family: 'SF Mono', 'Monaco', monospace;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--primary-600);
-}
-
-/* Mode Badge */
-.mode-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.mode-badge.cash {
-    background: var(--success-50, #f0fdf4);
-    color: var(--success-600, #16a34a);
-}
-
-.mode-badge.online,
-.mode-badge.upi {
-    background: var(--primary-50);
-    color: var(--primary-600);
-}
-
-/* Amount */
-.amount-cell {
-    font-weight: 600;
-    color: var(--admin-text-primary);
-}
-
-/* Balance */
-.balance-cell {
-    font-weight: 500;
-}
-
-.balance-cell.paid {
-    color: var(--success-600, #16a34a);
-}
-
-.balance-cell.due {
-    color: var(--danger-600, #dc2626);
-}
-
-/* Action Buttons */
-.action-btns {
-    display: flex;
-    gap: 0.5rem;
-}
-
 .action-btn {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: none;
-    border-radius: 8px;
+    border: 1px solid var(--admin-input-border, #e2e8f0);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--admin-text-secondary, #64748b);
     cursor: pointer;
-    transition: all 0.15s;
-    font-size: 0.9rem;
+    transition: all 0.2s;
 }
 
-.action-btn.view {
-    background: var(--gray-100);
-    color: var(--admin-text-secondary);
-}
-
-.action-btn.view:hover {
-    background: var(--gray-200);
-    color: var(--admin-text-primary);
-}
-
-.action-btn.download {
-    background: var(--primary-50);
-    color: var(--primary-600);
-}
-
-.action-btn.download:hover {
-    background: var(--primary-100);
-}
-
-.action-btn.whatsapp {
-    background: #dcfce7;
-    color: #16a34a;
+.action-btn:hover {
+    background: var(--gray-50, #f8fafc);
+    color: var(--admin-text-primary, #0f172a);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .action-btn.whatsapp:hover {
-    background: #bbf7d0;
+    color: #25D366;
+    background: rgba(37, 211, 102, 0.1);
+    border-color: #25D366;
+}
+
+/* Table Footer */
+.table-footer {
+    padding: 1.25rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--admin-text-secondary, #64748b);
+    background: var(--gray-50, #f8fafc);
+    border-top: 1px solid var(--gray-100, #f1f5f9);
+}
+
+/* ============================================
+   Mobile Cards
+   ============================================ */
+.data-cards {
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.premium-card {
+    background: #fff;
+    border: 1px solid var(--admin-input-border, #e2e8f0);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.card-id-badge {
+    font-family: 'SF Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--primary-600, #1a7eb0);
+    background: var(--primary-50, #edf6fb);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.card-amount {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--admin-text-primary, #0f172a);
+}
+
+.card-body {
+    margin-bottom: 1rem;
+}
+
+.card-info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-info-item {
+    font-size: 0.9rem;
+    color: var(--admin-text-secondary, #64748b);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card-info-item i {
+    width: 16px;
+    color: var(--admin-text-muted, #94a3b8);
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-100, #f1f5f9);
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
 }
 
 /* Empty State */
 .empty-state {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 4rem 2rem;
+    color: var(--admin-text-muted, #94a3b8);
 }
 
 .empty-state i {
     font-size: 3rem;
-    color: var(--gray-300);
     margin-bottom: 1rem;
+    opacity: 0.3;
 }
 
 .empty-state h3 {
@@ -236,7 +249,6 @@
 
 .empty-state p {
     color: var(--admin-text-muted);
-    margin-bottom: 1.5rem;
 }
 
 /* Loading State */
@@ -255,62 +267,9 @@
     color: var(--admin-text-muted);
 }
 
-/* Mobile Cards */
-.data-cards {
-    display: none;
-}
-
-.receipt-card {
-    background: #fff;
-    border: 1px solid var(--gray-200);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-}
-
-.receipt-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 0.75rem;
-}
-
-.receipt-card-id {
-    font-family: 'SF Mono', 'Monaco', monospace;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--primary-600);
-}
-
-.receipt-card-amount {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--admin-text-primary);
-}
-
-.receipt-card-details {
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-    font-size: 0.85rem;
-    color: var(--admin-text-secondary);
-}
-
-.receipt-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--gray-100);
-}
-
-.receipt-card-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-/* Receipt Modal */
+/* ============================================
+   Receipt Modal
+   ============================================ */
 .receipt-modal {
     max-width: 500px;
 }
@@ -389,14 +348,14 @@
     color: var(--primary-600);
 }
 
-.receipt-footer {
+.receipt-pdf-footer {
     text-align: center;
     margin-top: 1.5rem;
     padding-top: 1rem;
     border-top: 1px dashed var(--gray-300);
 }
 
-.receipt-footer p {
+.receipt-pdf-footer p {
     font-size: 0.75rem;
     color: var(--admin-text-muted);
     margin: 0;
@@ -440,28 +399,16 @@
     background: #15803d;
 }
 
-.btn-primary {
-    background: var(--accent-gradient);
-    border: none;
-    color: #fff;
-    padding: 0.75rem 1.25rem;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
-    text-decoration: none;
-}
-
-/* Mobile overrides for list-specific items */
+/* ============================================
+   Responsive: Mobile Switch
+   ============================================ */
 @media (max-width: 768px) {
     .table-container {
         display: none;
     }
 
     .data-cards {
-        display: block;
+        display: flex;
     }
 
     .receipt-modal {

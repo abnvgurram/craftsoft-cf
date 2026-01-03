@@ -107,20 +107,20 @@ function renderPayments() {
 
     // Mobile cards
     cards.innerHTML = paginatedPayments.map(p => `
-        <div class="payment-card">
-            <div class="payment-card-header">
-                <span class="payment-card-student">${p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown'}</span>
-                <span class="payment-card-amount">${formatCurrency(p.amount_paid)}</span>
+        <div class="premium-card">
+            <div class="card-header">
+                <span class="card-id-badge">${formatDate(p.created_at)}</span>
+                <span class="card-amount">${formatCurrency(p.amount_paid)}</span>
             </div>
-            <div class="payment-card-details">
-                <span><i class="fa-solid fa-book"></i> ${p.course?.course_name || 'Unknown'}</span>
-                <span class="reference-cell">${p.reference_id}</span>
+            <div class="card-body">
+                <div class="card-info-row">
+                    <span class="card-info-item"><i class="fa-solid fa-user"></i> ${p.student ? `${p.student.first_name} ${p.student.last_name}` : 'Unknown'}</span>
+                    <span class="card-info-item"><i class="fa-solid fa-book"></i> ${p.course?.course_name || 'Unknown'}</span>
+                    <span class="card-info-item"><i class="fa-solid fa-hashtag"></i> ${p.reference_id}</span>
+                </div>
             </div>
-            <div class="payment-card-footer">
-                <span class="payment-card-date">${formatDate(p.created_at)}</span>
-                <span class="mode-badge ${p.payment_mode.toLowerCase()}">
-                    ${p.payment_mode}
-                </span>
+            <div class="card-footer">
+                <span class="glass-tag ${p.payment_mode.toLowerCase()}">${p.payment_mode}</span>
             </div>
         </div>
     `).join('');
