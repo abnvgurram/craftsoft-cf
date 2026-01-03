@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Services - CraftSoft Admin</title>
+    <title>Service Clients - CraftSoft Admin</title>
     <link rel="icon" href="https://craftsoft.co.in/favicon.ico" type="image/x-icon">
 
     <!-- Fonts -->
@@ -48,6 +48,7 @@
     <link rel="stylesheet" href="../../../../assets/admin/css/responsive/mobile.css">
 
     <!-- Page Specific -->
+    <link rel="stylesheet" href="../../../../assets/admin/css/components/pagination.css">
     <link rel="stylesheet" href="../../../../assets/admin/css/components/notifications.css">
     <link rel="stylesheet" href="services.css">
 
@@ -72,32 +73,143 @@
     </script>
 </head>
 
-<body class="dashboard-page">
+<body>
     <div class="admin-layout">
         <!-- Sidebar injected by JS -->
+
         <main class="admin-main">
             <div id="header-container"></div>
 
-            <div class="content-card maintenance-board-container">
-                <div class="maintenance-content">
-                    <div class="maintenance-icon-wrapper">
-                        <i class="fa-solid fa-person-digging maintenance-icon"></i>
+            <div class="content-card">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <div class="section-icon">
+                            <i class="fa-solid fa-person-digging"></i>
+                        </div>
+                        <div class="section-info">
+                            <h2 class="section-title">Service Clients</h2>
+                            <p class="section-subtitle">Manage clients converted from service inquiries</p>
+                        </div>
                     </div>
-                    <h2 class="maintenance-title">Module Under Maintenance</h2>
-                    <p class="maintenance-description">
-                        We are currently building the service management system.<br>
-                        This module will allow you to manage IT services, tracking, and more.
-                    </p>
-                    <div class="maintenance-status">
-                        <span class="status-pulse"></span>
-                        <span class="status-text">Development in Progress</span>
-                    </div>
-                    <a href="../../dashboard/" class="btn btn-primary">
-                        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                    </a>
                 </div>
+
+                <div class="section-actions">
+                    <button class="btn btn-primary" id="add-client-btn">
+                        <i class="fa-solid fa-plus"></i> Add Client
+                    </button>
+                    <div class="search-box">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="client-search" placeholder="Search clients...">
+                    </div>
+                </div>
+
+                <!-- Inline Form (hidden by default) -->
+                <div class="inline-form-container" id="client-form-container" style="display: none;">
+                    <div class="inline-form-header">
+                        <h3 id="form-title">Add Client</h3>
+                        <button type="button" class="btn-icon" id="close-form-btn">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="inline-form-body">
+                        <input type="hidden" id="edit-client-id">
+                        <input type="hidden" id="converting-inquiry-id">
+
+                        <!-- Basic Info -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name <span class="required">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" id="client-fname" placeholder="First name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" id="client-lname" placeholder="Last name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Phone <span class="required">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input type="tel" id="client-phone" maxlength="10" placeholder="10-digit mobile">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" id="client-email" placeholder="Email address">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Services Selection -->
+                        <div class="form-group">
+                            <label>Services <span class="required">*</span></label>
+                            <div class="checkbox-list" id="client-services-list">
+                                <p class="text-muted">Loading services...</p>
+                            </div>
+                        </div>
+
+                        <!-- Fee Section -->
+                        <div class="form-section fee-section">
+                            <div class="form-section-header">
+                                <label><i class="fa-solid fa-indian-rupee-sign"></i> Fee Breakdown</label>
+                            </div>
+                            <div class="fee-breakdown" id="fee-breakdown">
+                                <p class="text-muted">Select services to see fee breakdown</p>
+                            </div>
+                            <div class="fee-total-row" id="fee-total-row" style="display: none;">
+                                <div class="fee-total-label">Total Fee</div>
+                                <div class="fee-total-amount" id="fee-total">₹0</div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <div class="input-with-icon textarea-icon">
+                                <i class="fa-solid fa-sticky-note input-icon"></i>
+                                <textarea id="client-notes" rows="2"
+                                    placeholder="Project details, requirements..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="inline-form-footer">
+                        <button type="button" class="btn btn-outline" id="cancel-form-btn">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="save-client-btn">
+                            <i class="fa-solid fa-check"></i> Save Client
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+                <div id="clients-content">
+                    <div class="loading-spinner">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Loading clients...
+                    </div>
+                </div>
+                <div class="pagination-container" id="pagination-container"></div>
             </div>
         </main>
+    </div>
+
+    <!-- Delete Confirmation -->
+    <div class="delete-confirm-overlay" id="delete-overlay" style="display: none;">
+        <div class="delete-confirm-box">
+            <div class="warning-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <p>Delete client <strong id="delete-name"></strong>?</p>
+            <div class="delete-actions">
+                <button class="btn btn-outline btn-sm" id="cancel-delete-btn">Cancel</button>
+                <button class="btn btn-danger btn-sm" id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->

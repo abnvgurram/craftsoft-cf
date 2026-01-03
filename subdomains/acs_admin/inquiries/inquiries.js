@@ -542,15 +542,30 @@ async function convertToStudent(id) {
     try {
         const { data } = await window.supabaseClient.from('inquiries').select('*').eq('id', id).single();
         if (data) {
+            // Check if this is a service inquiry
+            const isServiceInquiry = document.querySelector('input[name="inquiry-type"]:checked')?.value === 'service';
+            // Also check if the inquiry has service codes (services start with different patterns)
+            const hasServiceCodes = (data.courses || []).some(code =>
+                ['WDEV', 'MDEV', 'UIUX', 'SEO', 'DIGI', 'GRPH', 'BRND'].includes(code.toUpperCase())
+            );
+
             const p = new URLSearchParams({
                 prefill: '1',
                 name: data.name,
                 phone: data.phone,
                 email: data.email || '',
-                courses: (data.courses || []).join(','),
                 inquiry_id: data.id
             });
-            window.location.href = `../students/?${p.toString()}`;
+
+            if (isServiceInquiry || hasServiceCodes) {
+                // Redirect to Services/Clients page
+                p.set('services', (data.courses || []).join(','));
+                window.location.href = `../services/?${p.toString()}`;
+            } else {
+                // Redirect to Students page
+                p.set('courses', (data.courses || []).join(','));
+                window.location.href = `../students/?${p.toString()}`;
+            }
         }
     } catch (e) { console.error(e); }
 }
