@@ -119,6 +119,49 @@
   status = 200
   force = true
 
+# Payments - All sub-routes need explicit handling
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/payments/record-payment"
+  to = "/subdomains/acs_admin/payments/record-payment/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/payments/record-payment/"
+  to = "/subdomains/acs_admin/payments/record-payment/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/payments/all-payments"
+  to = "/subdomains/acs_admin/payments/all-payments/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/payments/all-payments/"
+  to = "/subdomains/acs_admin/payments/all-payments/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/payments/receipts"
+  to = "/subdomains/acs_admin/payments/receipts/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/payments/receipts/"
+  to = "/subdomains/acs_admin/payments/receipts/index.html"
+  status = 200
+  force = true
+
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/payments/*"
