@@ -17,9 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =====================
-// Security Features
+// Security Features (TEMPORARILY DISABLED FOR DEBUGGING)
 // =====================
 function initSecurity() {
+    // TEMPORARILY DISABLED - uncomment after fixing payment issue
+    console.log('Security features disabled for debugging');
+
+    /*
     // 1. Disable back/forward navigation
     history.pushState(null, null, location.href);
     window.addEventListener('popstate', () => {
@@ -64,6 +68,7 @@ function initSecurity() {
         currentStudent = null;
         coursesData = [];
     });
+    */
 }
 
 // Bind Events
