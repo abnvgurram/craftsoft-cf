@@ -1,4 +1,4 @@
-// Services/Clients Module
+// Clients Module (Converted from Service Inquiries)
 let allClients = [];
 let allServicesForClients = [];
 let deleteTargetId = null;
@@ -8,15 +8,7 @@ let serviceFees = {}; // Store per-service fees { serviceCode: fee }
 let currentPage = 1;
 const itemsPerPage = 10;
 
-// Website Services (for sync)
-const websiteServices = [
-    { code: 'S-WDEV', name: 'Website Development' },
-    { code: 'S-UIUX', name: 'UI/UX Design Services' },
-    { code: 'S-GD', name: 'Graphic Design Services' },
-    { code: 'S-BRND', name: 'Branding & Marketing' },
-    { code: 'S-CLOUD', name: 'Cloud & DevOps Solutions' },
-    { code: 'S-CAREER', name: 'Career & Placement Services' }
-];
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
@@ -25,11 +17,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    AdminSidebar.init('services');
+    AdminSidebar.init('clients', '../../');
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
-        headerContainer.innerHTML = AdminHeader.render('Service Clients');
+        headerContainer.innerHTML = AdminHeader.render('Clients');
     }
 
     const admin = await window.Auth.getCurrentAdmin();
@@ -43,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('add-client-btn')?.addEventListener('click', () => openForm());
     document.getElementById('client-search')?.addEventListener('input', (e) => filterClients(e.target.value));
-    document.getElementById('sync-services-btn')?.addEventListener('click', syncServices);
+
 
     // Check for prefill from inquiry conversion
     checkPrefill();

@@ -12,11 +12,11 @@ let selectedStudents = new Set();
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
-        window.location.href = '../login.html';
+        window.location.href = '../../login.html';
         return;
     }
 
-    AdminSidebar.init('students');
+    AdminSidebar.init('students', '../../');
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {

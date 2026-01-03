@@ -1,0 +1,53 @@
+/* Services Master Table Styles */
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: rgba(40, 150, 205, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state-icon i {
+    font-size: 32px;
+    color: var(--primary-color);
+}
+
+.empty-state h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+}
+
+.empty-state p {
+    font-size: 14px;
+}
+
+.error-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #ef4444;
+}
+
+.error-state i {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.table-footer {
+    padding: 12px 16px;
+    text-align: right;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-color);
+}

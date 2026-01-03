@@ -558,11 +558,11 @@ async function convertToStudent(id) {
             });
 
             if (isServiceInquiry || hasServiceCodes) {
-                // Redirect to Services/Clients page
+                // Redirect to Clients page (for service inquiries)
                 p.set('services', (data.courses || []).join(','));
-                window.location.href = `../services/?${p.toString()}`;
+                window.location.href = `../clients/?${p.toString()}`;
             } else {
-                // Redirect to Students page
+                // Redirect to Students page (for course inquiries)
                 p.set('courses', (data.courses || []).join(','));
                 window.location.href = `../students/?${p.toString()}`;
             }

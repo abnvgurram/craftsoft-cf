@@ -19,19 +19,26 @@ const AdminSidebar = {
     },
 
     render() {
-        // Check if current page is a Payments child
+        // Check if current page is in various groups
         const isPaymentsChild = ['record-payment', 'all-payments', 'receipts'].includes(this.currentPage);
+        const isCoursesServicesChild = ['courses', 'services'].includes(this.currentPage);
+        const isStudentsClientsChild = ['students', 'clients'].includes(this.currentPage);
 
         // Desktop sidebar (always expanded)
         const sidebarHTML = `
             <aside class="admin-sidebar" id="admin-sidebar">
                 <nav class="sidebar-nav">
                     ${this.navItem('dashboard', 'Dashboard', 'fa-chart-pie')}
-                    ${this.navItem('students', 'Students', 'fa-user-graduate', 'students')}
-                    ${this.navItem('services', 'Services', 'fa-person-digging', 'services')}
-                    ${this.navItem('tutors', 'Tutors', 'fa-chalkboard-user')}
                     ${this.navItem('inquiries', 'Inquiries', 'fa-phone-volume')}
-                    ${this.navItem('courses', 'Courses', 'fa-book-bookmark')}
+                    ${this.navItem('tutors', 'Tutors', 'fa-chalkboard-user')}
+                    
+                    <!-- Courses & Services (flat on desktop) -->
+                    ${this.navItem('courses', 'Courses', 'fa-book-bookmark', 'courses-services/courses')}
+                    ${this.navItem('services', 'Services', 'fa-briefcase', 'courses-services/services')}
+                    
+                    <!-- Students & Clients (flat on desktop) -->
+                    ${this.navItem('students', 'Students', 'fa-user-graduate', 'students-clients/students')}
+                    ${this.navItem('clients', 'Clients', 'fa-handshake', 'students-clients/clients')}
                     
                     <!-- Payments Section (No parent label on desktop/tablet) -->
                     ${this.navItem('record-payment', 'Record Payment', 'fa-money-bill-1', 'payments/record-payment')}
@@ -43,8 +50,10 @@ const AdminSidebar = {
             </aside>
         `;
 
-        // Mobile nav bottom sheet (collapsible)
-        const activeGroup = ['students', 'services'].includes(this.currentPage) ? 'students_services' : (isPaymentsChild ? 'payments' : null);
+        // Mobile nav bottom sheet (collapsible groups)
+        const activeGroup = isCoursesServicesChild ? 'courses_services' :
+            isStudentsClientsChild ? 'students_clients' :
+                isPaymentsChild ? 'payments' : null;
 
         const mobileNavHTML = `
             <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
@@ -57,25 +66,38 @@ const AdminSidebar = {
                 </div>
                 <nav class="mobile-nav-list">
                     ${this.mobileNavItem('dashboard', 'Dashboard', 'fa-chart-pie')}
+                    ${this.mobileNavItem('inquiries', 'Inquiries', 'fa-phone-volume')}
+                    ${this.mobileNavItem('tutors', 'Tutors', 'fa-chalkboard-user')}
 
-                    <!-- Students & Services Parent (Mobile Only) -->
-                    <div class="mobile-nav-parent ${activeGroup === 'students_services' ? 'expanded' : ''}" id="mobile-students-services-parent">
-                        <button class="mobile-nav-parent-btn" id="mobile-students-services-toggle">
-                            <i class="fa-solid fa-list-check"></i>
-                            <span>Students & Services</span>
+                    <!-- Courses & Services Parent (Mobile Only) -->
+                    <div class="mobile-nav-parent ${activeGroup === 'courses_services' ? 'expanded' : ''}" id="mobile-courses-services-parent">
+                        <button class="mobile-nav-parent-btn" id="mobile-courses-services-toggle">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>Courses & Services</span>
                             <i class="fa-solid fa-chevron-right mobile-nav-arrow"></i>
                         </button>
                         <div class="mobile-nav-children">
                             <div style="min-height: 0;">
-                                ${this.mobileNavItemChild('students', 'Students', 'fa-user-graduate', 'students')}
-                                ${this.mobileNavItemChild('services', 'Services', 'fa-person-digging', 'services')}
+                                ${this.mobileNavItemChild('courses', 'Courses', 'fa-book-bookmark', 'courses-services/courses')}
+                                ${this.mobileNavItemChild('services', 'Services', 'fa-briefcase', 'courses-services/services')}
                             </div>
                         </div>
                     </div>
 
-                    ${this.mobileNavItem('tutors', 'Tutors', 'fa-chalkboard-user')}
-                    ${this.mobileNavItem('inquiries', 'Inquiries', 'fa-phone-volume')}
-                    ${this.mobileNavItem('courses', 'Courses', 'fa-book-bookmark')}
+                    <!-- Students & Clients Parent (Mobile Only) -->
+                    <div class="mobile-nav-parent ${activeGroup === 'students_clients' ? 'expanded' : ''}" id="mobile-students-clients-parent">
+                        <button class="mobile-nav-parent-btn" id="mobile-students-clients-toggle">
+                            <i class="fa-solid fa-users"></i>
+                            <span>Students & Clients</span>
+                            <i class="fa-solid fa-chevron-right mobile-nav-arrow"></i>
+                        </button>
+                        <div class="mobile-nav-children">
+                            <div style="min-height: 0;">
+                                ${this.mobileNavItemChild('students', 'Students', 'fa-user-graduate', 'students-clients/students')}
+                                ${this.mobileNavItemChild('clients', 'Clients', 'fa-handshake', 'students-clients/clients')}
+                            </div>
+                        </div>
+                    </div>
                     
                     <!-- Payments Parent (collapsible on mobile) -->
                     <div class="mobile-nav-parent ${activeGroup === 'payments' ? 'expanded' : ''}" id="mobile-payments-parent">
@@ -187,10 +209,17 @@ const AdminSidebar = {
             this.closeMobileNav();
         });
 
-        // Mobile Students & Services expand/collapse
-        document.getElementById('mobile-students-services-toggle')?.addEventListener('click', (e) => {
+        // Mobile Courses & Services expand/collapse
+        document.getElementById('mobile-courses-services-toggle')?.addEventListener('click', (e) => {
             e.preventDefault();
-            const parent = document.getElementById('mobile-students-services-parent');
+            const parent = document.getElementById('mobile-courses-services-parent');
+            parent?.classList.toggle('expanded');
+        });
+
+        // Mobile Students & Clients expand/collapse
+        document.getElementById('mobile-students-clients-toggle')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const parent = document.getElementById('mobile-students-clients-parent');
             parent?.classList.toggle('expanded');
         });
 
