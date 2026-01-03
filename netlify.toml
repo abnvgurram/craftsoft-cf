@@ -110,6 +110,12 @@
   to = "/subdomains/pay/:splat"
   status = 200
 
+[[redirects]]
+  host = "pay-fee.craftsoft.co.in"
+  from = "/*"
+  to = "/subdomains/pay/404/index.html"
+  status = 404
+
 # ============================================
 # ADMIN SUBDOMAIN (admin.craftsoft.co.in)
 # ============================================

@@ -64,7 +64,7 @@ async function handleLookup() {
         showToast(err.message);
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-search"></i><span>Find My Account</span>';
+        btn.innerHTML = '<i class="fa-regular fa-money-bill-1"></i><span>Pay Fee</span>';
     }
 }
 

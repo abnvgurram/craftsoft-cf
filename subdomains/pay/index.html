@@ -4,59 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pay Your Fees - Abhi's Craftsoft</title>
+    <title>Pay Your Fee - Abhi's Craftsoft</title>
     <link rel="icon" href="https://craftsoft.co.in/favicon.svg" type="image/svg+xml">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <link rel="stylesheet" href="style.css?v=1.1">
+    <link rel="stylesheet" href="style.css?v=1.2">
 </head>
 
 <body>
     <div class="pay-container">
         <!-- Header -->
         <header class="pay-header">
-            <div class="logo">
-                <img src="https://craftsoft.co.in/favicon.svg" alt="ACS Logo" class="brand-logo">
-                <span>Abhi's Craftsoft</span>
+            <div class="logo-container">
+                <div class="logo-link">
+                    <div class="logo-placeholder"><i class="fas fa-graduation-cap"></i></div>
+                    <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
+                            Soft</span></span>
+                </div>
             </div>
-            <h1>Pay Your Fees</h1>
-            <p>Secure UPI payment</p>
+            <h1>Pay your fee</h1>
         </header>
 
         <main class="payment-card">
             <!-- Step 1: Lookup -->
             <section id="lookup-view" class="view active">
                 <div class="card-header-inner">
-                    <i class="fa-solid fa-user-check"></i>
-                    <h2>Find your account</h2>
+                    <i class="fa-solid fa-money-bill-transfer"></i>
                 </div>
                 <div class="card-body">
                     <div class="form-group">
-                        <label for="student-id">Student ID</label>
-                        <input type="text" id="student-id" placeholder="e.g. IN-ACS1001" autocomplete="off">
-                        <span class="hint">Enter your unique Student ID</span>
+                        <label for="student-id">Student ID <span class="required-star">*</span></label>
+                        <input type="text" id="student-id" placeholder="Enter your student id provided"
+                            autocomplete="off">
                     </div>
                     <button id="lookup-btn" class="primary-btn">
-                        <i class="fa-solid fa-search"></i>
-                        <span>Find My Account</span>
+                        <i class="fa-regular fa-money-bill-1"></i>
+                        <span>Pay Fee</span>
                     </button>
                 </div>
             </section>
 
-            <!-- Step 2: Details & Pay (Matching Image) -->
+            <!-- Step 2: Details & Pay -->
             <section id="payment-view" class="view">
                 <div class="student-header-box">
-                    <div class="avatar">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
                     <div class="info">
                         <h2 id="display-name">—</h2>
                         <span id="display-id" class="badge">—</span>
@@ -115,7 +114,7 @@
     <!-- Scripts -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js?v=1.1"></script>
+    <script src="script.js?v=1.2"></script>
 </body>
 
 </html>

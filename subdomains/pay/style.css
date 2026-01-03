@@ -12,7 +12,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 body {
@@ -22,6 +21,7 @@ body {
     display: flex;
     justify-content: center;
     padding-top: 60px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .pay-container {
@@ -36,29 +36,55 @@ body {
     margin-bottom: 30px;
 }
 
-.logo {
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text-dark);
+}
+
+.logo-placeholder {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    color: white;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 20px;
+    font-size: 1.25rem;
 }
 
-.brand-logo {
-    width: 24px;
-    height: 24px;
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+}
+
+.logo-signature {
+    font-family: 'Italianno', cursive;
+    color: var(--primary);
+    font-size: 2.2rem;
+    margin-right: -4px;
+    font-weight: 400;
+}
+
+.logo-text .highlight {
+    color: var(--text-dark);
 }
 
 h1 {
     font-size: 1.8rem;
     margin-bottom: 8px;
-}
-
-.pay-header p {
-    color: var(--text-muted);
-    font-size: 0.9rem;
+    font-family: 'Outfit', sans-serif;
 }
 
 /* Card Styling */
@@ -86,17 +112,18 @@ h1 {
 }
 
 .card-header-inner i {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
     color: var(--primary);
-    margin-bottom: 15px;
-}
-
-.card-header-inner h2 {
-    font-size: 1.3rem;
+    opacity: 0.9;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+}
+
+.required-star {
+    color: #ef4444;
+    margin-left: 2px;
 }
 
 label {
@@ -121,13 +148,6 @@ input:focus {
     box-shadow: 0 0 0 3px rgba(40, 150, 205, 0.1);
 }
 
-.hint {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    margin-top: 6px;
-}
-
 .primary-btn {
     width: 100%;
     padding: 14px;
@@ -142,46 +162,34 @@ input:focus {
     justify-content: center;
     gap: 10px;
     transition: background 0.2s;
+    font-size: 1rem;
 }
 
 .primary-btn:hover {
     background: var(--primary-hover);
 }
 
-/* Details View (Matching Image) */
+/* Details View */
 .student-header-box {
-    display: flex;
-    align-items: center;
-    gap: 15px;
     padding-bottom: 20px;
     border-bottom: 1px solid var(--border);
     margin-bottom: 25px;
 }
 
-.avatar {
-    width: 44px;
-    height: 44px;
-    background: #e2f5ff;
-    color: var(--primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-}
-
 .info h2 {
-    font-size: 1.1rem;
-    margin-bottom: 4px;
+    font-size: 1.25rem;
+    margin-bottom: 6px;
+    font-family: 'Outfit', sans-serif;
+    text-transform: capitalize;
 }
 
 .badge {
     display: inline-block;
-    background: var(--primary);
-    color: white;
-    padding: 3px 10px;
+    background: #e2f5ff;
+    color: var(--primary);
+    padding: 4px 12px;
     border-radius: 6px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
 }
@@ -248,21 +256,21 @@ input:focus {
 .amount-input-box input {
     padding-left: 25px;
     font-weight: 700;
-    height: 38px;
+    height: 44px;
 }
 
 .mini-pay-btn {
-    padding: 0 15px;
+    padding: 0 20px;
     background: var(--primary);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .card-actions {
@@ -273,8 +281,8 @@ input:focus {
 .back-btn {
     background: none;
     border: 1px solid var(--border);
-    padding: 8px 18px;
-    border-radius: 6px;
+    padding: 10px 20px;
+    border-radius: 8px;
     color: var(--text-dark);
     font-size: 0.85rem;
     font-weight: 600;
@@ -282,9 +290,46 @@ input:focus {
     display: flex;
     align-items: center;
     gap: 8px;
+    transition: all 0.2s;
 }
 
-/* Success & Footer */
+.back-btn:hover {
+    background: #f1f5f9;
+}
+
+/* Success View */
+#success-view {
+    text-align: center;
+}
+
+.success-icon {
+    font-size: 4rem;
+    color: #10b981;
+    margin-bottom: 20px;
+}
+
+.receipt-card {
+    background: #f8fafc;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 25px 0;
+    text-align: left;
+}
+
+.receipt-card .row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.receipt-card .row:last-child {
+    margin-bottom: 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+
+/* Footer */
 .pay-footer {
     text-align: center;
     font-size: 0.75rem;
@@ -327,7 +372,7 @@ input:focus {
     }
 
     .view {
-        padding: 20px 15px;
+        padding: 25px 20px;
     }
 
     h1 {
@@ -337,16 +382,7 @@ input:focus {
     .course-grid {
         grid-template-columns: 1fr;
         text-align: left;
-        gap: 15px;
-    }
-
-    .grid-label {
-        font-size: 0.75rem;
-        margin-bottom: 2px;
-    }
-
-    .grid-value {
-        font-size: 1rem;
+        gap: 12px;
     }
 
     .pay-row {
@@ -357,15 +393,5 @@ input:focus {
         width: 100%;
         height: 44px;
         justify-content: center;
-    }
-
-    .amount-input-box input {
-        height: 44px;
-    }
-
-    .student-header-box {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
     }
 }
