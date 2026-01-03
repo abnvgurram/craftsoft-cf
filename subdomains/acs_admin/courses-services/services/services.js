@@ -50,46 +50,72 @@ async function loadServices() {
         renderServicesList(allServices);
     } catch (error) {
         console.error(error);
-        content.innerHTML = '<div class="error-state"><i class="fa-solid fa-exclamation-triangle"></i><p>Failed to load services.</p></div>';
+        const container = document.getElementById('services-table-container');
+        if (container) container.innerHTML = '<div class="error-state"><i class="fa-solid fa-exclamation-triangle"></i><p>Failed to load services.</p></div>';
+    } finally {
+        const spinners = document.querySelectorAll('.loading-spinner');
+        spinners.forEach(s => s.style.display = 'none');
     }
 }
 
 function renderServicesList(services) {
-    const content = document.getElementById('services-content');
+    const tableContainer = document.getElementById('services-table-container');
+    const cardsContainer = document.getElementById('services-cards');
 
     if (!services || services.length === 0) {
-        content.innerHTML = `
+        const emptyHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon"><i class="fa-solid fa-briefcase"></i></div>
                 <h3>No services yet</h3>
                 <p>Click "Sync from Website" to populate services</p>
             </div>`;
+        if (tableContainer) tableContainer.innerHTML = emptyHTML;
+        if (cardsContainer) cardsContainer.innerHTML = '';
         return;
     }
 
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedServices = services.slice(start, start + itemsPerPage);
 
-    content.innerHTML = `
-        <div class="data-table-wrapper">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Code</th><th>Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${paginatedServices.map(s => `
+    // Render Table
+    if (tableContainer) {
+        tableContainer.innerHTML = `
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
                         <tr>
-                            <td><span class="badge badge-primary">${s.service_code}</span></td>
-                            <td>${s.name || '-'}</td>
+                            <th>Code</th><th>Name</th>
                         </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-        <div class="table-footer"><span>${services.length} service${services.length !== 1 ? 's' : ''} synced</span></div>
-    `;
+                    </thead>
+                    <tbody>
+                        ${paginatedServices.map(s => `
+                            <tr>
+                                <td><span class="badge badge-primary">${s.service_code}</span></td>
+                                <td>${s.name || '-'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer"><span>${services.length} service${services.length !== 1 ? 's' : ''} synced</span></div>
+        `;
+    }
+
+    // Render Cards
+    if (cardsContainer) {
+        cardsContainer.innerHTML = paginatedServices.map(s => `
+            <div class="premium-card">
+                <div class="card-header">
+                    <span class="card-id-badge">${s.service_code}</span>
+                </div>
+                <div class="card-body">
+                    <div class="card-info-row">
+                        <span class="card-info-item"><i class="fa-solid fa-briefcase"></i> ${s.name || '-'}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
 
     // Render pagination
     window.AdminUtils.Pagination.render('pagination-container', services.length, currentPage, itemsPerPage, (page) => {

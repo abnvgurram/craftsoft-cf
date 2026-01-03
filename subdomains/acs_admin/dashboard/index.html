@@ -107,22 +107,22 @@
 
                 <!-- Stats Row 2: Secondary Stats -->
                 <div class="stats-row stats-row-2">
-                    <div class="stat-card stat-card-secondary">
+                    <div class="stat-card stat-card-secondary" id="stat-services">
                         <div class="stat-icon stat-icon-demos">
-                            <i class="fa-solid fa-calendar-check"></i>
+                            <i class="fa-solid fa-briefcase"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-value" id="demos-today" Data-target="0">0</div>
-                            <div class="stat-label">Demos Today</div>
+                            <div class="stat-value" id="total-services" Data-target="0">0</div>
+                            <div class="stat-label">Active Services</div>
                         </div>
                     </div>
-                    <div class="stat-card stat-card-secondary">
+                    <div class="stat-card stat-card-secondary" id="stat-clients">
                         <div class="stat-icon stat-icon-joined">
-                            <i class="fa-solid fa-user-plus"></i>
+                            <i class="fa-solid fa-users"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-value" id="joined-week" Data-target="0">0</div>
-                            <div class="stat-label">Joined This Week</div>
+                            <div class="stat-value" id="total-clients" Data-target="0">0</div>
+                            <div class="stat-label">Total Clients</div>
                         </div>
                     </div>
                 </div>
@@ -133,8 +133,11 @@
                         <h3><i class="fa-solid fa-bolt"></i> Quick Actions</h3>
                     </div>
                     <div class="quick-actions">
-                        <a href="../students/" class="quick-action-btn">
+                        <a href="../students-clients/students/" class="quick-action-btn">
                             <i class="fa-solid fa-user-plus"></i> <span>Add Student</span>
+                        </a>
+                        <a href="../students-clients/clients/" class="quick-action-btn">
+                            <i class="fa-solid fa-users"></i> <span>Add Client</span>
                         </a>
                         <a href="../payments/record-payment/" class="quick-action-btn">
                             <i class="fa-solid fa-money-bill-1"></i> <span>Record Payment</span>
@@ -162,5 +165,3 @@
 </body>
 
 </html>
-
-

@@ -29,13 +29,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function bindStatCardLinks() {
     document.getElementById('stat-students')?.addEventListener('click', () => {
-        window.location.href = '../students/';
+        window.location.href = '../students-clients/students/';
     });
     document.getElementById('stat-courses')?.addEventListener('click', () => {
-        window.location.href = '../courses/';
+        window.location.href = '../courses-services/courses/';
     });
     document.getElementById('stat-tutors')?.addEventListener('click', () => {
         window.location.href = '../tutors/';
+    });
+    document.getElementById('stat-services')?.addEventListener('click', () => {
+        window.location.href = '../courses-services/services/';
+    });
+    document.getElementById('stat-clients')?.addEventListener('click', () => {
+        window.location.href = '../students-clients/clients/';
     });
 }
 
@@ -43,7 +49,7 @@ function bindStatCardLinks() {
 // Skeleton Loading
 // =====================
 function showSkeletonLoading() {
-    const statElements = ['total-students', 'total-courses', 'total-tutors', 'demos-today', 'joined-week'];
+    const statElements = ['total-students', 'total-courses', 'total-tutors', 'total-services', 'total-clients'];
     statElements.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -111,27 +117,21 @@ async function loadStats() {
         tutorsEl.textContent = '0';
         animateCount(tutorsEl, tutorCount || 0);
 
-        // Demos Today
-        const today = new Date().toISOString().split('T')[0];
-        const { count: demosToday } = await window.supabaseClient
-            .from('students')
-            .select('*', { count: 'exact', head: true })
-            .eq('demo_scheduled', true)
-            .eq('demo_date', today);
-        const demosEl = document.getElementById('demos-today');
-        demosEl.textContent = '0';
-        animateCount(demosEl, demosToday || 0);
+        // Active Services (Master Table)
+        const { count: serviceCount } = await window.supabaseClient
+            .from('services')
+            .select('*', { count: 'exact', head: true });
+        const servicesEl = document.getElementById('total-services');
+        servicesEl.textContent = '0';
+        animateCount(servicesEl, serviceCount || 0);
 
-        // Students Joined This Week
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        const { count: joinedWeek } = await window.supabaseClient
-            .from('students')
-            .select('*', { count: 'exact', head: true })
-            .gte('created_at', weekAgo.toISOString());
-        const joinedEl = document.getElementById('joined-week');
-        joinedEl.textContent = '0';
-        animateCount(joinedEl, joinedWeek || 0);
+        // Total Clients
+        const { count: clientCount } = await window.supabaseClient
+            .from('clients')
+            .select('*', { count: 'exact', head: true });
+        const clientsEl = document.getElementById('total-clients');
+        clientsEl.textContent = '0';
+        animateCount(clientsEl, clientCount || 0);
 
     } catch (error) {
         console.error('Error loading stats:', error);
