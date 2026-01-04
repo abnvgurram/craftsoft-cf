@@ -1,4 +1,4 @@
-# Netlify configuration file - Strict Multi-Host Routing
+# Netlify configuration file
 
 [build]
   publish = "."
@@ -19,77 +19,42 @@
   [headers.values]
     Cache-Control = "public, max-age=3600"
 
-# ============================================
-# 1. SIGNUP SUBDOMAIN (signup.craftsoft.co.in)
-# ============================================
-[[redirects]]
-  from = "/"
-  to = "/subdomains/acs_admin/signup/index.html"
-  status = 200
-  force = true
-  conditions = {Host = ["signup.craftsoft.co.in"]}
+[[headers]]
+  for = "*/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
 
-[[redirects]]
-  from = "/*"
-  to = "/subdomains/acs_admin/signup/:splat"
-  status = 200
-  force = true
-  conditions = {Host = ["signup.craftsoft.co.in"]}
+# Edge Functions
+[[edge_functions]]
+  path = "/*"
+  function = "router"
 
-# ============================================
-# 2. ADMIN SUBDOMAIN (admin.craftsoft.co.in)
-# ============================================
+# Legacy redirects for main site (Keep these as they are simple)
 [[redirects]]
-  from = "/"
-  to = "/subdomains/acs_admin/index.html"
-  status = 200
-  force = true
-  conditions = {Host = ["admin.craftsoft.co.in"]}
+  from = "/about.html"
+  to = "/about/"
+  status = 301
+  conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in"]}
 
 [[redirects]]
-  from = "/login"
-  to = "/subdomains/acs_admin/login.html"
-  status = 200
-  force = true
-  conditions = {Host = ["admin.craftsoft.co.in"]}
+  from = "/contact.html"
+  to = "/contact/"
+  status = 301
+  conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in"]}
 
 [[redirects]]
-  from = "/dashboard/*"
-  to = "/subdomains/acs_admin/dashboard/:splat"
-  status = 200
-  force = true
-  conditions = {Host = ["admin.craftsoft.co.in"]}
+  from = "/courses.html"
+  to = "/courses/"
+  status = 301
+  conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in"]}
 
 [[redirects]]
-  from = "/students/*"
-  to = "/subdomains/acs_admin/students-clients/students/:splat"
-  status = 200
-  force = true
-  conditions = {Host = ["admin.craftsoft.co.in"]}
+  from = "/services.html"
+  to = "/acs_services/"
+  status = 301
+  conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in"]}
 
-[[redirects]]
-  from = "/clients/*"
-  to = "/subdomains/acs_admin/students-clients/clients/:splat"
-  status = 200
-  force = true
-  conditions = {Host = ["admin.craftsoft.co.in"]}
-
-# Catch-all for other admin paths
-[[redirects]]
-  from = "/*"
-  to = "/subdomains/acs_admin/:splat"
-  status = 200
-  force = true
-  conditions = {Host = ["admin.craftsoft.co.in"]}
-
-# ============================================
-# 3. MAIN WEBSITE (craftsoft.co.in / www.craftsoft.co.in)
-# ============================================
-
-# No force redirects needed here - let static files serve by default
-# for any Host that didn't match the above rules.
-# However, for 404s, we want to stay on the main site's 404 page.
-
+# Global 404 catch-all (Main Site Only)
 [[redirects]]
   from = "/*"
   to = "/404/website/index.html"
