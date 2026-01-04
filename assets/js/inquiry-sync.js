@@ -135,6 +135,12 @@ const InquirySync = {
     },
 
     showSuccess(form, inquiryId, message = 'Thank you! Your inquiry has been submitted successfully.') {
+        // Store original form HTML before replacing
+        const originalFormHTML = form.dataset.originalHtml || form.innerHTML;
+        if (!form.dataset.originalHtml) {
+            form.dataset.originalHtml = originalFormHTML;
+        }
+
         const successDiv = document.createElement('div');
         successDiv.className = 'form-success-message';
         successDiv.innerHTML = `
@@ -145,10 +151,35 @@ const InquirySync = {
                     ID: ${inquiryId}
                 </div>
                 <p style="margin: 0.5rem 0 0; font-size: 0.9rem; opacity: 0.9;">Please keep this ID for your reference.</p>
+                <button type="button" class="submit-another-btn" style="margin-top: 1rem; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 0.6rem 1.2rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.9rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s;">
+                    <i class="fas fa-dice"></i> Submit Another Response
+                </button>
             </div>
         `;
         form.innerHTML = '';
         form.appendChild(successDiv);
+
+        // Add click handler for submit another button
+        const submitAnotherBtn = successDiv.querySelector('.submit-another-btn');
+        if (submitAnotherBtn) {
+            submitAnotherBtn.addEventListener('mouseenter', () => {
+                submitAnotherBtn.style.background = 'rgba(255,255,255,0.3)';
+            });
+            submitAnotherBtn.addEventListener('mouseleave', () => {
+                submitAnotherBtn.style.background = 'rgba(255,255,255,0.2)';
+            });
+            submitAnotherBtn.addEventListener('click', () => {
+                form.innerHTML = form.dataset.originalHtml;
+                form.reset();
+                // Re-initialize form handlers
+                this.reinitializeForm(form);
+            });
+        }
+    },
+
+    reinitializeForm(form) {
+        // This will be called to rebind event listeners after form reset
+        // The specific init function will handle rebinding based on form type
     },
 
     showError(form, message = 'Something went wrong. Please try again.') {
@@ -269,13 +300,26 @@ const InquirySync = {
         return data;
     },
 
+    // Store form type for reinitialization
+    formTypes: {},
+
     initCourseForm(formId, courseName) {
         const form = document.getElementById(formId);
         if (!form) return;
 
+        // Store original HTML and type
+        if (!form.dataset.originalHtml) {
+            form.dataset.originalHtml = form.innerHTML;
+        }
+        this.formTypes[formId] = { type: 'course', courseName };
+
         form.removeAttribute('action');
         form.removeAttribute('method');
 
+        this.bindCourseFormSubmit(form, courseName);
+    },
+
+    bindCourseFormSubmit(form, courseName) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = this.extractFormData(form);
@@ -288,9 +332,19 @@ const InquirySync = {
         const form = document.getElementById(formId);
         if (!form) return;
 
+        // Store original HTML and type
+        if (!form.dataset.originalHtml) {
+            form.dataset.originalHtml = form.innerHTML;
+        }
+        this.formTypes[formId] = { type: 'service' };
+
         form.removeAttribute('action');
         form.removeAttribute('method');
 
+        this.bindServiceFormSubmit(form);
+    },
+
+    bindServiceFormSubmit(form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = this.extractFormData(form);
@@ -302,9 +356,19 @@ const InquirySync = {
         const form = document.getElementById(formId);
         if (!form) return;
 
+        // Store original HTML and type
+        if (!form.dataset.originalHtml) {
+            form.dataset.originalHtml = form.innerHTML;
+        }
+        this.formTypes[formId] = { type: 'contact' };
+
         form.removeAttribute('action');
         form.removeAttribute('method');
 
+        this.bindContactFormSubmit(form);
+    },
+
+    bindContactFormSubmit(form) {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = this.extractFormData(form);
@@ -318,7 +382,28 @@ const InquirySync = {
 
             await this.createContactInquiry(formData, type, form);
         });
+    },
+
+    reinitializeForm(form) {
+        const formId = form.id;
+        const formConfig = this.formTypes[formId];
+
+        if (!formConfig) return;
+
+        // Rebind submit handler based on form type
+        switch (formConfig.type) {
+            case 'course':
+                this.bindCourseFormSubmit(form, formConfig.courseName);
+                break;
+            case 'service':
+                this.bindServiceFormSubmit(form);
+                break;
+            case 'contact':
+                this.bindContactFormSubmit(form);
+                break;
+        }
     }
 };
 
 window.InquirySync = InquirySync;
+
