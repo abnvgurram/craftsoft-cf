@@ -144,17 +144,17 @@ const InquirySync = {
         const successDiv = document.createElement('div');
         successDiv.className = 'form-success-message';
         successDiv.innerHTML = `
-            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.5rem; border-radius: 1rem; text-align: center; margin-top: 1rem;">
-                <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
-                <p style="margin: 0; font-weight: 600;">${message}</p>
-                <div style="margin: 0.8rem 0; padding: 0.5rem; background: rgba(0,0,0,0.1); border-radius: 0.5rem; font-family: monospace; font-size: 1.1rem; letter-spacing: 1px;">
+            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 2rem 1.5rem; border-radius: 1rem; text-align: center; margin-top: 1rem;">
+                <i class="fas fa-check-circle" style="font-size: 2.5rem; margin-bottom: 0.75rem; display: block;"></i>
+                <p style="margin: 0; font-weight: 600; font-size: 1.1rem;">${message}</p>
+                <div style="margin: 1rem 0; padding: 0.75rem 1rem; background: rgba(0,0,0,0.15); border-radius: 0.5rem; font-family: 'Courier New', monospace; font-size: 1.2rem; letter-spacing: 2px; font-weight: 700;">
                     ID: ${inquiryId}
                 </div>
-                <p style="margin: 0.5rem 0 0; font-size: 0.9rem; opacity: 0.9;">Please keep this ID for your reference.</p>
-                <button type="button" class="submit-another-btn" style="margin-top: 1rem; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 0.6rem 1.2rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.9rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s;">
-                    <i class="fas fa-dice"></i> Submit Another Response
-                </button>
+                <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Please keep this ID for your reference.</p>
             </div>
+            <button type="button" class="submit-another-btn" style="margin-top: 1rem; background: linear-gradient(135deg, #0d9488, #0f766e); border: none; color: white; padding: 0.875rem 1.5rem; border-radius: 0.625rem; cursor: pointer; font-size: 1rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.625rem; transition: all 0.25s ease; width: 100%; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);">
+                <i class="fa-solid fa-dice" style="font-size: 1.1rem;"></i> Submit Another Response
+            </button>
         `;
         form.innerHTML = '';
         form.appendChild(successDiv);
