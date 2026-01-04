@@ -1,0 +1,86 @@
+# Main Website Only - Ignores admin subdomain redirects
+# This file is specifically for abhis-craftsoft Netlify project
+
+[build]
+  publish = "."
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':!subdomains'"
+
+# Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Block admin and subdomains paths on main domain
+[[redirects]]
+  from = "/admin"
+  to = "/404/website/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/404/website/"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/subdomains/*"
+  to = "/404/website/"
+  status = 404
+  force = true
+
+# Legacy HTML to Clean URL Redirects
+[[redirects]]
+  from = "/about.html"
+  to = "/about/"
+  status = 301
+
+[[redirects]]
+  from = "/contact.html"
+  to = "/contact/"
+  status = 301
+
+[[redirects]]
+  from = "/courses.html"
+  to = "/courses/"
+  status = 301
+
+[[redirects]]
+  from = "/services.html"
+  to = "/acs_services/"
+  status = 301
+
+[[redirects]]
+  from = "/privacy-policy.html"
+  to = "/privacy-policy/"
+  status = 301
+
+[[redirects]]
+  from = "/terms-of-service.html"
+  to = "/terms-of-service/"
+  status = 301
+
+# Old pages structure
+[[redirects]]
+  from = "/pages/courses/*"
+  to = "/courses/:splat/"
+  status = 301
+
+[[redirects]]
+  from = "/pages/services/*"
+  to = "/acs_services/:splat/"
+  status = 301
+
+# Favicon
+[[redirects]]
+  from = "/favicon.ico"
+  to = "/favicon.svg"
+  status = 200
