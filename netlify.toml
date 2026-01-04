@@ -30,12 +30,19 @@
 # These rules MUST come BEFORE admin subdomain rules
 # ============================================
 
-# Main site root - serve the homepage
+# Main site root - craftsoft.co.in
 [[redirects]]
+  host = "craftsoft.co.in"
   from = "/"
   to = "/index.html"
   status = 200
-  conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in", "acs-admin-craftsoft.netlify.app"]}
+
+# Main site root - www.craftsoft.co.in
+[[redirects]]
+  host = "www.craftsoft.co.in"
+  from = "/"
+  to = "/index.html"
+  status = 200
 
 # ============================================
 # ADMIN SUBDOMAIN (admin.craftsoft.co.in)
