@@ -527,7 +527,7 @@ function formatAdminId(num) {
 }
 
 function parseAdminId(id) {
-    const match = id.match(/^ACS-(\d+)$/);
+    const match = id.match(/^ACS-(\d+)$/i);
     return match ? parseInt(match[1], 10) : null;
 }
 
