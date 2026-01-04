@@ -163,10 +163,14 @@ const InquirySync = {
         const submitAnotherBtn = successDiv.querySelector('.submit-another-btn');
         if (submitAnotherBtn) {
             submitAnotherBtn.addEventListener('mouseenter', () => {
-                submitAnotherBtn.style.background = 'rgba(255,255,255,0.3)';
+                submitAnotherBtn.style.transform = 'translateY(-2px) scale(1.02)';
+                submitAnotherBtn.style.filter = 'brightness(1.1)';
+                submitAnotherBtn.style.boxShadow = '0 6px 16px rgba(13, 148, 136, 0.4)';
             });
             submitAnotherBtn.addEventListener('mouseleave', () => {
-                submitAnotherBtn.style.background = 'rgba(255,255,255,0.2)';
+                submitAnotherBtn.style.transform = 'translateY(0) scale(1)';
+                submitAnotherBtn.style.filter = 'brightness(1)';
+                submitAnotherBtn.style.boxShadow = '0 4px 12px rgba(13, 148, 136, 0.3)';
             });
             submitAnotherBtn.addEventListener('click', () => {
                 form.innerHTML = form.dataset.originalHtml;
