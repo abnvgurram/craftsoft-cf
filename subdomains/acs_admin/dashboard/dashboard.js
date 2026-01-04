@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Bind navigation to stat cards
     bindStatCardLinks();
+
+    // Initialize Recent Activity section
+    initRecentActivity();
 });
 
 function bindStatCardLinks() {
@@ -138,7 +141,152 @@ async function loadStats() {
     }
 }
 
+// =====================
+// Recent Activity Section
+// =====================
+function initRecentActivity() {
+    const activityList = document.getElementById('recentActivityList');
+    const clearAllBtn = document.getElementById('clearAllActivityBtn');
+
+    if (!activityList) return;
+
+    // Render activities
+    renderRecentActivity();
+
+    // Clear all button
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', () => {
+            if (window.AdminUtils && window.AdminUtils.Modal) {
+                window.AdminUtils.Modal.confirm(
+                    'Clear All Activity',
+                    'Are you sure you want to clear all recent activity?',
+                    () => {
+                        clearAllActivity();
+                        renderRecentActivity();
+                    }
+                );
+            } else {
+                clearAllActivity();
+                renderRecentActivity();
+            }
+        });
+    }
+}
+
+function getUnreadNotifications() {
+    const stored = localStorage.getItem('craftsoft_notifications');
+    if (!stored) return [];
+
+    try {
+        const all = JSON.parse(stored);
+        // Return only unread notifications from last 24 hours
+        const dayAgo = Date.now() - (24 * 60 * 60 * 1000);
+        return all.filter(n => !n.read && n.timestamp > dayAgo);
+    } catch (e) {
+        return [];
+    }
+}
+
+function clearAllActivity() {
+    const stored = localStorage.getItem('craftsoft_notifications');
+    if (!stored) return;
+
+    try {
+        const all = JSON.parse(stored);
+        // Mark all as read
+        all.forEach(n => n.read = true);
+        localStorage.setItem('craftsoft_notifications', JSON.stringify(all));
+    } catch (e) {
+        console.error('Error clearing activity:', e);
+    }
+}
+
+function deleteActivity(id) {
+    const stored = localStorage.getItem('craftsoft_notifications');
+    if (!stored) return;
+
+    try {
+        let all = JSON.parse(stored);
+        // Mark as read (which removes it from unread list)
+        const notification = all.find(n => n.id == id);
+        if (notification) {
+            notification.read = true;
+            localStorage.setItem('craftsoft_notifications', JSON.stringify(all));
+        }
+        renderRecentActivity();
+    } catch (e) {
+        console.error('Error deleting activity:', e);
+    }
+}
+
+function handleActivityClick(id, link) {
+    // Mark as read
+    deleteActivity(id);
+
+    // Navigate to link
+    if (link) {
+        window.location.href = link;
+    }
+}
+
+function getActivityIcon(type) {
+    const icons = {
+        inquiry: 'fas fa-phone-volume',
+        payment: 'fas fa-money-bill-transfer',
+        student: 'fas fa-user-graduate',
+        tutor: 'fas fa-chalkboard-user',
+        course: 'fas fa-book-bookmark',
+        service: 'fas fa-wrench'
+    };
+    return icons[type] || 'fas fa-bell';
+}
+
+function getTimeAgo(timestamp) {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return 'Just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+    return `${Math.floor(seconds / 86400)} days ago`;
+}
+
+function renderRecentActivity() {
+    const activityList = document.getElementById('recentActivityList');
+    if (!activityList) return;
+
+    const unread = getUnreadNotifications();
+
+    if (unread.length === 0) {
+        activityList.innerHTML = `
+            <div class="activity-empty">
+                <i class="fa-solid fa-check-circle"></i>
+                <p>No recent activity</p>
+            </div>
+        `;
+        return;
+    }
+
+    activityList.innerHTML = unread.slice(0, 8).map(n => `
+        <div class="activity-item" onclick="handleActivityClick('${n.id}', '${n.link || ''}')">
+            <div class="activity-icon ${n.type}">
+                <i class="${getActivityIcon(n.type)}"></i>
+            </div>
+            <div class="activity-content">
+                <p><strong>${n.title}</strong> ${n.message}</p>
+                <span class="activity-time">${getTimeAgo(n.timestamp)}</span>
+            </div>
+            <button class="activity-delete-btn" onclick="event.stopPropagation(); deleteActivity('${n.id}')" title="Dismiss">
+                <i class="fa-regular fa-trash-can"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+// Export for global access
+window.deleteActivity = deleteActivity;
+window.handleActivityClick = handleActivityClick;
+
 // Export addActivity for other modules
 window.DashboardActivities = {
     add: (type, name, link) => window.AdminUtils.Activity.add(type, name, link)
 };
+
