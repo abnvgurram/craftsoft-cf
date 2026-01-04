@@ -26,6 +26,18 @@
     Cache-Control = "public, max-age=0, must-revalidate"
 
 # ============================================
+# MAIN WEBSITE (craftsoft.co.in / www.craftsoft.co.in)
+# These rules MUST come BEFORE admin subdomain rules
+# ============================================
+
+# Main site root - serve the homepage
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+  conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in", "acs-admin-craftsoft.netlify.app"]}
+
+# ============================================
 # ADMIN SUBDOMAIN (admin.craftsoft.co.in)
 # ============================================
 [[redirects]]
