@@ -409,9 +409,9 @@
   to = "/subdomains/acs_admin/signup/404/"
   status = 404
 
-# Global 404 catch-all
+# Global 404 catch-all (main site only)
 [[redirects]]
   from = "/*"
   to = "/404/website/index.html"
   status = 404
-  force = true
+  conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in", "abhis-craftsoft.netlify.app"]}
