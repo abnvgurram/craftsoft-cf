@@ -26,23 +26,10 @@
     Cache-Control = "public, max-age=0, must-revalidate"
 
 # ============================================
-# MAIN WEBSITE (craftsoft.co.in / www.craftsoft.co.in)
-# These rules MUST come BEFORE admin subdomain rules
+# NOTE: Main website (craftsoft.co.in / www.craftsoft.co.in)
+# serves static files by DEFAULT (no redirects needed)
 # ============================================
 
-# Main site root - craftsoft.co.in
-[[redirects]]
-  host = "craftsoft.co.in"
-  from = "/"
-  to = "/index.html"
-  status = 200
-
-# Main site root - www.craftsoft.co.in
-[[redirects]]
-  host = "www.craftsoft.co.in"
-  from = "/"
-  to = "/index.html"
-  status = 200
 
 # ============================================
 # ADMIN SUBDOMAIN (admin.craftsoft.co.in)
