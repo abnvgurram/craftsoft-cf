@@ -8,6 +8,8 @@
     /* Changed from #f8fafc to theme color */
     position: relative;
     overflow: hidden;
+    border-radius: 1.5rem;
+    margin: 1rem;
 }
 
 .counseling-wrapper {
