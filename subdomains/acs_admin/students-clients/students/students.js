@@ -782,6 +782,7 @@ async function confirmDelete() {
 let currentProfileStudentId = null;
 
 async function openStudentProfile(studentId) {
+    console.log('openStudentProfile called with:', studentId);
     const overlay = document.getElementById('student-profile-overlay');
     const content = document.getElementById('profile-content');
     const footer = document.getElementById('profile-footer');
@@ -1065,5 +1066,6 @@ function bindProfileEvents() {
         }
     });
 }
+
 
 
