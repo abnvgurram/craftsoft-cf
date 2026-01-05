@@ -99,7 +99,7 @@
     </nav>
     <section class="course-detail-page">
       <div class="container">
-        <div class="course-detail-header">
+        <div class='course-detail-header' style='align-items: flex-start;'>
           <div class="course-detail-info">
             <span class="section-tag">About This Course</span>
             <p>
@@ -135,9 +135,19 @@
                 ><span>Placement Assistance</span>
               </div>
             </div>
-          </div>
-          <div class="course-cta-card">
-            <h3>Enroll Now</h3>
+          
+          <!-- Share Bar -->
+          <div class='share-course' style='margin-top: 2rem;'>
+            <span class='share-label'><i class='fas fa-share-alt'></i> Share:</span>
+            <div class='share-icons'>
+              <a href='#' class='share-icon whatsapp' data-share='whatsapp' title='WhatsApp'><i class='fab fa-whatsapp'></i></a>
+              <a href='#' class='share-icon twitter' data-share='twitter' title='X/Twitter'><i class='fab fa-x-twitter'></i></a>
+              <a href='#' class='share-icon linkedin' data-share='linkedin' title='LinkedIn'><i class='fab fa-linkedin-in'></i></a>
+              <a href='#' class='share-icon copy' data-share='copy' title='Copy Link'><i class='fab fa-link'></i></a>
+            </div>
+          </div></div>
+          <div class='course-cta-card' style='text-align: center;'>
+            <span class='section-tag' style='display: table; margin: 0 auto 1.5rem;'>Enroll Now</span>
             <div class="price-info">
               <span class="price-label">Course Fee</span>
               <p class="price">Contact for Pricing</p>
@@ -154,47 +164,7 @@
               <li><i class="fas fa-check"></i> Real-world Scenarios</li>
               <li><i class="fas fa-check"></i> Industry Expert Sessions</li>
             </ul>
-            <div class="share-course">
-              <span class="share-label"
-                ><i class="fas fa-share-alt"></i> Share This Course</span
-              >
-              <div class="share-icons">
-                <a
-                  href="#"
-                  class="share-icon linkedin"
-                  data-share="linkedin"
-                  title="Share on LinkedIn"
-                  ><i class="fab fa-linkedin-in"></i
-                ></a>
-                <a
-                  href="#"
-                  class="share-icon instagram"
-                  data-share="instagram"
-                  title="Share on Instagram"
-                  ><i class="fab fa-instagram"></i
-                ></a>
-                <a
-                  href="#"
-                  class="share-icon sms"
-                  data-share="sms"
-                  title="Share via SMS"
-                  ><i class="fas fa-sms"></i
-                ></a>
-                <a
-                  href="#"
-                  class="share-icon twitter"
-                  data-share="twitter"
-                  title="Share on X/Twitter"
-                  ><i class="fab fa-x-twitter"></i
-                ></a>
-                <a
-                  href="#"
-                  class="share-icon copy"
-                  data-share="copy"
-                  title="Copy Link"
-                  ><i class="fas fa-link"></i
-                ></a>
-              </div>
+            
             </div>
           </div>
         </div>
@@ -437,7 +407,8 @@
 
                         <div class="contact-form-side">
           <div class="contact-form-card">
-            <div style='display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem;'><span class='section-tag' style='margin: 0;'>Book Free Counseling</span><span class='section-tag' style='margin: 0; background: var(--gray-100); color: var(--gray-800);'>We are a message away</span></div>
+            <span class='section-tag' style='display: table; margin: 0 auto 1.5rem;'>Book Free Counseling</span>
+            
             <form id="course-contact-form">
               <div class="form-group">
                 <label for="name">Name</label>
@@ -584,6 +555,8 @@
   </script>
 </body>
 </html>
+
+
 
 
 
