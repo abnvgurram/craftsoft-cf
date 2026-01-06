@@ -69,8 +69,18 @@
     pointer-events: none;
 }
 
-.input-with-icon input {
+.input-with-icon input,
+.input-with-icon textarea {
     padding-left: 2.75rem !important;
+}
+
+/* Textarea Icon Alignment */
+.input-with-icon.textarea-icon {
+    align-items: flex-start;
+}
+
+.input-with-icon.textarea-icon .input-icon {
+    top: 1rem;
 }
 
 /* Checkbox List */
