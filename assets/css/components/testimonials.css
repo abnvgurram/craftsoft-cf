@@ -150,35 +150,81 @@
     margin-bottom: 0;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Responsive Optimization for Mobile */
+@media (max-width: 991px) {
     .testimonials {
-        padding: var(--spacing-lg) 0 var(--spacing-2xl);
+        padding: var(--spacing-md) 0 var(--spacing-xl);
+    }
+
+    .testimonials-wall {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        left: 0;
+        right: 0;
+        gap: 0;
+    }
+
+    .marquee-track {
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        padding: var(--spacing-md) 0;
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: hidden !important;
+    }
+
+    .marquee-content {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: var(--spacing-md) !important;
     }
 
     .testimonial-card {
-        width: 260px;
-        /* Slimmer cards */
+        width: 280px !important;
+        flex-shrink: 0 !important;
     }
 
-    .author-avatar {
-        display: none;
-        /* Remove profile pics as requested */
+    .author-avatar,
+    .testimonial-platform {
+        display: none !important;
+        /* Force hide profile pics and icons */
     }
 
     .track-right {
-        display: none;
-        /* Reduce to 1 horizontal scroll only for mobile */
+        display: none !important;
+        /* Hide second track on mobile */
     }
 
-    /* Reduce to ~4 unique cards (8 total with duplicates) to keep mobile lightweight */
-    .track-left .testimonial-card:nth-child(5),
-    .track-left .testimonial-card:nth-child(10) {
-        display: none;
+    /* Reduce count to 4 cards for mobile optimization */
+    .testimonial-card:nth-child(n+5) {
+        display: none !important;
     }
 
+    /* Strictly force horizontal row and prevent stacking */
     .track-left .marquee-content {
-        animation-duration: 30s;
-        /* Slightly faster for smaller card count */
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        width: max-content !important;
+        animation: scroll-left-mobile 20s linear infinite !important;
+    }
+}
+
+@keyframes scroll-left-mobile {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* Fallback if animation is too wide */
+@media (max-width: 480px) {
+    .testimonial-card {
+        width: 240px !important;
     }
 }
