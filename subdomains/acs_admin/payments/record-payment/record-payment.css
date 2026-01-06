@@ -1,9 +1,9 @@
 /* ============================================
-   Add Payment Page Styles
+   Record Payment Page Styles (Grid Layout)
    ============================================ */
 
 .payment-form-section {
-    max-width: 800px;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
@@ -44,34 +44,63 @@
     margin: 0.25rem 0 0;
 }
 
-/* Form Styles */
-.payment-form {
+/* Payment Layout Grid */
+.payment-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+    align-items: start;
 }
 
-/* Full width items */
-.payment-form .form-group:nth-child(n+5) {
-    grid-column: 1 / -1;
-}
-
-@media (max-width: 768px) {
-    .payment-form {
+@media (max-width: 1024px) {
+    .payment-grid {
         grid-template-columns: 1fr;
     }
 }
 
+/* Common Card Style */
+.payment-card {
+    background: var(--admin-card-bg-solid);
+    border: 1px solid var(--admin-input-border);
+    border-radius: var(--admin-radius-xl);
+    padding: 1.5rem;
+    box-shadow: var(--admin-card-shadow);
+    margin-bottom: 1.5rem;
+    animation: slideInUp 0.4s ease-out;
+}
+
+.card-header-mini {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary-500);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-header-mini i {
+    font-size: 0.9rem;
+}
+
+/* Form Styles */
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+}
+
+.form-group.no-margin {
+    margin-bottom: 0;
 }
 
 .form-label {
     font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--admin-text-primary);
+    font-weight: 600;
+    color: var(--admin-text-secondary);
 }
 
 .form-label .required {
@@ -80,27 +109,21 @@
 
 .form-select,
 .form-input {
-    padding: 0.875rem 1rem;
-    border: 1.5px solid var(--admin-input-border);
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--admin-input-border);
     border-radius: 10px;
     font-size: 0.95rem;
     color: var(--admin-text-primary);
-    background: #fff;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--admin-input-bg);
+    transition: all 0.2s;
 }
 
 .form-select:focus,
 .form-input:focus {
     outline: none;
-    border-color: var(--primary-400);
-    box-shadow: 0 0 0 3px rgba(40, 150, 205, 0.1);
-}
-
-.form-select:disabled,
-.form-input:disabled {
-    background: var(--gray-100);
-    cursor: not-allowed;
-    opacity: 0.7;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 4px rgba(40, 150, 205, 0.1);
+    background: #fff;
 }
 
 /* Amount Input */
@@ -112,61 +135,69 @@
 
 .currency-symbol {
     position: absolute;
-    left: 1rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--admin-text-muted);
+    left: 1.25rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-500);
 }
 
 .amount-input {
-    padding-left: 2.5rem;
-    font-size: 1.25rem;
-    font-weight: 600;
+    padding-left: 2.75rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-600);
 }
 
-/* Fee Summary */
-.fee-summary {
-    background: var(--gray-50);
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--gray-200);
+/* Fee Summary Card */
+.fee-summary-card {
+    background: var(--accent-gradient);
+    border-radius: var(--admin-radius-xl);
+    padding: 1.5rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 25px rgba(40, 150, 205, 0.2);
+    animation: slideInUp 0.3s ease-out;
+}
+
+.fee-summary-card .card-header-mini {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.fee-summary-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .fee-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 0;
-}
-
-.fee-row:not(:last-child) {
-    border-bottom: 1px solid var(--gray-200);
 }
 
 .fee-label {
     font-size: 0.9rem;
-    color: var(--admin-text-secondary);
+    opacity: 0.9;
 }
 
 .fee-value {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--admin-text-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
 }
 
-.fee-paid {
-    color: var(--success-600, #16a34a);
-}
-
-.fee-due {
-    color: var(--danger-600, #dc2626);
+.fee-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0.5rem 0;
 }
 
 .fee-row-highlight {
-    background: var(--gray-100);
-    margin: 0.5rem -1.25rem -1rem;
-    padding: 0.75rem 1.25rem;
-    border-radius: 0 0 12px 12px;
+    font-size: 1.25rem;
+    padding-top: 0.25rem;
+}
+
+.fee-row-highlight .fee-value {
+    font-size: 1.5rem;
 }
 
 /* Payment Mode */
@@ -184,111 +215,125 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
     padding: 1.25rem 1rem;
-    border: 2px solid var(--gray-200);
+    border: 1px solid var(--admin-input-border);
     border-radius: 12px;
     cursor: pointer;
-    transition: all 0.2s;
-    background: #fff;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--admin-input-bg);
 }
 
 .mode-card i {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     color: var(--admin-text-muted);
-    transition: color 0.2s;
 }
 
 .mode-card span {
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--admin-text-secondary);
 }
 
 .payment-mode-option input:checked+.mode-card {
     border-color: var(--primary-500);
     background: var(--primary-50);
+    box-shadow: 0 4px 12px rgba(40, 150, 205, 0.1);
 }
 
 .payment-mode-option input:checked+.mode-card i {
     color: var(--primary-500);
+    transform: scale(1.1);
 }
 
 .payment-mode-option input:checked+.mode-card span {
-    color: var(--primary-600);
+    color: var(--primary-700);
 }
 
 .mode-card:hover {
     border-color: var(--primary-300);
+    background: #fff;
+}
+
+/* Input with Icon */
+.input-with-icon {
+    position: relative;
+    width: 100%;
+}
+
+.input-with-icon .input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--admin-text-muted);
+    font-size: 0.9rem;
+}
+
+.input-with-icon .form-input {
+    padding-left: 2.75rem;
+    width: 100%;
 }
 
 /* Submit Button */
+.btn-block {
+    width: 100%;
+    margin-top: 1rem;
+}
+
 .btn-lg {
-    padding: 1rem 2rem;
-    font-size: 1rem;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
     border-radius: 12px;
-    margin-top: 0.5rem;
+    font-weight: 700;
 }
 
-.btn-primary {
-    background: var(--accent-gradient);
-    border: none;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
+/* Animations */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
 
-.btn-primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(40, 150, 205, 0.3);
-}
-
-.btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .payment-form-section {
-        max-width: 100%;
-    }
-
-    .section-header {
+    .payment-grid {
+        display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
     }
 
-    .section-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
+    .payment-grid-right {
+        order: -1;
+        /* Summary card goes to top on mobile */
     }
 
-    .section-title {
+    .fee-summary-card {
+        margin-bottom: 1.5rem;
+        padding: 1.25rem;
+    }
+
+    .fee-row-highlight .fee-value {
         font-size: 1.25rem;
-    }
-
-    .payment-mode-options {
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
     }
 
     .mode-card {
-        padding: 1rem 0.75rem;
+        padding: 1rem 0.5rem;
     }
 
     .mode-card i {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
     }
+}
 
-    .mode-card span {
-        font-size: 0.85rem;
-    }
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--admin-text-muted);
+    margin-top: 0.4rem;
+    display: block;
 }

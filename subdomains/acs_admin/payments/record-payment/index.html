@@ -88,100 +88,137 @@
                     </div>
 
                     <form id="payment-form" class="payment-form">
-                        <!-- Payment Type Toggle -->
-                        <div class="form-group">
-                            <label class="form-label">Payment Type</label>
-                            <div class="toggle-group type-toggle" style="margin-bottom: 20px;">
-                                <label class="toggle-item">
-                                    <input type="radio" name="payment-type" value="course" checked>
-                                    <span>Course</span>
-                                </label>
-                                <label class="toggle-item">
-                                    <input type="radio" name="payment-type" value="service">
-                                    <span>Service</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Student/Client Selection -->
-                        <div class="form-group">
-                            <label class="form-label" id="entity-label">Student <span class="required">*</span></label>
-                            <select id="student-select" class="form-select" required>
-                                <option value="">Select a student</option>
-                            </select>
-                        </div>
-
-                        <!-- Course/Service Selection -->
-                        <div class="form-group">
-                            <label class="form-label" id="item-label">Course <span class="required">*</span></label>
-                            <select id="course-select" class="form-select" required disabled>
-                                <option value="">Select student first</option>
-                            </select>
-                        </div>
-
-                        <!-- Fee Summary -->
-                        <div class="fee-summary" id="fee-summary" style="display: none;">
-                            <div class="fee-row">
-                                <span class="fee-label">Total Fee</span>
-                                <span class="fee-value" id="total-fee"><i class="fa-solid fa-indian-rupee-sign"></i>‚¹0</span>
-                            </div>
-                            <div class="fee-row">
-                                <span class="fee-label">Paid So Far</span>
-                                <span class="fee-value fee-paid" id="paid-so-far"><i class="fa-solid fa-indian-rupee-sign"></i>‚¹0</span>
-                            </div>
-                            <div class="fee-row fee-row-highlight">
-                                <span class="fee-label">Balance Due</span>
-                                <span class="fee-value fee-due" id="balance-due"><i class="fa-solid fa-indian-rupee-sign"></i>‚¹0</span>
-                            </div>
-                        </div>
-
-                        <!-- Payment Date -->
-                        <div class="form-group">
-                            <label class="form-label">Payment Date <span class="required">*</span></label>
-                            <input type="date" id="payment-date" class="form-input" required>
-                        </div>
-
-                        <!-- Amount Input -->
-                        <div class="form-group">
-                            <label class="form-label">Amount to Pay <span class="required">*</span></label>
-                            <div class="amount-input-wrapper">
-                                <span class="currency-symbol"><i class="fa-solid fa-indian-rupee-sign"></i>‚¹</span>
-                                <input type="number" id="amount-input" class="form-input amount-input"
-                                    placeholder="Enter amount" min="1" required disabled>
-                            </div>
-                        </div>
-
-                        <!-- Payment Mode -->
-                        <div class="form-group">
-                            <label class="form-label">Payment Mode <span class="required">*</span></label>
-                            <div class="payment-mode-options">
-                                <label class="payment-mode-option">
-                                    <input type="radio" name="payment-mode" value="CASH" checked>
-                                    <div class="mode-card">
-                                        <i class="fa-solid fa-money-bill-wave"></i> <span>Cash</span>
+                        <div class="payment-grid">
+                            <!-- Left Column: Selection -->
+                            <div class="payment-grid-left">
+                                <div class="payment-card">
+                                    <div class="card-header-mini">
+                                        <i class="fa-solid fa-user-check"></i> Selection
                                     </div>
-                                </label>
-                                <label class="payment-mode-option">
-                                    <input type="radio" name="payment-mode" value="OFFLINE_UPI">
-                                    <div class="mode-card">
-                                        <i class="fa-brands fa-google-pay"></i> <span>UPI</span>
+
+                                    <!-- Payment Type Toggle -->
+                                    <div class="form-group">
+                                        <label class="form-label">Payment Type</label>
+                                        <div class="toggle-group type-toggle">
+                                            <label class="toggle-item">
+                                                <input type="radio" name="payment-type" value="course" checked>
+                                                <span>Course</span>
+                                            </label>
+                                            <label class="toggle-item">
+                                                <input type="radio" name="payment-type" value="service">
+                                                <span>Service</span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </label>
+
+                                    <!-- Student/Client Selection -->
+                                    <div class="form-group">
+                                        <label class="form-label" id="entity-label">Student <span
+                                                class="required">*</span></label>
+                                        <select id="student-select" class="form-select" required>
+                                            <option value="">Select a student</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Course/Service Selection -->
+                                    <div class="form-group">
+                                        <label class="form-label" id="item-label">Course <span
+                                                class="required">*</span></label>
+                                        <select id="course-select" class="form-select" required disabled>
+                                            <option value="">Select student first</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Payment Date -->
+                                    <div class="form-group no-margin">
+                                        <label class="form-label">Payment Date <span class="required">*</span></label>
+                                        <div class="input-with-icon">
+                                            <i class="fa-solid fa-calendar-day input-icon"></i>
+                                            <input type="date" id="payment-date" class="form-input" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Summary & Payment -->
+                            <div class="payment-grid-right">
+                                <!-- Fee Summary Card -->
+                                <div class="fee-summary-card" id="fee-summary" style="display: none;">
+                                    <div class="card-header-mini">
+                                        <i class="fa-solid fa-file-invoice"></i> Payment Summary
+                                    </div>
+                                    <div class="fee-summary-body">
+                                        <div class="fee-row">
+                                            <span class="fee-label">Total Fee</span>
+                                            <span class="fee-value" id="total-fee">₹ 0</span>
+                                        </div>
+                                        <div class="fee-row">
+                                            <span class="fee-label">Paid So Far</span>
+                                            <span class="fee-value fee-paid" id="paid-so-far">₹ 0</span>
+                                        </div>
+                                        <div class="fee-divider"></div>
+                                        <div class="fee-row fee-row-highlight">
+                                            <span class="fee-label">Balance Due</span>
+                                            <span class="fee-value fee-due" id="balance-due">₹ 0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Details Card -->
+                                <div class="payment-card">
+                                    <div class="card-header-mini">
+                                        <i class="fa-solid fa-credit-card"></i> Payment Details
+                                    </div>
+
+                                    <!-- Amount Input -->
+                                    <div class="form-group">
+                                        <label class="form-label">Amount to Pay <span class="required">*</span></label>
+                                        <div class="amount-input-wrapper">
+                                            <span class="currency-symbol"><i
+                                                    class="fa-solid fa-indian-rupee-sign"></i></span>
+                                            <input type="number" id="amount-input" class="form-input amount-input"
+                                                placeholder="Enter amount" min="1" required disabled>
+                                        </div>
+                                    </div>
+
+                                    <!-- Payment Mode -->
+                                    <div class="form-group">
+                                        <label class="form-label">Payment Mode <span class="required">*</span></label>
+                                        <div class="payment-mode-options">
+                                            <label class="payment-mode-option">
+                                                <input type="radio" name="payment-mode" value="CASH" checked>
+                                                <div class="mode-card">
+                                                    <i class="fa-solid fa-money-bill-wave"></i> <span>Cash</span>
+                                                </div>
+                                            </label>
+                                            <label class="payment-mode-option">
+                                                <input type="radio" name="payment-mode" value="OFFLINE_UPI">
+                                                <div class="mode-card">
+                                                    <i class="fa-solid fa-qrcode"></i> <span>UPI</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- UTR Input -->
+                                    <div class="form-group" id="utr-group" style="display: none;">
+                                        <label class="form-label">UTR / Reference ID <span
+                                                class="required">*</span></label>
+                                        <div class="input-with-icon">
+                                            <i class="fa-solid fa-hashtag input-icon"></i>
+                                            <input type="text" class="form-input" id="utr-input"
+                                                placeholder="Transaction ID">
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <button type="submit" class="btn btn-primary btn-lg btn-block" id="proceed-btn"
+                                        disabled>
+                                        <i class="fa-solid fa-check-circle"></i> Record Payment
+                                    </button>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- UTR Input (for Offline UPI) -->
-                        <div class="form-group" id="utr-group" style="display: none;">
-                            <label class="form-label">UTR / Reference ID <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="utr-input"
-                                placeholder="Enter UTR from your UPI app">
-                            <small class="form-hint">Transaction ID from your received payment confirmation</small>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary btn-lg" id="proceed-btn" disabled>
-                            <i class="fa-solid fa-arrow-right"></i> Proceed
-                        </button>
                     </form>
                 </div>
             </div>
@@ -205,6 +242,3 @@
 </body>
 
 </html>
-
-
-
