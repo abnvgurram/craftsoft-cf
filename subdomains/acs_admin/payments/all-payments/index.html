@@ -75,6 +75,33 @@
             <!-- Header injected by JS -->
             <div id="header-container"></div>
 
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-vault"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">Total Revenue</span>
+                        <h2 class="stat-value" id="stats-total-revenue"><i class="fa-solid fa-indian-rupee-sign"></i>0
+                        </h2>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon secondary"><i class="fa-solid fa-calendar-check"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">This Month</span>
+                        <h2 class="stat-value" id="stats-month-revenue"><i class="fa-solid fa-indian-rupee-sign"></i>0
+                        </h2>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon accent"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-label">Last 7 Days</span>
+                        <h2 class="stat-value" id="stats-recent-revenue"><i class="fa-solid fa-indian-rupee-sign"></i>0
+                        </h2>
+                    </div>
+                </div>
+            </div>
+
             <div class="content-card">
                 <!-- Header Section -->
                 <div class="section-header">
@@ -83,14 +110,38 @@
                             <i class="fa-solid fa-money-bill-trend-up"></i>
                         </div>
                         <div class="section-info">
-                            <h2 class="section-title">All Payments</h2>
-                            <p class="section-subtitle">All payment records</p>
+                            <h2 class="section-title">Payment History</h2>
+                            <p class="section-subtitle">Track and manage all transactions</p>
                         </div>
                     </div>
                     <div class="section-actions">
+                        <button class="btn btn-outline" id="export-csv">
+                            <i class="fa-solid fa-file-export"></i> <span>Export</span>
+                        </button>
                         <a href="../record-payment/" class="btn btn-primary">
                             <i class="fa-solid fa-plus"></i> <span>Record Payment</span>
                         </a>
+                    </div>
+                </div>
+
+                <!-- Filters Bar -->
+                <div class="filters-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="search-input" placeholder="Search by student, course or ref...">
+                    </div>
+                    <div class="filter-controls">
+                        <select id="filter-mode" class="form-select">
+                            <option value="all">All Modes</option>
+                            <option value="CASH">Cash</option>
+                            <option value="UPI">UPI</option>
+                            <option value="TRANSFER">Bank Transfer</option>
+                        </select>
+                        <select id="filter-type" class="form-select">
+                            <option value="all">All Types</option>
+                            <option value="course">Course</option>
+                            <option value="service">Service</option>
+                        </select>
                     </div>
                 </div>
 
@@ -154,5 +205,3 @@
 </body>
 
 </html>
-
-

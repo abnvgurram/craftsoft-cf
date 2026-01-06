@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load payments
     await loadPayments();
 
-    // Bind search
+    // Bind events
     bindEvents();
 });
 
@@ -43,6 +43,8 @@ async function loadPayments() {
                 reference_id,
                 status,
                 created_at,
+                student_id,
+                client_id,
                 student:student_id (
                     id,
                     student_id,
@@ -71,6 +73,7 @@ async function loadPayments() {
         payments = data || [];
         filteredPayments = payments;
 
+        calculateStats();
         renderPayments();
     } catch (err) {
         console.error('Error loading payments:', err);
@@ -81,19 +84,59 @@ async function loadPayments() {
 }
 
 // =====================
+// Calculate Stats
+// =====================
+function calculateStats() {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(now.getDate() - 7);
+
+    let total = 0;
+    let monthTotal = 0;
+    let recentTotal = 0;
+
+    payments.forEach(p => {
+        const amount = parseFloat(p.amount_paid) || 0;
+        const date = new Date(p.created_at);
+
+        total += amount;
+        if (date >= startOfMonth) monthTotal += amount;
+        if (date >= sevenDaysAgo) recentTotal += amount;
+    });
+
+    document.getElementById('stats-total-revenue').innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(total)}`;
+    document.getElementById('stats-month-revenue').innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(monthTotal)}`;
+    document.getElementById('stats-recent-revenue').innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(recentTotal)}`;
+}
+
+// =====================
 // Render Payments
 // =====================
 function renderPayments() {
     const cards = document.getElementById('payments-cards');
     const emptyState = document.getElementById('empty-state');
+    const tableContainer = document.querySelector('.table-container');
 
     if (filteredPayments.length === 0) {
         cards.innerHTML = '';
+        if (document.getElementById('payments-tbody')) document.getElementById('payments-tbody').innerHTML = '';
         emptyState.style.display = 'block';
+        tableContainer.style.display = 'none';
+        cards.style.display = 'none';
         return;
     }
 
     emptyState.style.display = 'none';
+    tableContainer.style.display = 'block';
+
+    // Check mobile state to toggle visibility correctly
+    if (window.innerWidth <= 768) {
+        tableContainer.style.display = 'none';
+        cards.style.display = 'flex';
+    } else {
+        cards.style.display = 'none';
+    }
 
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedPayments = filteredPayments.slice(start, start + itemsPerPage);
@@ -116,7 +159,7 @@ function renderPayments() {
                         </div>
                     </td>
                     <td><span class="cell-title">${itemName}</span></td>
-                    <td><span class="cell-amount">${formatCurrency(p.amount_paid)}</span></td>
+                    <td><span class="cell-amount"><i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(p.amount_paid)}</span></td>
                     <td class="text-right"><span class="cell-badge">${p.reference_id || '-'}</span></td>
                 </tr>
             `;
@@ -133,7 +176,7 @@ function renderPayments() {
         <div class="premium-card">
             <div class="card-header">
                 <span class="card-id-badge">${formatDate(p.created_at)}</span>
-                <span class="card-amount">${formatCurrency(p.amount_paid)}</span>
+                <span class="card-amount"><i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(p.amount_paid)}</span>
             </div>
             <div class="card-body">
                 <div class="card-info-row">
@@ -142,11 +185,12 @@ function renderPayments() {
                         ${entityName} (${displayId})
                     </span>
                     <span class="card-info-item"><i class="fa-solid ${p.service_id ? 'fa-wrench' : 'fa-book'}"></i> ${itemName}</span>
-                    <span class="card-info-item"><i class="fa-solid fa-hashtag"></i> ${p.reference_id}</span>
+                    <span class="card-info-item"><i class="fa-solid fa-hashtag"></i> ${p.reference_id || '-'}</span>
                 </div>
             </div>
             <div class="card-footer">
                 <span class="glass-tag ${p.payment_mode.toLowerCase()}">${p.payment_mode}</span>
+                <span class="badge ${p.student_id ? 'badge-primary' : 'badge-info'}" style="font-size: 0.65rem;">${p.student_id ? 'COURSES' : 'SERVICES'}</span>
             </div>
         </div>
     `}).join('');
@@ -154,7 +198,7 @@ function renderPayments() {
     // Update footer count
     const footer = document.getElementById('payments-footer');
     if (footer) {
-        footer.innerHTML = `<span>Total Payments: <strong>${filteredPayments.length}</strong></span>`;
+        footer.innerHTML = `<span>Showing <strong>${paginatedPayments.length}</strong> of <strong>${filteredPayments.length}</strong> payments</span>`;
         footer.style.display = 'block';
     }
 
@@ -169,12 +213,8 @@ function renderPayments() {
 // =====================
 // Format Helpers
 // =====================
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0
-    }).format(amount || 0);
+function formatNumber(num) {
+    return (num || 0).toLocaleString('en-IN');
 }
 
 function formatDate(dateStr) {
@@ -191,27 +231,77 @@ function formatDate(dateStr) {
 // Bind Events
 // =====================
 function bindEvents() {
-    // Search
-    document.getElementById('search-input').addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
+    const handleFilter = () => {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        const mode = document.getElementById('filter-mode').value;
+        const type = document.getElementById('filter-type').value;
 
-        if (!query) {
-            filteredPayments = payments;
-        } else {
-            filteredPayments = payments.filter(p => {
-                const entity = p.student || p.client;
-                const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}`.toLowerCase() : '';
-                const displayId = (entity?.student_id || entity?.client_id || '').toLowerCase();
-                const itemName = (p.course?.course_name || p.service?.name || '').toLowerCase();
-                const ref = (p.reference_id || '').toLowerCase();
+        filteredPayments = payments.filter(p => {
+            // Search match
+            const entity = p.student || p.client;
+            const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}`.toLowerCase() : '';
+            const displayId = (entity?.student_id || entity?.client_id || '').toLowerCase();
+            const itemName = (p.course?.course_name || p.service?.name || '').toLowerCase();
+            const ref = (p.reference_id || '').toLowerCase();
 
-                return entityName.includes(query) ||
-                    displayId.includes(query) ||
-                    itemName.includes(query) ||
-                    ref.includes(query);
-            });
-        }
+            const matchSearch = !query ||
+                entityName.includes(query) ||
+                displayId.includes(query) ||
+                itemName.includes(query) ||
+                ref.includes(query);
 
+            // Mode match
+            const matchMode = mode === 'all' || p.payment_mode === mode;
+
+            // Type match
+            const matchType = type === 'all' ||
+                (type === 'course' && p.student_id) ||
+                (type === 'service' && p.client_id);
+
+            return matchSearch && matchMode && matchType;
+        });
+
+        currentPage = 1;
         renderPayments();
+    };
+
+    document.getElementById('search-input').addEventListener('input', handleFilter);
+    document.getElementById('filter-mode').addEventListener('change', handleFilter);
+    document.getElementById('filter-type').addEventListener('change', handleFilter);
+
+    // Export CSV
+    document.getElementById('export-csv').addEventListener('click', exportToCSV);
+}
+
+// =====================
+// Export CSV
+// =====================
+function exportToCSV() {
+    if (filteredPayments.length === 0) return;
+
+    const headers = ['Date', 'Entity Name', 'ID', 'Item', 'Amount', 'Mode', 'Reference'];
+    const rows = filteredPayments.map(p => {
+        const entity = p.student || p.client;
+        return [
+            formatDate(p.created_at),
+            entity ? `${entity.first_name} ${entity.last_name || ''}` : 'Unknown',
+            entity ? (entity.student_id || entity.client_id) : '-',
+            p.course?.course_name || p.service?.name || 'Unknown',
+            p.amount_paid,
+            p.payment_mode,
+            p.reference_id || '-'
+        ].map(val => `"${val}"`).join(',');
     });
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `payments_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
