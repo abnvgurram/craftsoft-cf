@@ -1,5 +1,5 @@
 /* ============================================
-   TESTIMONIALS Wall (Premium Infinite Marquee)
+   TESTIMONIALS Wall (Full-Width Infinite Marquee)
    ============================================ */
 .testimonials {
     background: linear-gradient(180deg, var(--white) 0%, rgba(40, 150, 205, 0.05) 100%);
@@ -7,12 +7,21 @@
     overflow: hidden;
 }
 
+/* Header stays centered in container */
+.testimonials .container {
+    margin-bottom: var(--spacing-xl);
+}
+
 .testimonials-wall {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xl);
-    margin-top: var(--spacing-3xl);
-    width: 100%;
+    gap: var(--spacing-lg);
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
 }
 
 /* Marquee Track */
@@ -20,24 +29,25 @@
     display: flex;
     overflow: hidden;
     user-select: none;
-    gap: var(--spacing-xl);
-    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    gap: var(--spacing-lg);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
 }
 
 .marquee-content {
     display: flex;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-lg);
     flex-shrink: 0;
-    min-width: 100%;
+    /* This ensures we always have enough width to loop */
 }
 
 /* Animations */
 .track-left .marquee-content {
-    animation: scroll-left 40s linear infinite;
+    animation: scroll-left 60s linear infinite;
 }
 
 .track-right .marquee-content {
-    animation: scroll-right 40s linear infinite;
+    animation: scroll-right 60s linear infinite;
 }
 
 .marquee-track:hover .marquee-content {
@@ -50,13 +60,15 @@
     }
 
     to {
-        transform: translateX(calc(-100% - var(--spacing-xl)));
+        transform: translateX(-50%);
     }
+
+    /* Half point since we double it */
 }
 
 @keyframes scroll-right {
     from {
-        transform: translateX(calc(-100% - var(--spacing-xl)));
+        transform: translateX(-50%);
     }
 
     to {
@@ -64,27 +76,25 @@
     }
 }
 
-/* Card Styling */
+/* Card Styling - Fixed Width for consistency */
 .testimonial-card {
-    width: 350px;
+    width: 320px;
     flex-shrink: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .testimonial-card-inner {
     background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 100%);
     border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
+    padding: var(--spacing-lg);
     box-shadow: 0 4px 15px rgba(40, 150, 205, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.8);
     height: 100%;
-    display: flex;
-    flex-direction: column;
+    transition: all 0.3s ease;
 }
 
-.testimonial-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(40, 150, 205, 0.15);
+.testimonial-card:hover .testimonial-card-inner {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(40, 150, 205, 0.12);
 }
 
 /* Header Area */
@@ -92,13 +102,13 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
     position: relative;
 }
 
 .author-avatar {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
     background: var(--accent-gradient);
     border-radius: 50%;
     display: flex;
@@ -106,52 +116,45 @@
     justify-content: center;
     color: var(--white);
     font-weight: 700;
-    font-size: 0.9rem;
-    box-shadow: 0 4px 10px rgba(40, 150, 205, 0.2);
+    font-size: 0.85rem;
 }
 
 .author-info h4 {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--gray-900);
-    margin-bottom: 2px;
+    margin-bottom: 0px;
 }
 
 .author-info span {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--gray-500);
-    font-weight: 500;
 }
 
 .testimonial-platform {
     position: absolute;
-    top: 0;
+    top: 50%;
+    transform: translateY(-50%);
     right: 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--primary-400);
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
-/* Testimonial Text */
 .testimonial-text {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--gray-700);
-    line-height: 1.7;
+    line-height: 1.6;
     margin-bottom: 0;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
     .testimonial-card {
-        width: 300px;
-    }
-
-    .testimonial-card-inner {
-        padding: var(--spacing-lg);
+        width: 280px;
     }
 
     .track-left .marquee-content,
     .track-right .marquee-content {
-        animation-duration: 30s;
-        /* Faster on mobile */
+        animation-duration: 40s;
     }
 }
