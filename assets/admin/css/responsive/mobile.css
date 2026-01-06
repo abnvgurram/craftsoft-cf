@@ -157,6 +157,11 @@
     }
 
     /* Account Panel Mobile */
+    /* Hide header account panel on mobile - moved to bottom of nav drawer */
+    #account-panel-container {
+        display: none !important;
+    }
+
     .account-trigger {
         padding: 0.4rem 0.75rem;
     }
