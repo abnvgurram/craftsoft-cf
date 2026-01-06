@@ -48,8 +48,8 @@ async function initializeStats() {
 
         const [totalCount, monthData, todayCount] = await Promise.all([
             window.supabaseClient.from('receipts').select('receipt_id', { count: 'exact', head: true }),
-            window.supabaseClient.from('receipts').select('amount_paid').gte('created_at', monthStartISO),
-            window.supabaseClient.from('receipts').select('receipt_id', { count: 'exact', head: true }).gte('created_at', today)
+            window.supabaseClient.from('receipts').select('amount_paid').gte('payment_date', monthStartISO),
+            window.supabaseClient.from('receipts').select('receipt_id', { count: 'exact', head: true }).gte('payment_date', today)
         ]);
 
         const totalRevMonth = (monthData.data || []).reduce((sum, r) => sum + (r.amount_paid || 0), 0);
@@ -78,6 +78,7 @@ async function loadReceipts() {
                 payment_mode,
                 reference_id,
                 balance_due,
+                payment_date,
                 created_at,
                 student:student_id (
                     id,
@@ -181,7 +182,7 @@ function renderReceipts() {
             <div class="card-header">
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                     <span class="card-id-badge">${r.receipt_id}</span>
-                    <span style="font-size: 0.75rem; color: var(--admin-text-muted);">${formatDate(r.created_at)}</span>
+                    <span style="font-size: 0.75rem; color: var(--admin-text-muted);">${formatDate(r.payment_date || r.created_at)}</span>
                 </div>
                 <div class="card-header-right">
                     <span class="glass-tag ${r.payment_mode.toLowerCase()}">${r.payment_mode}</span>
@@ -307,7 +308,7 @@ async function viewReceipt(receiptId) {
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">Date</span>
-                        <span class="receipt-value">${formatDate(currentReceipt.created_at)}</span>
+                        <span class="receipt-value">${formatDate(currentReceipt.payment_date || currentReceipt.created_at)}</span>
                     </div>
                     <div class="receipt-row">
                         <span class="receipt-label">${entityLabel}</span>
@@ -484,7 +485,7 @@ function bindEvents() {
                 receiptId.includes(query);
 
             // Date Match
-            const pDate = new Date(r.created_at).toISOString().split('T')[0];
+            const pDate = (r.payment_date || new Date(r.created_at).toISOString().split('T')[0]);
             const matchDate = (!dateFrom || pDate >= dateFrom) && (!dateTo || pDate <= dateTo);
 
             return matchSearch && matchDate;

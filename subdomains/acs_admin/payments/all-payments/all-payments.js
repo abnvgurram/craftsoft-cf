@@ -42,6 +42,7 @@ async function loadPayments() {
                 payment_mode,
                 reference_id,
                 status,
+                payment_date,
                 created_at,
                 student_id,
                 client_id,
@@ -98,7 +99,7 @@ function calculateStats() {
 
     payments.forEach(p => {
         const amount = parseFloat(p.amount_paid) || 0;
-        const date = new Date(p.created_at);
+        const date = new Date(p.payment_date || p.created_at);
 
         total += amount;
         if (date >= startOfMonth) monthTotal += amount;
@@ -151,7 +152,7 @@ function renderPayments() {
             const itemName = p.course?.course_name || p.service?.name || 'Unknown';
             return `
                 <tr>
-                    <td><span class="cell-badge">${formatDate(p.created_at)}</span></td>
+                    <td><span class="cell-badge">${formatDate(p.payment_date || p.created_at)}</span></td>
                     <td>
                         <div class="student-cell">
                             <span class="cell-title">${entityName}</span>
@@ -175,7 +176,7 @@ function renderPayments() {
         return `
         <div class="premium-card">
             <div class="card-header">
-                <span class="card-id-badge">${formatDate(p.created_at)}</span>
+                <span class="card-id-badge">${formatDate(p.payment_date || p.created_at)}</span>
                 <div class="card-header-right">
                     <span class="glass-tag ${p.payment_mode.toLowerCase()}">${p.payment_mode}</span>
                     <span class="card-amount"><i class="fa-solid fa-indian-rupee-sign"></i> ${formatNumber(p.amount_paid)}</span>
@@ -263,7 +264,7 @@ function bindEvents() {
                 (type === 'service' && p.client_id);
 
             // Date match
-            const pDate = new Date(p.created_at).toISOString().split('T')[0];
+            const pDate = (p.payment_date || new Date(p.created_at).toISOString().split('T')[0]);
             const matchDate = (!dateFrom || pDate >= dateFrom) && (!dateTo || pDate <= dateTo);
 
             return matchSearch && matchMode && matchType && matchDate;

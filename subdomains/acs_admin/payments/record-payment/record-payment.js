@@ -52,7 +52,7 @@ async function initializeStats() {
 
         // Parallel fetch for speed
         const [todayPayments, studentsCount, allPayments] = await Promise.all([
-            window.supabaseClient.from('payments').select('amount_paid').eq('status', 'SUCCESS').gte('created_at', today),
+            window.supabaseClient.from('payments').select('amount_paid').eq('status', 'SUCCESS').gte('payment_date', today),
             window.supabaseClient.from('students').select('id', { count: 'exact', head: true }),
             window.supabaseClient.from('payments').select('amount_paid').eq('status', 'SUCCESS')
         ]);
