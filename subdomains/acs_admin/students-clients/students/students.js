@@ -227,11 +227,14 @@ function renderStudentsList(students) {
                             <td class="text-right">
                                 ${(s.courses || []).map(code => {
         const course = allCoursesForStudents.find(c => c.course_code === code);
-        const netFee = (course?.course_fee || 0) - (s.course_discounts?.[code] || 0);
+        const netFee = (course?.fee || 0) - (s.course_discounts?.[code] || 0);
         return `<div style="font-size: 0.8rem; color: var(--admin-text-muted);">${code}: ₹${formatNumber(netFee)}</div>`;
     }).join('')}
                             </td>
-                            <td class="text-right" style="font-weight: 700; color: var(--primary-color);">₹${formatNumber(s.total_fee || 0)}</td>
+                            <td class="text-right" style="font-weight: 700; color: var(--primary-color);">₹${formatNumber((s.courses || []).reduce((sum, code) => {
+        const course = allCoursesForStudents.find(c => c.course_code === code);
+        return sum + ((course?.fee || 0) - (s.course_discounts?.[code] || 0));
+    }, 0))}</td>
                             <td class="text-right">
                                 <div class="cell-actions" style="justify-content: flex-end;">
                                     <button class="action-btn edit btn-edit-student" data-id="${s.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
@@ -265,7 +268,7 @@ function renderStudentsList(students) {
                         <div class="card-breakdown">
                             ${(s.courses || []).map(code => {
         const course = allCoursesForStudents.find(c => c.course_code === code);
-        const netFee = (course?.course_fee || 0) - (s.course_discounts?.[code] || 0);
+        const netFee = (course?.fee || 0) - (s.course_discounts?.[code] || 0);
         return `
                                     <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.25rem;">
                                         <span style="color: var(--admin-text-muted);">${code}</span>
@@ -275,7 +278,10 @@ function renderStudentsList(students) {
     }).join('')}
                             <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-weight: 700; color: var(--primary-color); font-size: 1rem;">
                                 <span>Total</span>
-                                <span>₹${formatNumber(s.total_fee || 0)}</span>
+                                <span>₹${formatNumber((s.courses || []).reduce((sum, code) => {
+        const course = allCoursesForStudents.find(c => c.course_code === code);
+        return sum + ((course?.fee || 0) - (s.course_discounts?.[code] || 0));
+    }, 0))}</span>
                             </div>
                         </div>
                     </div>

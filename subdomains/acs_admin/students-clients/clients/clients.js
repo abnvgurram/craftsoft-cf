@@ -140,10 +140,10 @@ function showSkeletons() {
                             <th width="40"><div class="skeleton" style="height: 16px; width: 16px;"></div></th>
                             <th>Client ID</th>
                             <th>Name</th>
-                            <th>Phone</th>
-                            <th>Services</th>
-                            <th class="text-right">Fee Breakdown</th>
-                            <th class="text-right">Total Fee</th>
+                            <th class="text-left">Phone</th>
+                            <th class="text-left">Services</th>
+                            <th class="text-right">Quotation Breakdown</th>
+                            <th class="text-right">Total Quotation</th>
                             <th class="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -226,10 +226,10 @@ function renderClients(clients) {
                 </th>
                 <th>Client ID</th>
                 <th>Name</th>
-                <th>Phone</th>
-                <th>Services</th>
-                <th class="text-right">Fee Breakdown</th>
-                <th class="text-right">Total Fee</th>
+                <th class="text-left">Phone</th>
+                <th class="text-left">Services</th>
+                <th class="text-right">Quotation Breakdown</th>
+                <th class="text-right">Total Quotation</th>
                 <th class="text-right">Actions</th>
             </tr>
         </thead>
@@ -246,8 +246,8 @@ function renderClients(clients) {
                 <td><input type="checkbox" class="client-checkbox" data-id="${c.id}" ${selectedClientIds.has(c.id) ? 'checked' : ''}></td>
                 <td><span class="badge badge-primary">${c.client_id || '-'}</span></td>
                 <td>${fullName}</td>
-                <td>${c.phone || '-'}</td>
-                <td><span class="services-tags">${servicesList}</span></td>
+                <td class="text-left">${c.phone || '-'}</td>
+                <td class="text-left"><span class="services-tags">${servicesList}</span></td>
                 <td class="text-right">
                     ${(c.services || []).map(code => {
             const fee = c.service_fees?.[code] || 0;
