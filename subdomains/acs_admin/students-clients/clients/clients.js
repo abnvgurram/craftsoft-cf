@@ -678,6 +678,7 @@ function checkPrefill() {
         const email = params.get('email') || '';
         const services = params.get('services')?.split(',').filter(s => s) || [];
         const inquiryId = params.get('inquiry_id') || '';
+        const readableId = params.get('readable_id') || '';
 
         // Open form and prefill
         openForm().then(() => {
@@ -688,6 +689,11 @@ function checkPrefill() {
             document.getElementById('client-phone').value = phone;
             document.getElementById('client-email').value = email;
             document.getElementById('converting-inquiry-id').value = inquiryId;
+
+            if (readableId) {
+                const notesEl = document.getElementById('client-notes');
+                if (notesEl) notesEl.value = `Inquiry ID: ${readableId}`;
+            }
 
             // Check the services
             services.forEach(code => {

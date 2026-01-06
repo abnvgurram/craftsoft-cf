@@ -79,6 +79,7 @@ function checkPrefill() {
         const email = params.get('email') || '';
         const courses = params.get('courses')?.split(',').filter(c => c) || [];
         const inquiryId = params.get('inquiry_id') || '';
+        const readableId = params.get('readable_id') || '';
 
         // Store inquiry ID for later status update
         if (inquiryId) {
@@ -86,14 +87,14 @@ function checkPrefill() {
         }
 
         // Open form with prefilled data
-        openFormWithPrefill(name, phone, email, courses);
+        openFormWithPrefill(name, phone, email, courses, readableId);
 
         // Clear URL params
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 }
 
-async function openFormWithPrefill(name, phone, email, courses) {
+async function openFormWithPrefill(name, phone, email, courses, readableId = '') {
     await openForm(false);
 
     // Split name into first and last
@@ -106,8 +107,15 @@ async function openFormWithPrefill(name, phone, email, courses) {
     document.getElementById('student-phone').value = phone;
     document.getElementById('student-email').value = email;
 
+    if (readableId) {
+        document.getElementById('student-notes').value = `Inquiry ID: ${readableId}`;
+    }
+
     // Render courses with pre-selected
     renderCoursesCheckboxes(courses, {});
+
+    // Explicitly trigger tutor assignment and fee breakdown
+    updateCourseTutorAssignment({});
     updateFeeBreakdown();
 }
 

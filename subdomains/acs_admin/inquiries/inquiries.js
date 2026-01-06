@@ -585,7 +585,8 @@ async function convertToStudent(id) {
                 name: data.name,
                 phone: data.phone,
                 email: data.email || '',
-                inquiry_id: data.id
+                inquiry_id: data.id,
+                readable_id: data.inquiry_id || ''
             });
 
             if (isServiceInquiry || hasServiceCodes) {
