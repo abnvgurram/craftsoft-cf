@@ -1624,11 +1624,14 @@ window.AdminUtils = {
         const obj = typeof id === 'string' ? document.getElementById(id) : id;
         if (!obj) return;
 
+        // Safety check for non-numeric end values
+        const endVal = isNaN(end) || end === null || end === undefined ? 0 : end;
+        const startVal = isNaN(start) || start === null || start === undefined ? 0 : start;
         let startTimestamp = null;
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            const value = Math.floor(progress * (end - start) + start);
+            const value = Math.floor(progress * (endVal - startVal) + startVal);
 
             // Format for currency if needed (simplified check)
             let displayValue = value.toLocaleString('en-IN');
@@ -1637,7 +1640,7 @@ window.AdminUtils = {
             if (progress < 1) {
                 window.requestAnimationFrame(step);
             } else {
-                obj.innerHTML = `${prefix}${end.toLocaleString('en-IN')}${suffix}`;
+                obj.innerHTML = `${prefix}${endVal.toLocaleString('en-IN')}${suffix}`;
             }
         };
         window.requestAnimationFrame(step);

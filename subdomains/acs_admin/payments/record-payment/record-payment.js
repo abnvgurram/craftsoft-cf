@@ -51,20 +51,20 @@ async function initializeStats() {
         const today = new Date().toISOString().split('T')[0];
 
         // Parallel fetch for speed
-        const [todayPayments, studentsCount, pendingSum] = await Promise.all([
+        const [todayPayments, studentsCount, allPayments] = await Promise.all([
             window.supabaseClient.from('payments').select('amount_paid').eq('status', 'SUCCESS').gte('created_at', today),
             window.supabaseClient.from('students').select('id', { count: 'exact', head: true }),
-            window.supabaseClient.from('invoice_summaries').select('total_balance').gt('total_balance', 0)
+            window.supabaseClient.from('payments').select('amount_paid').eq('status', 'SUCCESS')
         ]);
 
         const todayTotal = (todayPayments.data || []).reduce((sum, p) => sum + (p.amount_paid || 0), 0);
         const activeCount = studentsCount.count || 0;
-        const totalPending = (pendingSum.data || []).reduce((sum, i) => sum + (i.total_balance || 0), 0);
+        const cumulativeTotal = (allPayments.data || []).reduce((sum, p) => sum + (p.amount_paid || 0), 0);
 
         window.AdminUtils.StatsHeader.render('stats-container', [
             { label: 'Today\'s Collection', value: todayTotal, icon: 'fa-solid fa-calendar-day', prefix: '₹' },
-            { label: 'Active Students', value: activeCount, icon: 'fa-solid fa-user-graduate', color: 'var(--success-500)' },
-            { label: 'Pending Balance', value: totalPending, icon: 'fa-solid fa-clock', color: 'var(--warning-500)', prefix: '₹' }
+            { label: 'Students', value: activeCount, icon: 'fa-solid fa-user-graduate', color: 'var(--success-500)' },
+            { label: 'Total Revenue', value: cumulativeTotal, icon: 'fa-solid fa-chart-pie', color: 'var(--warning-500)', prefix: '₹' }
         ]);
     } catch (err) {
         console.error('Stats load error:', err);

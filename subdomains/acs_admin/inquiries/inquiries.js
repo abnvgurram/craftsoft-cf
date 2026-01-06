@@ -51,17 +51,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('Inquiries: Binding events');
         bindFormEvents();
         bindDeleteEvents();
+        bindSearchEvents();
+        bindTypeToggle();
 
-        // Finalize
-        setupSearch();
-
+        console.log('Inquiries: Initialization complete');
     } catch (error) {
         console.error('CRITICAL: Inquiries initialization failed:', error);
         const content = document.getElementById('inquiries-content');
         if (content) {
             content.innerHTML = `<div class="p-4 text-center text-danger">
                 <i class="fa-solid fa-circle-exclamation mb-2" style="font-size: 2rem;"></i>
-                <p>Failed to initialize page. Error: ${err.message}</p>
+                <p>Failed to initialize page. Error: ${error.message}</p>
                 <button class="btn btn-primary mt-2" onclick="location.reload()">Retry</button>
             </div>`;
         }

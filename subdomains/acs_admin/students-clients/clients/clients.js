@@ -57,7 +57,7 @@ async function initializeStats() {
         const [totalCount, activeProjects, totalRev] = await Promise.all([
             window.supabaseClient.from('clients').select('id', { count: 'exact', head: true }),
             window.supabaseClient.from('clients').select('id', { count: 'exact', head: true }), // Placeholder for active
-            window.supabaseClient.from('payments').select('amount_paid').eq('item_type', 'SERVICE').eq('status', 'SUCCESS')
+            window.supabaseClient.from('payments').select('amount_paid').not('service_id', 'is', null).eq('status', 'SUCCESS')
         ]);
 
         const totalValue = (totalRev.data || []).reduce((sum, p) => sum + (p.amount_paid || 0), 0);
