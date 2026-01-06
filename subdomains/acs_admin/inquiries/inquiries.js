@@ -68,6 +68,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+async function initializeStats() {
+    window.AdminUtils.StatsHeader.render('stats-container', [
+        { label: 'Total Inquiries', value: 0, icon: 'fa-solid fa-person-circle-question' },
+        { label: 'Today\'s Leads', value: 0, icon: 'fa-solid fa-fire', color: 'var(--danger-500)' },
+        { label: 'This Week', value: 0, icon: 'fa-solid fa-calendar-week' }
+    ]);
+
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const lastWeek = new Date();
+        lastWeek.setDate(lastWeek.getDate() - 7);
+        const lastWeekISO = lastWeek.toISOString().split('T')[0];
+
+        const [totalCount, todayCount, weekCount] = await Promise.all([
+            window.supabaseClient.from('inquiries').select('id', { count: 'exact', head: true }),
+            window.supabaseClient.from('inquiries').select('id', { count: 'exact', head: true }).gte('created_at', today),
+            window.supabaseClient.from('inquiries').select('id', { count: 'exact', head: true }).gte('created_at', lastWeekISO)
+        ]);
+
+        window.AdminUtils.StatsHeader.render('stats-container', [
+            { label: 'Total Inquiries', value: totalCount.count || 0, icon: 'fa-solid fa-person-circle-question' },
+            { label: 'Today\'s Leads', value: todayCount.count || 0, icon: 'fa-solid fa-fire', color: 'var(--danger-500)' },
+            { label: 'Recent (7 Days)', value: weekCount.count || 0, icon: 'fa-solid fa-calendar-week', color: 'var(--primary-500)' }
+        ]);
+    } catch (err) {
+        console.error('Stats load error:', err);
+    }
+}
+
 async function loadCourses() {
     try {
         const { data, error } = await window.supabaseClient
