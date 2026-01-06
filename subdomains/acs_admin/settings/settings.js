@@ -3,7 +3,7 @@ let settingsData = {};
 let currentAdmin = null;
 let sessionsData = [];
 let currentTabId = null;
-let currentSettingsTab = 'profile'; // profile, institute, bank, security
+let currentSettingsTab = 'institute'; // institute, bank, security, profile
 let sessionsChannel = null;
 
 // Format password last updated text
@@ -179,9 +179,6 @@ function renderSettings() {
     container.innerHTML = `
         <!-- Left Sidebar: Tabs -->
         <div class="settings-tabs">
-            <button class="settings-tab-btn ${currentSettingsTab === 'profile' ? 'active' : ''}" data-tab="profile">
-                <i class="fa-solid fa-user-circle"></i> My Profile
-            </button>
             <button class="settings-tab-btn ${currentSettingsTab === 'institute' ? 'active' : ''}" data-tab="institute">
                 <i class="fa-solid fa-building"></i> Institute Details
             </button>
@@ -190,6 +187,9 @@ function renderSettings() {
             </button>
             <button class="settings-tab-btn ${currentSettingsTab === 'security' ? 'active' : ''}" data-tab="security">
                 <i class="fa-solid fa-shield-halved"></i> Security & Sessions
+            </button>
+            <button class="settings-tab-btn ${currentSettingsTab === 'profile' ? 'active' : ''}" data-tab="profile">
+                <i class="fa-solid fa-user-circle"></i> My Profile
             </button>
         </div>
 
