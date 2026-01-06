@@ -344,16 +344,16 @@
 
 /* Password row - button + last updated text */
 .password-row {
+    margin-top: 1.5rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .password-last-updated {
-    font-size: 0.8rem;
-    color: var(--admin-text-muted, #9ca3af);
+    font-size: 0.75rem;
+    color: var(--admin-text-muted, #94a3b8);
     font-weight: 400;
 }
 

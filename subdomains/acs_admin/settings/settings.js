@@ -246,7 +246,7 @@ function renderProfileTab() {
                         <button class="profile-change-password-btn" id="change-password-btn">
                             <i class="fa-solid fa-key"></i> Change Password
                         </button>
-                        <span class="password-last-updated">${formatPasswordLastUpdated(currentAdmin?.password_updated_at)}</span>
+                        <div class="password-last-updated">${formatPasswordLastUpdated(currentAdmin?.password_updated_at)}</div>
                     </div>
                 </div>
             </div>
