@@ -152,12 +152,33 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .testimonial-card {
-        width: 280px;
+    .testimonials {
+        padding: var(--spacing-lg) 0 var(--spacing-2xl);
     }
 
-    .track-left .marquee-content,
-    .track-right .marquee-content {
-        animation-duration: 40s;
+    .testimonial-card {
+        width: 260px;
+        /* Slimmer cards */
+    }
+
+    .author-avatar {
+        display: none;
+        /* Remove profile pics as requested */
+    }
+
+    .track-right {
+        display: none;
+        /* Reduce to 1 horizontal scroll only for mobile */
+    }
+
+    /* Reduce to ~4 unique cards (8 total with duplicates) to keep mobile lightweight */
+    .track-left .testimonial-card:nth-child(5),
+    .track-left .testimonial-card:nth-child(10) {
+        display: none;
+    }
+
+    .track-left .marquee-content {
+        animation-duration: 30s;
+        /* Slightly faster for smaller card count */
     }
 }
