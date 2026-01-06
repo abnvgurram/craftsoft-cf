@@ -3,101 +3,86 @@
 /* ============================================
    Settings Container
    ============================================ */
+/* ============================================
+   Settings Container
+   ============================================ */
 .settings-container {
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 2rem;
-    align-items: flex-start;
-}
-
-@media (max-width: 992px) {
-    .settings-container {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 /* ============================================
    Settings Tabs
    ============================================ */
 .settings-tabs {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    background: #fff;
-    padding: 0.75rem;
-    border-radius: 16px;
-    border: 1px solid var(--admin-input-border, #e2e8f0);
-    position: sticky;
-    top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    background: transparent;
+    padding: 0;
+    border: none;
+    position: static;
 }
 
 .settings-tab-btn {
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 0.75rem;
-    padding: 0.875rem 1rem;
-    background: transparent;
-    border: none;
-    border-radius: 12px;
+    padding: 1.25rem 1rem;
+    background: #fff;
+    border: 1px solid var(--admin-input-border, #e2e8f0);
+    border-radius: 16px;
     color: var(--admin-text-secondary, #64748b);
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    text-align: left;
+    text-align: center;
 }
 
 .settings-tab-btn i {
-    width: 20px;
-    font-size: 1rem;
+    font-size: 1.5rem;
+    color: var(--sidebar-text-muted);
     transition: all 0.2s ease;
 }
 
 .settings-tab-btn:hover {
-    background: var(--gray-50, #f8fafc);
-    color: var(--admin-text-primary, #0f172a);
+    background: #fff;
+    border-color: var(--primary-300, #7dd3fc);
+    color: var(--primary-600, #1a7eb0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 150, 205, 0.1);
 }
 
 .settings-tab-btn.active {
     background: var(--primary-50, #edf6fb);
-    color: var(--primary-500, #2896cd);
+    border-color: var(--primary-500, #2896cd);
+    color: var(--primary-700, #0c4a6e);
+    box-shadow: 0 4px 12px rgba(40, 150, 205, 0.15);
 }
 
 .settings-tab-btn.active i {
-    color: var(--primary-500, #2896cd);
+    color: var(--primary-600, #1a7eb0);
     transform: scale(1.1);
 }
 
+/* Tablet/Mobile Responsive */
 @media (max-width: 992px) {
     .settings-tabs {
-        display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-        padding: 0.5rem;
-        position: static;
-        background: var(--admin-bg, #f8fafc);
-        border: none;
+        gap: 0.75rem;
     }
 
     .settings-tab-btn {
-        padding: 1rem 0.75rem;
-        background: #fff;
-        border: 1px solid var(--admin-input-border, #e2e8f0);
-        flex-direction: column;
-        justify-content: center;
-        text-align: center;
-        gap: 0.5rem;
-        font-size: 0.85rem;
+        padding: 1rem;
+        font-size: 0.9rem;
     }
 
     .settings-tab-btn i {
         font-size: 1.25rem;
-    }
-
-    .settings-tab-btn.active {
-        background: var(--primary-50, #edf6fb);
-        border-color: var(--primary-200, #bae6fd);
     }
 }
 

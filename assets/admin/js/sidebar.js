@@ -29,7 +29,7 @@ const AdminSidebar = {
             <aside class="admin-sidebar" id="admin-sidebar">
                 <nav class="sidebar-nav">
                     ${this.navItem('dashboard', 'Dashboard', 'fa-chart-pie')}
-                    ${this.navItem('inquiries', 'Inquiries', 'fa-person-circle-question')}
+                    ${this.navItem('inquiries', 'Inquiries', 'fa-regular fa-circle-question')}
                     ${this.navItem('tutors', 'Tutors', 'fa-chalkboard-user')}
                     
                     <!-- Courses & Services (flat on desktop) -->
@@ -72,7 +72,7 @@ const AdminSidebar = {
                 </div>
                 <nav class="mobile-nav-list">
                     ${this.mobileNavItem('dashboard', 'Dashboard', 'fa-chart-pie')}
-                    ${this.mobileNavItem('inquiries', 'Inquiries', 'fa-person-circle-question')}
+                    ${this.mobileNavItem('inquiries', 'Inquiries', 'fa-regular fa-circle-question')}
                     ${this.mobileNavItem('tutors', 'Tutors', 'fa-chalkboard-user')}
 
                     <!-- Courses & Services Parent (Mobile Only) -->
@@ -166,11 +166,12 @@ const AdminSidebar = {
 
     navItem(page, label, icon, path = null) {
         const href = path ? `${this.rootPath}${path}/` : `${this.rootPath}${page}/`;
+        const iconClass = icon.includes(' ') ? icon : `fa-solid ${icon}`;
         return `
             <a href="${href}"
                class="sidebar-item ${this.currentPage === page ? 'active' : ''}"
                title="${label}">
-                <i class="fa-solid ${icon}"></i>
+                <i class="${iconClass}"></i>
                 <span>${label}</span>
             </a>
         `;
@@ -178,9 +179,10 @@ const AdminSidebar = {
 
     mobileNavItem(page, label, icon, path = null) {
         const href = path ? `${this.rootPath}${path}/` : `${this.rootPath}${page}/`;
+        const iconClass = icon.includes(' ') ? icon : `fa-solid ${icon}`;
         return `
             <a href="${href}" class="mobile-nav-item ${this.currentPage === page ? 'active' : ''}">
-                <i class="fa-solid ${icon}"></i>
+                <i class="${iconClass}"></i>
                 <span>${label}</span>
             </a>
         `;
