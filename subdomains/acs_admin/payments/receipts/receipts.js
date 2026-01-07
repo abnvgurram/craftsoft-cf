@@ -426,7 +426,7 @@ async function downloadReceipt(receiptId) {
         pdfContainer.innerHTML = `
             <style>
                 #pdf-receipt-container * { font-family: 'Tahoma', Arial, sans-serif; box-sizing: border-box; }
-                .pdf-wrap { padding: 50px; background: white; min-height: 1100px; display: flex; flex-direction: column; }
+                .pdf-wrap { padding: 50px; padding-bottom: 100px; background: white; min-height: 1100px; position: relative; }
                 .pdf-headline { font-size: 22px; font-weight: bold; color: #2896cd; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1.5px solid #f1f5f9; }
                 .pdf-brand { position: relative; padding-left: 20px; margin-bottom: 50px; }
                 .pdf-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: #e0f2fe; border-left: 3px solid #2896cd; }
@@ -460,7 +460,7 @@ async function downloadReceipt(receiptId) {
                 .pdf-divider { height: 1px; background: #eee; margin: 15px 0; }
                 .pdf-sum-row.due .label { font-size: 16px; }
                 .pdf-sum-row.due .val { font-size: 18px; color: #2896cd; }
-                .pdf-footer { margin-top: auto; text-align: center; padding-top: 30px; border-top: 1px dashed #ddd; }
+                .pdf-footer { position: absolute; bottom: 30px; left: 50px; right: 50px; text-align: center; padding-top: 20px; border-top: 1px dashed #ddd; }
                 .pdf-footer p { font-size: 10px; color: #64748b; margin: 3px 0; }
             </style>
             <div class="pdf-wrap">
@@ -529,10 +529,10 @@ async function downloadReceipt(receiptId) {
                         <span class="val">₹ ${pendingForItem.toLocaleString('en-IN')}</span>
                     </div>
                 </div>
-                <div class="pdf-footer">
-                    <p>This is a system-generated secure receipt and does not require a physical signature.</p>
-                    <p>Abhi's Craftsoft © ${new Date().getFullYear()} | https://www.craftsoft.co.in</p>
-                </div>
+            </div>
+            <div class="pdf-footer">
+                <p>This is a system-generated secure receipt and does not require a physical signature.</p>
+                <p>Abhi's Craftsoft © ${new Date().getFullYear()} | https://www.craftsoft.co.in</p>
             </div>
         `;
 
