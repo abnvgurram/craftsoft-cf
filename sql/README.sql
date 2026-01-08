@@ -15,9 +15,11 @@
 -- ├── 08_receipts.sql        # Payment receipts
 -- ├── 09_activities.sql      # Audit log
 -- ├── 10_settings.sql        # Global settings
--- └── 11_sessions.sql        # User session management
+-- ├── 11_sessions.sql        # User session management
+-- └── 12_clients.sql         # Service clients (converted from inquiries)
 --
 -- HOW TO USE:
--- Execute files in order (00 → 11) when setting up a fresh database.
+-- Execute files in order (00 → 12) when setting up a fresh database.
 -- Each file is idempotent (can be run multiple times safely).
 -- ================================================================================
+
