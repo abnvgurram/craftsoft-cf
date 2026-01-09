@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
@@ -69,14 +69,12 @@
     <nav class="navbar" id="navbar">
         <div class="container nav-container">
             <a href="../" class="logo">
-                <div class="logo-placeholder"><i class="fas fa-graduation-cap"></i></div>
                 <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
                         Soft</span></span>
             </a>
             <ul class="nav-menu" id="nav-menu">
                 <div class="mobile-menu-header">
                     <div class="logo">
-                        <div class="logo-placeholder"><i class="fas fa-graduation-cap"></i></div>
                         <span class="logo-text"><span class="logo-signature">Abhi's</span> <span class="highlight">Craft
                                 Soft</span></span>
                     </div>
@@ -97,15 +95,15 @@
     </nav>
 
     <!-- Page Header -->
-    <section class="page-header">
+    <header class="page-header">
         <div class="container">
             <div class="page-header-content">
                 <span class="section-tag">Verification Portal</span>
                 <h1>Verify Your <span class="gradient-text">Receipt</span></h1>
-                <p>Official portal to verify and download your payment statements and course receipts.</p>
+                <p>Securely verify your official course enrollment and payment records from Abhi's Craft Soft.</p>
             </div>
         </div>
-    </section>
+    </header>
 
     <!-- Breadcrumbs -->
     <nav class="breadcrumbs" aria-label="Breadcrumb">
@@ -167,11 +165,10 @@
 
 
                 <!-- No Payments State -->
-                <div id="no-payments-state" class="verify-status-box hidden"
-                    style="border-color: #fef3c7; background: #fffbeb;">
-                    <div class="status-icon" style="color: #f59e0b;"><i class="fas fa-wallet"></i></div>
-                    <h3 style="color: #92400e;">No Payments Found</h3>
-                    <p id="no-payments-name" style="font-size: 1rem; color: #78350f;"></p>
+                <div id="no-payments-state" class="verify-status-box no-payments-box hidden">
+                    <div class="status-icon"><i class="fas fa-wallet"></i></div>
+                    <h3>No Payments Found</h3>
+                    <p id="no-payments-name"></p>
                 </div>
 
 
@@ -221,7 +218,7 @@
                     <ul id="footer-services"></ul>
                 </div>
                 <div class="footer-contact">
-                    <h4>Get in touch</h4>
+                    <h4>Contact Us</h4>
 
                     <ul>
                         <li><i class="fas fa-map-marker-alt"></i><a href="https://maps.app.goo.gl/uiTwuixvPKM8oJ9b8"
