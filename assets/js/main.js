@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initRandomFloatingCards();
     initScrollToNext();
     initScrollProgress();
+    initCardGlow();
 });
 
 /* ============================================
@@ -788,5 +789,23 @@ function initScrollProgress() {
         if (progressBar) {
             progressBar.style.width = scrolled + "%";
         }
+    });
+}
+
+/* ============================================
+   CARD MOUSE GLOW EFFECT
+   ============================================ */
+function initCardGlow() {
+    const cards = document.querySelectorAll('.unified-card');
+
+    cards.forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
     });
 }
