@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Abhi's Craft Soft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary-500: #2896cd;
+            --primary-600: #1a7eb0;
+            --primary-50: #edf6fb;
+            --primary-100: #d4eaf5;
+            --accent-gradient: linear-gradient(135deg, #2896cd 0%, #6C5CE7 100%);
+            --page-bg: #f0f7fb;
+            --card-bg: rgba(40, 150, 205, 0.04);
+            --card-border: rgba(40, 150, 205, 0.12);
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--page-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--gray-800);
+            overflow-x: hidden;
+        }
+
+        /* Background Decorations */
+        .bg-decoration {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            z-index: 0;
+        }
+
+        .bg-decoration-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(40, 150, 205, 0.3) 0%, transparent 70%);
+            top: -15%;
+            right: -10%;
+        }
+
+        .bg-decoration-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(108, 92, 231, 0.2) 0%, transparent 70%);
+            bottom: -10%;
+            left: -5%;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .offline-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: var(--primary-50);
+            color: var(--primary-600);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 24px;
+        }
+
+        .offline-badge i {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        h1 span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--gray-600);
+            max-width: 500px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+        }
+
+        .reconnect-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            background: var(--accent-gradient);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40, 150, 205, 0.3);
+        }
+
+        .reconnect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 150, 205, 0.4);
+        }
+
+        .reconnect-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .reconnect-btn:hover i {
+            transform: rotate(180deg);
+        }
+
+        /* Courses Section */
+        .courses-section {
+            margin-top: 50px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary-600);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 32px;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .course-card {
+            background: var(--white);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(40, 150, 205, 0.15);
+            border-color: var(--primary-500);
+        }
+
+        .course-card i {
+            font-size: 1.5rem;
+            color: var(--primary-500);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .course-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .course-card p {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* Contact Box */
+        .contact-box {
+            margin-top: 50px;
+            background: var(--primary-50);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+        }
+
+        .contact-box h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-600);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .contact-item:hover {
+            color: var(--gray-900);
+        }
+
+        .contact-item i {
+            font-size: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-links {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-decoration bg-decoration-1"></div>
+    <div class="bg-decoration bg-decoration-2"></div>
+
+    <div class="container">
+        <header>
+            <span class="offline-badge">
+                <i class="fas fa-wifi-slash"></i> Offline Mode
+            </span>
+            <h1>Learning <span>Never Stops</span></h1>
+            <p class="subtitle">
+                It seems you've lost your connection, but don't worry! You can still explore our course catalog below.
+            </p>
+            <button class="reconnect-btn" onclick="window.location.reload()">
+                <i class="fas fa-sync-alt"></i> Try Reconnect
+            </button>
+        </header>
+
+        <section class="courses-section">
+            <h2 class="section-title">Our Courses</h2>
+            <div class="courses-grid">
+                <div class="course-card">
+                    <i class="fas fa-code"></i>
+                    <h3>Full Stack Dev</h3>
+                    <p>Master MongoDB, Express, React, and Node.js with real-world projects.</p>
+                </div>
+                <div class="course-card">
+                    <i class="fas fa-palette"></i>
+                    <h3>UI/UX Design</h3>
+                    <p>Create stunning user interfaces with Figma and modern design principles.</p>
+                </div>
+                <div class="course-card">
+                    <i class="fas fa-pencil-ruler"></i>
+                    <h3>Graphic Design</h3>
+                    <p>Master Adobe Creative Suite, branding, and visual communication.</p>
+                </div>
+                <div class="course-card">
+                    <i class="fab fa-aws"></i>
+                    <h3>AWS Cloud</h3>
+                    <p>Master AWS cloud services and prepare for professional certifications.</p>
+                </div>
+                <div class="course-card">
+                    <i class="fas fa-infinity"></i>
+                    <h3>DevOps Mastery</h3>
+                    <p>Learn Docker, Kubernetes, Jenkins, and automated CI/CD pipelines.</p>
+                </div>
+                <div class="course-card">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>Soft Skills</h3>
+                    <p>Improve communication, interview performance, and career growth.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="contact-box">
+            <h4>Need Help? Connect with us</h4>
+            <div class="contact-links">
+                <a href="mailto:team.craftsoft@gmail.com" class="contact-item">
+                    <i class="fas fa-envelope"></i> team.craftsoft@gmail.com
+                </a>
+                <a href="tel:+917842239090" class="contact-item">
+                    <i class="fas fa-phone"></i> +91 7842239090
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
