@@ -625,13 +625,12 @@
     color: var(--success);
 }
 
-/* Course Curriculum Section - Web Optimized */
+/* Course Curriculum Section */
 .course-curriculum {
     background: var(--section-bg);
     border-radius: var(--radius-2xl);
-    padding: var(--spacing-2xl) var(--spacing-3xl);
+    padding: var(--spacing-2xl);
     margin-bottom: 2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .course-curriculum h2 {
