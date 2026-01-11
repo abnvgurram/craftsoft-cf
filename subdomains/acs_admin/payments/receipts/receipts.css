@@ -492,7 +492,7 @@
     }
 }
 
-/* Filters Bar (Copied from All Payments) */
+/* Filters Bar - Synced with All Payments */
 .filters-bar {
     display: flex;
     align-items: center;
@@ -503,29 +503,12 @@
     background: rgba(40, 150, 205, 0.04);
     border: 1px solid rgba(40, 150, 205, 0.1);
     border-radius: 14px;
-    flex-wrap: wrap;
 }
 
-.filters-bar .search-box {
-    flex: 1;
-    min-width: 250px;
+.search-box {
     max-width: 450px;
-    background: #fff;
-    border: 1px solid var(--admin-input-border, #e2e8f0);
-    border-radius: 12px;
-    padding: 0.55rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
 }
 
-.filters-bar .search-box input {
-    border: none;
-    outline: none;
-    width: 100%;
-    font-size: 0.95rem;
-    background: transparent;
-}
 
 .filter-controls {
     display: flex;
@@ -533,12 +516,30 @@
 }
 
 .filter-controls .form-select {
-    min-width: auto;
-    padding: 0.5rem 1rem;
+    min-width: 140px;
+    padding: 0.5rem 2rem 0.5rem 1rem;
     font-size: 0.85rem;
-    background: #fff;
+}
+
+/* Reset Button */
+.btn-outline.btn-sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
     border: 1px solid var(--admin-input-border);
-    border-radius: 10px;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--admin-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.btn-outline.btn-sm:hover {
+    background: rgba(40, 150, 205, 0.1);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
 }
 
 @media (max-width: 1250px) {
@@ -550,5 +551,6 @@
     .filter-controls {
         display: grid;
         grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
     }
 }
