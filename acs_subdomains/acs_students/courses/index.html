@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Payments | Abhi's Craft Soft</title>
+    <title>My Courses | Abhi's Craft Soft</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,8 +18,8 @@
     <link rel="icon" type="image/svg+xml" href="https://craftsoft.co.in/favicon.svg">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../dashboard/dashboard.css?v=6.0">
-    <link rel="stylesheet" href="payments.css?v=2.0">
+    <link rel="stylesheet" href="../dashboard/dashboard.css?v=7.0">
+    <link rel="stylesheet" href="courses.css?v=1.0">
 </head>
 
 <body>
@@ -38,11 +38,11 @@
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="./" class="nav-item active">
+                <a href="../payments/" class="nav-item">
                     <i class="fas fa-receipt"></i>
                     <span>Payments</span>
                 </a>
-                <a href="../courses/" class="nav-item">
+                <a href="./" class="nav-item active">
                     <i class="fas fa-book-open"></i>
                     <span>My Courses</span>
                 </a>
@@ -71,11 +71,11 @@
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="./" class="mobile-nav-item active">
+                <a href="../payments/" class="mobile-nav-item">
                     <i class="fas fa-receipt"></i>
                     <span>Payments</span>
                 </a>
-                <a href="../courses/" class="mobile-nav-item">
+                <a href="./" class="mobile-nav-item active">
                     <i class="fas fa-book-open"></i>
                     <span>My Courses</span>
                 </a>
@@ -96,7 +96,7 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="page-title">
-                        <h1>Payment History</h1>
+                        <h1>My Courses</h1>
                     </div>
                 </div>
 
@@ -111,31 +111,12 @@
                 </div>
             </header>
 
-            <!-- Summary Cards -->
-            <div class="payment-summary">
-                <div class="summary-card">
-                    <span class="label">Total Paid</span>
-                    <h3 id="total-paid">₹0</h3>
-                </div>
-                <div class="summary-card">
-                    <span class="label">Balance Due</span>
-                    <h3 id="total-pending" class="danger">₹0</h3>
-                </div>
-                <div class="summary-card">
-                    <span class="label">Total Course Fee</span>
-                    <h3 id="total-fee">₹0</h3>
-                </div>
-            </div>
-
-            <!-- Payments List -->
-            <section class="payments-container">
-                <div class="list-header">
-                    <h3>Recent Transactions</h3>
-                </div>
-                <div id="payments-list" class="payments-list">
+            <!-- Courses List -->
+            <section class="courses-container">
+                <div id="courses-list" class="courses-grid-full">
                     <div class="loading-state">
                         <i class="fas fa-circle-notch fa-spin"></i>
-                        <p>Loading your history...</p>
+                        <p>Loading your courses...</p>
                     </div>
                 </div>
             </section>
@@ -161,7 +142,7 @@
     <!-- SDKs -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/assets/admin/js/supabase-config.js?v=5.0"></script>
-    <script src="payments.js?v=2.0"></script>
+    <script src="courses.js?v=1.0"></script>
 </body>
 
 </html>
