@@ -77,8 +77,17 @@
     z-index: 2;
 }
 
+.testimonial-card {
+    background: white;
+    padding: 60px;
+    border-radius: 32px;
+    box-shadow: 0 30px 60px rgba(40, 150, 205, 0.12);
+    border: 1px solid rgba(40, 150, 205, 0.15);
+    position: relative;
+}
+
 .quote-icon {
-    font-size: 42px;
+    font-size: 44px;
     color: var(--admin-primary);
     opacity: 0.2;
     margin-bottom: 25px;
@@ -87,45 +96,20 @@
 
 .testimonial-large {
     font-family: 'Outfit', sans-serif;
-    font-size: 38px;
-    line-height: 1.2;
+    font-size: 36px;
+    line-height: 1.25;
     font-weight: 600;
     color: var(--admin-text-primary);
-    margin-bottom: 40px;
+    margin-bottom: 25px;
 }
 
-.testimonial-author {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.author-avatar {
-    width: 44px;
-    height: 44px;
-    background: var(--admin-primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
+.testimonial-tag {
     font-size: 14px;
-}
-
-.author-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.author-info strong {
-    font-size: 16px;
-    color: var(--admin-text-primary);
-}
-
-.author-info span {
-    font-size: 14px;
-    color: var(--admin-text-secondary);
+    font-weight: 600;
+    color: var(--admin-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
 }
 
 /* Admin Responsive Fixes */
@@ -157,18 +141,15 @@
     color: var(--gray-900);
 }
 
-.logo-text {
+.auth-logo .logo-text {
     font-family: 'Outfit', sans-serif;
     font-size: 1.8rem;
     font-weight: 700;
     color: var(--gray-900);
 }
 
-.logo-text .highlight {
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+.auth-logo .highlight {
+    color: #2896cd;
 }
 
 /* Auth Card */
@@ -372,19 +353,4 @@
 
 .auth-link a:hover {
     text-decoration: underline;
-}
-
-@media (max-width: 1024px) {
-    .auth-hero {
-        display: none;
-    }
-
-    .auth-container {
-        width: 100%;
-        background: var(--admin-bg-main);
-    }
-
-    .auth-card {
-        background: white;
-    }
 }

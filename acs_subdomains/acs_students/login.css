@@ -98,23 +98,22 @@ body {
     gap: 12px;
 }
 
-.login-brand .logo-box {
-    width: 40px;
-    height: 40px;
-    background: var(--primary);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 18px;
+.logo-signature {
+    font-family: 'Italianno', cursive;
+    font-weight: 400;
+    font-size: 2.2rem;
+    color: var(--text-primary);
 }
 
 .login-brand .logo-text {
     font-family: 'Outfit', sans-serif;
-    font-size: 20px;
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--text-primary);
+}
+
+.login-brand .highlight {
+    color: #2896cd;
 }
 
 .login-card-v2 {
@@ -193,55 +192,39 @@ body {
     z-index: 2;
 }
 
+.testimonial-card {
+    background: white;
+    padding: 60px;
+    border-radius: 32px;
+    box-shadow: 0 30px 60px rgba(40, 150, 205, 0.12);
+    border: 1px solid rgba(40, 150, 205, 0.15);
+    position: relative;
+}
+
 .quote-icon {
-    font-size: 48px;
+    font-size: 44px;
     color: var(--primary);
     opacity: 0.2;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     display: block;
 }
 
 .testimonial-large {
     font-family: 'Outfit', sans-serif;
-    font-size: 42px;
-    line-height: 1.15;
+    font-size: 36px;
+    line-height: 1.25;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 40px;
+    margin-bottom: 25px;
 }
 
-.testimonial-author {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.author-avatar {
-    width: 48px;
-    height: 48px;
-    background: var(--primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
+.testimonial-tag {
     font-size: 14px;
-}
-
-.author-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.author-info strong {
-    font-size: 16px;
-    color: var(--text-primary);
-}
-
-.author-info span {
-    font-size: 14px;
-    color: var(--text-secondary);
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
 }
 
 /* Mobile Adjustments (Student Portal) */
