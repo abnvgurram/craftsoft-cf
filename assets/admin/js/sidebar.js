@@ -8,9 +8,13 @@ const AdminSidebar = {
         this.currentPage = pageName;
         this.rootPath = rootPath;
 
+        // Render sidebar and mobile nav
         this.render();
         this.bindEvents();
         this.initSessionTimeout();
+
+        // Inject main footer strip
+        AdminFooter.inject();
 
         // Start remote logout detection
         if (window.Auth && typeof window.Auth.startSessionValidityCheck === 'function') {
@@ -47,12 +51,6 @@ const AdminSidebar = {
                     
                     ${this.navItem('settings', 'Settings', 'fa-gear')}
                 </nav>
-            <!-- Sidebar Footer -->
-            <div class="sidebar-footer">
-                <div class="copyright-text">
-                    Abhi's CraftSoft &copy; ${new Date().getFullYear()} <span class="version-badge">v2.0</span>
-                </div>
-            </div>
             </aside>
         `;
 
@@ -124,11 +122,6 @@ const AdminSidebar = {
                     ${this.mobileNavItem('settings', 'Settings', 'fa-gear')}
                 </nav>
                 
-                <!-- Mobile Nav Footer -->
-                <div class="mobile-nav-footer">
-                     <div class="copyright-text">
-                        Abhi's CraftSoft &copy; ${new Date().getFullYear()} <span class="version-badge">v2.0</span>
-                    </div>
                 </div>
             </div>
         `;
@@ -299,5 +292,32 @@ const AdminHeader = {
     }
 };
 
+// Footer helper
+const AdminFooter = {
+    render() {
+        return `
+            <footer class="admin-footer-strip">
+                <div class="footer-container">
+                    <div class="footer-left">
+                        Abhi's CraftSoft &copy; ${new Date().getFullYear()}
+                    </div>
+                    <div class="footer-right">
+                        <span class="version-badge">v2.0</span>
+                    </div>
+                </div>
+            </footer>
+        `;
+    },
+
+    inject() {
+        // Find main content area
+        const main = document.querySelector('.admin-main');
+        if (main && !document.querySelector('.admin-footer-strip')) {
+            main.insertAdjacentHTML('beforeend', this.render());
+        }
+    }
+};
+
 window.AdminSidebar = AdminSidebar;
 window.AdminHeader = AdminHeader;
+window.AdminFooter = AdminFooter;
