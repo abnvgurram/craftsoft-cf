@@ -190,11 +190,100 @@
         gap: 0.5rem;
     }
 
-    .premium-card {
-        background: var(--admin-card-bg);
-        border: 1px solid var(--admin-card-border);
-        box-shadow: var(--admin-card-shadow);
+    .data-cards {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.25rem;
+        padding-bottom: 2rem;
     }
+
+    .premium-card {
+        background: #fff;
+        border: 1px solid var(--admin-card-border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--admin-card-shadow);
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0;
+        /* Reset margin since we use gap */
+    }
+
+    .premium-card .card-header {
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(40, 150, 205, 0.03);
+        border-bottom: 1px solid var(--table-border);
+    }
+}
+
+.premium-card .card-body {
+    padding: 1.25rem;
+}
+
+.premium-card .card-info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.premium-card .card-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--admin-text-secondary);
+}
+
+.premium-card .card-info-item i {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-500);
+    font-size: 0.9rem;
+}
+
+.premium-card .card-footer {
+    padding: 1rem 1.25rem;
+    background: var(--table-header-bg);
+    border-top: 1px solid var(--table-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Payment Mode Tags */
+.glass-tag {
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.glass-tag.cash {
+    background: #def7ec;
+    color: #03543f;
+}
+
+.glass-tag.upi {
+    background: #e1effe;
+    color: #1e429f;
+}
+
+.glass-tag.transfer {
+    background: #fdf2f2;
+    color: #9b1c1c;
+}
+
+.glass-tag.online {
+    background: #fdf2f2;
+    color: #9b1c1c;
 }
 
 /* Card Header Right - Payment Mode + Amount */
