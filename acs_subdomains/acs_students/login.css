@@ -223,9 +223,25 @@ body {
     transform: translateY(-5px);
 }
 
+.hero-features-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.hero-subline {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    margin-bottom: -5px;
+}
+
 .hero-features {
     display: flex;
-    gap: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .feature-item {

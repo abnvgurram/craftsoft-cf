@@ -138,141 +138,170 @@
                     </h1>
                     <div class="testimonial-tag">Learning Culture</div>
                 </div>
-            </div>
 
-            <!-- New Status Badge -->
-            <div class="hero-status-badge">
-                <div class="status-indicator"></div>
-                <div class="status-text">
-                    <strong>Secure Server</strong>
-                    <span>System Active & Monitored</span>
+                <!-- Admin Modules Grid -->
+                <div class="admin-modules-grid">
+                    <div class="module-badge">
+                        <i class="fas fa-user-graduate"></i>
+                        <div class="module-info">
+                            <span>Students</span>
+                            <span>Records & Performance</span>
+                        </div>
+                    </div>
+                    <div class="module-badge">
+                        <i class="fas fa-book-open"></i>
+                        <div class="module-info">
+                            <span>Courses</span>
+                            <span>Curriculum & Batch</span>
+                        </div>
+                    </div>
+                    <div class="module-badge">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <div class="module-info">
+                            <span>Finances</span>
+                            <span>Payments & receipts</span>
+                        </div>
+                    </div>
+                    <div class="module-badge">
+                        <i class="fas fa-bullhorn"></i>
+                        <div class="module-info">
+                            <span>Inquiries</span>
+                            <span>Leads & Conversions</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-status-badge">
+                    <div class="status-indicator"></div>
+                    <div class="status-text">
+                        <strong>Secure Server</strong>
+                        <span>System Active & Monitored</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../../assets/admin/js/supabase-config.js"></script>
-    <script src="../../assets/admin/js/admin-utils.js"></script>
-    <script src="../../assets/admin/js/auth.js"></script>
+        <!-- Supabase -->
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="../../assets/admin/js/supabase-config.js"></script>
+        <script src="../../assets/admin/js/admin-utils.js"></script>
+        <script src="../../assets/admin/js/auth.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const { Toast, Modal, Validators, FormHelpers, Security, NavigationSecurity, clearTempEmail } = window.AdminUtils;
+        <script>
+            document.addEventListener('DOMContentLoaded', async () => {
+                const { Toast, Modal, Validators, FormHelpers, Security, NavigationSecurity, clearTempEmail } = window.AdminUtils;
 
-            // Initialize public page security (clear forward history)
-            NavigationSecurity.initPublicPage();
+                // Initialize public page security (clear forward history)
+                NavigationSecurity.initPublicPage();
 
-            // Clear any temp email from signup
-            clearTempEmail();
+                // Clear any temp email from signup
+                clearTempEmail();
 
-            // Apply security measures to inputs
-            const identifierInput = document.getElementById('identifier');
-            const passwordInput = document.getElementById('password');
+                // Apply security measures to inputs
+                const identifierInput = document.getElementById('identifier');
+                const passwordInput = document.getElementById('password');
 
-            Security.secureInput(identifierInput);
-            Security.secureInput(passwordInput);
+                Security.secureInput(identifierInput);
+                Security.secureInput(passwordInput);
 
-            // Check URL for email confirmation callback
-            const urlParams = new URLSearchParams(window.location.search);
-            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                // Check URL for email confirmation callback
+                const urlParams = new URLSearchParams(window.location.search);
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
 
-            // Handle email verification callback from Supabase
-            if (hashParams.has('access_token') || urlParams.has('type')) {
-                Toast.info('Processing...', 'Verifying your email');
+                // Handle email verification callback from Supabase
+                if (hashParams.has('access_token') || urlParams.has('type')) {
+                    Toast.info('Processing...', 'Verifying your email');
 
-                // Get the session (Supabase auto-handles the token exchange)
-                setTimeout(async () => {
-                    const session = await window.supabaseConfig.getSession();
+                    // Get the session (Supabase auto-handles the token exchange)
+                    setTimeout(async () => {
+                        const session = await window.supabaseConfig.getSession();
 
-                    if (session) {
-                        // Activate the admin account
-                        const result = await window.Auth.activateAdmin(session.user.id);
+                        if (session) {
+                            // Activate the admin account
+                            const result = await window.Auth.activateAdmin(session.user.id);
 
-                        if (result.success) {
-                            Toast.success('Email Verified!', `Your Admin ID is: ${result.adminId}`);
-                            // Sign out so they can login fresh
-                            await window.Auth.logout();
-                        } else {
-                            Toast.warning('Verification Issue', 'Please try logging in');
+                            if (result.success) {
+                                Toast.success('Email Verified!', `Your Admin ID is: ${result.adminId}`);
+                                // Sign out so they can login fresh
+                                await window.Auth.logout();
+                            } else {
+                                Toast.warning('Verification Issue', 'Please try logging in');
+                            }
                         }
+
+                        // Clean URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }, 1000);
+                }
+
+                // Check if already logged in
+                const session = await window.supabaseConfig.getSession();
+                if (session) {
+                    // Check if admin is active
+                    const admin = await window.Auth.getCurrentAdmin();
+                    if (admin && admin.status === 'ACTIVE') {
+                        window.location.href = 'dashboard/';
+                        return;
+                    }
+                }
+
+                // Login form handler
+                const form = document.getElementById('login-form');
+
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    FormHelpers.clearAllErrors('login-form');
+
+                    const identifier = identifierInput.value.trim();
+                    const password = passwordInput.value;
+
+                    // Validate
+                    let hasError = false;
+
+                    if (!identifier) {
+                        FormHelpers.showError('identifier', 'Please enter your Email, Admin ID or Phone');
+                        hasError = true;
+                    } else if (!Validators.isValidAdminId(identifier) && !Validators.isValidEmail(identifier) && !Validators.isValidPhone(identifier)) {
+                        FormHelpers.showError('identifier', 'Please enter a valid Email, Admin ID (ACS-XX) or Phone');
+                        hasError = true;
                     }
 
-                    // Clean URL
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }, 1000);
-            }
+                    if (!password) {
+                        FormHelpers.showError('password', 'Please enter your password');
+                        hasError = true;
+                    }
 
-            // Check if already logged in
-            const session = await window.supabaseConfig.getSession();
-            if (session) {
-                // Check if admin is active
-                const admin = await window.Auth.getCurrentAdmin();
-                if (admin && admin.status === 'ACTIVE') {
-                    window.location.href = 'dashboard/';
-                    return;
-                }
-            }
+                    if (hasError) return;
 
-            // Login form handler
-            const form = document.getElementById('login-form');
+                    // Set loading state
+                    FormHelpers.setLoading('login-btn', true);
 
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
+                    // Check if Supabase is configured
+                    if (!window.supabaseConfig.isConfigured()) {
+                        FormHelpers.setLoading('login-btn', false);
+                        Modal.alert('warning', 'Configuration Required', 'Supabase is not configured. Please set up your Supabase credentials.');
+                        return;
+                    }
 
-                FormHelpers.clearAllErrors('login-form');
+                    // Attempt login
+                    const result = await window.Auth.login(identifier, password);
 
-                const identifier = identifierInput.value.trim();
-                const password = passwordInput.value;
-
-                // Validate
-                let hasError = false;
-
-                if (!identifier) {
-                    FormHelpers.showError('identifier', 'Please enter your Email, Admin ID or Phone');
-                    hasError = true;
-                } else if (!Validators.isValidAdminId(identifier) && !Validators.isValidEmail(identifier) && !Validators.isValidPhone(identifier)) {
-                    FormHelpers.showError('identifier', 'Please enter a valid Email, Admin ID (ACS-XX) or Phone');
-                    hasError = true;
-                }
-
-                if (!password) {
-                    FormHelpers.showError('password', 'Please enter your password');
-                    hasError = true;
-                }
-
-                if (hasError) return;
-
-                // Set loading state
-                FormHelpers.setLoading('login-btn', true);
-
-                // Check if Supabase is configured
-                if (!window.supabaseConfig.isConfigured()) {
                     FormHelpers.setLoading('login-btn', false);
-                    Modal.alert('warning', 'Configuration Required', 'Supabase is not configured. Please set up your Supabase credentials.');
-                    return;
-                }
 
-                // Attempt login
-                const result = await window.Auth.login(identifier, password);
+                    if (result.success) {
+                        Toast.success('Login Successful', `Welcome back, ${result.admin.full_name}!`);
 
-                FormHelpers.setLoading('login-btn', false);
-
-                if (result.success) {
-                    Toast.success('Login Successful', `Welcome back, ${result.admin.full_name}!`);
-
-                    setTimeout(() => {
-                        window.location.href = 'dashboard/';
-                    }, 1000);
-                } else {
-                    Toast.error('Login Failed', result.error);
-                }
+                        setTimeout(() => {
+                            window.location.href = 'dashboard/';
+                        }, 1000);
+                    } else {
+                        Toast.error('Login Failed', result.error);
+                    }
+                });
             });
-        });
-    </script>
+        </script>
 </body>
 
 </html>

@@ -59,6 +59,7 @@
     padding: 100px;
     position: relative;
     border-left: 1px solid rgba(40, 150, 205, 0.1);
+    overflow: hidden;
 }
 
 .auth-hero-v2::before {
@@ -68,15 +69,33 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: radial-gradient(rgba(40, 150, 205, 0.2) 0.5px, transparent 0.5px);
-    background-size: 30px 30px;
-    opacity: 0.3;
+    background-image:
+        radial-gradient(rgba(40, 150, 205, 0.15) 1.5px, transparent 1.5px),
+        linear-gradient(rgba(40, 150, 205, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(40, 150, 205, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px, 120px 120px, 120px 120px;
+    background-position: center;
+    opacity: 0.8;
+}
+
+.auth-hero-v2::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(40, 150, 205, 0.1) 0%, transparent 70%);
+    z-index: 1;
 }
 
 .hero-content-v2 {
     max-width: 550px;
     position: relative;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
 }
 
 .testimonial-card {
@@ -112,6 +131,59 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     display: inline-block;
+}
+
+.admin-modules-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.module-badge {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 15px 20px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid rgba(40, 150, 205, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
+}
+
+.module-badge:hover {
+    transform: translateY(-3px);
+    border-color: rgba(40, 150, 205, 0.3);
+    box-shadow: 0 10px 25px rgba(40, 150, 205, 0.08);
+}
+
+.module-badge i {
+    width: 32px;
+    height: 32px;
+    background: rgba(40, 150, 205, 0.1);
+    color: var(--admin-primary);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.module-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.module-info span:first-child {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--admin-text-primary);
+}
+
+.module-info span:last-child {
+    font-size: 11px;
+    color: var(--admin-text-secondary);
 }
 
 .hero-status-badge {
