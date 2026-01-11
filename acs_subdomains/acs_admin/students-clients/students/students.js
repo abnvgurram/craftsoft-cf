@@ -321,9 +321,21 @@ function renderStudentsList(students) {
                         <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
                             <i class="fa-brands fa-whatsapp"></i> <span>Chat</span>
                         </a>
-                        <button class="card-action-btn delete btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}">
-                            <i class="fa-solid fa-trash"></i> <span>Delete</span>
-                        </button>
+                        ${s.status === 'INACTIVE'
+                ? `
+                            <button class="card-action-btn success btn-reactivate-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}">
+                                <i class="fa-solid fa-rotate-left"></i> <span>Reactivate</span>
+                            </button>
+                            <button class="card-action-btn delete btn-perm-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}">
+                                <i class="fa-solid fa-trash"></i> <span>Forever</span>
+                            </button>
+                            `
+                : `
+                            <button class="card-action-btn delete btn-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}">
+                                <i class="fa-solid fa-user-slash"></i> <span>Deactivate</span>
+                            </button>
+                            `
+            }
                     </div>
                 </div>
             `).join('')}

@@ -856,7 +856,9 @@
 
 .card-actions {
     display: flex;
-    gap: 0.75rem;
+    flex-wrap: wrap;
+    /* Allow buttons to wrap if they don't fit */
+    gap: 0.5rem;
     padding-top: 1.25rem;
     border-top: 1px solid var(--gray-100, #f1f5f9);
 }
@@ -885,6 +887,10 @@
 
 .card-action-btn.whatsapp {
     color: #128C7E;
+}
+
+.card-action-btn.success {
+    color: #10b981;
 }
 
 .card-action-btn.delete {
@@ -976,6 +982,17 @@
 
     .checkbox-list {
         max-height: 200px;
+    }
+
+    /* Stack card actions on very small screens */
+    .card-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .card-action-btn {
+        padding: 0.5rem;
+        font-size: 0.8rem;
     }
 }
 
