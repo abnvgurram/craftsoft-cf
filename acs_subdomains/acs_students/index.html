@@ -20,7 +20,7 @@
     <link rel="icon" type="image/svg+xml" href="https://craftsoft.co.in/favicon.svg">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/login.css?v=5.0">
+    <link rel="stylesheet" href="./login.css?v=6.0">
 </head>
 
 <body>
@@ -48,11 +48,10 @@
 
                     <form id="loginForm">
                         <div class="input-group">
-                            <label for="identifier">Student ID, Email or Phone</label>
+                            <label for="identifier">Student ID, Email or Phone <span class="required">*</span></label>
                             <div class="input-wrapper">
                                 <i class="fas fa-id-card"></i>
-                                <input type="text" id="identifier"
-                                    placeholder="Your Student ID or registered email/phone" autocomplete="username"
+                                <input type="text" id="identifier" placeholder="Student ID" autocomplete="username"
                                     required>
                             </div>
                         </div>
@@ -64,7 +63,11 @@
                     </form>
 
                     <div class="support-footer">
-                        <p>Having trouble? <a href="mailto:team.craftsoft@gmail.com">Contact Support</a></p>
+                        <span>Having trouble?</span>
+                        <a href="https://wa.me/917842239090?text=Hi! I need help logging into my Student Portal."
+                            target="_blank" class="whatsapp-btn">
+                            <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                        </a>
                     </div>
                 </div>
 
