@@ -86,13 +86,21 @@ body {
     display: flex;
     flex-direction: column;
     padding: 60px;
-    justify-content: space-between;
-    background: #f0f7fb;
+    justify-content: center;
+    /* Center vertically */
+    align-items: center;
+    /* Center horizontally */
+    background: linear-gradient(rgba(240, 247, 251, 0.9), rgba(240, 247, 251, 0.9)), url('../../assets/images/about-team.png');
+    background-size: cover;
+    background-position: center;
     position: relative;
     z-index: 10;
 }
 
 .login-brand {
+    position: absolute;
+    top: 40px;
+    left: 40px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -118,13 +126,18 @@ body {
 
 .login-card-v2 {
     width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
+    max-width: 420px;
+    background: white;
+    /* Give it a solid background since the container has an image */
+    padding: 45px;
+    border-radius: 28px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
 }
 
 .login-card-v2 .header {
     margin-bottom: 35px;
-    text-align: left;
+    text-align: center;
+    /* Center header text */
 }
 
 .login-card-v2 .header h2 {
@@ -141,6 +154,9 @@ body {
 }
 
 .login-footer-v2 {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
     display: flex;
     align-items: center;
     gap: 12px;
