@@ -370,7 +370,7 @@ function renderBankTab() {
             <div class="settings-section-header">
                 <h3 class="settings-section-title">
                     <i class="fa-solid fa-building-columns"></i>
-                    Bank & Payment Details
+                    Bank Details
                 </h3>
                 <button class="settings-edit-btn" data-section="bank">
                     <i class="fa-solid fa-pen"></i> Edit
@@ -378,27 +378,12 @@ function renderBankTab() {
             </div>
             <div class="settings-section-body">
                 <div class="settings-display">
-                    ${renderFieldRow('Course GST Rate', settingsData.course_gst_rate ? `${settingsData.course_gst_rate}%` : '18%')}
-                    ${renderFieldRow('Service GST Rate', settingsData.service_gst_rate ? `${settingsData.service_gst_rate}%` : '18%')}
-                    <div class="section-divider" style="margin: 1.5rem 0; opacity: 0.3;"></div>
                     ${renderFieldRow('Account Number', maskValue(settingsData.bank_account_number, 4))}
                     ${renderFieldRow('IFSC Code', settingsData.bank_ifsc_code)}
                     ${renderFieldRow('Branch', settingsData.bank_branch_name)}
                     ${renderFieldRow('UPI ID', maskValue(settingsData.upi_id, 4, '@'))}
                 </div>
                 <div class="settings-edit-form">
-                    <div class="form-row">
-                        <div class="settings-form-group">
-                            <label>Course GST Rate (%)</label>
-                            <input type="number" id="edit-course_gst_rate" value="${settingsData.course_gst_rate || '18'}" placeholder="e.g. 18" step="0.01">
-                            <span class="input-hint">Tax rate for academic courses</span>
-                        </div>
-                        <div class="settings-form-group">
-                            <label>Service GST Rate (%)</label>
-                            <input type="number" id="edit-service_gst_rate" value="${settingsData.service_gst_rate || '18'}" placeholder="e.g. 18" step="0.01">
-                            <span class="input-hint">Tax rate for consulting/services</span>
-                        </div>
-                    </div>
                     <div class="settings-form-group">
                         <label>Account Number</label>
                         <input type="text" id="edit-bank_account_number" value="${settingsData.bank_account_number || ''}" placeholder="Enter account number">
@@ -418,7 +403,45 @@ function renderBankTab() {
                     <div class="settings-form-actions">
                         <button class="btn btn-outline cancel-edit-btn" data-section="bank">Cancel</button>
                         <button class="btn btn-primary save-edit-btn" data-section="bank">
-                            <i class="fa-solid fa-check"></i> Save Details
+                            <i class="fa-solid fa-check"></i> Save Bank Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section" id="section-gst" style="margin-top: 2rem;">
+            <div class="settings-section-header">
+                <h3 class="settings-section-title">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    GST Details
+                </h3>
+                <button class="settings-edit-btn" data-section="gst">
+                    <i class="fa-solid fa-pen"></i> Edit
+                </button>
+            </div>
+            <div class="settings-section-body">
+                <div class="settings-display">
+                    ${renderFieldRow('Course GST Rate', settingsData.course_gst_rate ? `${settingsData.course_gst_rate}%` : '18%')}
+                    ${renderFieldRow('Service GST Rate', settingsData.service_gst_rate ? `${settingsData.service_gst_rate}%` : '18%')}
+                </div>
+                <div class="settings-edit-form">
+                    <div class="form-row">
+                        <div class="settings-form-group">
+                            <label>Course GST Rate (%)</label>
+                            <input type="number" id="edit-course_gst_rate" value="${settingsData.course_gst_rate || '18'}" placeholder="e.g. 18" step="0.01">
+                            <span class="input-hint">Tax rate for academic courses</span>
+                        </div>
+                        <div class="settings-form-group">
+                            <label>Service GST Rate (%)</label>
+                            <input type="number" id="edit-service_gst_rate" value="${settingsData.service_gst_rate || '18'}" placeholder="e.g. 18" step="0.01">
+                            <span class="input-hint">Tax rate for consulting/services</span>
+                        </div>
+                    </div>
+                    <div class="settings-form-actions">
+                        <button class="btn btn-outline cancel-edit-btn" data-section="gst">Cancel</button>
+                        <button class="btn btn-primary save-edit-btn" data-section="gst">
+                            <i class="fa-solid fa-check"></i> Save GST Details
                         </button>
                     </div>
                 </div>
@@ -720,12 +743,14 @@ async function saveSection(section) {
         } else if (section === 'contact') {
             keysToSave = ['primary_phone', 'secondary_phone', 'contact_email'];
         } else if (section === 'bank') {
-            keysToSave = ['course_gst_rate', 'service_gst_rate', 'bank_account_number', 'bank_ifsc_code', 'bank_branch_name', 'upi_id'];
+            keysToSave = ['bank_account_number', 'bank_ifsc_code', 'bank_branch_name', 'upi_id'];
             // Get branch name from lookup
             const branchText = document.getElementById('ifsc-branch-text')?.textContent || '';
             if (branchText && !branchText.includes('Invalid')) {
                 document.getElementById('edit-bank_branch_name') || (settingsData.bank_branch_name = branchText);
             }
+        } else if (section === 'gst') {
+            keysToSave = ['course_gst_rate', 'service_gst_rate'];
         } else if (section === 'timeout') {
             const selected = document.querySelector('.timeout-option.selected');
             if (selected) {
