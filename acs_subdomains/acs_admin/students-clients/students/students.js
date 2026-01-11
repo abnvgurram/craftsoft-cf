@@ -350,7 +350,7 @@ function renderStudentsList(students) {
     document.querySelectorAll('.btn-reactivate-student').forEach(btn =>
         btn.addEventListener('click', () => reactivateStudent(btn.dataset.id, btn.dataset.name)));
     document.querySelectorAll('.btn-perm-delete-student').forEach(btn =>
-        btn.addEventListener('click', () => permanentlyDeleteStudent(btn.dataset.id, btn.dataset.name)));
+        btn.addEventListener('click', () => showPermDeleteConfirm(btn.dataset.id, btn.dataset.name)));
 
     bindBulkActions();
 }
@@ -852,6 +852,14 @@ async function saveStudent() {
 function bindDeleteEvents() {
     document.getElementById('cancel-delete-btn')?.addEventListener('click', hideDeleteConfirm);
     document.getElementById('confirm-delete-btn')?.addEventListener('click', confirmDelete);
+
+    // Permanent Delete events
+    document.getElementById('cancel-perm-delete-btn')?.addEventListener('click', hidePermDeleteConfirm);
+    document.getElementById('confirm-perm-delete-btn')?.addEventListener('click', confirmPermDelete);
+    document.getElementById('perm-delete-confirm-input')?.addEventListener('input', (e) => {
+        const btn = document.getElementById('confirm-perm-delete-btn');
+        btn.disabled = e.target.value !== 'CONFIRM';
+    });
 }
 
 function showDeleteConfirm(id, name) {
@@ -863,6 +871,24 @@ function showDeleteConfirm(id, name) {
 function hideDeleteConfirm() {
     deleteTargetId = null;
     document.getElementById('delete-overlay').style.display = 'none';
+}
+
+function showPermDeleteConfirm(id, name) {
+    deleteTargetId = id;
+    const overlay = document.getElementById('perm-delete-overlay');
+    const input = document.getElementById('perm-delete-confirm-input');
+    const btn = document.getElementById('confirm-perm-delete-btn');
+
+    document.getElementById('perm-delete-name').textContent = name;
+    input.value = '';
+    btn.disabled = true;
+    overlay.style.display = 'flex';
+    input.focus();
+}
+
+function hidePermDeleteConfirm() {
+    deleteTargetId = null;
+    document.getElementById('perm-delete-overlay').style.display = 'none';
 }
 
 async function confirmDelete() {
@@ -913,68 +939,63 @@ async function confirmDelete() {
 
 // Reactivate an inactive student
 async function reactivateStudent(id, name) {
-    const { Toast } = window.AdminUtils;
+    const { Modal, Toast } = window.AdminUtils;
 
-    if (!confirm(`Reactivate ${name}? They will appear in the active students list again.`)) {
-        return;
-    }
+    Modal.confirm(
+        'Reactivate Student',
+        `Are you sure you want to reactivate ${name}? They will appear in the active students list again.`,
+        async () => {
+            try {
+                const { error } = await window.supabaseClient
+                    .from('students')
+                    .update({
+                        status: 'ACTIVE',
+                        deleted_at: null
+                    })
+                    .eq('id', id);
 
-    try {
-        const { error } = await window.supabaseClient
-            .from('students')
-            .update({
-                status: 'ACTIVE',
-                deleted_at: null
-            })
-            .eq('id', id);
+                if (error) throw error;
 
-        if (error) throw error;
-
-        Toast.success('Reactivated', `${name} is now active again.`);
-        await loadStudents();
-    } catch (e) {
-        console.error('Reactivation failed:', e);
-        Toast.error('Error', 'Failed to reactivate student');
-    }
+                Toast.success('Reactivated', `${name} is now active again.`);
+                await loadStudents();
+            } catch (e) {
+                console.error('Reactivation failed:', e);
+                Toast.error('Error', 'Failed to reactivate student');
+            }
+        }
+    );
 }
 
-// Permanently delete a student (DANGER - irreversible!)
-async function permanentlyDeleteStudent(id, name) {
+// Logic for permanent deletion from the custom modal
+async function confirmPermDelete() {
+    if (!deleteTargetId) return;
     const { Toast } = window.AdminUtils;
+    const btn = document.getElementById('confirm-perm-delete-btn');
+    const name = document.getElementById('perm-delete-name').textContent;
 
-    // Extra confirmation with typing
-    const confirmation = prompt(
-        `⚠️ PERMANENT DELETE ⚠️\n\n` +
-        `This will PERMANENTLY delete ${name} and ALL their:\n` +
-        `• Payment records\n` +
-        `• Receipts\n` +
-        `• History\n\n` +
-        `This CANNOT be undone!\n\n` +
-        `Type "CONFIRM" to proceed:`
-    );
-
-    if (confirmation !== 'CONFIRM') {
-        Toast.info('Cancelled', 'Permanent delete cancelled.');
-        return;
-    }
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
     try {
         // Delete associated receipts
-        await window.supabaseClient.from('receipts').delete().eq('student_id', id);
+        await window.supabaseClient.from('receipts').delete().eq('student_id', deleteTargetId);
 
         // Delete associated payments
-        await window.supabaseClient.from('payments').delete().eq('student_id', id);
+        await window.supabaseClient.from('payments').delete().eq('student_id', deleteTargetId);
 
         // Delete the student
-        const { error } = await window.supabaseClient.from('students').delete().eq('id', id);
+        const { error } = await window.supabaseClient.from('students').delete().eq('id', deleteTargetId);
 
         if (error) throw error;
 
-        Toast.success('Deleted', `${name} has been permanently removed.`);
+        Toast.success('Permanently Deleted', `${name} and all records removed.`);
+        hidePermDeleteConfirm();
         await loadStudents();
     } catch (e) {
         console.error('Permanent delete failed:', e);
         Toast.error('Error', 'Failed to permanently delete student');
+        btn.disabled = false;
+        btn.innerHTML = 'Delete Forever';
     }
 }
 
