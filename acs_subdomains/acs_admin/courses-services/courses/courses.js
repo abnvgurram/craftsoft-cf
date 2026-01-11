@@ -162,7 +162,7 @@ function renderCoursesList(courses) {
     });
 
     document.querySelectorAll('.btn-edit-fee').forEach(btn =>
-        btn.addEventListener('click', () => openFeeForm(btn.dataset.id, btn.dataset.code, btn.dataset.name, btn.dataset.fee)));
+        btn.addEventListener('click', () => openFeeForm(btn.dataset.id, btn.dataset.code, btn.dataset.name, btn.dataset.base, btn.dataset.gst, btn.dataset.total)));
 }
 
 function formatNumber(num) {
