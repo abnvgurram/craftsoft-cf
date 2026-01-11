@@ -84,6 +84,11 @@ CREATE POLICY "Active admins can manage inquiries" ON inquiries
 DROP POLICY IF EXISTS "Website can submit inquiries" ON inquiries;
 CREATE POLICY "Website can submit inquiries" ON inquiries
     FOR INSERT TO anon
-    WITH CHECK (true);
+    WITH CHECK (
+        name IS NOT NULL AND 
+        phone IS NOT NULL AND 
+        length(name) > 0 AND 
+        length(phone) > 0
+    );
 
 RAISE NOTICE 'Security hardening completed successfully.';
