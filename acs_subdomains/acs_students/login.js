@@ -87,10 +87,11 @@
     // Lookup Student from DB
     async function lookupStudent(val) {
         // Search by student_id (text code), email or phone
+        // We wrap the value in double quotes to handle special characters like dashes in IDs
         const { data, error } = await window.supabaseClient
             .from('students')
             .select('*')
-            .or(`student_id.eq.${val},email.eq.${val},phone_number.eq.${val}`)
+            .or(`student_id.eq."${val}",email.eq."${val}",phone_number.eq."${val}"`)
             .single();
 
         if (error) {
