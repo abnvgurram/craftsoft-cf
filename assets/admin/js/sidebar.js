@@ -50,7 +50,7 @@ const AdminSidebar = {
             <!-- Sidebar Footer -->
             <div class="sidebar-footer">
                 <div class="copyright-text">
-                    CraftSoft &copy; ${new Date().getFullYear()} <span class="version-badge">v2.0</span>
+                    Abhi's CraftSoft &copy; ${new Date().getFullYear()} <span class="version-badge">v2.0</span>
                 </div>
             </div>
             </aside>
@@ -127,7 +127,7 @@ const AdminSidebar = {
                 <!-- Mobile Nav Footer -->
                 <div class="mobile-nav-footer">
                      <div class="copyright-text">
-                        CraftSoft &copy; ${new Date().getFullYear()} <span class="version-badge">v2.0</span>
+                        Abhi's CraftSoft &copy; ${new Date().getFullYear()} <span class="version-badge">v2.0</span>
                     </div>
                 </div>
             </div>
