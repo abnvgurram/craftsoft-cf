@@ -15,21 +15,17 @@
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="https://craftsoft.co.in/favicon.svg">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="dashboard.css?v=5.0">
+    <link rel="stylesheet" href="dashboard.css?v=6.0">
 </head>
 
 <body>
     <div class="app-container">
-        <!-- Sidebar Overlay -->
-        <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
-        <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar">
+        <!-- Desktop Sidebar -->
+        <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <i class="fas fa-graduation-cap"></i>
@@ -58,12 +54,45 @@
             </div>
         </aside>
 
+        <!-- Mobile Nav Overlay -->
+        <div id="mobile-nav-overlay" class="mobile-nav-overlay"></div>
+
+        <!-- Mobile Nav Sheet (Slide-up like Admin) -->
+        <div id="mobile-nav-sheet" class="mobile-nav-sheet">
+            <div class="mobile-nav-header">
+                <span class="mobile-nav-title">Navigation</span>
+                <button id="mobile-nav-close" class="mobile-nav-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="mobile-nav-list">
+                <a href="./" class="mobile-nav-item active">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="../payments/" class="mobile-nav-item">
+                    <i class="fas fa-receipt"></i>
+                    <span>Payments</span>
+                </a>
+                <a href="#" class="mobile-nav-item" style="opacity: 0.5; pointer-events: none;">
+                    <i class="fas fa-book-open"></i>
+                    <span>My Courses (Coming Soon)</span>
+                </a>
+            </nav>
+            <div class="mobile-nav-footer">
+                <button id="btn-logout-mobile" class="logout-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout Account</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header -->
             <header class="top-bar">
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <button id="menu-toggle" class="menu-toggle">
+                    <button id="mobile-menu-btn" class="mobile-menu-btn">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="page-title">
@@ -71,13 +100,15 @@
                     </div>
                 </div>
 
-                <!-- Premium User Card -->
-                <div class="user-account-panel">
-                    <div class="user-details">
-                        <span id="user-name" class="user-name">Loading...</span>
-                        <span id="user-id" class="user-role">ID: Loading...</span>
+                <!-- Account Panel (Gmail-Style - Match Admin) -->
+                <div class="account-panel">
+                    <div class="account-trigger">
+                        <div id="user-initials" class="account-avatar">?</div>
+                        <div class="account-info">
+                            <span id="user-name" class="account-name">Loading...</span>
+                            <span id="user-id" class="account-id">ID: Loading...</span>
+                        </div>
                     </div>
-                    <div id="user-initials" class="user-avatar">?</div>
                 </div>
             </header>
 
@@ -96,18 +127,14 @@
                 <!-- Stats Cards -->
                 <section class="stats-container">
                     <div class="stat-card">
-                        <div class="stat-icon blue">
-                            <i class="fas fa-check-double"></i>
-                        </div>
+                        <div class="stat-icon blue"><i class="fas fa-check-double"></i></div>
                         <div class="stat-info">
                             <span class="label">Total Paid</span>
                             <span id="total-paid" class="value">₹0</span>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon red">
-                            <i class="fas fa-wallet"></i>
-                        </div>
+                        <div class="stat-icon red"><i class="fas fa-wallet"></i></div>
                         <div class="stat-info">
                             <span class="label">Balance Due</span>
                             <span id="total-pending" class="value">₹0</span>
@@ -117,9 +144,7 @@
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon green">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
+                        <div class="stat-icon green"><i class="fas fa-calendar-check"></i></div>
                         <div class="stat-info">
                             <span class="label">Next Fee Due</span>
                             <span id="next-due" class="value">Loading...</span>
@@ -144,12 +169,12 @@
                 <section class="quick-payments">
                     <div class="section-header">
                         <h3>Quick History</h3>
-                        <a href="../payments/" class="view-all">See Full History</a>
+                        <a href="../payments/" class="view-all"
+                            style="color: var(--primary); font-weight: 600; font-size: 13px; text-decoration: none;">See
+                            Full History</a>
                     </div>
                     <div class="recent-list" id="recent-payments">
-                        <div class="loading-state">
-                            <i class="fas fa-sync fa-spin"></i>
-                        </div>
+                        <div class="loading-state"><i class="fas fa-sync fa-spin"></i></div>
                     </div>
                 </section>
             </div>
@@ -159,9 +184,7 @@
     <!-- Modal System -->
     <div id="modal-overlay" class="modal-overlay">
         <div id="modal-content" class="modal-content">
-            <div id="modal-icon" class="modal-icon warning">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
+            <div id="modal-icon" class="modal-icon warning"><i class="fas fa-exclamation-triangle"></i></div>
             <h3 id="modal-title">Confirm Action</h3>
             <p id="modal-message">Are you sure you want to proceed?</p>
             <div id="modal-actions" class="modal-actions">
@@ -171,13 +194,13 @@
         </div>
     </div>
 
-    <!-- Notification Toast -->
+    <!-- Toast -->
     <div id="toast" class="toast"></div>
 
     <!-- SDKs -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/assets/admin/js/supabase-config.js?v=5.0"></script>
-    <script src="dashboard.js?v=5.0"></script>
+    <script src="dashboard.js?v=6.0"></script>
 </body>
 
 </html>

@@ -17,11 +17,13 @@
     const coursesList = document.getElementById('courses-list');
     const recentPayments = document.getElementById('recent-payments');
     const btnLogout = document.getElementById('btn-logout');
+    const btnLogoutMobile = document.getElementById('btn-logout-mobile');
 
-    // Menu Controls
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    // Mobile Nav Controls
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const mobileNavSheet = document.getElementById('mobile-nav-sheet');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
 
     let studentData = null;
 
@@ -127,7 +129,7 @@
     async function initDashboard() {
         userName.textContent = studentData.name;
         firstName.textContent = studentData.name.split(' ')[0];
-        userId.textContent = `ID: ${studentData.student_id}`;
+        userId.textContent = studentData.student_id;
 
         const names = studentData.name.split(' ');
         userInitials.textContent = names.length > 1 ? (names[0][0] + names[1][0]).toUpperCase() : names[0][0].toUpperCase();
@@ -137,7 +139,6 @@
             await fetchPayments(profile);
             await fetchEnrolledCourses(profile);
 
-            // Next Due: JOIN_DATE + 30 Days
             const joinDate = profile.date_of_joining || profile.joining_date || profile.created_at;
             calculateNextDue(joinDate);
         }
@@ -257,15 +258,26 @@
         });
     }
 
-    function toggleMenu() {
-        sidebar.classList.toggle('active');
-        sidebarOverlay.classList.toggle('active');
+    // Mobile Nav Toggle (Slide-up Sheet)
+    function openMobileNav() {
+        mobileNavOverlay.classList.add('open');
+        mobileNavSheet.classList.add('open');
+        document.body.classList.add('modal-open');
     }
 
-    menuToggle.addEventListener('click', toggleMenu);
-    sidebarOverlay.addEventListener('click', toggleMenu);
+    function closeMobileNav() {
+        mobileNavOverlay.classList.remove('open');
+        mobileNavSheet.classList.remove('open');
+        document.body.classList.remove('modal-open');
+    }
 
-    btnLogout.addEventListener('click', () => {
+    mobileMenuBtn.addEventListener('click', openMobileNav);
+    mobileNavClose.addEventListener('click', closeMobileNav);
+    mobileNavOverlay.addEventListener('click', closeMobileNav);
+
+    // Logout with Confirmation
+    function handleLogout() {
+        closeMobileNav();
         Modal.show({
             title: "Logout?",
             message: "Are you sure you want to exit your student portal?",
@@ -276,7 +288,10 @@
                 window.location.href = '../';
             }
         });
-    });
+    }
+
+    btnLogout.addEventListener('click', handleLogout);
+    btnLogoutMobile.addEventListener('click', handleLogout);
 
     checkAuth();
 

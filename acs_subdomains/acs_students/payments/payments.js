@@ -15,11 +15,13 @@
     const totalFeeEl = document.getElementById('total-fee');
     const paymentsList = document.getElementById('payments-list');
     const btnLogout = document.getElementById('btn-logout');
+    const btnLogoutMobile = document.getElementById('btn-logout-mobile');
 
-    // Menu Controls
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    // Mobile Nav Controls
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const mobileNavSheet = document.getElementById('mobile-nav-sheet');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
 
     let studentData = null;
 
@@ -85,16 +87,13 @@
             window.location.href = '../';
             return;
         }
-
-        const data = JSON.parse(session);
-        studentData = data;
+        studentData = JSON.parse(session);
         initPage();
     }
 
     async function initPage() {
-        // Basic Info
         userNameEl.textContent = studentData.name;
-        userIdEl.textContent = `ID: ${studentData.student_id}`;
+        userIdEl.textContent = studentData.student_id;
         userInitialsEl.textContent = studentData.name.split(' ').map(n => n[0]).join('').toUpperCase();
 
         await loadPaymentData();
@@ -102,7 +101,6 @@
 
     async function loadPaymentData() {
         try {
-            // 1. Fetch Profile for totals
             const { data: profile, error: pErr } = await window.supabaseClient
                 .from('students')
                 .select('final_fee')
@@ -111,7 +109,6 @@
 
             if (pErr) throw pErr;
 
-            // 2. Fetch Payments
             const { data: payments, error: payErr } = await window.supabaseClient
                 .from('payments')
                 .select('*')
@@ -123,7 +120,6 @@
             let totalPaid = 0;
             payments.forEach(p => totalPaid += (p.amount_paid || 0));
 
-            // Summary
             const totalFee = profile.final_fee || 0;
             const pending = totalFee - totalPaid;
 
@@ -167,16 +163,26 @@
         });
     }
 
-    // Toggle Menu
-    function toggleMenu() {
-        sidebar.classList.toggle('active');
-        sidebarOverlay.classList.toggle('active');
+    // Mobile Nav Toggle
+    function openMobileNav() {
+        mobileNavOverlay.classList.add('open');
+        mobileNavSheet.classList.add('open');
+        document.body.classList.add('modal-open');
     }
 
-    menuToggle.addEventListener('click', toggleMenu);
-    sidebarOverlay.addEventListener('click', toggleMenu);
+    function closeMobileNav() {
+        mobileNavOverlay.classList.remove('open');
+        mobileNavSheet.classList.remove('open');
+        document.body.classList.remove('modal-open');
+    }
 
-    btnLogout.addEventListener('click', () => {
+    mobileMenuBtn.addEventListener('click', openMobileNav);
+    mobileNavClose.addEventListener('click', closeMobileNav);
+    mobileNavOverlay.addEventListener('click', closeMobileNav);
+
+    // Logout
+    function handleLogout() {
+        closeMobileNav();
         Modal.show({
             title: "Logout?",
             message: "Are you sure you want to end your session?",
@@ -187,7 +193,10 @@
                 window.location.href = '../';
             }
         });
-    });
+    }
+
+    btnLogout.addEventListener('click', handleLogout);
+    btnLogoutMobile.addEventListener('click', handleLogout);
 
     checkAuth();
 
