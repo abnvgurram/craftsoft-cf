@@ -438,3 +438,32 @@ body {
         display: none;
     }
 }
+
+/* Toast Notifications */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #1e293b;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    z-index: 1000;
+    font-size: 14px;
+    font-weight: 500;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast.error {
+    background: #ef4444;
+}
+
+.toast.success {
+    background: #10b981;
+}

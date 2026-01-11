@@ -12,12 +12,29 @@
     const userId = document.getElementById('user-id');
     const totalPaidEl = document.getElementById('total-paid');
     const totalPendingEl = document.getElementById('total-pending');
-    const nextDueEl = document.getElementById('next-due');
     const coursesList = document.getElementById('courses-list');
     const recentPayments = document.getElementById('recent-payments');
     const btnLogout = document.getElementById('btn-logout');
 
     let studentData = null;
+
+    // Toast Utility
+    const Toast = {
+        show(msg, type = 'info') {
+            let toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = 'toast';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        },
+        success(msg) { this.show(msg, 'success'); },
+        error(msg) { this.show(msg, 'error'); }
+    };
 
     // Check Authentication
     async function checkAuth() {
@@ -28,9 +45,10 @@
         }
 
         const data = JSON.parse(session);
-        // Verify session is not too old (e.g. 24 hours)
         const loginTime = new Date(data.loginTime);
         const now = new Date();
+
+        // Session valid for 24 hours
         if ((now - loginTime) > 24 * 60 * 60 * 1000) {
             localStorage.removeItem('acs_student_session');
             window.location.href = '../';
@@ -48,9 +66,11 @@
         firstName.textContent = studentData.name.split(' ')[0];
         userId.textContent = studentData.student_id;
 
-        await fetchCompleteProfile();
-        await fetchPayments();
-        await fetchEnrolledCourses();
+        const profile = await fetchCompleteProfile();
+        if (profile) {
+            await fetchPayments(profile);
+            await fetchEnrolledCourses(profile);
+        }
     }
 
     // Fetch full data from DB
@@ -58,19 +78,24 @@
         try {
             const { data, error } = await window.supabaseClient
                 .from('students')
-                .select('*, courses:student_courses(course_id, status)')
+                .select('*')
                 .eq('id', studentData.id)
                 .single();
 
-            if (error) throw error;
-            // Update UI with any extra data if needed
+            if (error) {
+                // If student record not found, suggest contacting admin
+                Toast.error("Profile not found. Please contact admin.");
+                throw error;
+            }
+            return data;
         } catch (err) {
             console.error('Profile fetch error:', err);
+            return null;
         }
     }
 
     // Fetch Payments & Totals
-    async function fetchPayments() {
+    async function fetchPayments(profile) {
         try {
             const { data: payments, error } = await window.supabaseClient
                 .from('payments')
@@ -83,65 +108,62 @@
             let totalPaid = 0;
             payments.forEach(p => totalPaid += (p.amount_paid || 0));
 
-            // Format Currency
+            // Update Total Paid
             totalPaidEl.textContent = new Intl.NumberFormat('en-IN', {
                 style: 'currency', currency: 'INR', maximumFractionDigits: 0
             }).format(totalPaid);
 
-            // Render Recent
+            // Render Recent list
             renderRecentPayments(payments.slice(0, 3));
 
-            // Note: Total Pending will be fetched from the course totals or a separate query
-            calculatePending(studentData.id, totalPaid);
+            // Calculate Balance Due (Pending)
+            const finalFee = profile.final_fee || 0;
+            const pending = finalFee - totalPaid;
+
+            totalPendingEl.textContent = new Intl.NumberFormat('en-IN', {
+                style: 'currency', currency: 'INR', maximumFractionDigits: 0
+            }).format(pending > 0 ? pending : 0);
+
+            if (pending > 500) { // Show alert only if significant amount is pending
+                document.getElementById('pending-alert').style.display = 'block';
+            }
 
         } catch (err) {
             console.error('Payment fetch error:', err);
         }
     }
 
-    async function calculatePending(stuUuid, paid) {
-        try {
-            // Get total fees from enrolled courses
-            const { data, error } = await window.supabaseClient
-                .from('student_courses')
-                .select('course_fee')
-                .eq('student_id', stuUuid);
-
-            if (error) throw error;
-
-            let totalFee = 0;
-            data.forEach(c => totalFee += (c.course_fee || 0));
-
-            const pending = totalFee - paid;
-            totalPendingEl.textContent = new Intl.NumberFormat('en-IN', {
-                style: 'currency', currency: 'INR', maximumFractionDigits: 0
-            }).format(pending > 0 ? pending : 0);
-
-            if (pending > 0) {
-                document.getElementById('pending-alert').style.display = 'block';
-            }
-        } catch (err) {
-            console.error('Pending calculation error:', err);
-        }
-    }
-
     // Fetch Enrolled Courses
-    async function fetchEnrolledCourses() {
+    async function fetchEnrolledCourses(profile) {
         try {
+            const enrolledCodes = profile.courses || [];
+            if (enrolledCodes.length === 0) {
+                renderCourses([]);
+                return;
+            }
+
+            // Fetch course names from courses table
             const { data, error } = await window.supabaseClient
-                .from('student_courses')
-                .select('*, course:courses(course_name)')
-                .eq('student_id', studentData.id);
+                .from('courses')
+                .select('course_code, course_name')
+                .in('course_code', enrolledCodes);
 
             if (error) throw error;
 
-            renderCourses(data);
+            // Map and format for display
+            const formattedCourses = data.map(c => ({
+                name: c.course_name,
+                code: c.course_code,
+                status: 'In Progress' // Active student implies in progress
+            }));
+
+            renderCourses(formattedCourses);
         } catch (err) {
             console.error('Courses fetch error:', err);
         }
     }
 
-    // Render Logic
+    // UI Rendering
     function renderCourses(courses) {
         coursesList.innerHTML = '';
         if (courses.length === 0) {
@@ -155,8 +177,8 @@
             div.innerHTML = `
                 <div class="course-icon"><i class="fas fa-book"></i></div>
                 <div class="course-info">
-                    <h4>${c.course?.course_name || 'Course'}</h4>
-                    <span class="status ${c.status.toLowerCase()}">${c.status}</span>
+                    <h4>${c.name}</h4>
+                    <span class="status active">${c.status}</span>
                 </div>
             `;
             coursesList.appendChild(div);
@@ -175,22 +197,22 @@
             div.className = 'payment-item';
             div.innerHTML = `
                 <div>
-                    <strong>${p.payment_mode}</strong>
-                    <div class="date">${new Date(p.payment_date).toLocaleDateString()}</div>
+                    <strong>${p.payment_mode || 'Payment'}</strong>
+                    <div class="date">${new Date(p.payment_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</div>
                 </div>
-                <div class="amt">₹${p.amount_paid.toLocaleString()}</div>
+                <div class="amt">₹${(p.amount_paid || 0).toLocaleString()}</div>
             `;
             recentPayments.appendChild(div);
         });
     }
 
-    // Logout
+    // Logout Functionality
     btnLogout.addEventListener('click', () => {
         localStorage.removeItem('acs_student_session');
         window.location.href = '../';
     });
 
-    // Run
+    // Start
     checkAuth();
 
 })();
