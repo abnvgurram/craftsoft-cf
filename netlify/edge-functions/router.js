@@ -21,7 +21,20 @@ export default async (request, context) => {
         return context.rewrite(`/acs_subdomains/acs_signup${pathname}`);
     }
 
-    // 2. Admin Subdomain
+    // 2. Student Portal Subdomain
+    if (hostname.includes("acs-student.craftsoft")) {
+        if (pathname === "/") {
+            return context.rewrite("/acs_subdomains/acs_students/index.html");
+        }
+
+        if (!pathname.includes(".") && !pathname.endsWith("/")) {
+            return Response.redirect(`${request.url}/`, 301);
+        }
+
+        return context.rewrite(`/acs_subdomains/acs_students${pathname}`);
+    }
+
+    // 3. Admin Subdomain
     if (hostname.includes("admin.craftsoft")) {
         if (pathname === "/") {
             return context.rewrite("/acs_subdomains/acs_admin/index.html");

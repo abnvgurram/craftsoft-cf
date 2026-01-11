@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login | Abhi's Craft Soft</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Brand -->
+            <div class="brand">
+                <div class="logo-box">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h1>Abhi's <span class="highlight">Craft Soft</span></h1>
+                <p class="tagline">Student Portal</p>
+            </div>
+
+            <!-- Login Form Section -->
+            <div id="login-step-1" class="login-step">
+                <div class="header">
+                    <h2>Welcome Back!</h2>
+                    <p>Enter your details to receive an OTP</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="identifier">Student ID, Email or Phone</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user-tag"></i>
+                            <input type="text" id="identifier" placeholder="e.g. ACS-STU-001 or name@email.com"
+                                required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="btn-send-otp">
+                        <span class="btn-text">Send OTP</span>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+
+                <div class="info-footer">
+                    <p><i class="fas fa-info-circle"></i> OTP will be sent to your registered email</p>
+                </div>
+            </div>
+
+            <!-- OTP Verification Section (Hidden by default) -->
+            <div id="login-step-2" class="login-step" style="display: none;">
+                <div class="header">
+                    <h2>Verify Your Account</h2>
+                    <p>Check your email for a 6-digit code</p>
+                    <div class="sent-to-badge">
+                        <i class="fas fa-envelope"></i>
+                        <span id="display-email">ra***@gmail.com</span>
+                    </div>
+                </div>
+
+                <div class="otp-input-wrapper">
+                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
+                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
+                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
+                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
+                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
+                    <input type="text" maxlength="1" class="otp-box" pattern="\d*">
+                </div>
+
+                <button class="btn-primary" id="btn-verify-otp">
+                    <span class="btn-text">Verify & Login</span>
+                    <i class="fas fa-check-circle"></i>
+                </button>
+
+                <div class="resend-timer">
+                    Didn't receive code? <button id="btn-resend" disabled>Resend in <span id="timer">30</span>s</button>
+                </div>
+
+                <button class="btn-back" id="btn-change-identity">
+                    <i class="fas fa-arrow-left"></i> Change ID / Email
+                </button>
+            </div>
+
+            <div class="support-footer">
+                <p>New Student? Contact your Admin</p>
+                <div class="social-links">
+                    <a href="https://wa.me/917842239090" target="_blank"><i class="fab fa-whatsapp"></i> Chat Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- SDKs -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="/assets/admin/js/supabase-config.js"></script>
+    <script src="login.js"></script>
+</body>
+
+</html>
