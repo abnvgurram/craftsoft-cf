@@ -10,6 +10,9 @@
     const userNameEl = document.getElementById('user-name');
     const userInitialsEl = document.getElementById('user-initials');
     const userIdEl = document.getElementById('user-id');
+    const dropdownName = document.getElementById('dropdown-name');
+    const dropdownId = document.getElementById('dropdown-id');
+    const dropdownInitials = document.getElementById('dropdown-initials');
     const coursesList = document.getElementById('courses-list');
     const accountTrigger = document.querySelector('.account-trigger');
     const accountDropdown = document.getElementById('account-dropdown');
@@ -66,9 +69,17 @@
     }
 
     async function initPage() {
+        const initials = studentData.name.split(' ').map(n => n[0]).join('').toUpperCase();
+
+        // Header
         userNameEl.textContent = studentData.name;
         userIdEl.textContent = studentData.student_id;
-        userInitialsEl.textContent = studentData.name.split(' ').map(n => n[0]).join('').toUpperCase();
+        userInitialsEl.textContent = initials;
+
+        // Dropdown
+        if (dropdownName) dropdownName.textContent = studentData.name;
+        if (dropdownId) dropdownId.textContent = studentData.student_id;
+        if (dropdownInitials) dropdownInitials.textContent = initials;
 
         await loadCourses();
     }
@@ -98,25 +109,18 @@
 
             if (cErr) throw cErr;
 
-            // Fetch tutor names - try both id and tutor_id columns
+            // Fetch tutor names using tutor_id column (not UUID id)
             const tutorIds = Object.values(profile.course_tutors || {}).filter(Boolean);
             let tutorsMap = {};
+
             if (tutorIds.length > 0) {
-                // Try tutor_id first
-                let { data: tutors } = await window.supabaseClient
+                const { data: tutors, error: tErr } = await window.supabaseClient
                     .from('tutors')
                     .select('tutor_id, full_name')
                     .in('tutor_id', tutorIds);
 
-                if (tutors && tutors.length > 0) {
+                if (!tErr && tutors) {
                     tutors.forEach(t => tutorsMap[t.tutor_id] = t.full_name);
-                } else {
-                    // Fallback: try id column
-                    const { data: tutors2 } = await window.supabaseClient
-                        .from('tutors')
-                        .select('id, full_name')
-                        .in('id', tutorIds);
-                    tutors2?.forEach(t => tutorsMap[t.id] = t.full_name);
                 }
             }
 
@@ -213,6 +217,7 @@
     // Logout
     function handleLogout() {
         closeMobileNav();
+        if (accountDropdown) accountDropdown.classList.remove('open');
         Modal.show({
             title: "Logout?",
             message: "Are you sure you want to end your session?",
