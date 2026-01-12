@@ -15,14 +15,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const session = await window.supabaseConfig.getSession();
         if (!session) {
             console.log('Inquiries: No session, redirecting to login');
-            window.location.href = '../login.html';
+            window.location.href = '/';
             return;
         }
 
         // 2. Initialize Sidebar & Header (CRITICAL for UI)
         if (window.AdminSidebar) {
             console.log('Inquiries: Initializing sidebar');
-            window.AdminSidebar.init('inquiries');
+            window.AdminSidebar.init('inquiries', '/');
         }
 
         const headerCont = document.getElementById('header-container');
@@ -592,11 +592,11 @@ async function convertToStudent(id) {
             if (isServiceInquiry || hasServiceCodes) {
                 // Redirect to Clients page (for service inquiries)
                 p.set('services', (data.courses || []).join(','));
-                window.location.href = `../clients/?${p.toString()}`;
+                window.location.href = `/clients/?${p.toString()}`;
             } else {
                 // Redirect to Students page (for course inquiries)
                 p.set('courses', (data.courses || []).join(','));
-                window.location.href = `../students/?${p.toString()}`;
+                window.location.href = `/students/?${p.toString()}`;
             }
         }
     } catch (e) { console.error(e); }

@@ -318,7 +318,7 @@
                         Toast.success('Login Successful', `Welcome back, ${result.admin.full_name}!`);
 
                         setTimeout(() => {
-                            window.location.href = 'dashboard/';
+                            window.location.href = '/dashboard/';
                         }, 1000);
                     } else {
                         Toast.error('Login Failed', result.error);

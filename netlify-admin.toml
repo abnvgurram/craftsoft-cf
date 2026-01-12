@@ -141,6 +141,165 @@
   status = 200
   force = true
 
+# ============================================
+# FLAT URL ARCHITECTURE (Root-Level Routes)
+# ============================================
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/dashboard"
+  to = "/acs_subdomains/acs_admin/dashboard/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/dashboard/"
+  to = "/acs_subdomains/acs_admin/dashboard/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/students"
+  to = "/acs_subdomains/acs_admin/students-clients/students/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/students/"
+  to = "/acs_subdomains/acs_admin/students-clients/students/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/clients"
+  to = "/acs_subdomains/acs_admin/students-clients/clients/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/clients/"
+  to = "/acs_subdomains/acs_admin/students-clients/clients/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/courses"
+  to = "/acs_subdomains/acs_admin/courses-services/courses/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/courses/"
+  to = "/acs_subdomains/acs_admin/courses-services/courses/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/services"
+  to = "/acs_subdomains/acs_admin/courses-services/services/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/services/"
+  to = "/acs_subdomains/acs_admin/courses-services/services/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/record-payment"
+  to = "/acs_subdomains/acs_admin/payments/record-payment/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/record-payment/"
+  to = "/acs_subdomains/acs_admin/payments/record-payment/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/all-payments"
+  to = "/acs_subdomains/acs_admin/payments/all-payments/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/all-payments/"
+  to = "/acs_subdomains/acs_admin/payments/all-payments/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/receipts"
+  to = "/acs_subdomains/acs_admin/payments/receipts/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/receipts/"
+  to = "/acs_subdomains/acs_admin/payments/receipts/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/tutors"
+  to = "/acs_subdomains/acs_admin/tutors/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/tutors/"
+  to = "/acs_subdomains/acs_admin/tutors/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/inquiries"
+  to = "/acs_subdomains/acs_admin/inquiries/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/inquiries/"
+  to = "/acs_subdomains/acs_admin/inquiries/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/settings"
+  to = "/acs_subdomains/acs_admin/settings/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/settings/"
+  to = "/acs_subdomains/acs_admin/settings/index.html"
+  status = 200
+  force = true
+
+# Legacy Payment Paths (Keep for compatibility)
 # Payments - All sub-routes need explicit handling
 [[redirects]]
   host = "admin.craftsoft.co.in"

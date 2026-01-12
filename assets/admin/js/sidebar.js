@@ -37,17 +37,17 @@ const AdminSidebar = {
                     ${this.navItem('tutors', 'Tutors', 'fa-chalkboard-user')}
                     
                     <!-- Courses & Services (flat on desktop) -->
-                    ${this.navItem('courses', 'Courses', 'fa-book-bookmark', 'courses-services/courses')}
-                    ${this.navItem('services', 'Services', 'fa-wrench', 'courses-services/services')}
+                    ${this.navItem('courses', 'Courses', 'fa-book-bookmark')}
+                    ${this.navItem('services', 'Services', 'fa-wrench')}
                     
                     <!-- Students & Clients (flat on desktop) -->
-                    ${this.navItem('students', 'Students', 'fa-user-graduate', 'students-clients/students')}
-                    ${this.navItem('clients', 'Clients', 'fa-user-tie', 'students-clients/clients')}
+                    ${this.navItem('students', 'Students', 'fa-user-graduate')}
+                    ${this.navItem('clients', 'Clients', 'fa-user-tie')}
                     
                     <!-- Payments Section (No parent label on desktop/tablet) -->
-                    ${this.navItem('record-payment', 'Record Payment', 'fa-indian-rupee-sign', 'payments/record-payment')}
-                    ${this.navItem('all-payments', 'All Payments', 'fa-money-bill-trend-up', 'payments/all-payments')}
-                    ${this.navItem('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
+                    ${this.navItem('record-payment', 'Record Payment', 'fa-indian-rupee-sign')}
+                    ${this.navItem('all-payments', 'All Payments', 'fa-money-bill-trend-up')}
+                    ${this.navItem('receipts', 'Receipts', 'fa-file-invoice')}
                     
                     ${this.navItem('settings', 'Settings', 'fa-gear')}
                 </nav>
@@ -82,8 +82,8 @@ const AdminSidebar = {
                         </button>
                         <div class="mobile-nav-children">
                             <div style="min-height: 0;">
-                                ${this.mobileNavItemChild('courses', 'Courses', 'fa-book-bookmark', 'courses-services/courses')}
-                                ${this.mobileNavItemChild('services', 'Services', 'fa-wrench', 'courses-services/services')}
+                                ${this.mobileNavItemChild('courses', 'Courses', 'fa-book-bookmark', 'courses')}
+                                ${this.mobileNavItemChild('services', 'Services', 'fa-wrench', 'services')}
                             </div>
                         </div>
                     </div>
@@ -97,8 +97,8 @@ const AdminSidebar = {
                         </button>
                         <div class="mobile-nav-children">
                             <div style="min-height: 0;">
-                                ${this.mobileNavItemChild('students', 'Students', 'fa-user-graduate', 'students-clients/students')}
-                                ${this.mobileNavItemChild('clients', 'Clients', 'fa-user-tie', 'students-clients/clients')}
+                                ${this.mobileNavItemChild('students', 'Students', 'fa-user-graduate', 'students')}
+                                ${this.mobileNavItemChild('clients', 'Clients', 'fa-user-tie', 'clients')}
                             </div>
                         </div>
                     </div>
@@ -112,9 +112,9 @@ const AdminSidebar = {
                         </button>
                         <div class="mobile-nav-children">
                             <div style="min-height: 0;">
-                                ${this.mobileNavItemChild('record-payment', 'Record Payment', 'fa-indian-rupee-sign', 'payments/record-payment')}
-                                ${this.mobileNavItemChild('all-payments', 'All Payments', 'fa-money-bill-trend-up', 'payments/all-payments')}
-                                ${this.mobileNavItemChild('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
+                                ${this.mobileNavItemChild('record-payment', 'Record Payment', 'fa-indian-rupee-sign', 'record-payment')}
+                                ${this.mobileNavItemChild('all-payments', 'All Payments', 'fa-money-bill-trend-up', 'all-payments')}
+                                ${this.mobileNavItemChild('receipts', 'Receipts', 'fa-file-invoice', 'receipts')}
                             </div>
                         </div>
                     </div>

@@ -7,12 +7,12 @@ const itemsPerPage = window.innerWidth <= 1250 ? 5 : 10;
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
-        window.location.href = '../../login.html';
+        window.location.href = '/';
         return;
     }
 
     // Initialize sidebar with correct page name
-    AdminSidebar.init('all-payments', '../../');
+    AdminSidebar.init('all-payments', '/');
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {

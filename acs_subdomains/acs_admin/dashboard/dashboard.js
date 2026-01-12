@@ -32,19 +32,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function bindStatCardLinks() {
     document.getElementById('stat-students')?.addEventListener('click', () => {
-        window.location.href = '../students-clients/students/';
+        window.location.href = '/students/';
     });
     document.getElementById('stat-courses')?.addEventListener('click', () => {
-        window.location.href = '../courses-services/courses/';
+        window.location.href = '/courses/';
     });
     document.getElementById('stat-tutors')?.addEventListener('click', () => {
-        window.location.href = '../tutors/';
+        window.location.href = '/tutors/';
     });
     document.getElementById('stat-services')?.addEventListener('click', () => {
-        window.location.href = '../courses-services/services/';
+        window.location.href = '/services/';
     });
     document.getElementById('stat-clients')?.addEventListener('click', () => {
-        window.location.href = '../students-clients/clients/';
+        window.location.href = '/clients/';
     });
 }
 

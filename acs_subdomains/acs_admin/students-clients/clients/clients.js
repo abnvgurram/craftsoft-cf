@@ -15,11 +15,11 @@ const itemsPerPage = window.innerWidth <= 1250 ? 5 : 10;
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
-        window.location.href = '../../login.html';
+        window.location.href = '/';
         return;
     }
 
-    AdminSidebar.init('clients', '../../');
+    AdminSidebar.init('clients', '/');
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {

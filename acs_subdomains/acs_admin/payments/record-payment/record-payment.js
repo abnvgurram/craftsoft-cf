@@ -12,11 +12,11 @@ let balanceDue = 0;
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
-        window.location.href = '../../login.html';
+        window.location.href = '/';
         return;
     }
 
-    AdminSidebar.init('record-payment', '../../');
+    AdminSidebar.init('record-payment', '/');
 
     const headerContainer = document.getElementById('header-container');
     if (headerContainer) {
@@ -383,7 +383,7 @@ async function handlePayment(e) {
         await createReceipt(payment);
 
         Toast.success('Success', 'Payment recorded');
-        setTimeout(() => window.location.href = '../receipts/', 1500);
+        setTimeout(() => window.location.href = '/receipts/', 1500);
     } catch (err) {
         console.error(err);
         Toast.error('Error', err.message);
