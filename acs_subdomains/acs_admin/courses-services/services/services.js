@@ -41,6 +41,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     bindFormEvents();
     document.getElementById('sync-services-btn')?.addEventListener('click', syncServices);
+
+    // Check for deep links (Spotlight Search)
+    const params = new URLSearchParams(window.location.search);
+    const deepLinkId = params.get('id');
+    if (deepLinkId && allServices.length > 0) {
+        const service = allServices.find(s => s.id == deepLinkId);
+        if (service) {
+            // Clear param
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+
+            openFeeForm(service.id, service.service_code, service.name, service.base_fee, service.gst_amount, service.fee);
+        }
+    }
 });
 
 // =====================

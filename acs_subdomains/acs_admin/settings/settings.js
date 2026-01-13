@@ -52,6 +52,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Subscribe to realtime session updates
     subscribeToSessionUpdates();
+
+    // Check for deep links (Spotlight Search)
+    const params = new URLSearchParams(window.location.search);
+    const targetTab = params.get('tab');
+    if (targetTab) {
+        // Clear param
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+        currentSettingsTab = targetTab;
+        renderSettings();
+    }
 });
 
 

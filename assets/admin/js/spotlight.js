@@ -157,7 +157,33 @@ const Spotlight = {
     // Search across all modules
     async searchAll(query) {
         const results = [];
+        const lowerQuery = query.toLowerCase();
 
+        // 1. Static Navigation / Quick Jumps
+        const navigationResults = [
+            { id: 'nav-dash', title: 'Dashboard', subtitle: 'Overview & Stats', icon: 'nav', link: '/dashboard/' },
+            { id: 'nav-stu', title: 'Students List', subtitle: 'Manage academic records', icon: 'nav', link: '/students/' },
+            { id: 'nav-cli', title: 'Clients List', subtitle: 'Service management', icon: 'nav', link: '/clients/' },
+            { id: 'nav-pay', title: 'Record Payment', subtitle: 'Finance management', icon: 'nav', link: '/record-payment/' },
+            { id: 'nav-rec', title: 'Payment Receipts', subtitle: 'Transaction history', icon: 'nav', link: '/receipts/' },
+            { id: 'nav-all-pay', title: 'All Payments', subtitle: 'Financial overview', icon: 'nav', link: '/all-payments/' },
+            { id: 'nav-set-sec', title: 'Security Settings', subtitle: 'Passwords & Sessions', icon: 'nav', link: '/settings/?tab=security' },
+            { id: 'nav-set-ins', title: 'Institute Profile', subtitle: 'Company details', icon: 'nav', link: '/settings/?tab=institute' },
+            { id: 'nav-set-bank', title: 'Bank Settings', subtitle: 'Payment accounts', icon: 'nav', link: '/settings/?tab=bank' }
+        ].filter(item =>
+            item.title.toLowerCase().includes(lowerQuery) ||
+            item.subtitle.toLowerCase().includes(lowerQuery)
+        );
+
+        if (navigationResults.length) {
+            results.push({
+                type: 'nav',
+                title: 'Quick Navigation',
+                items: navigationResults
+            });
+        }
+
+        // 2. Database Searches
         // Search Students
         const { data: students } = await window.supabaseClient
             .from('students')
@@ -174,7 +200,7 @@ const Spotlight = {
                     title: `${s.first_name} ${s.last_name || ''}`,
                     subtitle: `${s.student_id} • ${s.phone || 'No phone'}`,
                     icon: 'student',
-                    link: this.getBasePath() + 'students-clients/students/'
+                    link: `/students/?id=${s.id}`
                 }))
             });
         }
@@ -195,7 +221,7 @@ const Spotlight = {
                     title: `${c.first_name} ${c.last_name || ''}`,
                     subtitle: `${c.client_id} • ${c.phone || 'No phone'}`,
                     icon: 'client',
-                    link: this.getBasePath() + 'students-clients/clients/'
+                    link: `/clients/?id=${c.id}`
                 }))
             });
         }
@@ -216,7 +242,7 @@ const Spotlight = {
                     title: c.course_name,
                     subtitle: c.course_code,
                     icon: 'course',
-                    link: this.getBasePath() + 'courses-services/courses/'
+                    link: `/courses/?id=${c.id}`
                 }))
             });
         }
@@ -224,7 +250,7 @@ const Spotlight = {
         // Search Services
         const { data: services } = await window.supabaseClient
             .from('services')
-            .select('id, name')
+            .select('id, name, service_code')
             .ilike('name', `%${query}%`)
             .limit(5);
 
@@ -235,9 +261,9 @@ const Spotlight = {
                 items: services.map(s => ({
                     id: s.id,
                     title: s.name,
-                    subtitle: 'Service',
+                    subtitle: s.service_code || 'Service',
                     icon: 'service',
-                    link: this.getBasePath() + 'courses-services/services/'
+                    link: `/services/?id=${s.id}`
                 }))
             });
         }
@@ -245,8 +271,8 @@ const Spotlight = {
         // Search Tutors
         const { data: tutors } = await window.supabaseClient
             .from('tutors')
-            .select('id, tutor_id, name, phone')
-            .or(`name.ilike.%${query}%,tutor_id.ilike.%${query}%,phone.ilike.%${query}%`)
+            .select('id, tutor_id, full_name, phone')
+            .or(`full_name.ilike.%${query}%,tutor_id.ilike.%${query}%,phone.ilike.%${query}%`)
             .limit(5);
 
         if (tutors?.length) {
@@ -255,10 +281,10 @@ const Spotlight = {
                 title: 'Tutors',
                 items: tutors.map(t => ({
                     id: t.id,
-                    title: t.name,
+                    title: t.full_name,
                     subtitle: `${t.tutor_id} • ${t.phone || 'No phone'}`,
                     icon: 'tutor',
-                    link: this.getBasePath() + 'tutors/'
+                    link: `/tutors/?id=${t.id}`
                 }))
             });
         }
@@ -355,6 +381,7 @@ const Spotlight = {
     // Get icon for type
     getIcon(type) {
         const icons = {
+            nav: 'fa-compass',
             student: 'fa-user-graduate',
             client: 'fa-user-tie',
             course: 'fa-book',

@@ -58,6 +58,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     bindFormEvents();
     document.getElementById('sync-courses-btn')?.addEventListener('click', syncCourses);
+
+    // Check for deep links (Spotlight Search)
+    const params = new URLSearchParams(window.location.search);
+    const deepLinkId = params.get('id');
+    if (deepLinkId && allCourses.length > 0) {
+        const course = allCourses.find(c => c.id == deepLinkId);
+        if (course) {
+            // Clear param
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+
+            openFeeForm(course.id, course.course_code, course.course_name, course.base_fee, course.gst_amount, course.fee);
+        }
+    }
 });
 
 // =====================

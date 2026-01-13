@@ -50,6 +50,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check for prefill from inquiry conversion
     checkPrefill();
+
+    // Check for deep links (Spotlight Search)
+    const params = new URLSearchParams(window.location.search);
+    const deepLinkId = params.get('id');
+    if (deepLinkId) {
+        // Clear param so refresh doesn't keep opening it
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+
+        await openForm(deepLinkId);
+    }
 });
 
 async function initializeStats() {
