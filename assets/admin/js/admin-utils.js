@@ -232,6 +232,50 @@ const Validators = {
         return phone.replace(/[^\d]/g, '');
     },
 
+    // Country code to flag emoji mapping
+    countryCodeFlags: {
+        '+91': { flag: '🇮🇳', name: 'India' },
+        '+1': { flag: '🇺🇸', name: 'USA/Canada' },
+        '+44': { flag: '🇬🇧', name: 'UK' },
+        '+61': { flag: '🇦🇺', name: 'Australia' },
+        '+971': { flag: '🇦🇪', name: 'UAE' },
+        '+966': { flag: '🇸🇦', name: 'Saudi Arabia' },
+        '+65': { flag: '🇸🇬', name: 'Singapore' },
+        '+49': { flag: '🇩🇪', name: 'Germany' },
+        '+33': { flag: '🇫🇷', name: 'France' },
+        '+81': { flag: '🇯🇵', name: 'Japan' },
+        '+86': { flag: '🇨🇳', name: 'China' },
+        '+82': { flag: '🇰🇷', name: 'South Korea' },
+        '+60': { flag: '🇲🇾', name: 'Malaysia' },
+        '+63': { flag: '🇵🇭', name: 'Philippines' },
+        '+94': { flag: '🇱🇰', name: 'Sri Lanka' },
+        '+977': { flag: '🇳🇵', name: 'Nepal' },
+        '+880': { flag: '🇧🇩', name: 'Bangladesh' },
+        '+92': { flag: '🇵🇰', name: 'Pakistan' },
+        '+27': { flag: '🇿🇦', name: 'South Africa' },
+        '+234': { flag: '🇳🇬', name: 'Nigeria' },
+        '+254': { flag: '🇰🇪', name: 'Kenya' }
+    },
+
+    // Get flag for country code
+    getFlagForCode(code) {
+        if (!code) return null;
+        const cleaned = code.startsWith('+') ? code : `+${code}`;
+        return this.countryCodeFlags[cleaned] || null;
+    },
+
+    // Parse stored phone into country code and number
+    parseStoredPhone(phone) {
+        if (!phone) return { code: '+91', number: '' };
+        // Format: "+91 - 9492020292"
+        const match = phone.match(/^(\+\d{1,4})\s*-\s*(.+)$/);
+        if (match) {
+            return { code: match[1], number: match[2] };
+        }
+        // Plain number without code
+        return { code: '+91', number: phone.replace(/[^\d]/g, '') };
+    },
+
     // Password strength
     isStrongPassword(password) {
         // At least 8 characters, 1 uppercase, 1 lowercase, 1 number
@@ -255,6 +299,7 @@ const Validators = {
         return password === confirmPassword;
     }
 };
+
 
 // ============================================
 // Form Helpers

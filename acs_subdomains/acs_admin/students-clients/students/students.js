@@ -499,7 +499,53 @@ function bindFormEvents() {
             document.querySelector('.demo-fields').style.display = this.value === 'yes' ? 'block' : 'none';
         });
     });
+
+    // Phone input with flag transformation
+    initPhoneInputComponent('student');
 }
+
+// Initialize phone input component with flag transformation
+function initPhoneInputComponent(prefix) {
+    const codeInput = document.getElementById(`${prefix}-country-code`);
+    const flagBtn = document.getElementById(`${prefix}-flag-btn`);
+    const phoneInput = document.getElementById(`${prefix}-phone`);
+
+    if (!codeInput || !flagBtn) return;
+
+    const { Validators } = window.AdminUtils;
+
+    // On blur: transform input to flag button
+    codeInput.addEventListener('blur', () => {
+        const code = codeInput.value.trim();
+        if (!code) return;
+
+        const countryInfo = Validators.getFlagForCode(code);
+        const flag = countryInfo?.flag || '🌍';
+        const displayCode = code.startsWith('+') ? code : `+${code}`;
+
+        flagBtn.querySelector('.flag-emoji').textContent = flag;
+        flagBtn.querySelector('.code-text').textContent = displayCode;
+
+        codeInput.style.display = 'none';
+        flagBtn.style.display = 'flex';
+    });
+
+    // On flag click: transform back to input
+    flagBtn.addEventListener('click', () => {
+        flagBtn.style.display = 'none';
+        codeInput.style.display = 'block';
+        codeInput.focus();
+        codeInput.select();
+    });
+
+    // Auto-focus phone number after entering code
+    codeInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab' && !e.shiftKey) {
+            // Let blur handle the flag transformation
+        }
+    });
+}
+
 
 function getFilteredTutors(selectedCourses) {
     if (!selectedCourses || selectedCourses.length === 0) return [];
@@ -700,7 +746,22 @@ async function openForm(studentId = null) {
         document.getElementById('edit-student-id').value = student.id;
         document.getElementById('student-fname').value = student.first_name || '';
         document.getElementById('student-lname').value = student.last_name || '';
-        document.getElementById('student-phone').value = student.phone || '';
+
+        // Parse and populate phone fields
+        const { Validators } = window.AdminUtils;
+        const parsed = Validators.parseStoredPhone(student.phone);
+        document.getElementById('student-country-code').value = parsed.code;
+        document.getElementById('student-phone').value = parsed.number;
+
+        // Show flag button for existing country code
+        const flagBtn = document.getElementById('student-flag-btn');
+        const codeInput = document.getElementById('student-country-code');
+        const countryInfo = Validators.getFlagForCode(parsed.code);
+        flagBtn.querySelector('.flag-emoji').textContent = countryInfo?.flag || '🌍';
+        flagBtn.querySelector('.code-text').textContent = parsed.code;
+        codeInput.style.display = 'none';
+        flagBtn.style.display = 'flex';
+
         document.getElementById('student-email').value = student.email || '';
         document.getElementById('student-demo-date').value = student.demo_date || '';
         document.getElementById('student-demo-time').value = student.demo_time || '';
@@ -715,6 +776,11 @@ async function openForm(studentId = null) {
 
         // Load course discounts from student data
         courseDiscounts = student.course_discounts || {};
+    } else {
+        // New student: reset phone fields to default
+        document.getElementById('student-country-code').value = '+91';
+        document.getElementById('student-country-code').style.display = 'block';
+        document.getElementById('student-flag-btn').style.display = 'none';
     }
 
     // Render courses checkboxes
@@ -733,6 +799,7 @@ async function openForm(studentId = null) {
     container.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+
 function closeForm() {
     document.getElementById('student-form-container').style.display = 'none';
 }
@@ -745,9 +812,15 @@ async function saveStudent() {
 
     const fname = document.getElementById('student-fname').value.trim();
     const lname = document.getElementById('student-lname').value.trim();
-    const phone = document.getElementById('student-phone').value.trim();
+
+    // Get phone from split fields
+    const countryCode = document.getElementById('student-country-code').value.trim();
+    const phoneNumber = document.getElementById('student-phone').value.trim();
+    const phone = phoneNumber; // Raw number for validation
+
     const email = document.getElementById('student-email').value.trim();
     const courses = Array.from(document.querySelectorAll('input[name="student-courses"]:checked')).map(c => c.value);
+
 
     // Collect per-course tutor assignments
     const course_tutors = {};
@@ -781,11 +854,12 @@ async function saveStudent() {
     // Validation
     const { Validators } = window.AdminUtils;
     if (!fname || !lname) { Toast.error('Required', 'Name required'); return; }
-    if (!Validators.isValidPhone(phone)) { Toast.error('Required', 'Valid phone number required'); return; }
+    if (!phone || phone.length < 6) { Toast.error('Required', 'Valid phone number required'); return; }
     if (courses.length === 0) { Toast.error('Required', 'Select at least one course'); return; }
 
-    // Format phone for storage (e.g., "+91 - 9492020292")
-    const formattedPhone = Validators.formatPhoneForStorage(phone);
+    // Format phone for storage using the country code from split input (e.g., "+91 - 9492020292")
+    const formattedPhone = Validators.formatPhoneForStorage(phoneNumber, countryCode);
+
 
     // Ensure every selected course has a tutor assigned
     const missingTutor = courses.some(code => !course_tutors[code]);

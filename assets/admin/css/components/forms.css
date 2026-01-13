@@ -450,3 +450,100 @@
     background: var(--admin-input-border);
     border-radius: 10px;
 }
+
+/* ============================================
+   Phone Input Component with Flag
+   ============================================ */
+.phone-input-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.country-code-wrapper {
+    position: relative;
+    min-width: 90px;
+    max-width: 100px;
+}
+
+.country-code-input {
+    width: 100%;
+    padding: 0.875rem 0.75rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--admin-input-bg);
+    border: 1.5px solid var(--admin-input-border);
+    border-radius: 12px;
+    color: var(--admin-text-primary);
+    transition: all 0.2s ease;
+    outline: none;
+    text-align: center;
+    font-weight: 600;
+}
+
+.country-code-input:focus {
+    border-color: var(--admin-input-focus);
+    background: #fff;
+    box-shadow: var(--admin-input-focus-glow);
+}
+
+.country-code-input::placeholder {
+    color: var(--admin-text-muted);
+    font-weight: 400;
+}
+
+.flag-display-btn {
+    width: 100%;
+    padding: 0.875rem 0.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--admin-input-bg);
+    border: 1.5px solid var(--admin-input-border);
+    border-radius: 12px;
+    color: var(--admin-text-primary);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+}
+
+.flag-display-btn:hover {
+    border-color: var(--primary-400);
+    background: rgba(40, 150, 205, 0.05);
+}
+
+.flag-display-btn .flag-emoji {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.flag-display-btn .code-text {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--admin-text-secondary);
+}
+
+.phone-number-input {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--admin-input-bg);
+    border: 1.5px solid var(--admin-input-border);
+    border-radius: 12px;
+    color: var(--admin-text-primary);
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.phone-number-input:focus {
+    border-color: var(--admin-input-focus);
+    background: #fff;
+    box-shadow: var(--admin-input-focus-glow);
+}
+
+.phone-number-input::placeholder {
+    color: var(--admin-text-muted);
+}

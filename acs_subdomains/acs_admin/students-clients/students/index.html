@@ -155,11 +155,21 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Phone <span class="required">*</span></label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-phone input-icon"></i> <input type="tel" id="student-phone"
-                                        maxlength="10" placeholder="10-digit mobile">
+                                <div class="phone-input-group">
+                                    <div class="country-code-wrapper" id="student-country-wrapper">
+                                        <input type="text" class="country-code-input" id="student-country-code"
+                                            placeholder="+91" maxlength="5" value="+91">
+                                        <button type="button" class="flag-display-btn" id="student-flag-btn"
+                                            style="display:none;">
+                                            <span class="flag-emoji">🇮🇳</span>
+                                            <span class="code-text">+91</span>
+                                        </button>
+                                    </div>
+                                    <input type="tel" class="phone-number-input" id="student-phone"
+                                        placeholder="Phone number">
                                 </div>
                             </div>
+
                             <div class="form-group">
                                 <label>Email</label>
                                 <div class="input-with-icon">

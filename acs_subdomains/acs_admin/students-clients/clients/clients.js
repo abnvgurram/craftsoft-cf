@@ -472,10 +472,48 @@ function bindFormEvents() {
     document.getElementById('close-form-btn')?.addEventListener('click', closeForm);
     document.getElementById('cancel-form-btn')?.addEventListener('click', closeForm);
     document.getElementById('save-client-btn')?.addEventListener('click', saveClient);
+
+    // Phone input with flag transformation
+    initPhoneInputComponent('client');
 }
 
+// Initialize phone input component with flag transformation
+function initPhoneInputComponent(prefix) {
+    const codeInput = document.getElementById(`${prefix}-country-code`);
+    const flagBtn = document.getElementById(`${prefix}-flag-btn`);
+
+    if (!codeInput || !flagBtn) return;
+
+    const { Validators } = window.AdminUtils;
+
+    // On blur: transform input to flag button
+    codeInput.addEventListener('blur', () => {
+        const code = codeInput.value.trim();
+        if (!code) return;
+
+        const countryInfo = Validators.getFlagForCode(code);
+        const flag = countryInfo?.flag || '🌍';
+        const displayCode = code.startsWith('+') ? code : `+${code}`;
+
+        flagBtn.querySelector('.flag-emoji').textContent = flag;
+        flagBtn.querySelector('.code-text').textContent = displayCode;
+
+        codeInput.style.display = 'none';
+        flagBtn.style.display = 'flex';
+    });
+
+    // On flag click: transform back to input
+    flagBtn.addEventListener('click', () => {
+        flagBtn.style.display = 'none';
+        codeInput.style.display = 'block';
+        codeInput.focus();
+        codeInput.select();
+    });
+}
+
+
 async function openForm(clientId = null) {
-    const { Toast } = window.AdminUtils;
+    const { Toast, Validators } = window.AdminUtils;
     const container = document.getElementById('client-form-container');
     const formTitle = document.getElementById('form-title');
     const saveBtn = document.getElementById('save-client-btn');
@@ -511,10 +549,29 @@ async function openForm(clientId = null) {
         document.getElementById('edit-client-id').value = client.id;
         document.getElementById('client-fname').value = client.first_name || '';
         document.getElementById('client-lname').value = client.last_name || '';
-        document.getElementById('client-phone').value = client.phone || '';
+
+        // Parse and populate phone fields
+        const parsed = Validators.parseStoredPhone(client.phone);
+        document.getElementById('client-country-code').value = parsed.code;
+        document.getElementById('client-phone').value = parsed.number;
+
+        // Show flag button for existing country code
+        const flagBtn = document.getElementById('client-flag-btn');
+        const codeInput = document.getElementById('client-country-code');
+        const countryInfo = Validators.getFlagForCode(parsed.code);
+        flagBtn.querySelector('.flag-emoji').textContent = countryInfo?.flag || '🌍';
+        flagBtn.querySelector('.code-text').textContent = parsed.code;
+        codeInput.style.display = 'none';
+        flagBtn.style.display = 'flex';
+
         document.getElementById('client-email').value = client.email || '';
         document.getElementById('client-notes').value = client.notes || '';
         serviceFees = client.service_fees || {};
+    } else {
+        // New client: reset phone fields to default
+        document.getElementById('client-country-code').value = '+91';
+        document.getElementById('client-country-code').style.display = 'block';
+        document.getElementById('client-flag-btn').style.display = 'none';
     }
 
     // Render services checkboxes
@@ -526,6 +583,7 @@ async function openForm(clientId = null) {
     container.style.display = 'block';
     container.scrollIntoView({ behavior: 'smooth' });
 }
+
 
 function closeForm() {
     document.getElementById('client-form-container').style.display = 'none';
@@ -629,7 +687,11 @@ async function saveClient() {
 
     const fname = document.getElementById('client-fname').value.trim();
     const lname = document.getElementById('client-lname').value.trim();
-    const phone = document.getElementById('client-phone').value.trim();
+
+    // Get phone from split fields
+    const countryCode = document.getElementById('client-country-code').value.trim();
+    const phoneNumber = document.getElementById('client-phone').value.trim();
+
     const email = document.getElementById('client-email').value.trim();
     const notes = document.getElementById('client-notes').value.trim();
 
@@ -646,11 +708,12 @@ async function saveClient() {
     // Validation
     const { Validators } = window.AdminUtils;
     if (!fname) { Toast.error('Required', 'First name required'); return; }
-    if (!Validators.isValidPhone(phone)) { Toast.error('Required', 'Valid phone number required'); return; }
+    if (!phoneNumber || phoneNumber.length < 6) { Toast.error('Required', 'Valid phone number required'); return; }
     if (services.length === 0) { Toast.error('Required', 'Select at least one service'); return; }
 
-    // Format phone for storage (e.g., "+91 - 9492020292")
-    const formattedPhone = Validators.formatPhoneForStorage(phone);
+    // Format phone for storage using country code from split input (e.g., "+91 - 9492020292")
+    const formattedPhone = Validators.formatPhoneForStorage(phoneNumber, countryCode);
+
 
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';

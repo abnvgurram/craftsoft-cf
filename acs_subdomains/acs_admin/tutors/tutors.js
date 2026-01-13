@@ -298,7 +298,45 @@ function bindFormEvents() {
     closeBtn?.addEventListener('click', closeForm);
     cancelBtn?.addEventListener('click', closeForm);
     saveBtn?.addEventListener('click', saveTutor);
+
+    // Phone input with flag transformation
+    initPhoneInputComponent('tutor');
 }
+
+// Initialize phone input component with flag transformation
+function initPhoneInputComponent(prefix) {
+    const codeInput = document.getElementById(`${prefix}-country-code`);
+    const flagBtn = document.getElementById(`${prefix}-flag-btn`);
+
+    if (!codeInput || !flagBtn) return;
+
+    const { Validators } = window.AdminUtils;
+
+    // On blur: transform input to flag button
+    codeInput.addEventListener('blur', () => {
+        const code = codeInput.value.trim();
+        if (!code) return;
+
+        const countryInfo = Validators.getFlagForCode(code);
+        const flag = countryInfo?.flag || '🌍';
+        const displayCode = code.startsWith('+') ? code : `+${code}`;
+
+        flagBtn.querySelector('.flag-emoji').textContent = flag;
+        flagBtn.querySelector('.code-text').textContent = displayCode;
+
+        codeInput.style.display = 'none';
+        flagBtn.style.display = 'flex';
+    });
+
+    // On flag click: transform back to input
+    flagBtn.addEventListener('click', () => {
+        flagBtn.style.display = 'none';
+        codeInput.style.display = 'block';
+        codeInput.focus();
+        codeInput.select();
+    });
+}
+
 
 function renderCoursesCheckboxes(selectedCourses = []) {
     const list = document.getElementById('tutor-courses-list');
@@ -311,7 +349,7 @@ function renderCoursesCheckboxes(selectedCourses = []) {
 }
 
 async function openForm(tutorId = null) {
-    const { Toast } = window.AdminUtils;
+    const { Toast, Validators } = window.AdminUtils;
     const container = document.getElementById('tutor-form-container');
     const formTitle = document.getElementById('form-title');
     const saveBtn = document.getElementById('save-tutor-btn');
@@ -343,10 +381,29 @@ async function openForm(tutorId = null) {
 
         document.getElementById('edit-tutor-id').value = tutor.id;
         document.getElementById('tutor-name').value = tutor.full_name || '';
-        document.getElementById('tutor-phone').value = tutor.phone || '';
+
+        // Parse and populate phone fields
+        const parsed = Validators.parseStoredPhone(tutor.phone);
+        document.getElementById('tutor-country-code').value = parsed.code;
+        document.getElementById('tutor-phone').value = parsed.number;
+
+        // Show flag button for existing country code
+        const flagBtn = document.getElementById('tutor-flag-btn');
+        const codeInput = document.getElementById('tutor-country-code');
+        const countryInfo = Validators.getFlagForCode(parsed.code);
+        flagBtn.querySelector('.flag-emoji').textContent = countryInfo?.flag || '🌍';
+        flagBtn.querySelector('.code-text').textContent = parsed.code;
+        codeInput.style.display = 'none';
+        flagBtn.style.display = 'flex';
+
         document.getElementById('tutor-email').value = tutor.email || '';
         document.getElementById('tutor-linkedin').value = tutor.linkedin_url || '';
         document.getElementById('tutor-notes').value = tutor.notes || '';
+    } else {
+        // New tutor: reset phone fields to default
+        document.getElementById('tutor-country-code').value = '+91';
+        document.getElementById('tutor-country-code').style.display = 'block';
+        document.getElementById('tutor-flag-btn').style.display = 'none';
     }
 
     renderCoursesCheckboxes(tutor?.courses || []);
@@ -369,7 +426,11 @@ async function saveTutor() {
     const isEdit = !!editId;
 
     const name = document.getElementById('tutor-name').value.trim();
-    const phone = document.getElementById('tutor-phone').value.trim();
+
+    // Get phone from split fields
+    const countryCode = document.getElementById('tutor-country-code').value.trim();
+    const phoneNumber = document.getElementById('tutor-phone').value.trim();
+
     const email = document.getElementById('tutor-email').value.trim();
     const linkedin = document.getElementById('tutor-linkedin').value.trim();
     const notes = document.getElementById('tutor-notes').value.trim();
@@ -378,11 +439,13 @@ async function saveTutor() {
     // Validation
     const { Validators } = window.AdminUtils;
     if (!name) { Toast.error('Required', 'Name required'); return; }
-    if (!Validators.isValidPhone(phone)) { Toast.error('Required', 'Valid phone number required'); return; }
+    if (!phoneNumber || phoneNumber.length < 6) { Toast.error('Required', 'Valid phone number required'); return; }
     if (courses.length === 0) { Toast.error('Required', 'Select at least one course'); return; }
 
-    // Format phone for storage (e.g., "+91 - 9492020292")
-    const formattedPhone = Validators.formatPhoneForStorage(phone);
+
+    // Format phone for storage using country code from split input (e.g., "+91 - 9492020292")
+    const formattedPhone = Validators.formatPhoneForStorage(phoneNumber, countryCode);
+
 
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
