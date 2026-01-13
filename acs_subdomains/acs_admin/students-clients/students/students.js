@@ -275,7 +275,7 @@ function renderStudentsList(students) {
                             <td class="text-right">
                                 <div class="cell-actions" style="justify-content: flex-end;">
                                     <button class="action-btn edit btn-edit-student" data-id="${s.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                                    <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="action-btn whatsapp" title="Chat"><i class="fa-brands fa-whatsapp"></i></a>
+                                    <a href="https://wa.me/${s.phone.replace(/\D/g, '')}" target="_blank" class="action-btn whatsapp" title="Chat"><i class="fa-brands fa-whatsapp"></i></a>
                                     ${s.status === 'INACTIVE'
             ? `<button class="action-btn success btn-reactivate-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}" title="Reactivate"><i class="fa-solid fa-rotate-left"></i></button>
                                            <button class="action-btn delete btn-perm-delete-student" data-id="${s.id}" data-name="${s.first_name} ${s.last_name}" title="Permanently Delete"><i class="fa-solid fa-trash"></i></button>`
@@ -330,7 +330,7 @@ function renderStudentsList(students) {
                         <button class="card-action-btn edit btn-edit-student" data-id="${s.id}">
                             <i class="fa-solid fa-pen"></i> <span>Edit</span>
                         </button>
-                        <a href="https://wa.me/91${s.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
+                        <a href="https://wa.me/${s.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
                             <i class="fa-brands fa-whatsapp"></i> <span>Chat</span>
                         </a>
                         ${s.status === 'INACTIVE'
@@ -1179,10 +1179,10 @@ function renderProfileContent(student, payments, totalPaid, balanceDue) {
                 </div>
             </div>
             <div class="profile-contact-btns">
-                <a href="tel:+91${student.phone}" class="profile-contact-btn call">
+                <a href="tel:${student.phone.replace(/[\s\-]/g, '')}" class="profile-contact-btn call">
                     <i class="fa-solid fa-phone"></i> Call
                 </a>
-                <a href="https://wa.me/91${student.phone.replace(/\D/g, '')}" target="_blank" class="profile-contact-btn whatsapp">
+                <a href="https://wa.me/${student.phone.replace(/\D/g, '')}" target="_blank" class="profile-contact-btn whatsapp">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp
                 </a>
             </div>

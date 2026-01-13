@@ -288,7 +288,7 @@ function renderClients(clients) {
                         <button class="action-btn edit-btn" data-id="${c.id}" title="Edit">
                             <i class="fa-solid fa-pen"></i>
                         </button>
-                        <a href="https://wa.me/91${c.phone.replace(/\D/g, '')}" target="_blank" class="action-btn whatsapp" title="WhatsApp">
+                        <a href="https://wa.me/${c.phone.replace(/\D/g, '')}" target="_blank" class="action-btn whatsapp" title="WhatsApp">
                             <i class="fa-brands fa-whatsapp"></i>
                         </a>
                         ${c.status === 'INACTIVE' ? `
@@ -355,7 +355,7 @@ function renderClients(clients) {
                     <button class="card-action-btn edit edit-btn" data-id="${c.id}">
                         <i class="fa-solid fa-pen"></i> <span>Edit</span>
                     </button>
-                    <a href="https://wa.me/91${c.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
+                    <a href="https://wa.me/${c.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
                         <i class="fa-brands fa-whatsapp"></i> <span>Chat</span>
                     </a>
                     ${c.status === 'INACTIVE' ? `

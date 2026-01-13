@@ -133,7 +133,7 @@ function renderTutorsList(tutors) {
                             <td class="text-right">
                                 <div class="cell-actions">
                                     <button class="action-btn edit btn-edit-tutor" data-id="${t.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                                    <a href="https://wa.me/91${t.phone.replace(/\D/g, '')}" target="_blank" class="action-btn whatsapp" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                                    <a href="https://wa.me/${t.phone.replace(/\D/g, '')}" target="_blank" class="action-btn whatsapp" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
                                     <button class="action-btn delete btn-delete-tutor" data-id="${t.id}" data-name="${t.full_name}" title="Delete"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </td>
@@ -162,7 +162,7 @@ function renderTutorsList(tutors) {
                         <button class="card-action-btn edit btn-edit-tutor" data-id="${t.id}">
                             <i class="fa-solid fa-pen"></i> <span>Edit</span>
                         </button>
-                        <a href="https://wa.me/91${t.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
+                        <a href="https://wa.me/${t.phone.replace(/\D/g, '')}" target="_blank" class="card-action-btn whatsapp">
                             <i class="fa-brands fa-whatsapp"></i> <span>WhatsApp</span>
                         </a>
                         <button class="card-action-btn delete btn-delete-tutor" data-id="${t.id}" data-name="${t.full_name}">

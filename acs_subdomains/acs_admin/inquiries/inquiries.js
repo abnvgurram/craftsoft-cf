@@ -369,7 +369,9 @@ function bindTableActions() {
     document.querySelectorAll('.edit-btn').forEach(b => b.onclick = () => openForm(true, b.dataset.id));
     document.querySelectorAll('.whatsapp').forEach(b => b.onclick = () => {
         const p = b.dataset.phone.replace(/\D/g, '');
-        window.open(`https://wa.me/91${p}`, '_blank');
+        // If already has country code (11+ digits), use as-is; otherwise prepend 91
+        const phoneNum = p.length >= 11 ? p : `91${p}`;
+        window.open(`https://wa.me/${phoneNum}`, '_blank');
     });
     document.querySelectorAll('.convert').forEach(b => b.onclick = () => convertToStudent(b.dataset.id));
     document.querySelectorAll('.delete').forEach(b => b.onclick = () => showDeleteConfirm(b.dataset.id, b.dataset.name));
