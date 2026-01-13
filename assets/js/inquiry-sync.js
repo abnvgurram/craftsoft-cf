@@ -449,8 +449,10 @@ const InquirySync = {
                 break;
         }
 
-        // Re-inject phone input after form reset
-        setTimeout(() => PhoneInputInjector.init(), 100);
+        // Re-inject phone input after form reset (with a delay to ensure HTML is restored)
+        setTimeout(() => {
+            if (window.PhoneInputInjector) window.PhoneInputInjector.init();
+        }, 50);
     }
 };
 
@@ -506,71 +508,83 @@ const PhoneInputInjector = {
                 overflow: hidden !important;
                 background: #fff !important;
                 transition: border-color 0.2s, box-shadow 0.2s !important;
+                width: 100% !important;
+                margin-top: 0.25rem !important;
             }
             .phone-input-injected:focus-within {
                 border-color: #2896cd !important;
                 box-shadow: 0 0 0 3px rgba(40, 150, 205, 0.15) !important;
             }
             .phone-input-injected .country-code-input {
-                width: 70px !important;
-                min-width: 70px !important;
+                width: 75px !important;
+                min-width: 75px !important;
                 padding: 0.75rem 0.5rem !important;
                 border: none !important;
                 border-right: 1px solid #e2e8f0 !important;
                 background: #f8fafc !important;
-                font-size: 0.9rem !important;
+                font-size: 0.95rem !important;
                 text-align: center !important;
                 outline: none !important;
                 font-family: inherit !important;
+                display: block !important;
             }
             .phone-input-injected .flag-display-btn {
-                display: flex !important;
+                display: none !important;
                 align-items: center !important;
                 justify-content: center !important;
-                gap: 0.25rem !important;
-                width: 70px !important;
-                min-width: 70px !important;
+                gap: 0.35rem !important;
+                width: 85px !important;
+                min-width: 85px !important;
                 padding: 0.75rem 0.5rem !important;
                 border: none !important;
                 border-right: 1px solid #e2e8f0 !important;
                 background: #f8fafc !important;
                 cursor: pointer !important;
-                font-size: 0.85rem !important;
+                font-size: 0.9rem !important;
                 transition: background 0.2s !important;
+                height: 100% !important;
             }
             .phone-input-injected .flag-display-btn:hover {
                 background: #e2e8f0 !important;
             }
-            .phone-input-injected .flag-display-btn .flag-emoji {
-                font-size: 1.1rem !important;
+            .phone-input-injected .flag-emoji {
+                font-size: 1.2rem !important;
+                line-height: 1 !important;
             }
-            .phone-input-injected .flag-display-btn .code-text {
-                font-size: 0.75rem !important;
-                color: #64748b !important;
-                font-weight: 500 !important;
+            .phone-input-injected .code-text {
+                font-size: 0.85rem !important;
+                color: #475569 !important;
+                font-weight: 600 !important;
             }
             .phone-input-injected .phone-number-input {
                 flex: 1 !important;
-                padding: 0.75rem !important;
+                padding: 0.75rem 1rem !important;
                 border: none !important;
                 background: transparent !important;
-                font-size: 0.95rem !important;
+                font-size: 1rem !important;
                 outline: none !important;
                 font-family: inherit !important;
+                width: 100% !important;
             }
             .phone-input-injected .phone-number-input::placeholder {
                 color: #94a3b8 !important;
             }
+            /* Show/Hide Logic */
+            .phone-input-injected.flag-active .country-code-input { display: none !important; }
+            .phone-input-injected.flag-active .flag-display-btn { display: flex !important; }
         `;
         document.head.appendChild(style);
     },
 
     transformInput(originalInput) {
-        if (originalInput.dataset.phoneInjected) return;
+        // CRITICAL: Skip if already transformed OR if it's a child of an injected wrapper
+        if (originalInput.dataset.phoneInjected || originalInput.closest('.phone-input-injected')) return;
 
         const originalId = originalInput.id;
         const originalName = originalInput.name;
+        const originalPlaceholder = originalInput.placeholder || 'Phone number';
         const originalValue = originalInput.value;
+        const isRequired = originalInput.required;
 
         const wrapper = document.createElement('div');
         wrapper.className = 'phone-input-injected';
@@ -586,7 +600,6 @@ const PhoneInputInjector = {
         const flagBtn = document.createElement('button');
         flagBtn.type = 'button';
         flagBtn.className = 'flag-display-btn';
-        flagBtn.style.display = 'none';
         flagBtn.innerHTML = `<span class="flag-emoji">🇮🇳</span><span class="code-text">+91</span>`;
 
         const phoneInput = document.createElement('input');
@@ -594,8 +607,11 @@ const PhoneInputInjector = {
         phoneInput.className = 'phone-number-input';
         phoneInput.id = originalId;
         phoneInput.name = originalName;
-        phoneInput.placeholder = 'Phone number';
+        phoneInput.placeholder = originalPlaceholder;
         phoneInput.value = originalValue;
+        phoneInput.required = isRequired;
+        // IMPORTANT: Mark the new input as injected so we don't transform it again
+        phoneInput.dataset.phoneInjected = 'true';
 
         const hiddenCodeInput = document.createElement('input');
         hiddenCodeInput.type = 'hidden';
@@ -609,15 +625,14 @@ const PhoneInputInjector = {
         wrapper.appendChild(hiddenCodeInput);
 
         originalInput.parentNode.replaceChild(wrapper, originalInput);
-        originalInput.dataset.phoneInjected = 'true';
 
-        this.bindInputEvents(codeInput, flagBtn, hiddenCodeInput);
+        this.bindInputEvents(wrapper, codeInput, flagBtn, hiddenCodeInput);
     },
 
-    bindInputEvents(codeInput, flagBtn, hiddenCodeInput) {
+    bindInputEvents(wrapper, codeInput, flagBtn, hiddenCodeInput) {
         const self = this;
 
-        codeInput.addEventListener('blur', () => {
+        const updateFlag = () => {
             const code = codeInput.value.trim();
             if (!code) return;
 
@@ -630,29 +645,46 @@ const PhoneInputInjector = {
             hiddenCodeInput.value = displayCode;
             codeInput.value = displayCode;
 
-            codeInput.style.display = 'none';
-            flagBtn.style.display = 'flex';
+            wrapper.classList.add('flag-active');
+        };
+
+        codeInput.addEventListener('blur', updateFlag);
+
+        // Also update if they press Enter
+        codeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                updateFlag();
+                wrapper.querySelector('.phone-number-input').focus();
+            }
         });
 
-        flagBtn.addEventListener('click', () => {
-            flagBtn.style.display = 'none';
-            codeInput.style.display = 'block';
-            codeInput.focus();
-            codeInput.select();
+        flagBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            wrapper.classList.remove('flag-active');
+            setTimeout(() => {
+                codeInput.focus();
+                codeInput.select();
+            }, 10);
         });
     },
 
     init() {
         this.injectStyles();
+        // Find all tel inputs that haven't been processed yet
         const telInputs = document.querySelectorAll('input[type="tel"]:not([data-phone-injected])');
-        telInputs.forEach(input => this.transformInput(input));
-        console.log(`PhoneInputInjector: Transformed ${telInputs.length} phone inputs`);
+        telInputs.forEach(input => {
+            // Check again that it's not a dummy input or already inside a wrapper
+            if (!input.classList.contains('phone-number-input')) {
+                this.transformInput(input);
+            }
+        });
     }
 };
 
 window.PhoneInputInjector = PhoneInputInjector;
 
-// Auto-initialize when DOM is ready
+// Auto-initialize
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => PhoneInputInjector.init());
 } else {
