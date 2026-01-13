@@ -430,9 +430,48 @@ function bindFormEvents() {
             if (el) el.style.display = r.value === 'yes' ? 'block' : 'none';
         }
     });
+
+    // Phone input with flag transformation
+    initPhoneInputComponent('inquiry');
 }
 
+// Initialize phone input component with flag transformation
+function initPhoneInputComponent(prefix) {
+    const codeInput = document.getElementById(`${prefix}-country-code`);
+    const flagBtn = document.getElementById(`${prefix}-flag-btn`);
+
+    if (!codeInput || !flagBtn) return;
+
+    const { Validators } = window.AdminUtils;
+
+    // On blur: transform input to flag button
+    codeInput.addEventListener('blur', () => {
+        const code = codeInput.value.trim();
+        if (!code) return;
+
+        const countryInfo = Validators.getFlagForCode(code);
+        const flag = countryInfo?.flag || '🌍';
+        const displayCode = code.startsWith('+') ? code : `+${code}`;
+
+        flagBtn.querySelector('.flag-emoji').textContent = flag;
+        flagBtn.querySelector('.code-text').textContent = displayCode;
+
+        codeInput.style.display = 'none';
+        flagBtn.style.display = 'flex';
+    });
+
+    // On flag click: transform back to input
+    flagBtn.addEventListener('click', () => {
+        flagBtn.style.display = 'none';
+        codeInput.style.display = 'block';
+        codeInput.focus();
+        codeInput.select();
+    });
+}
+
+
 async function openForm(isEdit = false, id = null) {
+    const { Validators } = window.AdminUtils;
     const container = document.getElementById('inquiry-form-container');
     if (!container) return;
 
@@ -469,7 +508,21 @@ async function openForm(isEdit = false, id = null) {
         if (data) {
             document.getElementById('edit-inquiry-id').value = data.id;
             document.getElementById('inquiry-name').value = data.name;
-            document.getElementById('inquiry-phone').value = data.phone;
+
+            // Parse and populate phone fields
+            const parsed = Validators.parseStoredPhone(data.phone);
+            document.getElementById('inquiry-country-code').value = parsed.code;
+            document.getElementById('inquiry-phone').value = parsed.number;
+
+            // Show flag button for existing country code
+            const flagBtn = document.getElementById('inquiry-flag-btn');
+            const codeInput = document.getElementById('inquiry-country-code');
+            const countryInfo = Validators.getFlagForCode(parsed.code);
+            flagBtn.querySelector('.flag-emoji').textContent = countryInfo?.flag || '🌍';
+            flagBtn.querySelector('.code-text').textContent = parsed.code;
+            codeInput.style.display = 'none';
+            flagBtn.style.display = 'flex';
+
             document.getElementById('inquiry-email').value = data.email || '';
             document.getElementById('inquiry-notes').value = data.notes || '';
             selected = data.courses || [];
@@ -502,6 +555,10 @@ async function openForm(isEdit = false, id = null) {
         }
     } else {
         document.getElementById('form-title').textContent = 'Add Inquiry';
+        // New inquiry: reset phone fields to default
+        document.getElementById('inquiry-country-code').value = '+91';
+        document.getElementById('inquiry-country-code').style.display = 'block';
+        document.getElementById('inquiry-flag-btn').style.display = 'none';
         renderCheckboxes(allCoursesForInquiries, false);
     }
 
@@ -509,33 +566,41 @@ async function openForm(isEdit = false, id = null) {
     container.scrollIntoView({ behavior: 'smooth' });
 }
 
+
 function closeForm() {
     const el = document.getElementById('inquiry-form-container');
     if (el) el.style.display = 'none';
 }
 
 async function saveInquiry() {
-    const { Toast } = window.AdminUtils || {};
+    const { Toast, Validators } = window.AdminUtils || {};
     const btn = document.getElementById('save-inquiry-btn');
     const editId = document.getElementById('edit-inquiry-id').value;
     const type = document.querySelector('input[name="inquiry-type"]:checked')?.value || 'course';
     const isService = type === 'service';
 
     const name = document.getElementById('inquiry-name').value.trim();
-    const phone = document.getElementById('inquiry-phone').value.trim();
+
+    // Get phone from split fields
+    const countryCode = document.getElementById('inquiry-country-code').value.trim();
+    const phoneNumber = document.getElementById('inquiry-phone').value.trim();
+
     const interests = Array.from(document.querySelectorAll('input[name="inquiry-interests"]:checked')).map(c => c.value);
 
-    if (!name || !phone || interests.length === 0) {
+    if (!name || !phoneNumber || interests.length === 0) {
         if (Toast) Toast.error('Required Fields', 'Please fill name, phone and select one item.');
         return;
     }
+
+    // Format phone for storage using country code from split input
+    const formattedPhone = Validators ? Validators.formatPhoneForStorage(phoneNumber, countryCode) : `${countryCode} - ${phoneNumber}`;
 
     if (btn) btn.disabled = true;
 
     try {
         const payload = {
             name,
-            phone,
+            phone: formattedPhone,
             email: document.getElementById('inquiry-email').value || null,
             courses: interests,
             notes: document.getElementById('inquiry-notes').value || null,
@@ -545,6 +610,7 @@ async function saveInquiry() {
             demo_date: isService ? null : (document.getElementById('inquiry-demo-date')?.value || null),
             demo_time: isService ? null : (document.getElementById('inquiry-demo-time')?.value || null)
         };
+
 
         if (editId) {
             await window.supabaseClient.from('inquiries').update(payload).eq('id', editId);

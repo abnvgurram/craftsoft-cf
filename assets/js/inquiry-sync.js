@@ -78,6 +78,24 @@ const InquirySync = {
         return code && code.startsWith('S-');
     },
 
+    // Format phone for storage: "+91 - 9492020292"
+    formatPhone(phone) {
+        if (!phone) return null;
+        const cleaned = phone.replace(/[\s\-()]/g, '');
+        // If already has country code format, normalize it
+        if (cleaned.startsWith('+')) {
+            const match = cleaned.match(/^(\+\d{1,4})(\d+)$/);
+            if (match) return `${match[1]} - ${match[2]}`;
+            return cleaned;
+        }
+        // For 10-digit Indian numbers, add +91 prefix
+        if (/^[6-9]\d{9}$/.test(cleaned)) {
+            return `+91 - ${cleaned}`;
+        }
+        // Return as-is for other formats
+        return phone;
+    },
+
     // Generate unique inquiry ID (INQ-ACS-001 style)
     async getNextInquiryId() {
         try {
@@ -214,7 +232,7 @@ const InquirySync = {
             const payload = {
                 name: formData.name,
                 email: formData.email || null,
-                phone: formData.phone || null,
+                phone: this.formatPhone(formData.phone),
                 courses: [courseCode],
                 notes: formData.message || formData.query || null,
                 source: 'Website',
@@ -247,7 +265,7 @@ const InquirySync = {
             const payload = {
                 name: formData.name,
                 email: formData.email || null,
-                phone: formData.phone || null,
+                phone: this.formatPhone(formData.phone),
                 courses: [serviceCode],
                 notes: formData.message || null,
                 source: 'Website',
@@ -285,7 +303,7 @@ const InquirySync = {
             const payload = {
                 name: formData.name,
                 email: formData.email || null,
-                phone: formData.phone || null,
+                phone: this.formatPhone(formData.phone),
                 courses: [code],
                 notes: formData.message || null,
                 source: 'Website',
