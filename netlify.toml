@@ -51,12 +51,51 @@
 
 [[redirects]]
   from = "/services.html"
-  to = "/acs_services/"
+  to = "/services/"
   status = 301
   conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in"]}
+
+[[redirects]]
+  from = "/services/"
+  to = "/acs_services/"
+  status = 200
+
+
+# Neat Links for Services (Rewrites)
+[[redirects]]
+  from = "/web-development/*"
+  to = "/acs_services/web-development/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/ui-ux-design/*"
+  to = "/acs_services/ui-ux-design/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/branding/*"
+  to = "/acs_services/branding/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/graphic-design/*"
+  to = "/acs_services/graphic-design/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/cloud-devops/*"
+  to = "/acs_services/cloud-devops/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/career-services/*"
+  to = "/acs_services/career-services/:splat"
+  status = 200
 
 # Global 404 catch-all
 [[redirects]]
   from = "/*"
   to = "/404.html"
   status = 404
+
+
