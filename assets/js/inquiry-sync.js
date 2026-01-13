@@ -48,23 +48,24 @@ const InquirySync = {
 
     // Service codes (with S- prefix)
     serviceCodeMap: {
-        'Web Development': 'S-WEB',
-        'Web Development Service': 'S-WEB',
-        'Website Development': 'S-WEB',
+        'Web Development': 'S-WDEV',
+        'Web Development Service': 'S-WDEV',
+        'Website Development': 'S-WDEV',
         'UI/UX Design Service': 'S-UX',
         'UI/UX Design Services': 'S-UX',
         'Graphic Design Service': 'S-GD',
         'Graphic Design Services': 'S-GD',
-        'Branding & Marketing': 'S-BM',
+        'Branding & Marketing': 'S-BRND',
         'Cloud & DevOps': 'S-CLOUD',
         'Cloud & DevOps Service': 'S-CLOUD',
         'Cloud & DevOps Solutions': 'S-CLOUD',
         'Career Services': 'S-CAREER',
         'Career & Placement Services': 'S-CAREER',
         // Direct code mappings
-        'S-GD': 'S-GD', 'S-UX': 'S-UX', 'S-WEB': 'S-WEB',
-        'S-CLOUD': 'S-CLOUD', 'S-BM': 'S-BM', 'S-CAREER': 'S-CAREER'
+        'S-GD': 'S-GD', 'S-UX': 'S-UX', 'S-WDEV': 'S-WDEV',
+        'S-CLOUD': 'S-CLOUD', 'S-BRND': 'S-BRND', 'S-CAREER': 'S-CAREER'
     },
+
 
     getCourseCode(name) {
         return this.courseCodeMap[name] || name;
