@@ -499,7 +499,9 @@ const InquirySync = {
         // Re-inject phone input after form reset (with a delay to ensure HTML is restored)
         setTimeout(() => {
             if (window.PhoneInputInjector) window.PhoneInputInjector.init();
+            if (window.WhatsAppCleaner) window.WhatsAppCleaner.init();
         }, 50);
+
     }
 };
 
@@ -731,9 +733,54 @@ const PhoneInputInjector = {
 
 window.PhoneInputInjector = PhoneInputInjector;
 
-// Auto-initialize
+// ============================================
+// Global WhatsApp Link Cleaner
+// Ensures all wa.me links are digits-only
+// ============================================
+
+const WhatsAppCleaner = {
+    clean(url) {
+        if (!url || !url.includes('wa.me/')) return url;
+
+        try {
+            const parts = url.split('wa.me/');
+            const afterWa = parts[1];
+
+            // Separate the number from the message (if any)
+            let [number, query] = afterWa.split('?');
+
+            // Clean number: keep only digits
+            const cleanedNumber = number.replace(/\D/g, '');
+
+            return `${parts[0]}wa.me/${cleanedNumber}${query ? '?' + query : ''}`;
+        } catch (e) {
+            console.error('WhatsApp Cleaner Error:', e);
+            return url;
+        }
+    },
+
+    init() {
+        const links = document.querySelectorAll('a[href*="wa.me/"]');
+        links.forEach(link => {
+            const originalHref = link.getAttribute('href');
+            const cleanHref = this.clean(originalHref);
+            if (originalHref !== cleanHref) {
+                link.setAttribute('href', cleanHref);
+            }
+        });
+    }
+};
+
+// Run on load
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => PhoneInputInjector.init());
+    document.addEventListener('DOMContentLoaded', () => {
+        PhoneInputInjector.init();
+        WhatsAppCleaner.init();
+    });
 } else {
     PhoneInputInjector.init();
+    WhatsAppCleaner.init();
 }
+
+
+window.WhatsAppCleaner = WhatsAppCleaner;
