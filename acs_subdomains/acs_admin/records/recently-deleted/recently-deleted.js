@@ -241,7 +241,7 @@ function renderList(items) {
                     <span class="table-user-name">${name}</span>
                 </td>
                 <td>
-                    ${item.phone ? `+91 - ${item.phone}` : '<span class="text-muted">-</span>'}
+                    ${item.phone || '<span class="text-muted">-</span>'}
                 </td>
                 <td>
                     ${deletedAt.toLocaleDateString()}
