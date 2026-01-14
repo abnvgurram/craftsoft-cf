@@ -39,7 +39,27 @@ document.addEventListener('DOMContentLoaded', function () {
     initCardGlow();
     initHeroParallax();
     initWorkspaceTabs();
+    initFormSecurity();
 });
+
+/* ============================================
+   FORM SECURITY - Disable Autocomplete
+   ============================================ */
+function initFormSecurity() {
+    // Disable autocomplete on all forms for security
+    document.querySelectorAll('form').forEach(form => {
+        form.setAttribute('autocomplete', 'off');
+    });
+
+    // Also disable on individual inputs
+    document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]').forEach(input => {
+        input.setAttribute('autocomplete', 'off');
+    });
+
+    document.querySelectorAll('select').forEach(select => {
+        select.setAttribute('autocomplete', 'off');
+    });
+}
 
 /* ============================================
    WORKSPACE TABS AUTO-ROTATION
@@ -655,6 +675,37 @@ function initCurriculumTabs() {
                 }
             });
         });
+    });
+
+    // Also initialize curriculum module accordions
+    initCurriculumAccordion();
+}
+
+/* ============================================
+   CURRICULUM MODULE ACCORDIONS
+   ============================================ */
+function initCurriculumAccordion() {
+    const modules = document.querySelectorAll('.curriculum-module');
+
+    if (modules.length === 0) return;
+
+    // Open the first module by default in each level
+    document.querySelectorAll('.curriculum-level').forEach(level => {
+        const firstModule = level.querySelector('.curriculum-module');
+        if (firstModule) {
+            firstModule.classList.add('active');
+        }
+    });
+
+    // Toggle accordion on click
+    modules.forEach(module => {
+        const header = module.querySelector('.module-header');
+        if (header) {
+            header.addEventListener('click', () => {
+                // Toggle current module
+                module.classList.toggle('active');
+            });
+        }
     });
 }
 

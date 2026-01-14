@@ -190,13 +190,13 @@
     color: #3b82f6;
 }
 
-/* Form Card Styling - Match Image 2/3 */
+/* Form Card Styling - Match Course/Service Card Style */
 .contact-form-card {
-    background: var(--section-bg);
+    background: linear-gradient(135deg, #e8f4fc 0%, #dbeafe 50%, #e0f2fe 100%);
     padding: 3rem;
     border-radius: 2rem;
     box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.06);
-    border: 1px solid var(--card-border);
+    border: 1px solid rgba(59, 130, 246, 0.12);
 }
 
 .contact-form-card h3 {

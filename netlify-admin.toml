@@ -167,6 +167,36 @@
   status = 200
   force = true
 
+# Records - Archived (Clean URL)
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/archived"
+  to = "/acs_subdomains/acs_admin/records/archived/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/archived/"
+  to = "/acs_subdomains/acs_admin/records/archived/index.html"
+  status = 200
+  force = true
+
+# Records - Recently Deleted / Recovery Center (Clean URL)
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/recently-deleted"
+  to = "/acs_subdomains/acs_admin/records/recently-deleted/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/recently-deleted/"
+  to = "/acs_subdomains/acs_admin/records/recently-deleted/index.html"
+  status = 200
+  force = true
+
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/students"

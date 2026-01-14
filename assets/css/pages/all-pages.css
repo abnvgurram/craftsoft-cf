@@ -634,18 +634,19 @@
     margin-bottom: var(--spacing-xl);
 }
 
+/* Accordion-style Curriculum Module - Light Blue Theme */
 .curriculum-module {
-    background: var(--card-bg);
-    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, #e8f4fc 0%, #dbeafe 50%, #e0f2fe 100%);
+    border-radius: var(--radius-xl);
     margin-bottom: var(--spacing-md);
     overflow: hidden;
-    border: 1px solid var(--card-border);
-    box-shadow: var(--shadow-sm);
-    transition: background 0.2s ease;
+    border: 1px solid rgba(59, 130, 246, 0.12);
+    box-shadow: 0 2px 8px rgba(40, 150, 205, 0.08);
+    transition: all 0.3s ease;
 }
 
 .curriculum-module:hover {
-    background: var(--card-bg-hover);
+    box-shadow: 0 4px 16px rgba(40, 150, 205, 0.15);
 }
 
 .module-header {
@@ -658,7 +659,7 @@
 }
 
 .module-header:hover {
-    background: var(--primary-50);
+    background: rgba(59, 130, 246, 0.08);
 }
 
 .module-header h4 {
@@ -666,6 +667,8 @@
     align-items: center;
     gap: var(--spacing-sm);
     font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gray-900);
 }
 
 .module-header .module-number {
@@ -678,9 +681,34 @@
     justify-content: center;
     color: var(--white);
     font-size: 0.875rem;
+    font-weight: 600;
 }
 
+/* Accordion toggle indicator */
+.module-header::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.75rem;
+    color: var(--primary-500);
+    transition: transform 0.3s ease;
+}
+
+.curriculum-module.active .module-header::after {
+    transform: rotate(180deg);
+}
+
+/* Collapsible content */
 .module-content {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 var(--spacing-lg);
+    padding-left: calc(var(--spacing-lg) + 42px);
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.curriculum-module.active .module-content {
+    max-height: 500px;
     padding: 0 var(--spacing-lg) var(--spacing-lg);
     padding-left: calc(var(--spacing-lg) + 42px);
 }
@@ -688,7 +716,7 @@
 .module-content ul li {
     padding: var(--spacing-sm) 0;
     color: var(--gray-600);
-    border-bottom: 1px dashed var(--gray-200);
+    border-bottom: 1px dashed rgba(59, 130, 246, 0.15);
 }
 
 .module-content ul li:last-child {
