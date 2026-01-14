@@ -164,6 +164,14 @@ function renderList(items) {
         const cardsContainer = document.getElementById('archives-cards');
         if (cardsContainer) cardsContainer.innerHTML = '';
         document.getElementById('pagination-container').innerHTML = '';
+
+        // Update total strip even when empty
+        const totalStrip = document.getElementById('total-strip');
+        if (totalStrip) {
+            const label = currentTab === 'students' ? 'Students' : 'Clients';
+            totalStrip.innerHTML = `<span>Total ${label}: <strong>0</strong></span>`;
+            totalStrip.style.display = 'block';
+        }
         return;
     }
 

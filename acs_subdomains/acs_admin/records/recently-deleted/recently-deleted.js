@@ -188,6 +188,14 @@ function renderList(items) {
         `;
         if (cardsContainer) cardsContainer.innerHTML = `<div class="empty-state"><p>Trash is Empty</p></div>`;
         document.getElementById('pagination-container').innerHTML = '';
+
+        // Update total strip even when empty
+        const totalStrip = document.getElementById('total-strip');
+        if (totalStrip) {
+            const label = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+            totalStrip.innerHTML = `<span>Total ${label}: <strong>0</strong></span>`;
+            totalStrip.style.display = 'block';
+        }
         return;
     }
 
