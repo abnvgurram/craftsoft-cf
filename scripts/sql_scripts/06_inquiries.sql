@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS inquiries (
     demo_time TEXT,
     status TEXT DEFAULT 'New' CHECK (status IN ('New', 'Contacted', 'Demo Scheduled', 'Converted', 'Closed')),
     notes TEXT,
+    deleted_at TIMESTAMPTZ DEFAULT NULL,        -- Soft delete timestamp
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
