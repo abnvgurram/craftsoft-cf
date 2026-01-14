@@ -33,3 +33,12 @@ h6 {
     font-size: 1.6em;
     letter-spacing: 1px;
 }
+
+/* Footer Visibility for legacy logos */
+.footer-brand .logo-signature {
+    color: var(--white) !important;
+}
+
+.footer-brand .logo-text {
+    color: var(--white) !important;
+}
