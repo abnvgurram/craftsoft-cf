@@ -256,6 +256,17 @@ function bindBulkActions() {
         };
     }
 
+    const bulkCancelBtn = document.getElementById('bulk-cancel-btn');
+    if (bulkCancelBtn) {
+        bulkCancelBtn.onclick = () => {
+            selectedTutors.clear();
+            const selectAll = document.getElementById('select-all-tutors');
+            if (selectAll) selectAll.checked = false;
+            checkboxes.forEach(cb => cb.checked = false);
+            updateBulkBar();
+        };
+    }
+
     function updateBulkBar() {
         if (bulkBar && selectedCountText) {
             if (selectedTutors.size > 0) {

@@ -138,6 +138,10 @@
     padding-left: 2.5rem !important;
 }
 
+.search-box .searchable-select-trigger {
+    padding-left: 2.5rem !important;
+}
+
 /* Bulk Bar */
 .bulk-actions-container {
     background: #fff1f2;

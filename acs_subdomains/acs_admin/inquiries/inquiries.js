@@ -379,6 +379,17 @@ function bindBulkActions() {
         };
     }
 
+    const bulkCancelBtn = document.getElementById('bulk-cancel-btn');
+    if (bulkCancelBtn) {
+        bulkCancelBtn.onclick = () => {
+            selectedInquiries.clear();
+            const selectAll = document.getElementById('select-all-inquiries');
+            if (selectAll) selectAll.checked = false;
+            checkboxes.forEach(cb => cb.checked = false);
+            updateBulkBar();
+        };
+    }
+
     function updateBulkBar() {
         if (bulkBar && selectedCount) {
             if (selectedInquiries.size > 0) {

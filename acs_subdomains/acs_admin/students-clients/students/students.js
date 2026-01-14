@@ -439,6 +439,16 @@ function bindBulkActions() {
         };
     }
 
+    const bulkCancelBtn = document.getElementById('bulk-cancel-btn');
+    if (bulkCancelBtn) {
+        bulkCancelBtn.onclick = () => {
+            selectedStudents.clear();
+            if (selectAll) selectAll.checked = false;
+            checkboxes.forEach(cb => cb.checked = false);
+            updateBulkBar();
+        };
+    }
+
     function updateBulkBar() {
         if (bulkBar && selectedCountText) {
             if (selectedStudents.size > 0) {

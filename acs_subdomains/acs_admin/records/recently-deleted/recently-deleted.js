@@ -168,15 +168,17 @@ function filterAndRender(searchQ = '') {
     renderList(filtered);
 }
 
-// Mobile Cards Container
-const cardsContainer = document.getElementById('trash-cards');
+function renderList(items) {
+    const tbody = document.getElementById('trash-tbody');
+    // Mobile Cards Container
+    const cardsContainer = document.getElementById('trash-cards');
 
-// Reset selection on new render
-selectedItems.clear();
-updateBulkBar();
+    // Reset selection on new render
+    selectedItems.clear();
+    updateBulkBar();
 
-if (items.length === 0) {
-    tbody.innerHTML = `
+    if (items.length === 0) {
+        tbody.innerHTML = `
             <tr>
                 <td colspan="6">
                     <div class="empty-state">
@@ -187,46 +189,46 @@ if (items.length === 0) {
                 </td>
             </tr>
         `;
-    if (cardsContainer) cardsContainer.innerHTML = `<div class="empty-state"><p>Trash is Empty</p></div>`;
-    document.getElementById('pagination-container').innerHTML = '';
-    return;
-}
-
-// Pagination
-const totalPages = Math.ceil(items.length / itemsPerPage);
-const start = (currentPage - 1) * itemsPerPage;
-const paginated = items.slice(start, start + itemsPerPage);
-
-// Table Render
-tbody.innerHTML = paginated.map(item => {
-    const id = item.student_id || item.client_id || item.inquiry_id || 'ID-UNKNOWN';
-    const name = `${item.first_name || item.name || ''} ${item.last_name || ''}`;
-
-    // Calculate Days Left
-    const deletedAt = new Date(item.deleted_at);
-
-    let purgeTag = '';
-
-    if (window.RETENTION_DAYS === 'never') {
-        purgeTag = `<span class="badge badge-gray">Manual Purge</span>`;
-    } else {
-        const purgeDate = new Date(deletedAt);
-        purgeDate.setDate(deletedAt.getDate() + (parseInt(window.RETENTION_DAYS) || 30));
-
-        const now = new Date();
-        const diffTime = purgeDate - now;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays <= 3) {
-            purgeTag = `<span class="badge badge-error">Purge in ${diffDays}d</span>`;
-        } else if (diffDays < 0) {
-            purgeTag = `<span class="badge badge-gray">Pending Purge</span>`;
-        } else {
-            purgeTag = `<span class="badge badge-info-soft">Purge in ${diffDays}d</span>`;
-        }
+        if (cardsContainer) cardsContainer.innerHTML = `<div class="empty-state"><p>Trash is Empty</p></div>`;
+        document.getElementById('pagination-container').innerHTML = '';
+        return;
     }
 
-    return `
+    // Pagination
+    const totalPages = Math.ceil(items.length / itemsPerPage);
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginated = items.slice(start, start + itemsPerPage);
+
+    // Table Render
+    tbody.innerHTML = paginated.map(item => {
+        const id = item.student_id || item.client_id || item.inquiry_id || 'ID-UNKNOWN';
+        const name = `${item.first_name || item.name || ''} ${item.last_name || ''}`;
+
+        // Calculate Days Left
+        const deletedAt = new Date(item.deleted_at);
+
+        let purgeTag = '';
+
+        if (window.RETENTION_DAYS === 'never') {
+            purgeTag = `<span class="badge badge-gray">Manual Purge</span>`;
+        } else {
+            const purgeDate = new Date(deletedAt);
+            purgeDate.setDate(deletedAt.getDate() + (parseInt(window.RETENTION_DAYS) || 30));
+
+            const now = new Date();
+            const diffTime = purgeDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays <= 3) {
+                purgeTag = `<span class="badge badge-error">Purge in ${diffDays}d</span>`;
+            } else if (diffDays < 0) {
+                purgeTag = `<span class="badge badge-gray">Pending Purge</span>`;
+            } else {
+                purgeTag = `<span class="badge badge-info-soft">Purge in ${diffDays}d</span>`;
+            }
+        }
+
+        return `
             <tr>
                 <td><input type="checkbox" class="trash-checkbox" data-id="${item.id}" onchange="toggleSelection('${item.id}')"></td>
                 <td><span class="badge badge-secondary">${id}</span></td>
@@ -251,16 +253,16 @@ tbody.innerHTML = paginated.map(item => {
                 </td>
             </tr>
         `;
-}).join('');
+    }).join('');
 
-// Mobile Cards Render
-if (cardsContainer) {
-    cardsContainer.innerHTML = paginated.map(item => {
-        const id = item.student_id || item.client_id || item.inquiry_id || 'ID-UNKNOWN';
-        const name = `${item.first_name || item.name || ''} ${item.last_name || ''}`;
-        const deletedAt = new Date(item.deleted_at);
+    // Mobile Cards Render
+    if (cardsContainer) {
+        cardsContainer.innerHTML = paginated.map(item => {
+            const id = item.student_id || item.client_id || item.inquiry_id || 'ID-UNKNOWN';
+            const name = `${item.first_name || item.name || ''} ${item.last_name || ''}`;
+            const deletedAt = new Date(item.deleted_at);
 
-        return `
+            return `
                  <div class="premium-card">
                     <div class="card-header">
                          <div style="display:flex; align-items:center; gap:10px;">
@@ -284,14 +286,14 @@ if (cardsContainer) {
                     </div>
                 </div>
             `;
-    }).join('');
-}
+        }).join('');
+    }
 
-window.AdminUtils.Pagination.render('pagination-container', items.length, currentPage, itemsPerPage, (p) => {
-    currentPage = p;
-    filterAndRender();
-    window.scrollTo(0, 0);
-});
+    window.AdminUtils.Pagination.render('pagination-container', items.length, currentPage, itemsPerPage, (p) => {
+        currentPage = p;
+        filterAndRender();
+        window.scrollTo(0, 0);
+    });
 }
 
 // Bulk Actions
@@ -445,9 +447,20 @@ async function emptyTrash() {
     );
 }
 
+
+function cancelSelection() {
+    selectedItems.clear();
+    const mainCb = document.getElementById('trash-select-all');
+    if (mainCb) mainCb.checked = false;
+    document.querySelectorAll('.trash-checkbox').forEach(cb => cb.checked = false);
+    updateBulkBar();
+}
+
+// Expose globally
 window.restoreFromTrash = restoreFromTrash;
 window.deleteForever = deleteForever;
 window.bulkRestoreFromTrash = bulkRestoreFromTrash;
 window.bulkDeleteForever = bulkDeleteForever;
 window.toggleSelection = toggleSelection;
 window.toggleSelectAllTrash = toggleSelectAllTrash;
+window.cancelSelection = cancelSelection;

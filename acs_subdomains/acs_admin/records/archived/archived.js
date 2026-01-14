@@ -351,7 +351,7 @@ async function bulkRestore() {
 
     window.AdminUtils.Modal.confirm(
         `Bulk Activate`,
-        `Are you sure you want to restore ${count} ${label} to Agctive status?`,
+        `Are you sure you want to restore ${count} ${label} to Active status?`,
         async () => {
             const loading = document.getElementById('archives-loading');
             loading.style.display = 'flex';
@@ -383,7 +383,18 @@ async function bulkRestore() {
 }
 
 // Expose globally
+
+function cancelSelection() {
+    selectedItems.clear();
+    const mainCb = document.getElementById('archive-select-all');
+    if (mainCb) mainCb.checked = false;
+    document.querySelectorAll('.archive-checkbox').forEach(cb => cb.checked = false);
+    updateBulkBar();
+}
+
+// Expose globally
 window.restoreItem = restoreItem;
 window.toggleSelection = toggleSelection;
 window.toggleSelectAll = toggleSelectAll;
 window.bulkRestore = bulkRestore;
+window.cancelSelection = cancelSelection;

@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('status-filter')?.addEventListener('change', handleFilter);
     document.getElementById('sort-order')?.addEventListener('change', handleFilter);
     document.getElementById('bulk-delete-btn')?.addEventListener('click', bulkDeleteClients);
+    document.getElementById('bulk-cancel-btn')?.addEventListener('click', cancelSelection);
 
 
     // Check for prefill from inquiry conversion
@@ -400,6 +401,15 @@ function renderClients(clients) {
 
     renderPagination(totalPages);
     bindTableActions();
+    updateBulkActionsBar();
+}
+
+
+function cancelSelection() {
+    selectedClientIds.clear();
+    const selectAll = document.getElementById('select-all-clients');
+    if (selectAll) selectAll.checked = false;
+    document.querySelectorAll('.client-checkbox').forEach(cb => cb.checked = false);
     updateBulkActionsBar();
 }
 
