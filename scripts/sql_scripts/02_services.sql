@@ -1,41 +1,77 @@
 -- ================================================================================
 -- 02. SERVICES - Specialized Services
--- Description: Manages specialized services offered by the institute.
+-- Description: Manages specialized services offered by the institute
 -- ================================================================================
 
-DROP TABLE IF EXISTS services CASCADE;
-CREATE TABLE services (
+-- ============================================
+-- TABLE DEFINITION
+-- ============================================
+CREATE TABLE IF NOT EXISTS services (
     id BIGSERIAL PRIMARY KEY,
-    service_id TEXT UNIQUE, -- e.g. Serv-001
-    service_code TEXT UNIQUE, -- e.g. GD, UXD
+    service_id TEXT UNIQUE,                     -- e.g. SERV-001
+    service_code TEXT UNIQUE,                   -- e.g. GD, UXD
     name TEXT NOT NULL,
     category TEXT,
     description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    fee DECIMAL(10,2) DEFAULT 0,
+    status TEXT DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============================================
+-- ROW LEVEL SECURITY
+-- ============================================
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies
 DROP POLICY IF EXISTS "Allow public read services" ON services;
-CREATE POLICY "Allow public read services" ON services
-    FOR SELECT TO anon
-    USING (true);
-
 DROP POLICY IF EXISTS "Allow admin all services" ON services;
 DROP POLICY IF EXISTS "Active admins can manage services" ON services;
-CREATE POLICY "Active admins can manage services" ON services
-    FOR ALL TO authenticated
-    USING (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
-    )
-    WITH CHECK (
-        EXISTS (SELECT 1 FROM admins WHERE id = auth.uid() AND status = 'ACTIVE')
-    );
-
--- Public read for verification portal
-
 DROP POLICY IF EXISTS "Public can read services" ON services;
-CREATE POLICY "Public can read services" ON services
-    FOR SELECT TO public
+
+-- POLICY: Public read access (website & verification portal)
+CREATE POLICY "public_read_services" ON services
+    FOR SELECT 
+    TO anon, public
     USING (true);
 
+-- POLICY: Active admins can manage all services
+CREATE POLICY "admin_manage_services" ON services
+    FOR ALL 
+    TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM admins 
+            WHERE id = auth.uid() AND status = 'ACTIVE'
+        )
+    )
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM admins 
+            WHERE id = auth.uid() AND status = 'ACTIVE'
+        )
+    );
+
+-- ============================================
+-- INDEXES
+-- ============================================
+CREATE INDEX IF NOT EXISTS idx_services_status ON services(status);
+CREATE INDEX IF NOT EXISTS idx_services_code ON services(service_code);
+
+-- ============================================
+-- TRIGGERS
+-- ============================================
+CREATE OR REPLACE FUNCTION update_services_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql
+SET search_path = public;
+
+DROP TRIGGER IF EXISTS services_updated_at ON services;
+CREATE TRIGGER services_updated_at
+    BEFORE UPDATE ON services
+    FOR EACH ROW EXECUTE FUNCTION update_services_updated_at();
