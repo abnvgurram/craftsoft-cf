@@ -62,6 +62,7 @@
 .action-buttons {
     display: flex;
     gap: 8px;
+    justify-content: flex-end;
 }
 
 .btn-icon {
@@ -116,12 +117,101 @@
     font-size: 0.9rem;
 }
 
-#empty-trash-btn {
-    color: var(--danger);
-    border-color: var(--danger);
+
+/* Search Box Fix */
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
-#empty-trash-btn:hover {
-    background: var(--danger);
-    color: white;
+.search-box i {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.search-box input,
+.search-box select {
+    padding-left: 2.5rem !important;
+}
+
+/* Bulk Bar */
+.bulk-actions-container {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #9f1239;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bulk-info {
+    font-weight: 500;
+}
+
+.bulk-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Responsive Cards */
+.data-cards {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .table-container {
+        display: none;
+    }
+
+    .data-cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .premium-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+        justify-content: flex-end;
+    }
 }

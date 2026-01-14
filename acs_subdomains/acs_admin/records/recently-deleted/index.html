@@ -62,7 +62,7 @@
                 <div class="info-banner">
                     <i class="fa-solid fa-circle-info"></i>
                     <span>Items in the Recovery Center are automatically deleted after 30 days.</span>
-                    <button class="btn btn-outline btn-sm" id="empty-trash-btn" style="margin-left: auto;">
+                    <button class="btn btn-outline-danger btn-sm" id="empty-trash-btn" style="margin-left: auto;">
                         <i class="fa-regular fa-trash-can"></i> Empty Trash Now
                     </button>
                 </div>
@@ -72,6 +72,20 @@
                     <button class="tab-btn" data-tab="clients">Clients</button>
                     <button class="tab-btn" data-tab="inquiries">Inquiries</button>
                     <!-- <button class="tab-btn" data-tab="receipts">Receipts</button> -->
+                </div>
+
+                <div id="trash-bulk-bar" class="bulk-actions-container" style="display:none;">
+                    <div class="bulk-info">
+                        <span id="selected-count">0</span> items selected
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="btn btn-sm btn-outline-success" onclick="bulkRestoreFromTrash()">
+                            <i class="fa-solid fa-rotate-left"></i> Restore Selected
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="bulkDeleteForever()">
+                            <i class="fa-solid fa-trash-can"></i> Delete Forever
+                        </button>
+                    </div>
                 </div>
 
                 <div class="section-actions">
@@ -95,7 +109,9 @@
                     <table class="premium-table">
                         <thead>
                             <tr>
-                                <th width="15%">ID</th>
+                                <th width="40px"><input type="checkbox" id="trash-select-all"
+                                        onclick="toggleSelectAllTrash()"></th>
+                                <th width="12%">ID</th>
                                 <th width="25%">NAME</th>
                                 <th width="20%">DELETED ON</th>
                                 <th width="20%">STATUS</th>
@@ -107,6 +123,8 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="data-cards" id="trash-cards"></div>
 
                 <div id="trash-loading" class="loading-state" style="display: none;">
                     <div class="spinner"></div>

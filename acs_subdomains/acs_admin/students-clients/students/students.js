@@ -173,6 +173,7 @@ async function loadStudents() {
             .from('students')
             .select('*')
             .is('deleted_at', null)
+            .neq('status', 'INACTIVE')
             .order('student_id', { ascending: true });
 
         const { data: students, error } = await query;
@@ -1181,8 +1182,9 @@ async function openStudentProfile(studentId) {
         const { data: payments, error: paymentsError } = await window.supabaseClient
             .from('payments')
             .select('*, courses(course_code, course_name)')
-            .eq('student_id', studentId)
-            .order('payment_date', { ascending: false });
+            .is('deleted_at', null)
+            .neq('status', 'INACTIVE')
+            .order('created_at', { ascending: false });
 
         if (paymentsError) console.warn('Error loading payments:', paymentsError);
 

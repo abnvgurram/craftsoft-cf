@@ -65,6 +65,17 @@
                     <!-- <button class="tab-btn" data-tab="inquiries">Inquiries</button> -->
                 </div>
 
+                <div id="archives-bulk-bar" class="bulk-actions-container" style="display:none;">
+                    <div class="bulk-info">
+                        <span id="selected-count">0</span> items selected
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="btn btn-sm btn-outline" onclick="bulkRestore()">
+                            <i class="fa-solid fa-rotate-left"></i> Restore Selected
+                        </button>
+                    </div>
+                </div>
+
                 <div class="section-actions">
                     <div class="filter-group">
                         <div class="search-box">
@@ -87,7 +98,9 @@
                     <table class="premium-table">
                         <thead>
                             <tr>
-                                <th width="15%">ID</th>
+                                <th width="40px"><input type="checkbox" id="archive-select-all"
+                                        onclick="toggleSelectAll()"></th>
+                                <th width="12%">ID</th>
                                 <th width="25%">NAME</th>
                                 <th width="20%">CONTACT</th>
                                 <th width="20%">DETAILS</th>
@@ -98,6 +111,10 @@
                             <!-- Dynamic Content -->
                         </tbody>
                     </table>
+                </div>
+
+                <div class="data-cards" id="archives-cards">
+                    <!-- Dynamic Cards -->
                 </div>
 
                 <div id="archives-loading" class="loading-state" style="display: none;">

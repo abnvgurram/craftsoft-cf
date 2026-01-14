@@ -30,7 +30,7 @@
     color: var(--text-dark);
 }
 
-/* Table specific styles if needed (overriding or supplementing global) */
+/* Table specific styles */
 .premium-table td {
     vertical-align: middle;
 }
@@ -71,40 +71,104 @@
     color: #2563eb;
 }
 
-.archive-card {
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+.badge-gray {
+    background: var(--bg-body);
+    color: var(--text-muted);
     border: 1px solid var(--border-color);
+}
+
+/* Search Box Fix */
+.search-box {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
 }
 
-.archive-info h4 {
-    margin: 0 0 5px 0;
-    font-size: 1rem;
-}
-
-.archive-info p {
-    margin: 0;
-    font-size: 0.85rem;
+.search-box i {
+    position: absolute;
+    left: 1rem;
     color: var(--text-muted);
+    pointer-events: none;
+    z-index: 10;
 }
 
-.restore-btn {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
-    border: 1px solid rgba(16, 185, 129, 0.2);
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
+.search-box input,
+.search-box select {
+    padding-left: 2.5rem !important;
 }
 
-.restore-btn:hover {
-    background: #10b981;
-    color: white;
+/* Bulk Bar */
+.bulk-actions-container {
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    color: #3730a3;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bulk-info {
+    font-weight: 500;
+}
+
+/* Responsive Cards */
+.data-cards {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .table-container {
+        display: none;
+    }
+
+    .data-cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .premium-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .card-actions .btn {
+        flex: 1;
+    }
 }

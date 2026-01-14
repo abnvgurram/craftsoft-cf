@@ -139,7 +139,7 @@ const Modal = {
         iconEl.innerHTML = `<i class="fa-solid ${icons[type]}"></i>`;
 
         this.overlay.querySelector('.modal-title').textContent = title;
-        this.overlay.querySelector('.modal-message').textContent = message;
+        this.overlay.querySelector('.modal-message').innerHTML = message;
 
         const actionsEl = this.overlay.querySelector('.modal-actions');
         actionsEl.innerHTML = '';

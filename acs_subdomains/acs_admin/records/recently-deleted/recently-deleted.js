@@ -91,6 +91,25 @@ async function loadItems() {
         }
 
         allItems = data || [];
+
+        // Fetch retention setting
+        try {
+            const { data: set, error: setErr } = await window.supabaseClient
+                .from('settings')
+                .select('setting_value')
+                .eq('setting_key', 'data_retention_days')
+                .single();
+
+            if (set && set.setting_value) {
+                window.RETENTION_DAYS = parseInt(set.setting_value) || 30;
+            } else {
+                window.RETENTION_DAYS = 30;
+            }
+        } catch (e) {
+            console.warn('Failed to load retention setting', e);
+            window.RETENTION_DAYS = 30;
+        }
+
         filterAndRender();
 
     } catch (e) {
@@ -134,15 +153,17 @@ function filterAndRender(searchQ = '') {
     renderList(filtered);
 }
 
-function renderList(items) {
-    const tbody = document.getElementById('trash-tbody');
-    const loading = document.getElementById('trash-loading');
-    loading.style.display = 'none';
+// Mobile Cards Container
+const cardsContainer = document.getElementById('trash-cards');
 
-    if (items.length === 0) {
-        tbody.innerHTML = `
+// Reset selection on new render
+selectedItems.clear();
+updateBulkBar();
+
+if (items.length === 0) {
+    tbody.innerHTML = `
             <tr>
-                <td colspan="5">
+                <td colspan="6">
                     <div class="empty-state">
                         <i class="fa-regular fa-trash-can"></i>
                         <h3>Trash is Empty</h3>
@@ -151,45 +172,45 @@ function renderList(items) {
                 </td>
             </tr>
         `;
-        document.getElementById('pagination-container').innerHTML = '';
-        return;
+    if (cardsContainer) cardsContainer.innerHTML = `<div class="empty-state"><p>Trash is Empty</p></div>`;
+    document.getElementById('pagination-container').innerHTML = '';
+    return;
+}
+
+// Pagination
+const totalPages = Math.ceil(items.length / itemsPerPage);
+const start = (currentPage - 1) * itemsPerPage;
+const paginated = items.slice(start, start + itemsPerPage);
+
+// Table Render
+tbody.innerHTML = paginated.map(item => {
+    const id = item.student_id || item.client_id || item.inquiry_id || 'ID-UNKNOWN';
+    const name = `${item.first_name || item.name || ''} ${item.last_name || ''}`;
+
+    // Calculate Days Left
+    const deletedAt = new Date(item.deleted_at);
+    const purgeDate = new Date(deletedAt);
+    purgeDate.setDate(deletedAt.getDate() + (window.RETENTION_DAYS || 30));
+
+    const now = new Date();
+    const diffTime = purgeDate - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    let purgeTag = '';
+    if (diffDays <= 3) {
+        purgeTag = `<span class="badge badge-error">Purge in ${diffDays}d</span>`;
+    } else if (diffDays < 0) {
+        purgeTag = `<span class="badge badge-gray">Pending Purge</span>`;
+    } else {
+        purgeTag = `<span class="badge badge-info-soft">Purge in ${diffDays}d</span>`;
     }
 
-    // Pagination
-    const totalPages = Math.ceil(items.length / itemsPerPage);
-    const start = (currentPage - 1) * itemsPerPage;
-    const paginated = items.slice(start, start + itemsPerPage);
-
-    tbody.innerHTML = paginated.map(item => {
-        const id = item.student_id || item.client_id || item.inquiry_id || 'ID-UNKNOWN';
-        const name = `${item.first_name || item.name || ''} ${item.last_name || ''}`;
-
-        // Calculate Days Left
-        const deletedAt = new Date(item.deleted_at);
-        const purgeDate = new Date(deletedAt);
-        purgeDate.setDate(deletedAt.getDate() + 30);
-
-        const now = new Date();
-        const diffTime = purgeDate - now;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        let purgeTag = '';
-        if (diffDays <= 3) {
-            purgeTag = `<span class="badge badge-error">Purge in ${diffDays}d</span>`;
-        } else if (diffDays < 0) {
-            purgeTag = `<span class="badge badge-gray">Pending Purge</span>`;
-        } else {
-            purgeTag = `<span class="badge badge-info-soft">Purge in ${diffDays}d</span>`;
-        }
-
-        return `
+    return `
             <tr>
+                <td><input type="checkbox" class="trash-checkbox" data-id="${item.id}" onchange="toggleSelection('${item.id}')"></td>
                 <td><span class="badge badge-secondary">${id}</span></td>
                  <td>
-                    <div class="table-user-info">
-                        <div class="table-user-avatar">${window.AdminUtils.AccountManager.getInitials(name)}</div>
-                        <span class="table-user-name">${name}</span>
-                    </div>
+                    <span class="table-user-name">${name}</span>
                 </td>
                 <td>
                     <div class="text-sm text-muted">
@@ -209,13 +230,121 @@ function renderList(items) {
                 </td>
             </tr>
         `;
-    }).join('');
+}).join('');
 
-    window.AdminUtils.Pagination.render('pagination-container', items.length, currentPage, itemsPerPage, (p) => {
-        currentPage = p;
-        filterAndRender();
-        window.scrollTo(0, 0);
+// Mobile Cards Render
+if (cardsContainer) {
+    cardsContainer.innerHTML = paginated.map(item => {
+        const id = item.student_id || item.client_id || item.inquiry_id || 'ID-UNKNOWN';
+        const name = `${item.first_name || item.name || ''} ${item.last_name || ''}`;
+        const deletedAt = new Date(item.deleted_at);
+
+        return `
+                 <div class="premium-card">
+                    <div class="card-header">
+                         <div style="display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" class="trash-checkbox" data-id="${item.id}" ${selectedItems.has(item.id) ? 'checked' : ''} onchange="toggleSelection('${item.id}')">
+                            <span class="badge badge-secondary">${id}</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                         <h4 class="card-name">${name}</h4>
+                         <div class="card-info-item">
+                            <i class="fa-regular fa-calendar"></i> Deleted: ${deletedAt.toLocaleDateString()}
+                         </div>
+                    </div>
+                    <div class="card-actions">
+                         <button class="btn btn-outline-success" onclick="restoreFromTrash('${item.id}')">
+                            <i class="fa-solid fa-trash-arrow-up"></i> Restore
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="deleteForever('${item.id}', '${name.replace(/'/g, "\\'")}')">
+                            <i class="fa-regular fa-trash-can"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+    }).join('');
+}
+
+window.AdminUtils.Pagination.render('pagination-container', items.length, currentPage, itemsPerPage, (p) => {
+    currentPage = p;
+    filterAndRender();
+    window.scrollTo(0, 0);
+});
+}
+
+// Bulk Actions
+const selectedItems = new Set();
+
+function toggleSelection(id) {
+    if (selectedItems.has(id)) selectedItems.delete(id);
+    else selectedItems.add(id);
+    updateBulkBar();
+}
+
+function toggleSelectAllTrash() {
+    const mainCb = document.getElementById('trash-select-all');
+    if (!mainCb) return;
+
+    const visibleCheckboxes = document.querySelectorAll('.trash-checkbox');
+    visibleCheckboxes.forEach(cb => {
+        if (cb.id === 'trash-select-all') return;
+        cb.checked = mainCb.checked;
+        if (mainCb.checked) selectedItems.add(cb.dataset.id);
+        else selectedItems.delete(cb.dataset.id);
     });
+    updateBulkBar();
+}
+
+function updateBulkBar() {
+    const bar = document.getElementById('trash-bulk-bar');
+    const countEl = document.getElementById('selected-count');
+    if (selectedItems.size > 0) {
+        if (bar) bar.style.display = 'flex';
+        if (countEl) countEl.textContent = selectedItems.size;
+    } else {
+        if (bar) bar.style.display = 'none';
+    }
+}
+
+async function bulkRestoreFromTrash() {
+    if (selectedItems.size === 0) return;
+    window.AdminUtils.Modal.confirm(
+        'Bulk Restore',
+        `Restore ${selectedItems.size} items to active list?`,
+        async () => {
+            try {
+                const table = currentTab;
+                const { error } = await window.supabaseClient.from(table).update({ deleted_at: null }).in('id', Array.from(selectedItems));
+                if (error) throw error;
+                window.AdminUtils.Toast.success('Restored', 'Items restored successfully');
+                loadItems();
+            } catch (e) {
+                console.error(e);
+                window.AdminUtils.Toast.error('Error', 'Failed to restore items');
+            }
+        }
+    );
+}
+
+async function bulkDeleteForever() {
+    if (selectedItems.size === 0) return;
+    window.AdminUtils.Modal.confirm(
+        'Bulk Delete Forever',
+        `Permanently delete ${selectedItems.size} items? This cannot be undone.`,
+        async () => {
+            try {
+                const table = currentTab;
+                const { error } = await window.supabaseClient.from(table).delete().in('id', Array.from(selectedItems));
+                if (error) throw error;
+                window.AdminUtils.Toast.success('Deleted', 'Items permanently deleted');
+                loadItems();
+            } catch (e) {
+                console.error(e);
+                window.AdminUtils.Toast.error('Error', 'Failed to delete items');
+            }
+        }
+    );
 }
 
 async function restoreFromTrash(id) {
@@ -276,8 +405,6 @@ async function emptyTrash() {
         async () => {
             try {
                 const table = currentTab;
-                // Since we can't easily do delete where deleted_at is not null without safety check,
-                // we'll loop IDs or use an IN query if possible.
                 const ids = allItems.map(i => i.id);
 
                 const { error } = await window.supabaseClient
@@ -299,3 +426,7 @@ async function emptyTrash() {
 
 window.restoreFromTrash = restoreFromTrash;
 window.deleteForever = deleteForever;
+window.bulkRestoreFromTrash = bulkRestoreFromTrash;
+window.bulkDeleteForever = bulkDeleteForever;
+window.toggleSelection = toggleSelection;
+window.toggleSelectAllTrash = toggleSelectAllTrash;
