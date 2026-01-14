@@ -59,7 +59,7 @@ export default async (request, context) => {
         let targetPath = pathname;
 
         // Only apply short-url mapping if the full path isn't already used
-        if (!pathname.startsWith("/students-clients/") && !pathname.startsWith("/courses-services/")) {
+        if (!pathname.startsWith("/students-clients/") && !pathname.startsWith("/courses-services/") && !pathname.startsWith("/payments/")) {
             if (pathname.startsWith("/students")) {
                 targetPath = pathname.replace("/students", "/students-clients/students");
             } else if (pathname.startsWith("/clients")) {
@@ -68,6 +68,12 @@ export default async (request, context) => {
                 targetPath = pathname.replace("/courses", "/courses-services/courses");
             } else if (pathname.startsWith("/services")) {
                 targetPath = pathname.replace("/services", "/courses-services/services");
+            } else if (pathname.startsWith("/record-payment")) {
+                targetPath = pathname.replace("/record-payment", "/payments/record-payment");
+            } else if (pathname.startsWith("/all-payments")) {
+                targetPath = pathname.replace("/all-payments", "/payments/all-payments");
+            } else if (pathname.startsWith("/receipts")) {
+                targetPath = pathname.replace("/receipts", "/payments/receipts");
             }
         }
 
