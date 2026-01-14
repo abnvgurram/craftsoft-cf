@@ -30,9 +30,12 @@ body {
     align-items: center;
 }
 
-.illustration-wrapper dotlottie-player {
-    max-width: 380px;
+.illustration-wrapper iframe {
+    max-width: 400px;
     width: 100%;
+    height: 300px;
+    border: none;
+    border-radius: 12px;
     filter: drop-shadow(0 10px 30px rgba(108, 92, 231, 0.15));
 }
 
