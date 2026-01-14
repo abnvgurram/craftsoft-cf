@@ -37,7 +37,49 @@ document.addEventListener('DOMContentLoaded', function () {
     initScrollToNext();
     initScrollProgress();
     initCardGlow();
+    initHeroParallax();
 });
+
+/* ============================================
+   HERO PARALLAX EFFECT
+   ============================================ */
+function initHeroParallax() {
+    const hero = document.querySelector('.hero');
+    const shapes = document.querySelectorAll('.hero-shape');
+
+    if (!hero || shapes.length === 0) return;
+
+    hero.addEventListener('mousemove', (e) => {
+        const rect = hero.getBoundingClientRect();
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const offsetX = (mouseX - centerX) / centerX;
+        const offsetY = (mouseY - centerY) / centerY;
+
+        shapes.forEach((shape, index) => {
+            const speed = (index + 1) * 15;
+            const x = offsetX * speed;
+            const y = offsetY * speed;
+            shape.style.transform = `translate(${x}px, ${y}px)`;
+        });
+    });
+
+    hero.addEventListener('mouseleave', () => {
+        shapes.forEach(shape => {
+            shape.style.transform = 'translate(0, 0)';
+            shape.style.transition = 'transform 0.5s ease-out';
+        });
+    });
+
+    hero.addEventListener('mouseenter', () => {
+        shapes.forEach(shape => {
+            shape.style.transition = 'transform 0.1s ease-out';
+        });
+    });
+}
 
 /* ============================================
    SCROLL TO NEXT SECTION
