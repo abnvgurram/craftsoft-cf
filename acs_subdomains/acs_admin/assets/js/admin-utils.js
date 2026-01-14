@@ -1912,14 +1912,16 @@ window.AdminUtils = {
             this.menu = document.createElement('div');
             this.menu.className = 'searchable-select-menu';
 
-            // Search input
-            this.searchWrapper = document.createElement('div');
-            this.searchWrapper.className = 'searchable-select-search';
-            this.searchInput = document.createElement('input');
-            this.searchInput.type = 'text';
-            this.searchInput.placeholder = 'Search...';
-            this.searchWrapper.appendChild(this.searchInput);
-            this.menu.appendChild(this.searchWrapper);
+            // Search input (only if searchable is not false)
+            if (this.options.searchable !== false) {
+                this.searchWrapper = document.createElement('div');
+                this.searchWrapper.className = 'searchable-select-search';
+                this.searchInput = document.createElement('input');
+                this.searchInput.type = 'text';
+                this.searchInput.placeholder = 'Search...';
+                this.searchWrapper.appendChild(this.searchInput);
+                this.menu.appendChild(this.searchWrapper);
+            }
 
             // Options list
             this.list = document.createElement('div');
@@ -1930,8 +1932,10 @@ window.AdminUtils = {
 
             // Bind events
             this.trigger.addEventListener('click', () => this.toggle());
-            this.searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
-            this.searchInput.addEventListener('keydown', (e) => this.handleKeydown(e));
+            if (this.searchInput) {
+                this.searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
+                this.searchInput.addEventListener('keydown', (e) => this.handleKeydown(e));
+            }
 
             // Close on click outside
             document.addEventListener('click', (e) => {

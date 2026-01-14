@@ -59,13 +59,7 @@
                     </div>
                 </div>
 
-                <div class="info-banner">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <span>Items in the Recovery Center are automatically deleted after 30 days.</span>
-                    <button class="btn btn-outline-danger btn-sm" id="empty-trash-btn" style="margin-left: auto;">
-                        <i class="fa-regular fa-trash-can"></i> Empty Trash Now
-                    </button>
-                </div>
+
 
                 <div class="tabs-nav">
                     <button class="tab-btn active" data-tab="students">Students</button>
@@ -115,10 +109,10 @@
                                 <th width="40px"><input type="checkbox" id="trash-select-all"
                                         onclick="toggleSelectAllTrash()"></th>
                                 <th width="12%">ID</th>
-                                <th width="25%">NAME</th>
+                                <th width="28%">NAME</th>
+                                <th width="20%">CONTACT</th>
                                 <th width="20%">DELETED ON</th>
-                                <th width="20%">STATUS</th>
-                                <th width="20%" class="text-right">ACTIONS</th>
+                                <th width="15%">ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody id="trash-tbody">
@@ -133,6 +127,7 @@
                     <div class="spinner"></div>
                 </div>
 
+                <div id="total-strip" class="table-footer" style="display:none;"></div>
                 <div id="pagination-container"></div>
             </div>
         </main>

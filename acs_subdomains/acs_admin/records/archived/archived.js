@@ -31,9 +31,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initial Load
     await loadItems();
 
-    // Initialize custom dropdown
+    // Initialize custom dropdown without search
     if (window.AdminUtils.SearchableSelect) {
-        new window.AdminUtils.SearchableSelect('sort-order', { placeholder: 'Sort By' });
+        new window.AdminUtils.SearchableSelect('sort-order', { placeholder: 'Sort By', searchable: false });
     }
 });
 
@@ -45,6 +45,11 @@ function bindEvents() {
             e.target.classList.add('active');
             currentTab = e.target.dataset.tab;
             currentPage = 1;
+            // Update header text
+            const detailsHeader = document.getElementById('details-header');
+            if (detailsHeader) {
+                detailsHeader.textContent = currentTab === 'students' ? 'COURSES' : 'SERVICES';
+            }
             loadItems();
         });
     });
@@ -202,10 +207,12 @@ function renderList(items) {
                     ${item.phone ? `<div class="text-sm"><i class="fa-solid fa-phone text-xs text-muted" style="margin-right:5px;"></i>${item.phone}</div>` : '<span class="text-muted">-</span>'}
                 </td>
                  <td>${contextInfo}</td>
-                <td class="text-right">
-                    <button class="btn btn-sm btn-outline-success" onclick="restoreItem('${item.id}')" title="Restore to Active">
-                        <i class="fa-solid fa-rotate-left"></i> Activate
-                    </button>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-sm btn-outline-success" onclick="restoreItem('${item.id}')" title="Restore to Active">
+                            <i class="fa-solid fa-rotate-left"></i> Activate
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -251,6 +258,14 @@ function renderList(items) {
                 </div>
             `;
         }).join('');
+    }
+
+    // Total Strip
+    const totalStrip = document.getElementById('total-strip');
+    if (totalStrip) {
+        const label = currentTab === 'students' ? 'Students' : 'Clients';
+        totalStrip.innerHTML = `<span>Total ${label}: <strong>${items.length}</strong></span>`;
+        totalStrip.style.display = 'block';
     }
 
     window.AdminUtils.Pagination.render('pagination-container', items.length, currentPage, itemsPerPage, (p) => {

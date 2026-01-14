@@ -104,10 +104,10 @@
                                 <th width="40px"><input type="checkbox" id="archive-select-all"
                                         onclick="toggleSelectAll()"></th>
                                 <th width="12%">ID</th>
-                                <th width="25%">NAME</th>
+                                <th width="28%">NAME</th>
                                 <th width="20%">CONTACT</th>
-                                <th width="20%">DETAILS</th>
-                                <th width="20%" class="text-right">ACTIONS</th>
+                                <th width="20%" id="details-header">COURSES</th>
+                                <th width="15%">ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody id="archives-tbody">
@@ -124,6 +124,7 @@
                     <div class="spinner"></div>
                 </div>
 
+                <div id="total-strip" class="table-footer" style="display:none;"></div>
                 <div id="pagination-container"></div>
             </div>
         </main>

@@ -31,9 +31,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initial Load
     await loadItems();
 
-    // Initialize custom dropdown
+    // Initialize custom dropdown without search
     if (window.AdminUtils.SearchableSelect) {
-        new window.AdminUtils.SearchableSelect('sort-order', { placeholder: 'Sort By' });
+        new window.AdminUtils.SearchableSelect('sort-order', { placeholder: 'Sort By', searchable: false });
     }
 });
 
@@ -59,9 +59,6 @@ function bindEvents() {
     document.getElementById('sort-order')?.addEventListener('change', () => {
         filterAndRender();
     });
-
-    // Empty Trash
-    document.getElementById('empty-trash-btn')?.addEventListener('click', emptyTrash);
 }
 
 async function loadItems() {
@@ -232,17 +229,19 @@ function renderList(items) {
             <tr>
                 <td><input type="checkbox" class="trash-checkbox" data-id="${item.id}" onchange="toggleSelection('${item.id}')"></td>
                 <td><span class="badge badge-secondary">${id}</span></td>
-                 <td>
+                <td>
                     <span class="table-user-name">${name}</span>
+                </td>
+                <td>
+                    ${item.phone ? `<div class="text-sm"><i class="fa-solid fa-phone text-xs text-muted" style="margin-right:5px;"></i>${item.phone}</div>` : '<span class="text-muted">-</span>'}
                 </td>
                 <td>
                     <div class="text-sm text-muted">
                         <i class="fa-regular fa-calendar" style="margin-right:5px;"></i>${deletedAt.toLocaleDateString()}
                     </div>
                 </td>
-                <td>${purgeTag}</td>
-                <td class="text-right">
-                    <div class="action-buttons" style="justify-content: flex-end;">
+                <td>
+                    <div class="action-buttons">
                         <button class="btn-icon" style="color:var(--success)" onclick="restoreFromTrash('${item.id}')" title="Restore">
                             <i class="fa-solid fa-trash-arrow-up"></i>
                         </button>
@@ -273,6 +272,9 @@ function renderList(items) {
                     <div class="card-body">
                          <h4 class="card-name">${name}</h4>
                          <div class="card-info-item">
+                            <i class="fa-solid fa-phone"></i> ${item.phone || '-'}
+                         </div>
+                         <div class="card-info-item">
                             <i class="fa-regular fa-calendar"></i> Deleted: ${deletedAt.toLocaleDateString()}
                          </div>
                     </div>
@@ -287,6 +289,14 @@ function renderList(items) {
                 </div>
             `;
         }).join('');
+    }
+
+    // Total Strip
+    const totalStrip = document.getElementById('total-strip');
+    if (totalStrip) {
+        const label = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+        totalStrip.innerHTML = `<span>Total ${label}: <strong>${items.length}</strong></span>`;
+        totalStrip.style.display = 'block';
     }
 
     window.AdminUtils.Pagination.render('pagination-container', items.length, currentPage, itemsPerPage, (p) => {
