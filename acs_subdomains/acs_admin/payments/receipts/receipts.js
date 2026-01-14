@@ -80,6 +80,8 @@ async function loadReceipts() {
                 balance_due,
                 payment_date,
                 created_at,
+                student_id,
+                client_id,
                 student:student_id (
                     id,
                     student_id,
@@ -130,19 +132,32 @@ function renderReceipts() {
     const cards = document.getElementById('receipts-cards');
     const emptyState = document.getElementById('empty-state');
 
+    const tbody = document.getElementById('receipts-tbody');
+    const tableContainer = document.querySelector('.table-container');
+
     if (filteredReceipts.length === 0) {
-        cards.innerHTML = '';
+        if (tbody) tbody.innerHTML = '';
+        if (cards) cards.innerHTML = '';
         emptyState.style.display = 'block';
+        if (tableContainer) tableContainer.style.display = 'none';
+        if (cards) cards.style.display = 'none';
         return;
     }
 
     emptyState.style.display = 'none';
+    if (tableContainer) tableContainer.style.display = 'block';
+    // Check mobile state to toggle visibility correctly
+    if (window.innerWidth <= 1250) {
+        if (tableContainer) tableContainer.style.display = 'none';
+        if (cards) cards.style.display = 'flex';
+    } else {
+        if (cards) cards.style.display = 'none';
+    }
 
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedReceipts = filteredReceipts.slice(start, start + itemsPerPage);
 
     // Desktop Table Rendering
-    const tbody = document.getElementById('receipts-tbody');
     if (tbody) {
         tbody.innerHTML = paginatedReceipts.map(r => {
             const entity = r.student || r.client;
@@ -657,8 +672,9 @@ function bindEvents() {
             const matchDate = (!dateFrom || pDate >= dateFrom) && (!dateTo || pDate <= dateTo);
 
             // Entity Type Match
-            const isStudent = !!r.student;
-            const matchEntity = entityType === 'all' || (entityType === 'student' && isStudent) || (entityType === 'client' && !isStudent);
+            const isStudent = !!r.student_id;
+            const isClient = !!r.client_id;
+            const matchEntity = entityType === 'all' || (entityType === 'student' && isStudent) || (entityType === 'client' && isClient);
 
             // Status Match
             const status = entity?.status || 'ACTIVE';
