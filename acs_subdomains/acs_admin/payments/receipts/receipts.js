@@ -85,14 +85,16 @@ async function loadReceipts() {
                     student_id,
                     first_name,
                     last_name,
-                    phone
+                    phone,
+                    status
                 ),
                 client:client_id (
                     id,
                     client_id,
                     first_name,
                     last_name,
-                    phone
+                    phone,
+                    status
                 ),
                 course:course_id (
                     id,
@@ -629,22 +631,21 @@ function formatDate(dateStr) {
 
 function bindEvents() {
     const handleFilter = () => {
-        const searchInput = document.getElementById('search-input');
-        const filterDateFrom = document.getElementById('filter-date-from');
-        const filterDateTo = document.getElementById('filter-date-to');
-
-        const query = searchInput ? searchInput.value.toLowerCase() : '';
-        const dateFrom = filterDateFrom ? filterDateFrom.value : '';
-        const dateTo = filterDateTo ? filterDateTo.value : '';
+        const query = document.getElementById('search-input')?.value.toLowerCase() || '';
+        const dateFrom = document.getElementById('filter-date-from')?.value || '';
+        const dateTo = document.getElementById('filter-date-to')?.value || '';
+        const entityType = document.getElementById('filter-entity')?.value || 'all';
+        const entityStatus = document.getElementById('filter-status')?.value || 'all';
+        const sortOrder = document.getElementById('sort-order')?.value || 'newest';
 
         filteredReceipts = receipts.filter(r => {
-            // Search Match
             const entity = r.student || r.client;
             const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}`.toLowerCase() : '';
             const displayId = (entity?.student_id || entity?.client_id || '').toLowerCase();
             const itemName = (r.course?.course_name || r.service?.name || '').toLowerCase();
             const receiptId = (r.receipt_id || '').toLowerCase();
 
+            // Search Match
             const matchSearch = !query ||
                 entityName.includes(query) ||
                 displayId.includes(query) ||
@@ -655,7 +656,24 @@ function bindEvents() {
             const pDate = (r.payment_date || new Date(r.created_at).toISOString().split('T')[0]);
             const matchDate = (!dateFrom || pDate >= dateFrom) && (!dateTo || pDate <= dateTo);
 
-            return matchSearch && matchDate;
+            // Entity Type Match
+            const isStudent = !!r.student;
+            const matchEntity = entityType === 'all' || (entityType === 'student' && isStudent) || (entityType === 'client' && !isStudent);
+
+            // Status Match
+            const status = entity?.status || 'ACTIVE';
+            const matchStatus = entityStatus === 'all' || status === entityStatus;
+
+            return matchSearch && matchDate && matchEntity && matchStatus;
+        });
+
+        // Sorting
+        filteredReceipts.sort((a, b) => {
+            if (sortOrder === 'newest') return new Date(b.payment_date || b.created_at) - new Date(a.payment_date || a.created_at);
+            if (sortOrder === 'oldest') return new Date(a.payment_date || a.created_at) - new Date(b.payment_date || b.created_at);
+            if (sortOrder === 'amount-high') return (b.amount_paid || 0) - (a.amount_paid || 0);
+            if (sortOrder === 'amount-low') return (a.amount_paid || 0) - (b.amount_paid || 0);
+            return 0;
         });
 
         currentPage = 1;
@@ -665,12 +683,18 @@ function bindEvents() {
     document.getElementById('search-input')?.addEventListener('input', handleFilter);
     document.getElementById('filter-date-from')?.addEventListener('change', handleFilter);
     document.getElementById('filter-date-to')?.addEventListener('change', handleFilter);
+    document.getElementById('filter-entity')?.addEventListener('change', handleFilter);
+    document.getElementById('filter-status')?.addEventListener('change', handleFilter);
+    document.getElementById('sort-order')?.addEventListener('change', handleFilter);
 
     // Reset button
     document.getElementById('reset-filters-btn')?.addEventListener('click', () => {
         document.getElementById('search-input').value = '';
         document.getElementById('filter-date-from').value = '';
         document.getElementById('filter-date-to').value = '';
+        document.getElementById('filter-entity').value = 'all';
+        document.getElementById('filter-status').value = 'all';
+        document.getElementById('sort-order').value = 'newest';
         handleFilter();
     });
 

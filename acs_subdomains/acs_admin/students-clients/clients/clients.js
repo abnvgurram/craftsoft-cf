@@ -3,7 +3,7 @@ let allClients = [];
 let allServicesForClients = [];
 let serviceFees = {}; // Store per-service fees { serviceCode: fee }
 let selectedClientIds = new Set();
-let statusFilter = 'ACTIVE';
+let statusFilter = 'ALL';
 let deleteTargetId = null;
 
 // Pagination State
@@ -39,12 +39,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     bindDeleteEvents();
 
     document.getElementById('add-client-btn')?.addEventListener('click', () => openForm());
-    document.getElementById('client-search')?.addEventListener('input', (e) => filterClients(e.target.value));
-    document.getElementById('status-filter')?.addEventListener('change', (e) => {
-        statusFilter = e.target.value;
-        currentPage = 1;
-        loadClients();
-    });
+    document.getElementById('client-search')?.addEventListener('input', handleFilter);
+    document.getElementById('status-filter')?.addEventListener('change', handleFilter);
+    document.getElementById('sort-order')?.addEventListener('change', handleFilter);
     document.getElementById('bulk-delete-btn')?.addEventListener('click', bulkDeleteClients);
 
 
@@ -114,19 +111,14 @@ async function loadClients() {
     showSkeletons();
 
     try {
-        let query = window.supabaseClient
+        const { data, error } = await window.supabaseClient
             .from('clients')
-            .select('*');
-
-        if (statusFilter !== 'ALL') {
-            query = query.eq('status', statusFilter);
-        }
-
-        const { data, error } = await query.order('created_at', { ascending: false });
+            .select('*')
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
         allClients = data || [];
-        renderClients(allClients);
+        handleFilter();
     } catch (e) {
         console.error('Error loading clients:', e);
         const tableContainer = document.getElementById('clients-table-container');
@@ -206,20 +198,35 @@ function showSkeletons() {
     }
 }
 
-function filterClients(query) {
-    const q = query.toLowerCase();
-    const qDigits = query.replace(/[^\d]/g, ''); // Extract digits for phone search
+function handleFilter() {
+    const q = document.getElementById('client-search')?.value.toLowerCase() || '';
+    const status = document.getElementById('status-filter')?.value || 'ALL';
+    const sort = document.getElementById('sort-order')?.value || 'newest';
 
-    const filtered = allClients.filter(c => {
+    const qDigits = q.replace(/[^\d]/g, '');
+
+    let filtered = allClients.filter(c => {
         const nameMatch = (c.first_name + ' ' + (c.last_name || '')).toLowerCase().includes(q);
         const idMatch = c.client_id?.toLowerCase().includes(q);
         const serviceMatch = (c.services || []).some(s => s.toLowerCase().includes(q));
-        // Phone search: compare raw digits so "9492020292" matches "+91 - 9492020292"
         const phoneDigits = (c.phone || '').replace(/[^\d]/g, '');
         const phoneMatch = qDigits.length >= 3 && phoneDigits.includes(qDigits);
+        const searchMatch = !q || nameMatch || idMatch || serviceMatch || phoneMatch;
 
-        return nameMatch || idMatch || serviceMatch || phoneMatch;
+        const statusMatch = status === 'ALL' || c.status === status;
+
+        return searchMatch && statusMatch;
     });
+
+    // Sorting
+    filtered.sort((a, b) => {
+        if (sort === 'newest') return new Date(b.created_at) - new Date(a.created_at);
+        if (sort === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
+        if (sort === 'name-asc') return `${a.first_name} ${a.last_name || ''}`.localeCompare(`${b.first_name} ${b.last_name || ''}`);
+        if (sort === 'name-desc') return `${b.first_name} ${b.last_name || ''}`.localeCompare(`${a.first_name} ${a.last_name || ''}`);
+        return 0;
+    });
+
     renderClients(filtered);
 }
 

@@ -107,6 +107,25 @@
                     <button class="btn btn-primary" id="add-inquiry-btn">
                         <i class="fa-solid fa-plus"></i> Add Inquiry
                     </button>
+                    <div class="filter-group" style="display: flex; gap: 10px;">
+                        <div class="search-box" style="max-width: 180px;">
+                            <i class="fa-solid fa-filter"></i>
+                            <select id="filter-type" class="form-select" style="padding-left: 2.5rem; height: 42px;">
+                                <option value="all">All Types</option>
+                                <option value="course">Courses Only</option>
+                                <option value="service">Services Only</option>
+                            </select>
+                        </div>
+                        <div class="search-box" style="max-width: 180px;">
+                            <i class="fa-solid fa-sort"></i>
+                            <select id="sort-order" class="form-select" style="padding-left: 2.5rem; height: 42px;">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="search-box">
                         <i class="fa-solid fa-search"></i> <input type="text" id="inquiry-search"
                             placeholder="Search inquiries...">

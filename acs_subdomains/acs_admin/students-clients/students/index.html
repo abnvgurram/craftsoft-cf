@@ -108,13 +108,22 @@
                     <button class="btn btn-primary" id="add-student-btn">
                         <i class="fa-solid fa-plus"></i> Add Student
                     </button>
-                    <div class="filter-group">
+                    <div class="filter-group" style="display: flex; gap: 10.1px;">
                         <div class="search-box" style="max-width: 200px;">
                             <i class="fa-solid fa-filter"></i>
                             <select id="status-filter" class="form-select" style="padding-left: 2.5rem; height: 42px;">
-                                <option value="ACTIVE" selected>Active Students</option>
+                                <option value="ACTIVE">Active Students</option>
                                 <option value="INACTIVE">Inactive Students</option>
-                                <option value="ALL">All Students</option>
+                                <option value="ALL" selected>All Students</option>
+                            </select>
+                        </div>
+                        <div class="search-box" style="max-width: 200px;">
+                            <i class="fa-solid fa-sort"></i>
+                            <select id="sort-order" class="form-select" style="padding-left: 2.5rem; height: 42px;">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
                             </select>
                         </div>
                     </div>
@@ -267,7 +276,8 @@
                             <div class="fee-total-row" id="fee-total-row" style="display: none;">
                                 <div class="fee-total-label">Total Fee</div>
                                 <div class="fee-total-amount" id="fee-total"><i
-                                        class="fa-solid fa-indian-rupee-sign"></i>0</div>
+                                        class="fa-solid fa-indian-rupee-sign"></i>0
+                                </div>
                             </div>
                         </div>
 

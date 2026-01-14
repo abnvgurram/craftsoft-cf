@@ -113,13 +113,22 @@
                     <button class="btn btn-primary" id="add-client-btn">
                         <i class="fa-solid fa-plus"></i> Add Client
                     </button>
-                    <div class="filter-group">
+                    <div class="filter-group" style="display: flex; gap: 10px;">
                         <div class="search-box" style="max-width: 200px;">
                             <i class="fa-solid fa-filter"></i>
                             <select id="status-filter" class="form-select" style="padding-left: 2.5rem; height: 42px;">
-                                <option value="ACTIVE" selected>Active Clients</option>
+                                <option value="ACTIVE">Active Clients</option>
                                 <option value="INACTIVE">Inactive Clients</option>
-                                <option value="ALL">All Clients</option>
+                                <option value="ALL" selected>All Clients</option>
+                            </select>
+                        </div>
+                        <div class="search-box" style="max-width: 200px;">
+                            <i class="fa-solid fa-sort"></i>
+                            <select id="sort-order" class="form-select" style="padding-left: 2.5rem; height: 42px;">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
                             </select>
                         </div>
                     </div>

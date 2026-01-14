@@ -50,13 +50,15 @@ async function loadPayments() {
                     id,
                     student_id,
                     first_name,
-                    last_name
+                    last_name,
+                    status
                 ),
                 client:client_id (
                     id,
                     client_id,
                     first_name,
-                    last_name
+                    last_name,
+                    status
                 ),
                 course:course_id (
                     id,
@@ -235,20 +237,22 @@ function formatDate(dateStr) {
 // =====================
 function bindEvents() {
     const handleFilter = () => {
-        const query = document.getElementById('search-input').value.toLowerCase();
-        const mode = document.getElementById('filter-mode').value;
-        const type = document.getElementById('filter-type').value;
-        const dateFrom = document.getElementById('filter-date-from').value;
-        const dateTo = document.getElementById('filter-date-to').value;
+        const query = document.getElementById('search-input')?.value.toLowerCase() || '';
+        const mode = document.getElementById('filter-mode')?.value || 'all';
+        const type = document.getElementById('filter-type')?.value || 'all';
+        const statusFilter = document.getElementById('filter-status')?.value || 'all';
+        const dateFrom = document.getElementById('filter-date-from')?.value || '';
+        const dateTo = document.getElementById('filter-date-to')?.value || '';
+        const sortOrder = document.getElementById('sort-order')?.value || 'newest';
 
         filteredPayments = payments.filter(p => {
-            // Search match
             const entity = p.student || p.client;
             const entityName = entity ? `${entity.first_name} ${entity.last_name || ''}`.toLowerCase() : '';
             const displayId = (entity?.student_id || entity?.client_id || '').toLowerCase();
             const itemName = (p.course?.course_name || p.service?.name || '').toLowerCase();
             const ref = (p.reference_id || '').toLowerCase();
 
+            // Search match
             const matchSearch = !query ||
                 entityName.includes(query) ||
                 displayId.includes(query) ||
@@ -263,28 +267,45 @@ function bindEvents() {
                 (type === 'course' && p.student_id) ||
                 (type === 'service' && p.client_id);
 
+            // Status match
+            const entityStatus = entity?.status || 'ACTIVE';
+            const matchStatus = statusFilter === 'all' || entityStatus === statusFilter;
+
             // Date match
             const pDate = (p.payment_date || new Date(p.created_at).toISOString().split('T')[0]);
             const matchDate = (!dateFrom || pDate >= dateFrom) && (!dateTo || pDate <= dateTo);
 
-            return matchSearch && matchMode && matchType && matchDate;
+            return matchSearch && matchMode && matchType && matchStatus && matchDate;
+        });
+
+        // Sorting
+        filteredPayments.sort((a, b) => {
+            if (sortOrder === 'newest') return new Date(b.payment_date || b.created_at) - new Date(a.payment_date || a.created_at);
+            if (sortOrder === 'oldest') return new Date(a.payment_date || a.created_at) - new Date(b.payment_date || b.created_at);
+            if (sortOrder === 'amount-high') return (b.amount_paid || 0) - (a.amount_paid || 0);
+            if (sortOrder === 'amount-low') return (a.amount_paid || 0) - (b.amount_paid || 0);
+            return 0;
         });
 
         currentPage = 1;
         renderPayments();
     };
 
-    document.getElementById('search-input').addEventListener('input', handleFilter);
-    document.getElementById('filter-mode').addEventListener('change', handleFilter);
-    document.getElementById('filter-type').addEventListener('change', handleFilter);
-    document.getElementById('filter-date-from').addEventListener('change', handleFilter);
-    document.getElementById('filter-date-to').addEventListener('change', handleFilter);
+    document.getElementById('search-input')?.addEventListener('input', handleFilter);
+    document.getElementById('filter-mode')?.addEventListener('change', handleFilter);
+    document.getElementById('filter-type')?.addEventListener('change', handleFilter);
+    document.getElementById('filter-status')?.addEventListener('change', handleFilter);
+    document.getElementById('sort-order')?.addEventListener('change', handleFilter);
+    document.getElementById('filter-date-from')?.addEventListener('change', handleFilter);
+    document.getElementById('filter-date-to')?.addEventListener('change', handleFilter);
 
     // Reset button
     document.getElementById('reset-filters-btn')?.addEventListener('click', () => {
         document.getElementById('search-input').value = '';
         document.getElementById('filter-mode').value = 'all';
         document.getElementById('filter-type').value = 'all';
+        document.getElementById('filter-status').value = 'all';
+        document.getElementById('sort-order').value = 'newest';
         document.getElementById('filter-date-from').value = '';
         document.getElementById('filter-date-to').value = '';
         handleFilter();

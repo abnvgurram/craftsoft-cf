@@ -108,6 +108,22 @@
                     <div class="filter-controls">
                         <input type="date" id="filter-date-from" class="form-select">
                         <input type="date" id="filter-date-to" class="form-select">
+                        <select id="filter-entity" class="form-select">
+                            <option value="all">All Payers</option>
+                            <option value="student">Students Only</option>
+                            <option value="client">Clients Only</option>
+                        </select>
+                        <select id="filter-status" class="form-select">
+                            <option value="all">All Status</option>
+                            <option value="ACTIVE">Active Only</option>
+                            <option value="INACTIVE">Inactive Only</option>
+                        </select>
+                        <select id="sort-order" class="form-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="amount-high">Amount (High-Low)</option>
+                            <option value="amount-low">Amount (Low-High)</option>
+                        </select>
                         <button type="button" class="btn btn-outline btn-sm" id="reset-filters-btn">
                             <i class="fa-solid fa-rotate-left"></i> Reset
                         </button>

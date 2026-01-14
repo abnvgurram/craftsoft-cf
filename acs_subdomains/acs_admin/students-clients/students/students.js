@@ -3,7 +3,7 @@ let allCoursesForStudents = [];
 let allTutorsForStudents = [];
 let deleteTargetId = null;
 let courseDiscounts = {}; // Store per-course discounts { courseCode: discount }
-let currentStatusFilter = 'ACTIVE'; // Status filter: ACTIVE, INACTIVE, ALL
+let currentStatusFilter = 'ALL'; // Status filter: ACTIVE, INACTIVE, ALL
 
 // Pagination State
 let currentPage = 1;
@@ -38,14 +38,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     bindDeleteEvents();
 
     document.getElementById('add-student-btn')?.addEventListener('click', () => openForm());
-    document.getElementById('student-search')?.addEventListener('input', (e) => filterStudents(e.target.value));
-
-    // Status filter
-    document.getElementById('status-filter')?.addEventListener('change', async (e) => {
-        currentStatusFilter = e.target.value;
-        currentPage = 1;
-        await loadStudents();
-    });
+    document.getElementById('student-search')?.addEventListener('input', handleFilter);
+    document.getElementById('status-filter')?.addEventListener('change', handleFilter);
+    document.getElementById('sort-order')?.addEventListener('change', handleFilter);
 
     // Check for prefill from inquiry conversion
     checkPrefill();
@@ -179,19 +174,11 @@ async function loadStudents() {
             .select('*')
             .order('student_id', { ascending: true });
 
-        // Apply status filter
-        if (currentStatusFilter === 'ACTIVE') {
-            query = query.eq('status', 'ACTIVE');
-        } else if (currentStatusFilter === 'INACTIVE') {
-            query = query.eq('status', 'INACTIVE');
-        }
-        // If 'ALL', no filter applied
-
         const { data: students, error } = await query;
 
         if (error) throw error;
         allStudents = students || [];
-        renderStudentsList(allStudents);
+        handleFilter();
     } catch (error) {
         console.error('Load students error:', error);
         content.innerHTML = '<div class="error-state"><i class="fa-solid fa-exclamation-triangle"></i><p>Failed to load students.</p></div>';
@@ -465,19 +452,35 @@ function bindBulkActions() {
 }
 
 
-function filterStudents(query) {
-    const q = query.toLowerCase();
-    const qDigits = query.replace(/[^\d]/g, ''); // Extract digits for phone search
+function handleFilter() {
+    const q = document.getElementById('student-search')?.value.toLowerCase() || '';
+    const status = document.getElementById('status-filter')?.value || 'ALL';
+    const sort = document.getElementById('sort-order')?.value || 'newest';
 
-    const filtered = allStudents.filter(s => {
+    const qDigits = q.replace(/[^\d]/g, '');
+
+    let filtered = allStudents.filter(s => {
         const nameMatch = `${s.first_name} ${s.last_name}`.toLowerCase().includes(q);
-        const idMatch = s.student_id.toLowerCase().includes(q);
-        // Phone search: compare raw digits so "9492020292" matches "+91 - 9492020292"
+        const idMatch = (s.student_id || '').toLowerCase().includes(q);
         const phoneDigits = (s.phone || '').replace(/[^\d]/g, '');
         const phoneMatch = qDigits.length >= 3 && phoneDigits.includes(qDigits);
+        const searchMatch = !q || nameMatch || idMatch || phoneMatch;
 
-        return nameMatch || idMatch || phoneMatch;
+        const statusMatch = status === 'ALL' || s.status === status;
+
+        return searchMatch && statusMatch;
     });
+
+    // Sorting
+    filtered.sort((a, b) => {
+        if (sort === 'newest') return new Date(b.created_at) - new Date(a.created_at);
+        if (sort === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
+        if (sort === 'name-asc') return `${a.first_name} ${a.last_name || ''}`.localeCompare(`${b.first_name} ${b.last_name || ''}`);
+        if (sort === 'name-desc') return `${b.first_name} ${b.last_name || ''}`.localeCompare(`${a.first_name} ${a.last_name || ''}`);
+        return 0;
+    });
+
+    currentPage = 1;
     renderStudentsList(filtered);
 }
 

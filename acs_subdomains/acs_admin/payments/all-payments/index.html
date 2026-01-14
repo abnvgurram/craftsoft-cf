@@ -139,9 +139,20 @@
                             <option value="TRANSFER">Bank Transfer</option>
                         </select>
                         <select id="filter-type" class="form-select">
-                            <option value="all">All Types</option>
-                            <option value="course">Course</option>
-                            <option value="service">Service</option>
+                            <option value="all">All Payers</option>
+                            <option value="course">Students</option>
+                            <option value="service">Clients</option>
+                        </select>
+                        <select id="filter-status" class="form-select">
+                            <option value="all">All Status</option>
+                            <option value="ACTIVE">Active Only</option>
+                            <option value="INACTIVE">Inactive Only</option>
+                        </select>
+                        <select id="sort-order" class="form-select">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="amount-high">Amount (High-Low)</option>
+                            <option value="amount-low">Amount (Low-High)</option>
                         </select>
                         <button type="button" class="btn btn-outline btn-sm" id="reset-filters-btn">
                             <i class="fa-solid fa-rotate-left"></i> Reset
@@ -210,5 +221,3 @@
 </body>
 
 </html>
-
-

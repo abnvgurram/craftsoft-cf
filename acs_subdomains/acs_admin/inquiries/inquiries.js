@@ -51,8 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('Inquiries: Binding events');
         bindFormEvents();
         bindDeleteEvents();
-        bindSearchEvents();
-        bindTypeToggle();
+        bindFilterEvents();
 
         console.log('Inquiries: Initialization complete');
     } catch (error) {
@@ -67,6 +66,43 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
+
+function handleFilter() {
+    const q = document.getElementById('inquiry-search')?.value.toLowerCase() || '';
+    const type = document.getElementById('filter-type')?.value || 'all';
+    const sort = document.getElementById('sort-order')?.value || 'newest';
+
+    let filtered = allInquiries.filter(inq => {
+        const nameMatch = inq.name?.toLowerCase().includes(q) || (inq.inquiry_id || '').toLowerCase().includes(q);
+        const phoneMatch = inq.phone?.toLowerCase().includes(q);
+        const courseMatch = (inq.courses || []).some(c => c.toLowerCase().includes(q));
+        const searchMatch = !q || nameMatch || phoneMatch || courseMatch;
+
+        const isSrv = (inq.courses || []).some(c => c && c.startsWith('S-'));
+        const typeMatch = type === 'all' || (type === 'service' && isSrv) || (type === 'course' && !isSrv);
+
+        return searchMatch && typeMatch;
+    });
+
+    // Sorting
+    filtered.sort((a, b) => {
+        if (sort === 'newest') return new Date(b.created_at) - new Date(a.created_at);
+        if (sort === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
+        if (sort === 'name-asc') return (a.name || '').localeCompare(b.name || '');
+        if (sort === 'name-desc') return (b.name || '').localeCompare(a.name || '');
+        return 0;
+    });
+
+    currentPage = 1;
+    renderInquiries(filtered);
+}
+
+function bindFilterEvents() {
+    document.getElementById('inquiry-search')?.addEventListener('input', handleFilter);
+    document.getElementById('filter-type')?.addEventListener('change', handleFilter);
+    document.getElementById('sort-order')?.addEventListener('change', handleFilter);
+    bindTypeToggle();
+}
 
 async function initializeStats() {
     window.AdminUtils.StatsHeader.render('stats-container', [
@@ -693,11 +729,3 @@ function bindDeleteEvents() {
     document.getElementById('confirm-delete-btn')?.addEventListener('click', confirmDelete);
 }
 
-function bindSearchEvents() {
-    document.getElementById('inquiry-search')?.addEventListener('input', (e) => {
-        const q = e.target.value.toLowerCase();
-        document.querySelectorAll('.inquiries-table tbody tr, .inquiry-card').forEach(row => {
-            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-        });
-    });
-}
