@@ -35,7 +35,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.AdminUtils.SearchableSelect) {
         new window.AdminUtils.SearchableSelect('sort-order', { placeholder: 'Sort By', searchable: false });
     }
+
+    // Load retention setting and update subtitle
+    await loadRetentionSetting();
 });
+
+async function loadRetentionSetting() {
+    try {
+        const { data, error } = await window.supabaseConfig.supabase
+            .from('settings')
+            .select('value')
+            .eq('key', 'data_retention_days')
+            .single();
+
+        const subtitleEl = document.getElementById('retention-subtitle');
+        if (subtitleEl && data) {
+            const days = parseInt(data.value);
+            if (days === 0) {
+                subtitleEl.textContent = 'Manage deleted records. Manual deletion only (auto-delete disabled).';
+            } else {
+                subtitleEl.textContent = `Manage deleted records. Items are permanently removed after ${days} days.`;
+            }
+        }
+    } catch (e) {
+        console.log('Could not load retention setting');
+    }
+}
 
 function bindEvents() {
     // Tabs
