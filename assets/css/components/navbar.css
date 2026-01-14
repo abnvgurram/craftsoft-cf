@@ -39,16 +39,7 @@
 }
 
 .logo-placeholder {
-    width: 48px;
-    height: 48px;
-    background: var(--accent-gradient);
-    border-radius: var(--radius-xl);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--white);
-    font-size: 1.35rem;
-    box-shadow: 0 4px 15px rgba(40, 150, 205, 0.3);
+    display: none !important;
 }
 
 .logo-text {
