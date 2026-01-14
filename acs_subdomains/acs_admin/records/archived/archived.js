@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initial Load
     await loadItems();
+
+    // Initialize custom dropdown
+    if (window.AdminUtils.SearchableSelect) {
+        new window.AdminUtils.SearchableSelect('sort-order', { placeholder: 'Sort By' });
+    }
 });
 
 function bindEvents() {

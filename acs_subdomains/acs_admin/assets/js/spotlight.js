@@ -169,7 +169,9 @@ const Spotlight = {
             { id: 'nav-all-pay', title: 'All Payments', subtitle: 'Financial overview', icon: 'nav', link: '/all-payments/' },
             { id: 'nav-set-sec', title: 'Security Settings', subtitle: 'Passwords & Sessions', icon: 'nav', link: '/settings/?tab=security' },
             { id: 'nav-set-ins', title: 'Institute Profile', subtitle: 'Company details', icon: 'nav', link: '/settings/?tab=institute' },
-            { id: 'nav-set-bank', title: 'Bank Settings', subtitle: 'Payment accounts', icon: 'nav', link: '/settings/?tab=bank' }
+            { id: 'nav-set-bank', title: 'Bank Settings', subtitle: 'Payment accounts', icon: 'nav', link: '/settings/?tab=bank' },
+            { id: 'nav-archived', title: 'Archived Records', subtitle: 'Inactive data', icon: 'nav', link: '/records/archived/' },
+            { id: 'nav-trash', title: 'Recovery Center', subtitle: 'Restore deleted items', icon: 'nav', link: '/records/recently-deleted/' }
         ].filter(item =>
             item.title.toLowerCase().includes(lowerQuery) ||
             item.subtitle.toLowerCase().includes(lowerQuery)
