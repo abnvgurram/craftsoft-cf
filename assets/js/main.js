@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initHeroTypingEffect();
     initRandomFloatingCards();
     initScrollToNext();
-    initScrollProgress();
+
     initCardGlow();
     initHeroParallax();
     initWorkspaceTabs();
@@ -941,30 +941,7 @@ function initDynamicContent() {
 /* ============================================
    SCROLL PROGRESS BAR
    ============================================ */
-function initScrollProgress() {
-    const navbar = document.getElementById('navbar');
-    if (!navbar) return;
 
-    // Inject Progress Bar HTML if it doesn't exist
-    if (!document.querySelector('.scroll-progress-container')) {
-        const progressContainer = document.createElement('div');
-        progressContainer.className = 'scroll-progress-container';
-        progressContainer.innerHTML = '<div class="scroll-progress-bar" id="scrollProgressBar"></div>';
-        navbar.appendChild(progressContainer);
-    }
-
-    const progressBar = document.getElementById('scrollProgressBar');
-
-    window.addEventListener('scroll', () => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrolled = (winScroll / height) * 100;
-
-        if (progressBar) {
-            progressBar.style.width = scrolled + "%";
-        }
-    });
-}
 
 /* ============================================
    CARD MOUSE GLOW EFFECT

@@ -72,86 +72,13 @@
   status = 200
   force = true
 
+# Dashboard
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/dashboard/*"
   to = "/acs_subdomains/acs_admin/dashboard/:splat"
   status = 200
   force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/students"
-  to = "/acs_subdomains/acs_admin/students-clients/students/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/students/*"
-  to = "/acs_subdomains/acs_admin/students-clients/students/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/clients"
-  to = "/acs_subdomains/acs_admin/students-clients/clients/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/clients/*"
-  to = "/acs_subdomains/acs_admin/students-clients/clients/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/tutors/*"
-  to = "/acs_subdomains/acs_admin/tutors/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/inquiries/*"
-  to = "/acs_subdomains/acs_admin/inquiries/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/courses"
-  to = "/acs_subdomains/acs_admin/courses-services/courses/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/courses/*"
-  to = "/acs_subdomains/acs_admin/courses-services/courses/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/services"
-  to = "/acs_subdomains/acs_admin/courses-services/services/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/services/*"
-  to = "/acs_subdomains/acs_admin/courses-services/services/:splat"
-  status = 200
-  force = true
-
-# ============================================
-# FLAT URL ARCHITECTURE (Root-Level Routes)
-# ============================================
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
@@ -170,6 +97,13 @@
 # Records - Archived (Clean URL)
 [[redirects]]
   host = "admin.craftsoft.co.in"
+  from = "/archived/*"
+  to = "/acs_subdomains/acs_admin/records/archived/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
   from = "/archived"
   to = "/acs_subdomains/acs_admin/records/archived/index.html"
   status = 200
@@ -185,6 +119,13 @@
 # Records - Recently Deleted / Recovery Center (Clean URL)
 [[redirects]]
   host = "admin.craftsoft.co.in"
+  from = "/recently-deleted/*"
+  to = "/acs_subdomains/acs_admin/records/recently-deleted/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
   from = "/recently-deleted"
   to = "/acs_subdomains/acs_admin/records/recently-deleted/index.html"
   status = 200
@@ -194,6 +135,14 @@
   host = "admin.craftsoft.co.in"
   from = "/recently-deleted/"
   to = "/acs_subdomains/acs_admin/records/recently-deleted/index.html"
+  status = 200
+  force = true
+
+# Students & Clients
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/students/*"
+  to = "/acs_subdomains/acs_admin/students-clients/students/:splat"
   status = 200
   force = true
 
@@ -213,6 +162,13 @@
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
+  from = "/clients/*"
+  to = "/acs_subdomains/acs_admin/students-clients/clients/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
   from = "/clients"
   to = "/acs_subdomains/acs_admin/students-clients/clients/index.html"
   status = 200
@@ -222,6 +178,14 @@
   host = "admin.craftsoft.co.in"
   from = "/clients/"
   to = "/acs_subdomains/acs_admin/students-clients/clients/index.html"
+  status = 200
+  force = true
+
+# Courses & Services
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/courses/*"
+  to = "/acs_subdomains/acs_admin/courses-services/courses/:splat"
   status = 200
   force = true
 
@@ -241,6 +205,13 @@
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
+  from = "/services/*"
+  to = "/acs_subdomains/acs_admin/courses-services/services/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
   from = "/services"
   to = "/acs_subdomains/acs_admin/courses-services/services/index.html"
   status = 200
@@ -253,6 +224,7 @@
   status = 200
   force = true
 
+# Payments
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/record-payment"
@@ -295,6 +267,14 @@
   status = 200
   force = true
 
+# Tutors & Inquiries
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/tutors/*"
+  to = "/acs_subdomains/acs_admin/tutors/:splat"
+  status = 200
+  force = true
+
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/tutors"
@@ -311,123 +291,11 @@
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
-  from = "/inquiries"
-  to = "/acs_subdomains/acs_admin/inquiries/index.html"
+  from = "/inquiries/*"
+  to = "/acs_subdomains/acs_admin/inquiries/:splat"
   status = 200
   force = true
 
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/inquiries/"
-  to = "/acs_subdomains/acs_admin/inquiries/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/settings"
-  to = "/acs_subdomains/acs_admin/settings/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/settings/"
-  to = "/acs_subdomains/acs_admin/settings/index.html"
-  status = 200
-  force = true
-
-# Legacy Payment Paths (Keep for compatibility)
-# Payments - All sub-routes need explicit handling
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/payments/record-payment"
-  to = "/acs_subdomains/acs_admin/payments/record-payment/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/payments/record-payment/"
-  to = "/acs_subdomains/acs_admin/payments/record-payment/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/payments/all-payments"
-  to = "/acs_subdomains/acs_admin/payments/all-payments/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/payments/all-payments/"
-  to = "/acs_subdomains/acs_admin/payments/all-payments/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/payments/receipts"
-  to = "/acs_subdomains/acs_admin/payments/receipts/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/payments/receipts/"
-  to = "/acs_subdomains/acs_admin/payments/receipts/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/payments/*"
-  to = "/acs_subdomains/acs_admin/payments/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/settings/*"
-  to = "/acs_subdomains/acs_admin/settings/:splat"
-  status = 200
-  force = true
-# Add explicit redirects for paths WITHOUT and WITH trailing slash
-# These must come BEFORE the catch-all
-
-# Dashboard
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/dashboard"
-  to = "/acs_subdomains/acs_admin/dashboard/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/dashboard/"
-  to = "/acs_subdomains/acs_admin/dashboard/index.html"
-  status = 200
-  force = true
-
-# Tutors
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/tutors"
-  to = "/acs_subdomains/acs_admin/tutors/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/tutors/"
-  to = "/acs_subdomains/acs_admin/tutors/index.html"
-  status = 200
-  force = true
-
-# Inquiries
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/inquiries"
@@ -439,35 +307,19 @@
   host = "admin.craftsoft.co.in"
   from = "/inquiries/"
   to = "/acs_subdomains/acs_admin/inquiries/index.html"
-  status = 200
-  force = true
-
-# Courses
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/courses"
-  to = "/acs_subdomains/acs_admin/courses-services/courses/index.html"
-  status = 200
-  force = true
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/courses/"
-  to = "/acs_subdomains/acs_admin/courses-services/courses/index.html"
-  status = 200
-  force = true
-
-# Services
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/services/"
-  to = "/acs_subdomains/acs_admin/courses-services/services/index.html"
   status = 200
   force = true
 
 # Settings
 [[redirects]]
   host = "admin.craftsoft.co.in"
+  from = "/settings/*"
+  to = "/acs_subdomains/acs_admin/settings/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
   from = "/settings"
   to = "/acs_subdomains/acs_admin/settings/index.html"
   status = 200
@@ -480,29 +332,13 @@
   status = 200
   force = true
 
-# Students (with trailing slash)
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/students/"
-  to = "/acs_subdomains/acs_admin/students-clients/students/index.html"
-  status = 200
-  force = true
-
-# Clients (with trailing slash)
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/clients/"
-  to = "/acs_subdomains/acs_admin/students-clients/clients/index.html"
-  status = 200
-  force = true
-
-# Catch-all for files in acs_admin (Static assets)
-# This handles JS, CSS, images - does NOT use force so it only serves if file exists
+# Global catch-all for assets
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/*"
   to = "/acs_subdomains/acs_admin/:splat"
   status = 200
+
 
 # Admin Subdomain 404 (MUST follow assets catch-all)
 [[redirects]]
