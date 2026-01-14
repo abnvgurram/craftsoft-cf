@@ -139,6 +139,7 @@
 .action-buttons {
     display: flex;
     gap: 8px;
+    justify-content: center;
 }
 
 /* Tablet breakpoint - match other modules */
