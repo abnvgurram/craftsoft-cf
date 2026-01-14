@@ -204,7 +204,7 @@ function renderList(items) {
                     <span class="table-user-name">${name}</span>
                 </td>
                 <td>
-                    ${item.phone ? `<span class="cell-phone"><i class="fa-solid fa-phone" style="margin-right:6px; color: #10b981;"></i>${item.phone}</span>` : '<span class="text-muted">-</span>'}
+                    ${item.phone ? `+91 - ${item.phone}` : '<span class="text-muted">-</span>'}
                 </td>
                 <td>${contextInfo}</td>
                 <td>
