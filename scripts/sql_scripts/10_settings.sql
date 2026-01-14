@@ -24,42 +24,20 @@ DROP POLICY IF EXISTS "Active admins can read settings" ON settings;
 DROP POLICY IF EXISTS "Active admins can insert settings" ON settings;
 DROP POLICY IF EXISTS "Active admins can update settings" ON settings;
 
--- POLICY: Active admins can read settings
-CREATE POLICY "admin_read_settings" ON settings
-    FOR SELECT 
+-- POLICY: Active admins can manage settings (All actions)
+CREATE POLICY "admin_manage_settings" ON settings
+    FOR ALL 
     TO authenticated
     USING (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can insert settings
-CREATE POLICY "admin_insert_settings" ON settings
-    FOR INSERT 
-    TO authenticated
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can update settings
-CREATE POLICY "admin_update_settings" ON settings
-    FOR UPDATE 
-    TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     )
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     );
 

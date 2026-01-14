@@ -33,26 +33,26 @@ DROP POLICY IF EXISTS "Active admins can manage receipts" ON receipts;
 DROP POLICY IF EXISTS "Public can lookup receipts" ON receipts;
 DROP POLICY IF EXISTS "Public can read receipts for verification" ON receipts;
 
--- POLICY: Public read for verification portal
-CREATE POLICY "public_read_receipts" ON receipts
+-- POLICY: Global SELECT access for receipts
+CREATE POLICY "select_receipts" ON receipts
     FOR SELECT 
-    TO anon, public
+    TO public
     USING (true);
 
--- POLICY: Active admins can manage all receipts
+-- POLICY: Active admins can manage all receipts (Insert, Update, Delete)
 CREATE POLICY "admin_manage_receipts" ON receipts
     FOR ALL 
     TO authenticated
     USING (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     )
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     );
 

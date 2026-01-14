@@ -46,59 +46,34 @@ DROP POLICY IF EXISTS "Public can lookup students by id" ON students;
 DROP POLICY IF EXISTS "Public can read students for verification" ON students;
 DROP POLICY IF EXISTS "Admins can view all students" ON students;
 
--- POLICY: Public read for payment page & verification portal
-CREATE POLICY "public_read_students" ON students
+-- POLICY: Global SELECT access (Public and Admins)
+-- Note: Soft-deleted students are hidden by default from non-admins
+CREATE POLICY "select_students" ON students
     FOR SELECT 
-    TO anon, public
-    USING (true);
+    TO public
+    USING (
+        deleted_at IS NULL
+        OR
+        EXISTS (
+            SELECT 1 FROM admins 
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
+        )
+    );
 
--- POLICY: Active admins can read all students
-CREATE POLICY "admin_read_students" ON students
-    FOR SELECT 
+-- POLICY: Active admins can manage students (Insert, Update, Delete)
+CREATE POLICY "admin_manage_students" ON students
+    FOR ALL
     TO authenticated
     USING (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can insert students
-CREATE POLICY "admin_insert_students" ON students
-    FOR INSERT 
-    TO authenticated
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can update students
-CREATE POLICY "admin_update_students" ON students
-    FOR UPDATE 
-    TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     )
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can delete students
-CREATE POLICY "admin_delete_students" ON students
-    FOR DELETE 
-    TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     );
 

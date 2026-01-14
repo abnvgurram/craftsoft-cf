@@ -66,7 +66,7 @@ RETURNS BOOLEAN AS $$
 BEGIN
     RETURN EXISTS (
         SELECT 1 FROM public.admins 
-        WHERE id = auth.uid() AND status = 'ACTIVE'
+        WHERE id = (select auth.uid()) AND status = 'ACTIVE'
     );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER

@@ -31,53 +31,20 @@ DROP POLICY IF EXISTS "Active admins can insert tutors" ON tutors;
 DROP POLICY IF EXISTS "Active admins can update tutors" ON tutors;
 DROP POLICY IF EXISTS "Active admins can delete tutors" ON tutors;
 
--- POLICY: Active admins can read tutors
-CREATE POLICY "admin_read_tutors" ON tutors
-    FOR SELECT 
+-- POLICY: Active admins can manage all tutor records
+CREATE POLICY "admin_manage_tutors" ON tutors
+    FOR ALL 
     TO authenticated
     USING (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can insert tutors
-CREATE POLICY "admin_insert_tutors" ON tutors
-    FOR INSERT 
-    TO authenticated
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can update tutors
-CREATE POLICY "admin_update_tutors" ON tutors
-    FOR UPDATE 
-    TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     )
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can delete tutors
-CREATE POLICY "admin_delete_tutors" ON tutors
-    FOR DELETE 
-    TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     );
 

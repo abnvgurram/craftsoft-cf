@@ -36,27 +36,22 @@ DROP POLICY IF EXISTS "admins_update" ON admins;
 DROP POLICY IF EXISTS "admins_insert_policy" ON admins;
 DROP POLICY IF EXISTS "Active admins can insert admins" ON admins;
 
--- POLICY: Anonymous login lookup (allows anon to resolve admin_id -> email for login)
--- This is necessary for the admin login flow
-CREATE POLICY "anon_login_lookup" ON admins
+-- POLICY: Anonymous login lookup
+CREATE POLICY "anon_select_admins" ON admins
     FOR SELECT 
     TO anon
     USING (true);
 
--- POLICY: Authenticated admins can read their own record
-CREATE POLICY "admin_read_own" ON admins
-    FOR SELECT 
-    TO authenticated
-    USING (id = auth.uid());
-
--- POLICY: Active admins can read all admin records (for admin management)
-CREATE POLICY "admin_read_all" ON admins
+-- POLICY: Combined SELECT policy for authenticated users
+CREATE POLICY "admin_select_admins" ON admins
     FOR SELECT 
     TO authenticated
     USING (
+        id = (select auth.uid()) 
+        OR 
         EXISTS (
             SELECT 1 FROM admins a 
-            WHERE a.id = auth.uid() AND a.status = 'ACTIVE'
+            WHERE a.id = (select auth.uid()) AND a.status = 'ACTIVE'
         )
     );
 
@@ -64,8 +59,8 @@ CREATE POLICY "admin_read_all" ON admins
 CREATE POLICY "admin_update_own" ON admins
     FOR UPDATE 
     TO authenticated
-    USING (id = auth.uid())
-    WITH CHECK (id = auth.uid());
+    USING (id = (select auth.uid()))
+    WITH CHECK (id = (select auth.uid()));
 
 -- POLICY: Only active admins can create new admin accounts
 CREATE POLICY "admin_insert" ON admins
@@ -74,7 +69,7 @@ CREATE POLICY "admin_insert" ON admins
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM admins a 
-            WHERE a.id = auth.uid() AND a.status = 'ACTIVE'
+            WHERE a.id = (select auth.uid()) AND a.status = 'ACTIVE'
         )
     );
 

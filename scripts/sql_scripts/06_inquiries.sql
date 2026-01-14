@@ -49,7 +49,6 @@ DROP POLICY IF EXISTS "admin_update_inquiries" ON inquiries;
 DROP POLICY IF EXISTS "admin_delete_inquiries" ON inquiries;
 
 -- POLICY: Anonymous users can INSERT inquiries (website form submissions)
--- SECURE: Validates required fields are present (not just true)
 CREATE POLICY "anon_insert_inquiries" ON inquiries
     FOR INSERT 
     TO anon
@@ -60,53 +59,20 @@ CREATE POLICY "anon_insert_inquiries" ON inquiries
         length(phone) > 0
     );
 
--- POLICY: Active admins can read all inquiries
-CREATE POLICY "admin_read_inquiries" ON inquiries
-    FOR SELECT 
+-- POLICY: Active admins can manage all inquiries (All actions)
+CREATE POLICY "admin_manage_inquiries" ON inquiries
+    FOR ALL
     TO authenticated
     USING (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can insert inquiries (walk-ins, calls, etc.)
-CREATE POLICY "admin_insert_inquiries" ON inquiries
-    FOR INSERT 
-    TO authenticated
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can update inquiries
-CREATE POLICY "admin_update_inquiries" ON inquiries
-    FOR UPDATE 
-    TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     )
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can delete inquiries
-CREATE POLICY "admin_delete_inquiries" ON inquiries
-    FOR DELETE 
-    TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     );
 

@@ -27,36 +27,20 @@ DROP POLICY IF EXISTS "Active admins can read activities" ON activities;
 DROP POLICY IF EXISTS "Active admins can insert activities" ON activities;
 DROP POLICY IF EXISTS "Active admins can delete activities" ON activities;
 
--- POLICY: Active admins can read activities
-CREATE POLICY "admin_read_activities" ON activities
-    FOR SELECT 
+-- POLICY: Active admins can manage activities (Full access for logging/auditing)
+CREATE POLICY "admin_manage_activities" ON activities
+    FOR ALL 
     TO authenticated
     USING (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
-    );
-
--- POLICY: Active admins can insert activities
-CREATE POLICY "admin_insert_activities" ON activities
-    FOR INSERT 
-    TO authenticated
+    )
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
-        )
-    );
-
--- POLICY: Active admins can delete activities (cleanup old logs)
-CREATE POLICY "admin_delete_activities" ON activities
-    FOR DELETE 
-    TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     );
 

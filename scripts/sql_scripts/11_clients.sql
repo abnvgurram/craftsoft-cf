@@ -33,26 +33,33 @@ DROP POLICY IF EXISTS "Active admins can manage clients" ON clients;
 DROP POLICY IF EXISTS "Public can lookup clients by id" ON clients;
 DROP POLICY IF EXISTS "Public can read clients for verification" ON clients;
 
--- POLICY: Public read for verification portal
-CREATE POLICY "public_read_clients" ON clients
+-- POLICY: Global SELECT access for clients
+CREATE POLICY "select_clients" ON clients
     FOR SELECT 
-    TO anon, public
-    USING (true);
+    TO public
+    USING (
+        deleted_at IS NULL
+        OR
+        EXISTS (
+            SELECT 1 FROM admins 
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
+        )
+    );
 
--- POLICY: Active admins can manage all clients
+-- POLICY: Active admins can manage all clients (Insert, Update, Delete)
 CREATE POLICY "admin_manage_clients" ON clients
     FOR ALL 
     TO authenticated
     USING (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     )
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     );
 

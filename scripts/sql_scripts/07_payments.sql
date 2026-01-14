@@ -34,26 +34,26 @@ DROP POLICY IF EXISTS "Allow delete on payments" ON payments;
 DROP POLICY IF EXISTS "Allow insert on payments" ON payments;
 DROP POLICY IF EXISTS "Allow update on payments" ON payments;
 
--- POLICY: Public read for payment page (balance lookup)
-CREATE POLICY "public_read_payments" ON payments
+-- POLICY: Global read access for payments
+CREATE POLICY "select_payments" ON payments
     FOR SELECT 
-    TO anon, public
+    TO public
     USING (true);
 
--- POLICY: Active admins can manage all payments
+-- POLICY: Active admins can manage all payments (Insert, Update, Delete)
 CREATE POLICY "admin_manage_payments" ON payments
     FOR ALL 
     TO authenticated
     USING (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     )
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     );
 

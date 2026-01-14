@@ -30,26 +30,26 @@ DROP POLICY IF EXISTS "Allow admin all services" ON services;
 DROP POLICY IF EXISTS "Active admins can manage services" ON services;
 DROP POLICY IF EXISTS "Public can read services" ON services;
 
--- POLICY: Public read access (website & verification portal)
-CREATE POLICY "public_read_services" ON services
+-- POLICY: Public read access for everyone (anon and authenticated)
+CREATE POLICY "select_services" ON services
     FOR SELECT 
-    TO anon, public
+    TO public
     USING (true);
 
--- POLICY: Active admins can manage all services
+-- POLICY: Active admins can manage services (Insert, Update, Delete)
 CREATE POLICY "admin_manage_services" ON services
-    FOR ALL 
+    FOR ALL
     TO authenticated
     USING (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     )
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM admins 
-            WHERE id = auth.uid() AND status = 'ACTIVE'
+            WHERE id = (select auth.uid()) AND status = 'ACTIVE'
         )
     );
 
