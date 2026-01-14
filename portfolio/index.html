@@ -4,52 +4,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio | Abhi's Craft Soft</title>
+    <title>Our Portfolio | Abhi's Craft Soft</title>
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Fonts -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <!-- Custom Style -->
     <link rel="stylesheet" href="portfolio.css">
 </head>
 
 <body>
-    <div class="maintenance-card">
-        <div class="icon-container">
-            <i class="fas fa-road-barrier"></i> </div>
-        <h1>We are working on it</h1>
-        <p>Our portfolio showcase is currently under construction. We are busy assembling our best work to inspire you.
-            Check back soon!</p>
 
-        <div class="btn-group">
-            <a href="../" class="btn btn-primary">
-                <i class="fas fa-home"></i> Back to Home
-            </a>
-            <a href="../courses/" class="btn btn-secondary">
-                <i class="fas fa-graduation-cap"></i> Browse Courses
-            </a>
+    <!-- Header Section -->
+    <header class="portfolio-hero">
+        <div class="container">
+            <span class="hero-tag">OUR WORK</span>
+            <h1 class="hero-title">Creative <span>Showcase</span></h1>
+            <p class="hero-desc">Explore the masterpieces created by our students and the high-end solutions delivered
+                to our global clients.</p>
         </div>
+    </header>
 
-        <div class="helpful-links">
-            <h3>Helpful Links</h3>
-            <div class="links-grid">
-                <a href="../about/" class="link-item">
-                    <i class="fas fa-user-group"></i> <span>About Us</span>
-                </a>
-                <a href="../acs_services/" class="link-item">
-                    <i class="fas fa-layer-group"></i> <span>Services</span>
-                </a>
-                <a href="../contact/" class="link-item">
-                    <i class="fas fa-envelope"></i> <span>Support</span>
-                </a>
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <div class="container">
+            <!-- Desktop Grid Filter (2x3 or 3x2) -->
+            <div class="filter-grid">
+                <div class="filter-card active" data-filter="all">
+                    <div class="icon-box"><i class="fas fa-th-large"></i></div>
+                    <span>All Projects</span>
+                </div>
+                <div class="filter-card" data-filter="graphic">
+                    <div class="icon-box"><i class="fas fa-palette"></i></div>
+                    <span>Graphic Design</span>
+                </div>
+                <div class="filter-card" data-filter="uiux">
+                    <div class="icon-box"><i class="fas fa-mobile-alt"></i></div>
+                    <span>UI/UX Design</span>
+                </div>
+                <div class="filter-card" data-filter="web">
+                    <div class="icon-box"><i class="fas fa-code"></i></div>
+                    <span>Web Development</span>
+                </div>
+                <div class="filter-card" data-filter="branding">
+                    <div class="icon-box"><i class="fas fa-bullseye"></i></div>
+                    <span>Branding</span>
+                </div>
+                <div class="filter-card" data-filter="student">
+                    <div class="icon-box"><i class="fas fa-user-graduate"></i></div>
+                    <span>Student Work</span>
+                </div>
+            </div>
+
+            <!-- Mobile Dropdown Filter -->
+            <div class="mobile-filter-container">
+                <div class="filter-dropdown-btn" id="filterDropdownBtn">
+                    <span id="currentFilter"><i class="fas fa-th-large"></i> All Projects</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="filter-dropdown-content" id="filterDropdownContent">
+                    <div class="dropdown-item active" data-filter="all">
+                        <i class="fas fa-th-large"></i> All Projects
+                    </div>
+                    <div class="dropdown-item" data-filter="graphic">
+                        <i class="fas fa-palette"></i> Graphic Design
+                    </div>
+                    <div class="dropdown-item" data-filter="uiux">
+                        <i class="fas fa-mobile-alt"></i> UI/UX Design
+                    </div>
+                    <div class="dropdown-item" data-filter="web">
+                        <i class="fas fa-code"></i> Web Development
+                    </div>
+                    <div class="dropdown-item" data-filter="branding">
+                        <i class="fas fa-bullseye"></i> Branding
+                    </div>
+                    <div class="dropdown-item" data-filter="student">
+                        <i class="fas fa-user-graduate"></i> Student Work
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <main class="projects-container">
+        <div class="container">
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Placeholders will be injected here via JavaScript or hardcoded -->
+                <!-- Hardcoded for immediate preview -->
+                <article class="project-card" data-category="graphic">
+                    <div class="project-image placeholder-shimmer">
+                        <!-- <img src="placeholder.jpg" alt="Design Project"> -->
+                    </div>
+                    <div class="project-overlay">
+                        <span class="project-category">Graphic Design</span>
+                        <h3 class="project-title">Branding Identity</h3>
+                        <a href="#" class="view-btn">Full Project <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="uiux">
+                    <div class="project-image placeholder-shimmer"></div>
+                    <div class="project-overlay">
+                        <span class="project-category">UI/UX Design</span>
+                        <h3 class="project-title">E-Learning App</h3>
+                        <a href="#" class="view-btn">Full Project <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="web">
+                    <div class="project-image placeholder-shimmer"></div>
+                    <div class="project-overlay">
+                        <span class="project-category">Web Development</span>
+                        <h3 class="project-title">SaaS Landing Page</h3>
+                        <a href="#" class="view-btn">Full Project <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="student">
+                    <div class="project-image placeholder-shimmer"></div>
+                    <div class="project-overlay">
+                        <span class="project-category">Student Work</span>
+                        <h3 class="project-title">UI Case Study</h3>
+                        <a href="#" class="view-btn">Full Project <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="branding">
+                    <div class="project-image placeholder-shimmer"></div>
+                    <div class="project-overlay">
+                        <span class="project-category">Branding</span>
+                        <h3 class="project-title">Startup Logo Pack</h3>
+                        <a href="#" class="view-btn">Full Project <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="graphic">
+                    <div class="project-image placeholder-shimmer"></div>
+                    <div class="project-overlay">
+                        <span class="project-category">Graphic Design</span>
+                        <h3 class="project-title">Event Poster Kit</h3>
+                        <a href="#" class="view-btn">Full Project <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Script -->
+    <script>
+        // Dropdown Toggle Logic
+        const dropdownBtn = document.getElementById('filterDropdownBtn');
+        const dropdownContent = document.getElementById('filterDropdownContent');
+        const currentFilterSpan = document.getElementById('currentFilter');
+
+        dropdownBtn.addEventListener('click', () => {
+            dropdownContent.classList.toggle('show');
+        });
+
+        // Filtering Logic
+        const filterCards = document.querySelectorAll('.filter-card');
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+        const projectCards = document.querySelectorAll('.project-card');
+
+        function setFilter(filter) {
+            // Update UI for grid
+            filterCards.forEach(card => {
+                if(card.dataset.filter === filter) card.classList.add('active');
+                else card.classList.remove('active');
+            });
+
+            // Update UI for dropdown
+            dropdownItems.forEach(item => {
+                if(item.dataset.filter === filter) {
+                    item.classList.add('active');
+                    currentFilterSpan.innerHTML = item.innerHTML;
+                }
+                else item.classList.remove('active');
+            });
+
+            // Filter projects
+            projectCards.forEach(card => {
+                if(filter === 'all' || card.dataset.category === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            dropdownContent.classList.remove('show');
+        }
+
+        filterCards.forEach(card => {
+            card.addEventListener('click', () => setFilter(card.dataset.filter));
+        });
+
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', () => setFilter(item.dataset.filter));
+        });
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.closest('.mobile-filter-container')) {
+                dropdownContent.classList.remove('show');
+            }
+        }
+    </script>
+
 </body>
 
 </html>
-
