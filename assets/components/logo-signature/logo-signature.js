@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <a href="${link}" class="logo-component">
                 <div class="logo-text-wrapper">
                     <span class="logo-sig">Abhi's</span>
-                    <span class="logo-accent">Craft Soft</span>
+                    <span class="logo-accent">Craftsoft</span>
                 </div>
             </a>
         `;
