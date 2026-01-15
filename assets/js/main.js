@@ -859,8 +859,8 @@ function initDynamicContent() {
         { name: 'Graphic Design', url: '/c-graphic-design/', icon: 'fas fa-swatchbook', desc: 'Master Adobe Creative Suite and visual communication.', features: ['Photoshop & Illustrator', 'Brand Identity', 'Portfolio'] },
         { name: 'UI/UX Design', url: '/c-ui-ux/', icon: 'fa-brands fa-square-figma', desc: 'Create stunning user interfaces and experiences.', features: ['Figma & XD', 'User Research', 'Prototyping'] },
         { name: 'Full Stack MERN', url: '/c-full-stack/', icon: 'fas fa-layer-group', desc: 'Build production-ready web applications with MERN.', features: ['React & Node.js', 'MongoDB', 'Deployment'] },
-        { name: 'Python Full Stack', url: '/c-python-full-stack/', icon: 'fab fa-python', desc: 'Master Python, Django, and modern web development.', features: ['Python & Django', 'REST APIs', 'Database Design'] },
-        { name: 'Java Full Stack', url: '/c-java-full-stack/', icon: 'fab fa-java', desc: 'Build scalable enterprise applications with Java Spring.', features: ['Spring Boot', 'Hibernate', 'Microservices'] },
+        { name: 'Python Full Stack', url: '/c-python/', icon: 'fab fa-python', desc: 'Master Python, Django, and modern web development.', features: ['Python & Django', 'REST APIs', 'Database Design'] },
+        { name: 'Java Full Stack', url: '/c-java/', icon: 'fab fa-java', desc: 'Build scalable enterprise applications with Java Spring.', features: ['Spring Boot', 'Hibernate', 'Microservices'] },
         { name: 'React Development', url: '/c-react/', icon: 'fab fa-react', desc: 'Master front-end development with the React library.', features: ['Hooks & Context', 'Redux', 'Architecture'] },
         { name: 'DSA Mastery', url: '/c-dsa/', icon: 'fas fa-code-branch', desc: 'Master Algorithms and Data Structures for interviews.', features: ['Recursion', 'Graphs', 'Dynamic Prog'] },
         { name: 'SQL Mastery', url: '/c-sql/', icon: 'fa-solid fa-database', desc: 'Master databases and advanced data querying.', features: ['Complex Joins', 'Optimization', 'Stored Procs'] },
@@ -875,7 +875,7 @@ function initDynamicContent() {
         { name: 'Salesforce Developer', url: '/c-salesforce-developer/', icon: 'fab fa-salesforce', desc: 'Build custom apps and logic on Salesforce.', features: ['Apex', 'LWC', 'Integrations'] },
         { name: 'Salesforce Marketing', url: '/c-salesforce-marketing-cloud/', icon: 'fa-solid fa-bullhorn', desc: 'Master data-driven personalized marketing.', features: ['Journey Builder', 'Audience', 'Analytics'] },
         { name: 'Oracle Fusion', url: '/c-oracle-fusion-cloud/', icon: 'fa-solid fa-cloud', desc: 'Learn enterprise ERP solutions with Oracle.', features: ['Supply Chain', 'HR Cloud', 'Fusion Admin'] },
-        { name: 'Python Programming', url: '/c-python/', icon: 'fab fa-python', desc: 'Learn the core principles of Python programming.', features: ['Logic & Flow', 'Data Structs', 'OOPs'] },
+        { name: 'Python Programming', url: '/c-python-programming/', icon: 'fab fa-python', desc: 'Learn the core principles of Python programming.', features: ['Logic & Flow', 'Data Structs', 'OOPs'] },
         { name: 'Automation', url: '/c-automation-python/', icon: 'fas fa-robot', desc: 'Automate boring tasks with Python scripting.', features: ['Web Scraping', 'File Ops', 'Bots'] },
         { name: 'Git & GitHub', url: '/c-git-github/', icon: 'fab fa-github', desc: 'Master version control and collaboration tools.', features: ['Branching', 'PR Workflows', 'Actions'] },
         { name: 'Spoken English', url: '/c-spoken-english/', icon: 'fas fa-user-ninja', desc: 'Enhance your communication and public confidence.', features: ['Fluency & Accent', 'Presentation', 'Vocabulary'] },
@@ -969,27 +969,3 @@ function initCardGlow() {
     });
 }
 
-function initViewToggle() {
-    const gridBtn = document.getElementById('grid-view-btn');
-    const listBtn = document.getElementById('list-view-btn');
-    const grids = document.querySelectorAll('.courses-grid');
-    if (!gridBtn || !listBtn) return;
-    const savedView = localStorage.getItem('courseViewPreference');
-    if (savedView === 'list') setListView();
-    gridBtn.addEventListener('click', () => setGridView());
-    listBtn.addEventListener('click', () => setListView());
-    function setGridView() {
-        gridBtn.classList.add('active');
-        listBtn.classList.remove('active');
-        grids.forEach(grid => grid.classList.remove('list-view'));
-        localStorage.setItem('courseViewPreference', 'grid');
-    }
-    function setListView() {
-        listBtn.classList.add('active');
-        gridBtn.classList.remove('active');
-        grids.forEach(grid => grid.classList.add('list-view'));
-        localStorage.setItem('courseViewPreference', 'list');
-    }
-}
-
-document.addEventListener('DOMContentLoaded', initViewToggle);
