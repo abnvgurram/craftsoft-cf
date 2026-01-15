@@ -826,8 +826,8 @@ function initDynamicCopyright() {
     const currentYear = new Date().getFullYear();
 
     copyrightElements.forEach(el => {
-        if (el.textContent.includes('Â©')) {
-            el.textContent = el.textContent.replace(/Â© \d{4}/, `Â© ${currentYear}`);
+        if (el.textContent.includes('©')) {
+            el.textContent = el.textContent.replace(/© \d{4}/, `© ${currentYear}`);
         }
     });
 }
@@ -838,13 +838,11 @@ function initDynamicCopyright() {
 function initPrivacyProtection() {
     const protectedImages = document.querySelectorAll('.protected-img');
     protectedImages.forEach(img => {
-        // Block right-click (Redundant with HTML attribute but good for safety)
+        // Block right-click
         img.addEventListener('contextmenu', e => e.preventDefault());
-
         // Block dragging
         img.addEventListener('dragstart', e => e.preventDefault());
-
-        // Block keyboard copy shortcut
+        // Block copy
         img.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
                 e.preventDefault();
@@ -858,24 +856,29 @@ function initPrivacyProtection() {
    ============================================ */
 function initDynamicContent() {
     const allCourses = [
-        { name: 'Graphic Design', url: '/courses/graphic-design/', icon: 'fas fa-palette', desc: 'Master Adobe Creative Suite and visual communication.', features: ['Photoshop & Illustrator', 'Brand Identity', 'Portfolio'] },
-        { name: 'UI/UX Design', url: '/courses/ui-ux/', icon: 'fas fa-window-maximize', desc: 'Create stunning user interfaces and experiences.', features: ['Figma & XD', 'User Research', 'Prototyping'] },
-        { name: 'Full Stack Development', url: '/courses/full-stack/', icon: 'fas fa-layer-group', desc: 'Master both front-end and back-end dev.', features: ['React & Node.js', 'Rest APIs', 'Deployment'] },
-        { name: 'DevOps Engineering', url: '/courses/devops/', icon: 'fas fa-server', desc: 'Learn CI/CD, Docker, and automation tools.', features: ['CI/CD Pipelines', 'Docker & K8s', 'Automation'] },
-        { name: 'AWS Cloud', url: '/courses/aws/', icon: 'fab fa-aws', desc: 'Master cloud infrastructure on Amazon Web Services.', features: ['EC2 & S3', 'Lambda & IAM', 'CloudFormation'] },
-        { name: 'Python Programming', url: '/courses/python-programming/', icon: 'fab fa-python', desc: 'Learn one of the most versatile coding languages.', features: ['Data Science', 'Web Dev', 'Automation'] },
-        { name: 'Resume & Interview', url: '/courses/resume-interview/', icon: 'fas fa-file-invoice', desc: 'Prepare for your dream career with mock sessions.', features: ['Mock Interviews', 'Resume Building', 'Soft Skills'] },
-        { name: 'Spoken English', url: '/courses/spoken-english/', icon: 'fas fa-microphone', desc: 'Enhance your communication and professional confidence.', features: ['Communication', 'Presentation', 'Confidence'] },
-        { name: 'Soft Skills', url: '/courses/soft-skills/', icon: 'fas fa-users', desc: 'Develop professional soft skills for career success.', features: ['Leadership', 'Teamwork', 'Problem Solving'] }
+        { name: 'Graphic Design', url: '/c-graphic-design/', icon: 'fas fa-swatchbook', desc: 'Master Adobe Creative Suite and visual communication.', features: ['Photoshop & Illustrator', 'Brand Identity', 'Portfolio'] },
+        { name: 'UI/UX Design', url: '/c-ui-ux/', icon: 'fa-brands fa-square-figma', desc: 'Create stunning user interfaces and experiences.', features: ['Figma & XD', 'User Research', 'Prototyping'] },
+        { name: 'Full Stack MERN', url: '/c-full-stack/', icon: 'fas fa-layer-group', desc: 'Build production-ready web applications with MERN.', features: ['React & Node.js', 'MongoDB', 'Deployment'] },
+        { name: 'Python Full Stack', url: '/c-python-full-stack/', icon: 'fab fa-python', desc: 'Master Python, Django, and modern web development.', features: ['Python & Django', 'REST APIs', 'Database Design'] },
+        { name: 'AI & ML', url: '/c-ai-ml/', icon: 'fa-solid fa-brain', desc: 'Build intelligent systems with data and algorithms.', features: ['Machine Learning', 'Python for AI', 'Neural Networks'] },
+        { name: 'Data Analytics', url: '/c-data-analytics/', icon: 'fas fa-chart-area', desc: 'Turn raw data into meaningful business insights.', features: ['Python & SQL', 'Power BI & Tableau', 'Statistics'] },
+        { name: 'Salesforce Admin', url: '/c-salesforce/', icon: 'fab fa-salesforce', desc: 'Master the world #1 CRM platform and automation.', features: ['Sales Cloud', 'CRM Basics', 'Cert Prep'] },
+        { name: 'DevOps Engineering', url: '/c-devops/', icon: 'fas fa-infinity', desc: 'Master CI/CD pipelines and infrastructure scaling.', features: ['Docker & K8s', 'Jenkins', 'Terraform'] },
+        { name: 'AWS Cloud', url: '/c-aws/', icon: 'fab fa-aws', desc: 'Master cloud infrastructure on Amazon Web Services.', features: ['EC2 & S3', 'Lambda & IAM', 'Cloud Cert'] },
+        { name: 'Cyber Security', url: '/c-cyber-security/', icon: 'fa-solid fa-shield-halved', desc: 'Protect systems and data from cyber threats.', features: ['Network Security', 'Ethical Hacking', 'Defense'] },
+        { name: 'SQL Mastery', url: '/c-sql/', icon: 'fa-solid fa-database', desc: 'Master databases and advanced data querying.', features: ['Complex Joins', 'Optimization', 'Stored Procs'] },
+        { name: 'Spoken English', url: '/c-spoken-english/', icon: 'fas fa-user-ninja', desc: 'Enhance your communication and public confidence.', features: ['Fluency & Accent', 'Presentation', 'Vocabulary'] },
+        { name: 'Soft Skills', url: '/c-soft-skills/', icon: 'fas fa-microphone-lines', desc: 'Develop essential workplace and leadership skills.', features: ['Communication', 'Teamwork', 'Leadership'] },
+        { name: 'Resume & Interview', url: '/c-resume-interview/', icon: 'far fa-file-lines', desc: 'Prepare for your dream career with mock sessions.', features: ['Resume Building', 'Mock Interviews', 'ATS Proofing'] }
     ];
 
     const allServices = [
-        { name: 'Graphic Design', url: '/acs_services/graphic-design/', icon: 'fas fa-palette', desc: 'Stunning visuals for your brand identity.' },
-        { name: 'UI/UX Design', url: '/acs_services/ui-ux-design/', icon: 'fas fa-window-maximize', desc: 'User-centered design solution for digital products.' },
-        { name: 'Web Development', url: '/acs_services/web-development/', icon: 'fas fa-globe', desc: 'Custom, responsive websites that drive results.' },
-        { name: 'Brand Identity', url: '/acs_services/branding/', icon: 'fas fa-bullseye', desc: 'Strategic branding to set you apart.' },
-        { name: 'Cloud & DevOps', url: '/acs_services/cloud-devops/', icon: 'fas fa-server', desc: 'Scalable infrastructure and automation.' },
-        { name: 'Career Services', url: '/acs_services/career-services/', icon: 'fas fa-users', desc: 'Expert guidance for your professional journey.' }
+        { name: 'Graphic Design', url: '/s-graphic-design/', icon: 'fas fa-swatchbook', desc: 'Stunning visuals for your brand identity.' },
+        { name: 'UI/UX Design', url: '/s-ui-ux-design/', icon: 'fa-brands fa-square-figma', desc: 'User-centered design solution for digital products.' },
+        { name: 'Web Development', url: '/s-web-development/', icon: 'fas fa-globe', desc: 'Custom, responsive websites that drive results.' },
+        { name: 'Brand Identity', url: '/s-branding/', icon: 'fas fa-bullseye', desc: 'Strategic branding to set you apart.' },
+        { name: 'Cloud & DevOps', url: '/s-cloud-devops/', icon: 'fas fa-infinity', desc: 'Scalable infrastructure and automation.' },
+        { name: 'Career Services', url: '/s-career-services/', icon: 'fas fa-users', desc: 'Expert guidance for your professional journey.' }
     ];
 
     const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
@@ -939,24 +942,42 @@ function initDynamicContent() {
 }
 
 /* ============================================
-   SCROLL PROGRESS BAR
-   ============================================ */
-
-
-/* ============================================
-   CARD MOUSE GLOW EFFECT
-   ============================================ */
+    CARD MOUSE GLOW EFFECT
+    ============================================ */
 function initCardGlow() {
     const cards = document.querySelectorAll('.unified-card');
-
     cards.forEach(card => {
         card.addEventListener('mousemove', e => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-
             card.style.setProperty('--mouse-x', `${x}px`);
             card.style.setProperty('--mouse-y', `${y}px`);
         });
     });
 }
+
+function initViewToggle() {
+    const gridBtn = document.getElementById('grid-view-btn');
+    const listBtn = document.getElementById('list-view-btn');
+    const grids = document.querySelectorAll('.courses-grid');
+    if (!gridBtn || !listBtn) return;
+    const savedView = localStorage.getItem('courseViewPreference');
+    if (savedView === 'list') setListView();
+    gridBtn.addEventListener('click', () => setGridView());
+    listBtn.addEventListener('click', () => setListView());
+    function setGridView() {
+        gridBtn.classList.add('active');
+        listBtn.classList.remove('active');
+        grids.forEach(grid => grid.classList.remove('list-view'));
+        localStorage.setItem('courseViewPreference', 'grid');
+    }
+    function setListView() {
+        listBtn.classList.add('active');
+        gridBtn.classList.remove('active');
+        grids.forEach(grid => grid.classList.add('list-view'));
+        localStorage.setItem('courseViewPreference', 'list');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initViewToggle);

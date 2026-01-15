@@ -1,4 +1,4 @@
-# Netlify configuration file
+﻿# Netlify configuration file
 
 [build]
   command = "npm run build"
@@ -449,3 +449,35 @@
   to = "/404.html"
   status = 404
   conditions = {Host = ["craftsoft.co.in", "www.craftsoft.co.in", "abhis-craftsoft.netlify.app"]}
+
+# New Courses Redirects
+[[redirects]]
+  from = "/c-ai-ml/*"
+  to = "/courses/ai-ml/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/c-sql/*"
+  to = "/courses/sql/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/c-salesforce-developer/*"
+  to = "/courses/salesforce-developer/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/c-salesforce-marketing-cloud/*"
+  to = "/courses/salesforce-marketing-cloud/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/c-cyber-security/*"
+  to = "/courses/cyber-security/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/c-oracle-fusion-cloud/*"
+  to = "/courses/oracle-fusion-cloud/:splat"
+  status = 200
+
