@@ -857,7 +857,7 @@ function initPrivacyProtection() {
 function initDynamicContent() {
     const allCourses = [
         { name: 'Graphic Design', url: '/c-graphic-design/', icon: 'fas fa-swatchbook', desc: 'Master Adobe Creative Suite and visual communication.', features: ['Photoshop & Illustrator', 'Brand Identity', 'Portfolio'] },
-        { name: 'UI/UX Design', url: '/c-ui-ux/', icon: 'fa-brands fa-square-figma', desc: 'Create stunning user interfaces and experiences.', features: ['Figma & XD', 'User Research', 'Prototyping'] },
+        { name: 'UI/UX Design', url: '/c-ui-ux/', icon: 'fa-brands fa-figma', desc: 'Create stunning user interfaces and experiences.', features: ['Figma & XD', 'User Research', 'Prototyping'] },
         { name: 'Full Stack MERN', url: '/c-full-stack/', icon: 'fas fa-layer-group', desc: 'Build production-ready web applications with MERN.', features: ['React & Node.js', 'MongoDB', 'Deployment'] },
         { name: 'Python Full Stack', url: '/c-python/', icon: 'fab fa-python', desc: 'Master Python, Django, and modern web development.', features: ['Python & Django', 'REST APIs', 'Database Design'] },
         { name: 'Java Full Stack', url: '/c-java/', icon: 'fab fa-java', desc: 'Build scalable enterprise applications with Java Spring.', features: ['Spring Boot', 'Hibernate', 'Microservices'] },
