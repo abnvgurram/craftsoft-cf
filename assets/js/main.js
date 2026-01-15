@@ -879,14 +879,14 @@ function initDynamicContent() {
         { name: 'Automation with Python', url: '/c-automation-python/', icon: 'fas fa-robot', desc: 'Automate boring tasks with Python scripting.', features: ['Web Scraping', 'File Ops', 'Bots'] },
         { name: 'Git & GitHub', url: '/c-git-github/', icon: 'fab fa-github', desc: 'Master version control and collaboration tools.', features: ['Branching', 'PR Workflows', 'Actions'] },
         { name: 'Spoken English', url: '/c-spoken-english/', icon: 'fas fa-user-ninja', desc: 'Enhance your communication and public confidence.', features: ['Fluency & Accent', 'Presentation', 'Vocabulary'] },
-        { name: 'Soft Skills', url: '/c-soft-skills/', icon: 'fas fa-microphone-lines', desc: 'Develop essential workplace and leadership skills.', features: ['Communication', 'Teamwork', 'Leadership'] },
+        { name: 'Soft Skills', url: '/c-soft-skills/', icon: 'fas fa-people-arrows', desc: 'Develop essential workplace and leadership skills.', features: ['Communication', 'Teamwork', 'Leadership'] },
         { name: 'Resume & Interview Prep', url: '/c-resume-interview/', icon: 'far fa-file-lines', desc: 'Prepare for your dream career with mock sessions.', features: ['Resume Building', 'Mock Interviews', 'ATS Proofing'] },
         { name: 'Handwriting Improvement', url: '/c-handwriting/', icon: 'fas fa-pen-nib', desc: 'Improve your handwriting and penmanship.', features: ['Strokes', 'Consistency', 'Practice'] }
     ];
 
     const allServices = [
         { name: 'Graphic Design', url: '/s-graphic-design/', icon: 'fas fa-swatchbook', desc: 'Stunning visuals for your brand identity.' },
-        { name: 'UI/UX Design', url: '/s-ui-ux-design/', icon: 'fa-brands fa-square-figma', desc: 'User-centered design solution for digital products.' },
+        { name: 'UI/UX Design', url: '/s-ui-ux-design/', icon: 'fa-brands fa-figma', desc: 'User-centered design solution for digital products.' },
         { name: 'Web Development', url: '/s-web-development/', icon: 'fas fa-globe', desc: 'Custom, responsive websites that drive results.' },
         { name: 'Brand Identity', url: '/s-branding/', icon: 'fas fa-bullseye', desc: 'Strategic branding to set you apart.' },
         { name: 'Cloud Solutions', url: '/s-cloud-devops/', icon: 'fas fa-infinity', desc: 'Scalable infrastructure and automation.' },
