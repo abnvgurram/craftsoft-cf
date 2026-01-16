@@ -75,7 +75,7 @@ async function loadServices() {
         renderServicesList(allServices);
     } catch (error) {
         console.error(error);
-        const container = document.getElementById('services-grid-container');
+        const container = document.getElementById('services-table-container');
         if (container) container.innerHTML = '<div class="error-state"><i class="fa-solid fa-exclamation-triangle"></i><p>Failed to load services.</p></div>';
     } finally {
         const spinners = document.querySelectorAll('.loading-spinner');
@@ -84,56 +84,90 @@ async function loadServices() {
 }
 
 function renderServicesList(services) {
-    const gridContainer = document.getElementById('services-grid-container');
+    const tableContainer = document.getElementById('services-table-container');
+    const cardsContainer = document.getElementById('services-cards');
 
     if (!services || services.length === 0) {
-        gridContainer.innerHTML = `
-                <div class="empty-state" style="grid-column: 1 / -1;">
+        const emptyHTML = `
+                <div class="empty-state">
                     <div class="empty-state-icon"><i class="fa-solid fa-wrench"></i></div>
                     <h3>No services yet</h3>
                     <p>Click "Sync from Website" to populate services</p>
                 </div>`;
+        if (tableContainer) tableContainer.innerHTML = emptyHTML;
+        if (cardsContainer) cardsContainer.innerHTML = '';
         return;
     }
 
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedServices = services.slice(start, start + itemsPerPage);
 
-    gridContainer.innerHTML = paginatedServices.map(s => {
-        const typeBadge = s.service_code.includes('-') ? s.service_code.split('-')[1] : s.service_code;
-        return `
-        <div class="premium-card">
-            <div class="card-ribbon">${s.service_code}</div>
-            <div class="card-body">
-                <div class="card-top">
-                    <span class="card-type-badge">${typeBadge}</span>
+    // Render Table
+    if (tableContainer) {
+        tableContainer.innerHTML = `
+                <div class="data-table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th><th>Name</th>
+                                <th>Base Fee</th><th>GST (${defaultGstRate}%)</th><th>Total Fee</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${paginatedServices.map(s => `
+                                <tr>
+                                    <td><span class="badge badge-primary">${s.service_code}</span></td>
+                                    <td>${s.name || '-'}</td>
+                                    <td class="fee-cell text-muted">₹${formatNumber(s.base_fee || 0)}</td>
+                                    <td class="fee-cell text-muted">₹${formatNumber(s.gst_amount || 0)}</td>
+                                    <td class="fee-cell highlight"><strong>₹${formatNumber(s.total_fee || 0)}</strong></td>
+                                    <td>
+                                        <button class="btn-icon btn-edit-fee" data-id="${s.id}" data-code="${s.service_code}" data-name="${s.name}" 
+                                            data-base="${s.base_fee || 0}" data-gst="${s.gst_amount || 0}" data-total="${s.total_fee || 0}" title="Edit Pricing">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
                 </div>
-                <h3 class="card-title">${s.name || 'Unnamed Service'}</h3>
-                
-                <div class="pricing-container">
-                    <div class="pricing-row">
-                        <span class="label">Base Fee</span>
-                        <span class="value">₹${formatNumber(s.base_fee || 0)}</span>
+            `;
+    }
+
+    // Render Cards
+    if (cardsContainer) {
+        cardsContainer.innerHTML = paginatedServices.map(s => `
+                <div class="premium-card">
+                    <div class="card-header">
+                        <span class="card-id-badge">${s.service_code}</span>
                     </div>
-                    <div class="pricing-row">
-                        <span class="label">GST (${defaultGstRate}%)</span>
-                        <span class="value">₹${formatNumber(s.gst_amount || 0)}</span>
+                    <div class="card-body">
+                        <div class="card-info-row">
+                            <span class="card-info-item"><i class="fa-solid fa-wrench"></i> ${s.name || '-'}</span>
+                        </div>
+                        <div class="card-pricing" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted);">
+                                <span>Base:</span> <span>₹${formatNumber(s.base_fee || 0)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted);">
+                                <span>GST (${defaultGstRate}%):</span> <span>₹${formatNumber(s.gst_amount || 0)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 600; margin-top: 0.25rem;">
+                                <span>Total:</span> <span>₹${formatNumber(s.total_fee || 0)}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="pricing-divider"></div>
-                    <div class="pricing-row total">
-                        <span class="label">Total Fee</span>
-                        <span class="value">₹${formatNumber(s.total_fee || 0)}</span>
+                    <div class="card-actions" style="padding: 1rem; border-top: 1px solid var(--border-color);">
+                        <button class="btn btn-sm btn-outline btn-edit-fee" data-id="${s.id}" data-code="${s.service_code}" data-name="${s.name}" 
+                            data-base="${s.base_fee || 0}" data-gst="${s.gst_amount || 0}" data-total="${s.total_fee || 0}" style="width: 100%;">
+                            <i class="fa-solid fa-pen"></i> Edit Pricing
+                        </button>
                     </div>
                 </div>
-            </div>
-            <div class="card-footer">
-                <button class="btn-edit-pricing btn-edit-fee" data-id="${s.id}" data-code="${s.service_code}" data-name="${s.name}" 
-                    data-base="${s.base_fee || 0}" data-gst="${s.gst_amount || 0}" data-total="${s.total_fee || 0}">
-                    <i class="fa-solid fa-pen"></i> Edit Pricing
-                </button>
-            </div>
-        </div>
-    `}).join('');
+            `).join('');
+    }
 
     document.querySelectorAll('.btn-edit-fee').forEach(btn => {
         btn.addEventListener('click', () => {
