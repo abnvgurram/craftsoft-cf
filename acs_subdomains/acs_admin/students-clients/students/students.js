@@ -140,7 +140,7 @@ async function openFormWithPrefill(name, phone, email, courses, readableId = '')
 async function loadCoursesForStudents() {
     const { data, error } = await window.supabaseClient
         .from('courses')
-        .select('course_code, course_name, fee')
+        .select('course_code, course_name, total_fee, base_fee, fee')
         .eq('status', 'ACTIVE')
         .order('course_code');
     if (!error && data) allCoursesForStudents = data;
@@ -233,9 +233,11 @@ function renderStudentsList(students) {
                 </thead>
                 <tbody>
                     ${paginatedStudents.map(s => {
-        const totalAmount = (s.courses || []).reduce((sum, code) => {
+        // Use saved final_fee if available, otherwise fallback to live calculation
+        const totalAmount = s.final_fee !== null && s.final_fee !== undefined ? s.final_fee : (s.courses || []).reduce((sum, code) => {
             const course = allCoursesForStudents.find(c => c.course_code === code);
-            return sum + ((course?.fee || 0) - (s.course_discounts?.[code] || 0));
+            const courseFee = course?.total_fee || course?.fee || 0;
+            return sum + (courseFee - (s.course_discounts?.[code] || 0));
         }, 0);
 
         return `
@@ -250,7 +252,8 @@ function renderStudentsList(students) {
                                 <div class="cell-course-meta">
                                     ${(s.courses || []).map(code => {
             const course = allCoursesForStudents.find(c => c.course_code === code);
-            const netFee = (course?.fee || 0) - (s.course_discounts?.[code] || 0);
+            const courseFee = course?.total_fee || course?.fee || 0;
+            const netFee = courseFee - (s.course_discounts?.[code] || 0);
             return `
                                             <div class="course-entry">
                                                 <span class="course-tag">${code}</span>
@@ -289,9 +292,11 @@ function renderStudentsList(students) {
         </div>
         <div class="data-cards">
             ${paginatedStudents.map(s => {
-        const totalAmount = (s.courses || []).reduce((sum, code) => {
+        // Use saved final_fee if available, otherwise fallback to live calculation
+        const totalAmount = s.final_fee !== null && s.final_fee !== undefined ? s.final_fee : (s.courses || []).reduce((sum, code) => {
             const course = allCoursesForStudents.find(c => c.course_code === code);
-            return sum + ((course?.fee || 0) - (s.course_discounts?.[code] || 0));
+            const courseFee = course?.total_fee || course?.fee || 0;
+            return sum + (courseFee - (s.course_discounts?.[code] || 0));
         }, 0);
 
         return `
@@ -314,7 +319,8 @@ function renderStudentsList(students) {
                         <div class="card-course-summary">
                             ${(s.courses || []).map(code => {
             const course = allCoursesForStudents.find(c => c.course_code === code);
-            const netFee = (course?.fee || 0) - (s.course_discounts?.[code] || 0);
+            const courseFee = course?.total_fee || course?.fee || 0;
+            const netFee = courseFee - (s.course_discounts?.[code] || 0);
             return `
                                     <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.25rem;">
                                         <span style="color: var(--admin-text-muted);">${code}</span>
