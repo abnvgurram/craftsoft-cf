@@ -1191,7 +1191,8 @@ async function openStudentProfile(studentId) {
         // Fetch payments for this student
         const { data: payments, error: paymentsError } = await window.supabaseClient
             .from('payments')
-            .select('*, courses(course_code, course_name)')
+            .select('*, course:course_id(course_code, course_name)')
+            .eq('student_id', studentId)
             .is('deleted_at', null)
             .neq('status', 'INACTIVE')
             .order('created_at', { ascending: false });
