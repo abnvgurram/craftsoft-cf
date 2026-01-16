@@ -419,17 +419,6 @@ function getStatusBadge(status) {
 function bindTableActions() {
     document.querySelectorAll('.edit-btn').forEach(b => b.onclick = () => openForm(true, b.dataset.id));
 
-    // Send Message trigger
-    document.querySelectorAll('.btn-wa-trigger').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (window.AdminWaModal) {
-                window.AdminWaModal.show(btn.dataset.name, btn.dataset.phone);
-            }
-        });
-    });
-
     document.querySelectorAll('.convert').forEach(b => b.onclick = () => convertToStudent(b.dataset.id));
     document.querySelectorAll('.delete').forEach(b => b.onclick = () => showDeleteConfirm(b.dataset.id, b.dataset.name));
 }

@@ -375,14 +375,6 @@ function renderStudentsList(students) {
     document.querySelectorAll('.btn-perm-delete-student').forEach(btn =>
         btn.addEventListener('click', () => showPermDeleteConfirm(btn.dataset.id, btn.dataset.name)));
 
-    // Send Message trigger
-    document.querySelectorAll('.btn-wa-trigger').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            showWhatsAppModal(btn.dataset.name, btn.dataset.phone);
-        });
-    });
 
 
     bindBulkActions();
@@ -985,42 +977,6 @@ function recalculateTotal() {
     totalEl.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i>${formatNumber(total)}`;
 }
 
-// =====================
-// Send A Message Modal
-// =====================
-let currentWaData = { name: '', phone: '' };
-
-function showWhatsAppModal(name, phone) {
-    currentWaData = { name, phone };
-
-    const overlay = document.getElementById('whatsapp-modal-overlay');
-    document.getElementById('wa-student-name').textContent = name;
-    document.getElementById('wa-student-phone').textContent = phone;
-
-    // Pre-fill with greeting
-    const firstName = name.split(' ')[0];
-    document.getElementById('wa-message-textarea').value = `Hi ${firstName},\n\n`;
-
-    // Bind modal close/cancel
-    document.getElementById('close-wa-modal').onclick = hideWaModal;
-    document.getElementById('cancel-wa-modal').onclick = hideWaModal;
-    document.getElementById('send-wa-btn').onclick = sendWaMessage;
-
-    // Show modal
-    overlay.classList.add('active');
-}
-
-function hideWaModal() {
-    document.getElementById('whatsapp-modal-overlay').classList.remove('active');
-}
-
-function sendWaMessage() {
-    const message = document.getElementById('wa-message-textarea').value;
-    const cleanPhone = currentWaData.phone.replace(/\D/g, '');
-    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-    window.open(waUrl, '_blank');
-    hideWaModal();
-}
 
 async function openForm(studentId = null) {
     const { Toast } = window.AdminUtils;
@@ -1591,9 +1547,9 @@ function renderProfileContent(student, payments, totalPaid, balanceDue) {
                 <a href="tel:${student.phone.replace(/[\s\-]/g, '')}" class="profile-contact-btn call">
                     <i class="fa-solid fa-phone"></i> Call
                 </a>
-                <a href="https://wa.me/${student.phone.replace(/\D/g, '')}" target="_blank" class="profile-contact-btn whatsapp">
+                <button type="button" class="profile-contact-btn whatsapp btn-wa-trigger" data-name="${student.first_name} ${student.last_name}" data-phone="${student.phone}">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                </a>
+                </button>
             </div>
         </div>
         

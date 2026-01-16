@@ -483,16 +483,6 @@ function bindTableActions() {
         };
     });
 
-    // Send Message trigger
-    document.querySelectorAll('.btn-wa-trigger').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (window.AdminWaModal) {
-                window.AdminWaModal.show(btn.dataset.name, btn.dataset.phone);
-            }
-        });
-    });
 }
 
 // =====================

@@ -188,16 +188,6 @@ function renderTutorsList(tutors) {
     document.querySelectorAll('.btn-delete-tutor').forEach(btn =>
         btn.addEventListener('click', () => showDeleteConfirm(btn.dataset.id, btn.dataset.name)));
 
-    // Send Message trigger
-    document.querySelectorAll('.btn-wa-trigger').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (window.AdminWaModal) {
-                window.AdminWaModal.show(btn.dataset.name, btn.dataset.phone);
-            }
-        });
-    });
 
     bindBulkActions();
 }

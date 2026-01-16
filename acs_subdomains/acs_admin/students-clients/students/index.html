@@ -374,46 +374,6 @@
         </div>
     </div>
 
-    <!-- Send A Message Modal -->
-    <div class="modal-overlay" id="whatsapp-modal-overlay">
-        <div class="modal-container modal-md animate-scale">
-            <div class="modal-header wa-modal-header">
-                <h3><i class="fa-brands fa-whatsapp"></i> Send A Message</h3>
-                <button class="modal-close" id="close-wa-modal">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="wa-student-info">
-                    Messaging: <strong id="wa-student-name"></strong>
-                    <span class="wa-phone-badge" id="wa-student-phone"></span>
-                </p>
-
-                <div class="wa-template-grid">
-                    <div class="wa-template-card active" data-action="direct">
-                        <div class="wa-template-icon"><i class="fa-brands fa-whatsapp"></i></div>
-                        <div class="wa-template-content">
-                            <h4>Send a Message</h4>
-                            <p>Open WhatsApp with custom message</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="wa-message-preview" id="wa-message-section">
-                    <label>MESSAGE (EDITABLE):</label>
-                    <textarea id="wa-message-textarea" rows="5" placeholder="Type your message here..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" id="cancel-wa-modal">Cancel</button>
-                <button class="btn btn-success" id="send-wa-btn">
-                    <i class="fa-brands fa-whatsapp"></i> Open WhatsApp
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/assets/admin/js/supabase-config.js"></script>
     <script src="/assets/admin/js/admin-utils.js"></script>
@@ -421,6 +381,7 @@
     <script src="/assets/admin/js/sidebar.js"></script>
     <script src="/assets/admin/js/spotlight.js"></script>
     <script src="/assets/admin/js/notifications.js"></script>
+    <script src="/assets/admin/js/wa-modal/wa-modal.js"></script>
     <script src="students.js"></script>
 </body>
 
