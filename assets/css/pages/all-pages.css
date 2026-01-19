@@ -532,12 +532,33 @@
 }
 
 
-.services-contact-section .form-group input:focus,
-.services-contact-section .form-group select:focus,
-.services-contact-section .form-group textarea:focus {
+.unified-form-side .form-group input,
+.unified-form-side .form-group select,
+.unified-form-side .form-group textarea,
+.unified-form-side .phone-input-wrapper {
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.unified-form-side .form-group input:focus,
+.unified-form-side .form-group select:focus,
+.unified-form-side .form-group textarea:focus,
+.unified-form-side .phone-input-wrapper:focus-within {
+    background: var(--white);
+    border-color: var(--primary-400);
+    box-shadow: 0 0 0 4px rgba(40, 150, 205, 0.1);
     outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+}
+
+.unified-form-side .form-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 0.5rem;
 }
 
 .services-contact-section .form-group select {
@@ -1522,23 +1543,54 @@
 }
 
 .unified-method-card {
-    background: var(--white);
-    border: 1px solid var(--gray-200);
-    border-radius: 1rem;
-    padding: 1.25rem;
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 100%);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.4s ease, border-color 0.4s ease;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    gap: 0.75rem;
+    border: 1px solid rgba(59, 130, 246, 0.12);
+    box-shadow: 0 4px 15px rgba(40, 150, 205, 0.08);
+    position: relative;
+    overflow: hidden;
 }
 
 .unified-method-card:hover {
-    background: var(--white);
-    border-color: var(--primary-300);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(40, 150, 205, 0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(40, 150, 205, 0.15);
+    border-color: var(--primary-200);
+}
+
+/* Mouse Glow for Contact Cards & Form */
+.unified-method-card::before,
+.unified-form-side::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y),
+            rgba(40, 150, 205, 0.12),
+            transparent 40%);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.unified-method-card:hover::before,
+.unified-form-side:hover::before {
+    opacity: 1;
+}
+
+.unified-method-card>*,
+.unified-form-side>* {
+    position: relative;
+    z-index: 1;
 }
 
 .unified-method-card .method-card-header {
@@ -1548,15 +1600,23 @@
 }
 
 .unified-method-card .method-card-header i {
-    width: 36px;
-    height: 36px;
-    background: var(--accent-gradient);
-    border-radius: 10px;
+    width: 50px;
+    height: 50px;
+    background: var(--white);
+    border-radius: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--white);
-    font-size: 0.95rem;
+    color: var(--primary-600);
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px rgba(40, 150, 205, 0.1);
+    border: 1px solid var(--gray-100);
+    transition: transform 0.3s ease;
+}
+
+.unified-method-card:hover .method-card-header i {
+    transform: scale(1.1);
+    color: var(--primary-700);
 }
 
 .unified-method-card .method-card-header h4 {
@@ -1577,10 +1637,13 @@
 
 /* Right Side - Form */
 .unified-form-side {
-    background: var(--white);
-    border-radius: 1.5rem;
-    padding: 2.5rem;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 100%);
+    border-radius: 2rem;
+    padding: 3rem;
+    border: 1px solid rgba(59, 130, 246, 0.12);
+    box-shadow: 0 25px 50px -12px rgba(40, 150, 205, 0.15);
+    position: relative;
+    overflow: hidden;
 }
 
 .unified-form-side .form-header {
