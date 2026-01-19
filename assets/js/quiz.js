@@ -25,7 +25,7 @@ const quizData = [
         question: "What's your biggest career goal right now?",
         options: [
             { text: "Become a creative professional in design.", score: { design: 10, uiux: 10 } },
-            { text: "Get a high-paying developer job at a tech company.", score: { fullstack: 10, python: 8, interview: 5, java: 8, react: 7 } },
+            { text: "Get a high-paying developer job at a tech company.", score: { fullstack: 10, python: 8, java: 8, react: 7 } },
             { text: "Work in cloud/DevOps and manage infrastructure.", score: { aws: 10, devops: 10, azure: 9 } },
             { text: "Master AI or Data Science tools.", score: { aiml: 10, dataanalytics: 10 } }
         ]
@@ -40,15 +40,6 @@ const quizData = [
         ]
     },
     {
-        question: "What kind of data or information interests you more?",
-        options: [
-            { text: "Visual assets, icons, and typography.", score: { design: 10, uiux: 8 } },
-            { text: "User profiles, database records, and API calls.", score: { fullstack: 10, sql: 8, java: 7 } },
-            { text: "Network logs, traffic patterns, and alerts.", score: { cybersecurity: 10, devops: 7 } },
-            { text: "Sales figures, trends, and market statistics.", score: { dataanalytics: 10, aiml: 7, salesforce: 5 } }
-        ]
-    },
-    {
         question: "Which work environment sounds best to you?",
         options: [
             { text: "A creative studio working on branding.", score: { design: 10 } },
@@ -60,23 +51,23 @@ const quizData = [
 ];
 
 const courseRecommendations = {
-    design: { title: "Graphic Design", icon: "fas fa-paint-brush", url: "courses/graphic-design/", desc: "Unleash your creativity and master branding with our graphic design excellence program." },
-    uiux: { title: "UI/UX Design", icon: "fas fa-object-group", url: "courses/ui-ux/", desc: "Design interfaces that people love using Figma and modern design principles." },
-    fullstack: { title: "Full Stack Development", icon: "fas fa-code", url: "courses/full-stack/", desc: "Become a complete developer by mastering frontend, backend, and databases." },
+    design: { title: "Graphic Design", icon: "fas fa-swatchbook", url: "courses/graphic-design/", desc: "Unleash your creativity and master branding with our graphic design excellence program." },
+    uiux: { title: "UI/UX Design", icon: "fa-brands fa-figma", url: "courses/ui-ux/", desc: "Design interfaces that people love using Figma and modern design principles." },
+    fullstack: { title: "Full Stack Development", icon: "fas fa-layer-group", url: "courses/full-stack/", desc: "Become a complete developer by mastering frontend, backend, and databases." },
     devops: { title: "DevOps Engineering", icon: "fas fa-infinity", url: "courses/devops/", desc: "Bridge the gap between development and operations with automation and CI/CD." },
     aws: { title: "AWS Cloud Excellence", icon: "fab fa-aws", url: "courses/aws/", desc: "Master the world's leading cloud platform and build scalable infrastructure." },
     azure: { title: "Azure Cloud Mastery", icon: "fab fa-microsoft", url: "courses/azure/", desc: "Become an expert in Microsoft Azure and manage robust enterprise cloud solutions." },
-    aiml: { title: "AI & Machine Learning", icon: "fas fa-brain", url: "courses/ai-ml/", desc: "Dive into the future of technology by building intelligent models and AI systems." },
-    dataanalytics: { title: "Data Analytics", icon: "fas fa-chart-line", url: "courses/data-analytics/", desc: "Turn raw data into actionable insights with modern analytics tools and techniques." },
-    cybersecurity: { title: "Cyber Security", icon: "fas fa-shield-alt", url: "courses/cyber-security/", desc: "Protect organizations from digital threats and master ethical hacking." },
-    devsecops: { title: "DevSecOps", icon: "fas fa-user-shield", url: "courses/devsecops/", desc: "Integrate security into the DevOps pipeline and build resilient systems." },
+    aiml: { title: "AI & Machine Learning", icon: "fa-solid fa-brain", url: "courses/ai-ml/", desc: "Dive into the future of technology by building intelligent models and AI systems." },
+    dataanalytics: { title: "Data Analytics", icon: "fas fa-chart-area", url: "courses/data-analytics/", desc: "Turn raw data into actionable insights with modern analytics tools and techniques." },
+    cybersecurity: { title: "Cyber Security", icon: "fa-solid fa-user-shield", url: "courses/cyber-security/", desc: "Protect organizations from digital threats and master ethical hacking." },
+    devsecops: { title: "DevSecOps", icon: "fas fa-shield-alt", url: "courses/devsecops/", desc: "Integrate security into the DevOps pipeline and build resilient systems." },
     salesforce: { title: "Salesforce Mastery", icon: "fab fa-salesforce", url: "courses/salesforce/", desc: "Master the world's #1 CRM platform and build powerful business automations." },
     python: { title: "Python Programming", icon: "fab fa-python", url: "courses/python/", desc: "Learn the most versatile programming language and build powerful applications." },
     java: { title: "Java Development", icon: "fab fa-java", url: "courses/java/", desc: "Master enterprise-grade development with Java and modern frameworks." },
     react: { title: "React JS Mastery", icon: "fab fa-react", url: "courses/react/", desc: "Build dynamic and high-performance user interfaces with React." },
-    sql: { title: "SQL & Database Design", icon: "fas fa-database", url: "courses/sql/", desc: "Master data management and complex query optimization." },
-    dsa: { title: "DSA Excellence", icon: "fas fa-subscript", url: "courses/dsa/", desc: "Master Data Structures and Algorithms to ace your technical interviews." },
-    oracle: { title: "Oracle Fusion Cloud", icon: "fas fa-cloud", url: "courses/oracle-fusion-cloud/", desc: "Learn Oracle's leading enterprise resource planning solutions." }
+    sql: { title: "SQL & Database Design", icon: "fa-solid fa-database", url: "courses/sql/", desc: "Master data management and complex query optimization." },
+    dsa: { title: "DSA Excellence", icon: "fas fa-code-branch", url: "courses/dsa/", desc: "Master Data Structures and Algorithms to ace your technical interviews." },
+    oracle: { title: "Oracle Fusion Cloud", icon: "fa-solid fa-cloud", url: "courses/oracle-fusion-cloud/", desc: "Learn Oracle's leading enterprise resource planning solutions." }
 };
 
 let currentQuizStep = 0;
