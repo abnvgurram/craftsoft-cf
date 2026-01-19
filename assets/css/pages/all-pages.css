@@ -235,10 +235,9 @@
     flex-shrink: 0;
 }
 
-/* Services Page */
 .services-page,
 .courses-page {
-    padding: 1rem 0;
+    padding: 1rem 0 0 0;
     background: rgba(40, 150, 205, 0.05);
 }
 
@@ -395,7 +394,7 @@
 .services-contact-section {
     background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 50%, var(--primary-100) 100%);
     border-radius: var(--radius-2xl);
-    padding: var(--spacing-3xl);
+    padding: 1.5rem 0 3rem 0;
     border: 1px solid var(--primary-100);
 }
 
@@ -1134,7 +1133,7 @@
     }
 
     .services-contact-section {
-        padding: var(--spacing-xl);
+        padding: 1.5rem 0;
     }
 
     .services-contact-section .form-row {
@@ -1280,8 +1279,8 @@
 .courses-contact-section {
     background: rgba(40, 150, 205, 0.05);
     border-radius: var(--radius-2xl);
-    padding: var(--spacing-3xl) 0;
-    margin-top: var(--spacing-xl);
+    padding: var(--spacing-md) 0 var(--spacing-3xl) 0;
+    margin-top: 0;
 }
 
 .courses-contact-wrapper {

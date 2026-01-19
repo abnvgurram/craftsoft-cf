@@ -135,10 +135,11 @@
 }
 
 .inline-quiz-body {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
     border-radius: var(--radius-xl);
     padding: var(--spacing-xl);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .inline-quiz-question h3 {
@@ -218,11 +219,12 @@
 }
 
 .result-recommendation {
-    background: white;
+    background: var(--primary-50);
     color: var(--gray-900);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-xl);
     border-radius: var(--radius-lg);
     margin-bottom: var(--spacing-lg);
+    border: 1px solid var(--primary-100);
 }
 
 .result-recommendation h4 {
@@ -264,6 +266,48 @@
 }
 
 .quiz-restart:hover {
+    color: white;
+}
+
+/* WhatsApp Button */
+.btn-whatsapp {
+    background: #25D366;
+    color: white !important;
+    border: none;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover {
+    background: #20BA5A;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+    color: white !important;
+}
+
+.result-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    margin-top: var(--spacing-lg);
+}
+
+.inline-quiz-result .result-icon {
+    font-size: 4rem;
+    color: white;
+    margin-bottom: var(--spacing-md);
+    text-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.result-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--spacing-md);
     color: white;
 }
 
@@ -383,9 +427,9 @@
    ============================================ */
 
 .breadcrumbs {
-    background: var(--gray-50);
+    background: transparent;
     padding: var(--spacing-md) 0;
-    border-bottom: 1px solid var(--gray-100);
+    border-bottom: none;
 }
 
 .breadcrumb-list {

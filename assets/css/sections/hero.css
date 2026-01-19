@@ -1139,6 +1139,10 @@
     animation: shine 3s ease-in-out infinite;
 }
 
+.hero-buttons .btn-secondary::after {
+    animation-delay: 1.5s;
+}
+
 @keyframes shine {
     0% {
         left: -100%;
