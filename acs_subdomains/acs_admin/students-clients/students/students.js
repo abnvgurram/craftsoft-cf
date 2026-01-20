@@ -70,16 +70,22 @@ async function initializeStats() {
         monthStart.setDate(1);
         const monthStartISO = monthStart.toISOString().split('T')[0];
 
-        const [totalCount, monthCount, payCount] = await Promise.all([
-            window.supabaseClient.from('students').select('id', { count: 'exact', head: true }),
-            window.supabaseClient.from('students').select('id', { count: 'exact', head: true }).gte('created_at', monthStartISO),
-            window.supabaseClient.from('payments').select('id', { count: 'exact', head: true })
+        const [totalCount, monthCount, payStats, studentsFees] = await Promise.all([
+            window.supabaseClient.from('students').select('id', { count: 'exact', head: true }).is('deleted_at', null),
+            window.supabaseClient.from('students').select('id', { count: 'exact', head: true }).is('deleted_at', null).gte('created_at', monthStartISO),
+            window.supabaseClient.from('payments').select('amount_paid').eq('status', 'SUCCESS'),
+            window.supabaseClient.from('students').select('final_fee, fee, discount').is('deleted_at', null)
         ]);
 
+        const totalPayments = (payStats.data || []).reduce((sum, p) => sum + (p.amount_paid || 0), 0);
+        const totalFees = (studentsFees.data || []).reduce((sum, s) => sum + (s.final_fee || (s.fee - s.discount) || 0), 0);
+        const pendingDues = Math.max(0, totalFees - totalPayments);
+
         window.AdminUtils.StatsHeader.render('stats-container', [
-            { label: 'Total Students', value: totalCount.count || 0, icon: 'fa-solid fa-chalkboard', color: 'var(--primary-500)' },
-            { label: 'Enrolled Month', value: monthCount.count || 0, icon: 'fa-regular fa-pen-to-square', color: 'var(--success)' },
-            { label: 'Payments Count', value: payCount.count || 0, icon: 'fa-solid fa-credit-card', color: 'var(--info)' }
+            { label: 'Total Students', value: totalCount.count || 0, icon: 'fa-solid fa-user-graduate', color: 'var(--primary-500)' },
+            { label: 'Enrolled Month', value: monthCount.count || 0, icon: 'fa-solid fa-user-plus', color: 'var(--success)' },
+            { label: 'Pending Dues', value: pendingDues, icon: 'fa-solid fa-receipt', color: 'var(--error, #ef4444)', prefix: '₹' },
+            { label: 'Total Revenue', value: totalPayments, icon: 'fa-solid fa-indian-rupee-sign', color: 'var(--info)', prefix: '₹' }
         ]);
     } catch (err) {
         console.error('Stats load error:', err);
@@ -171,7 +177,7 @@ async function loadStudents() {
     try {
         let query = window.supabaseClient
             .from('students')
-            .select('*')
+            .select('*, payments(amount_paid, status)')
             .is('deleted_at', null)
             .neq('status', 'INACTIVE')
             .order('student_id', { ascending: true });
@@ -179,7 +185,15 @@ async function loadStudents() {
         const { data: students, error } = await query;
 
         if (error) throw error;
-        allStudents = students || [];
+
+        // Calculate payments_total for each student
+        allStudents = (students || []).map(s => {
+            const paymentsTotal = (s.payments || [])
+                .filter(p => p.status === 'SUCCESS' || !p.status)
+                .reduce((sum, p) => sum + (p.amount_paid || 0), 0);
+            return { ...s, payments_total: paymentsTotal };
+        });
+
         handleFilter();
     } catch (error) {
         console.error('Load students error:', error);
@@ -235,7 +249,8 @@ function renderStudentsList(students) {
                 <tbody>
                     ${paginatedStudents.map(s => {
         const totalPaid = s.payments_total || 0;
-        const balanceDue = Math.max(0, (s.final_fee || 0) - totalPaid);
+        const totalFee = s.final_fee !== null ? s.final_fee : ((s.fee || 0) - (s.discount || 0));
+        const balanceDue = Math.max(0, totalFee - totalPaid);
         return `
                         <tr>
                             <td>
@@ -260,7 +275,10 @@ function renderStudentsList(students) {
             return `<div style="font-size: 0.8rem; color: var(--admin-text-muted);">${code}: ₹${formatNumber(netFee)}</div>`;
         }).join('')}
                             </td>
-                            <td class="text-right" style="font-weight: 700; color: ${balanceDue > 0 ? '#ef4444' : '#10b981'};">₹${formatNumber(balanceDue)}</td>
+                            <td class="text-right" style="font-weight: 700; color: ${balanceDue > 0 ? 'var(--error, #ef4444)' : 'var(--success, #10b981)'};">
+                                <div>₹${formatNumber(balanceDue)}</div>
+                                ${totalPaid > 0 ? `<div style="font-size: 0.7rem; font-weight: 400; color: var(--admin-text-muted);">Paid: ₹${formatNumber(totalPaid)}</div>` : ''}
+                            </td>
                             <td class="text-right">
                                 <div class="cell-actions" style="justify-content: flex-end;">
                                     <button class="action-btn edit btn-edit-student" data-id="${s.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
@@ -286,7 +304,8 @@ function renderStudentsList(students) {
         <div class="data-cards">
             ${paginatedStudents.map(s => {
         const totalPaid = s.payments_total || 0;
-        const balanceDue = Math.max(0, (s.final_fee || 0) - totalPaid);
+        const totalFee = s.final_fee !== null ? s.final_fee : ((s.fee || 0) - (s.discount || 0));
+        const balanceDue = Math.max(0, totalFee - totalPaid);
         return `
                 <div class="premium-card">
                     <div class="card-header">
@@ -315,10 +334,15 @@ function renderStudentsList(students) {
                                     </div>
                                 `;
         }).join('')}
-                            <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-weight: 700; color: ${balanceDue > 0 ? '#ef4444' : '#10b981'}; font-size: 1rem;">
-                                <span>Due</span>
+                            <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-weight: 700; color: ${balanceDue > 0 ? 'var(--error, #ef4444)' : 'var(--success, #10b981)'}; font-size: 1rem;">
+                                <span>Balance Due</span>
                                 <span>₹${formatNumber(balanceDue)}</span>
                             </div>
+                            ${totalPaid > 0 ? `
+                            <div style="display: flex; justify-content: space-between; margin-top: 0.25rem; font-size: 0.8rem; color: var(--admin-text-muted);">
+                                <span>Total Paid</span>
+                                <span>₹${formatNumber(totalPaid)}</span>
+                            </div>` : ''}
                         </div>
                     </div>
                     <div class="card-actions">
@@ -1478,8 +1502,12 @@ async function openStudentProfile(studentId) {
         // Store data globally for pagination
         allProfilePayments = payments || [];
         currentProfileStudent = student;
-        profileTotalPaid = allProfilePayments.reduce((sum, p) => sum + parseFloat(p.amount_paid || 0), 0);
-        profileBalanceDue = (student.final_fee || student.fee || 0) - profileTotalPaid;
+        profileTotalPaid = allProfilePayments
+            .filter(p => p.status === 'SUCCESS' || !p.status)
+            .reduce((sum, p) => sum + parseFloat(p.amount_paid || 0), 0);
+
+        const totalFee = student.final_fee !== null ? student.final_fee : ((student.fee || 0) - (student.discount || 0));
+        profileBalanceDue = Math.max(0, totalFee - profileTotalPaid);
         profilePaymentsPage = 1;
 
         // Render profile content
