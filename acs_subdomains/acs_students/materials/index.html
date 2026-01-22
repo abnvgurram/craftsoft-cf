@@ -18,7 +18,7 @@
     <script>
         (async () => {
             try {
-                const token = sessionStorage.getItem('acs_student_token');
+                const token = localStorage.getItem('acs_student_token');
                 if (!token) { window.location.replace('../'); return; }
                 const { data, error } = await window.supabaseClient
                     .from('student_sessions')

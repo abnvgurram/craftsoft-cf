@@ -243,8 +243,8 @@
 
             if (sessionError) throw sessionError;
 
-            // Store token in sessionStorage
-            sessionStorage.setItem('acs_student_token', sessionData.token);
+            // Store token in localStorage for persistence
+            localStorage.setItem('acs_student_token', sessionData.token);
 
             // Cleanup: Delete ALL expired OTPs globally and all OTPs for THIS student
             await Promise.all([

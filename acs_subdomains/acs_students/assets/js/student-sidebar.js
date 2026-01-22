@@ -22,6 +22,7 @@ const StudentSidebar = {
         if (path.includes('/dashboard/')) return '../';
         if (path.includes('/payments/')) return '../';
         if (path.includes('/courses/')) return '../';
+        if (path.includes('/materials/')) return '../';
         return './';
     },
 

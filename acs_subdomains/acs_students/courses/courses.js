@@ -49,14 +49,14 @@
         window.addEventListener('popstate', () => history.pushState(null, '', location.href));
         document.addEventListener('visibilitychange', async () => {
             if (document.visibilityState === 'visible') {
-                const token = sessionStorage.getItem('acs_student_token');
+                const token = localStorage.getItem('acs_student_token');
                 if (!token) { window.location.replace('../'); return; }
                 const { data } = await window.supabaseClient.from('student_sessions').select('id').eq('token', token).gt('expires_at', new Date().toISOString()).single();
                 if (!data) window.location.replace('../');
             }
         });
 
-        const token = sessionStorage.getItem('acs_student_token');
+        const token = localStorage.getItem('acs_student_token');
         if (!token) {
             window.location.replace('../');
             return;
@@ -240,10 +240,10 @@
             type: "warning",
             confirmText: "Logout",
             onConfirm: async () => {
-                const token = sessionStorage.getItem('acs_student_token');
+                const token = localStorage.getItem('acs_student_token');
                 if (token) {
                     await window.supabaseClient.from('student_sessions').delete().eq('token', token);
-                    sessionStorage.removeItem('acs_student_token');
+                    localStorage.removeItem('acs_student_token');
                 }
                 window.location.replace('../');
             }
