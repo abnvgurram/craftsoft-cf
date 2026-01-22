@@ -201,7 +201,7 @@ const StudentSidebar = {
             <div class="account-header-wrapper">
                 <button class="account-trigger" id="account-trigger">
                     <div class="account-avatar">${initials}</div>
-                    <div class="account-info">
+                    <div class="account-info desktop-only">
                         <span class="account-name-label">${studentData.name}</span>
                         <span class="account-id-label">${studentData.student_id}</span>
                     </div>
@@ -271,8 +271,9 @@ const StudentHeader = {
                 <button id="mobile-menu-btn" class="mobile-menu-btn">
                     <i class="fa-solid fa-bars-staggered"></i>
                 </button>
+                <div class="header-divider mobile-only"></div>
                 <div class="header-title-group">
-                    <div class="header-icon-box">
+                    <div class="header-icon-box mobile-only-hidden">
                         <i class="fa-solid ${icon}"></i>
                     </div>
                     <div class="header-text-info">

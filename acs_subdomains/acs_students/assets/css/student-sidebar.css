@@ -138,7 +138,7 @@
 
 /* Header Account Panel (Premium Admin Style) */
 .header-account-container {
-    padding-left: 1.5rem;
+    padding-left: 1rem;
     display: flex;
     align-items: center;
 }
@@ -380,6 +380,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: nowrap;
+}
+
+.header-divider {
+    width: 1.5px;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.08);
+    margin: 0 0.5rem;
+}
+
+.mobile-only {
+    display: none;
 }
 
 .header-left {
@@ -435,7 +447,35 @@
 
 @media (max-width: 768px) {
     .desktop-only {
-        display: none;
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: block;
+    }
+
+    .mobile-only-hidden {
+        display: none !important;
+    }
+
+    .top-bar {
+        padding: 0.75rem 1rem;
+    }
+
+    .header-left {
+        gap: 0.5rem;
+    }
+
+    .header-title-group {
+        gap: 0.75rem;
+    }
+
+    .page-main-title {
+        font-size: 1.1rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.75rem;
     }
 }
 
@@ -476,7 +516,7 @@
     }
 
     .main-content {
-        margin-left: 0;
+        margin-left: 0 !important;
     }
 
     .mobile-menu-btn {
