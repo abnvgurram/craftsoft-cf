@@ -99,6 +99,8 @@ export default async (request, context) => {
                 targetPath = pathname.replace("/upload-materials", "/academics/upload-materials");
             } else if (pathname.startsWith("/assignments")) {
                 targetPath = pathname.replace("/assignments", "/academics/assignments");
+            } else if (pathname.startsWith("/submissions")) {
+                targetPath = pathname.replace("/submissions", "/academics/submissions");
             }
         }
 
