@@ -105,22 +105,36 @@
         // Re-validate on tab focus (prevents stale sessions)
         document.addEventListener('visibilitychange', async () => {
             if (document.visibilityState === 'visible') {
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-                if (!session) window.location.replace('../');
+                const token = sessionStorage.getItem('acs_student_token');
+                if (!token) { window.location.replace('../'); return; }
+                const { data } = await window.supabaseClient.from('student_sessions').select('id').eq('token', token).gt('expires_at', new Date().toISOString()).single();
+                if (!data) window.location.replace('../');
             }
         });
 
-        // Get Supabase session
-        const { data: { session } } = await window.supabaseClient.auth.getSession();
-        if (!session) {
+        // Get session from our custom table
+        const token = sessionStorage.getItem('acs_student_token');
+        if (!token) {
             window.location.replace('../');
             return;
         }
 
-        // Get student data from user metadata
-        const metadata = session.user.user_metadata;
+        const { data: session, error } = await window.supabaseClient
+            .from('student_sessions')
+            .select('*')
+            .eq('token', token)
+            .gt('expires_at', new Date().toISOString())
+            .single();
+
+        if (error || !session) {
+            window.location.replace('../');
+            return;
+        }
+
+        // Get student data from our custom session metadata
+        const metadata = session.metadata;
         studentData = {
-            id: metadata.student_db_id,
+            id: session.student_db_id,
             name: metadata.name,
             student_id: metadata.student_id,
             email: metadata.email,
@@ -312,7 +326,11 @@
             type: "warning",
             confirmText: "Yes, Logout",
             onConfirm: async () => {
-                await window.supabaseClient.auth.signOut();
+                const token = sessionStorage.getItem('acs_student_token');
+                if (token) {
+                    await window.supabaseClient.from('student_sessions').delete().eq('token', token);
+                    sessionStorage.removeItem('acs_student_token');
+                }
                 window.location.replace('../');
             }
         });

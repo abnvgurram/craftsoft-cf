@@ -226,28 +226,37 @@
                 return;
             }
 
-            // Sign in anonymously with Supabase Auth
-            const { data: authData, error: authError } = await window.supabaseClient.auth.signInAnonymously({
-                options: {
-                    data: {
-                        student_db_id: currentStudent.id,
+            // Create server-side session in Supabase table
+            const { data: sessionData, error: sessionError } = await window.supabaseClient
+                .from('student_sessions')
+                .insert([{
+                    student_db_id: currentStudent.id,
+                    metadata: {
                         student_id: currentStudent.student_id,
                         name: `${currentStudent.first_name} ${currentStudent.last_name}`,
                         email: currentStudent.email,
                         phone: currentStudent.phone
                     }
-                }
-            });
+                }])
+                .select()
+                .single();
 
-            if (authError) {
-                throw authError;
-            }
+            if (sessionError) throw sessionError;
 
-            // Delete ALL OTPs for this student (cleanup)
-            await window.supabaseClient
-                .from('student_otps')
-                .delete()
-                .eq('student_id', currentStudent.id);
+            // Store token in sessionStorage
+            sessionStorage.setItem('acs_student_token', sessionData.token);
+
+            // Cleanup: Delete ALL expired OTPs globally and all OTPs for THIS student
+            await Promise.all([
+                window.supabaseClient
+                    .from('student_otps')
+                    .delete()
+                    .lt('expires_at', new Date().toISOString()),
+                window.supabaseClient
+                    .from('student_otps')
+                    .delete()
+                    .eq('student_id', currentStudent.id)
+            ]);
 
             showToast("Authentication Successful!", "success");
 

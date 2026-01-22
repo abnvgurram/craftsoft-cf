@@ -22,10 +22,16 @@
             window.StudentSidebar.closeMobileNav();
         }
 
-        // Sign out from Supabase
-        window.supabaseClient.auth.signOut().then(() => {
+        // Terminate custom session
+        const token = sessionStorage.getItem('acs_student_token');
+        if (token) {
+            window.supabaseClient.from('student_sessions').delete().eq('token', token).then(() => {
+                sessionStorage.removeItem('acs_student_token');
+                window.location.replace('../');
+            });
+        } else {
             window.location.replace('../');
-        });
+        }
     };
 
 })();

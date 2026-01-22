@@ -49,20 +49,34 @@
         window.addEventListener('popstate', () => history.pushState(null, '', location.href));
         document.addEventListener('visibilitychange', async () => {
             if (document.visibilityState === 'visible') {
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-                if (!session) window.location.replace('../');
+                const token = sessionStorage.getItem('acs_student_token');
+                if (!token) { window.location.replace('../'); return; }
+                const { data } = await window.supabaseClient.from('student_sessions').select('id').eq('token', token).gt('expires_at', new Date().toISOString()).single();
+                if (!data) window.location.replace('../');
             }
         });
 
-        const { data: { session } } = await window.supabaseClient.auth.getSession();
-        if (!session) {
+        const token = sessionStorage.getItem('acs_student_token');
+        if (!token) {
             window.location.replace('../');
             return;
         }
 
-        const metadata = session.user.user_metadata;
+        const { data: session, error } = await window.supabaseClient
+            .from('student_sessions')
+            .select('*')
+            .eq('token', token)
+            .gt('expires_at', new Date().toISOString())
+            .single();
+
+        if (error || !session) {
+            window.location.replace('../');
+            return;
+        }
+
+        const metadata = session.metadata;
         studentData = {
-            id: metadata.student_db_id,
+            id: session.student_db_id,
             name: metadata.name,
             student_id: metadata.student_id,
             email: metadata.email,
@@ -226,7 +240,11 @@
             type: "warning",
             confirmText: "Logout",
             onConfirm: async () => {
-                await window.supabaseClient.auth.signOut();
+                const token = sessionStorage.getItem('acs_student_token');
+                if (token) {
+                    await window.supabaseClient.from('student_sessions').delete().eq('token', token);
+                    sessionStorage.removeItem('acs_student_token');
+                }
                 window.location.replace('../');
             }
         });
