@@ -62,37 +62,122 @@
         bindSearch();
     }
 
+    // Pagination State
+    let currentPage = 1;
+    const itemsPerPage = 5;
+
     async function fetchMaterials() {
         try {
             loading.style.display = 'block';
             container.style.display = 'none';
             emptyState.style.display = 'none';
+            if (document.getElementById('pagination-strip')) document.getElementById('pagination-strip').style.display = 'none';
 
-            // DEBUG: Log the student ID since console.log is disabled
-            console.error('Fetching materials for Student UUID:', studentData.id);
-
-            const { data, error } = await window.supabaseClient
+            // TIER 1: Query by internal DB UUID
+            const { data: tier1, error: error1 } = await window.supabaseClient
                 .from('student_materials')
                 .select('*')
                 .eq('student_db_id', studentData.id)
                 .order('created_at', { ascending: false });
 
-            if (error) {
-                console.error('Supabase Query Error:', error);
-                throw error;
+            let combinedResults = tier1 || [];
+
+            // TIER 2: Fallback Query by readable Student ID (ST-ACS-XXX)
+            if (combinedResults.length === 0 && studentData.student_id) {
+                const { data: tier2, error: error2 } = await window.supabaseClient
+                    .from('student_materials')
+                    .select('*')
+                    .eq('student_id', studentData.student_id)
+                    .order('created_at', { ascending: false });
+
+                if (!error2 && tier2) {
+                    combinedResults = tier2;
+                }
             }
 
-            console.error('Materials data received:', data?.length || 0, 'items');
-
-            allMaterials = data || [];
-            renderMaterials(allMaterials);
+            allMaterials = combinedResults;
+            currentPage = 1;
+            renderMaterialsWithPagination();
 
         } catch (err) {
-            console.error('Error fetching materials:', err);
+            console.error('[CORE] Critical Fetch Error:', err);
             showToast('error', 'Failed to load materials');
             loading.style.display = 'none';
             emptyState.style.display = 'block';
         }
+    }
+
+    function renderMaterialsWithPagination() {
+        const query = searchInput.value.toLowerCase();
+        const filtered = allMaterials.filter(m => {
+            return m.file_name.toLowerCase().includes(query) ||
+                m.course_code.toLowerCase().includes(query);
+        });
+
+        const totalItems = filtered.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        if (totalItems === 0) {
+            container.style.display = 'none';
+            loading.style.display = 'none';
+            emptyState.style.display = 'block';
+            if (document.getElementById('pagination-strip')) document.getElementById('pagination-strip').style.display = 'none';
+            return;
+        }
+
+        loading.style.display = 'none';
+        emptyState.style.display = 'none';
+        container.style.display = 'grid';
+
+        // Slice for current page
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageData = filtered.slice(start, end);
+
+        renderMaterials(pageData);
+        updatePaginationUI(totalItems, totalPages);
+    }
+
+    function updatePaginationUI(totalItems, totalPages) {
+        const strip = document.getElementById('pagination-strip');
+        const totalCount = document.getElementById('total-count');
+        const pageNumbers = document.getElementById('page-numbers');
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+
+        if (!strip) return;
+
+        strip.style.display = 'flex';
+        totalCount.textContent = totalItems;
+
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+
+        pageNumbers.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.className = `page-num ${i === currentPage ? 'active' : ''}`;
+            btn.textContent = i;
+            btn.onclick = () => {
+                currentPage = i;
+                renderMaterialsWithPagination();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+            pageNumbers.appendChild(btn);
+        }
+
+        prevBtn.onclick = () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderMaterialsWithPagination();
+            }
+        };
+        nextBtn.onclick = () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderMaterialsWithPagination();
+            }
+        };
     }
 
     function renderMaterials(materials) {
@@ -141,18 +226,9 @@
     }
 
     function bindSearch() {
-        searchInput?.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase().trim();
-            if (!term) {
-                renderMaterials(allMaterials);
-                return;
-            }
-
-            const filtered = allMaterials.filter(m =>
-                m.file_name.toLowerCase().includes(term) ||
-                m.course_code.toLowerCase().includes(term)
-            );
-            renderMaterials(filtered);
+        searchInput?.addEventListener('input', () => {
+            currentPage = 1;
+            renderMaterialsWithPagination();
         });
     }
 

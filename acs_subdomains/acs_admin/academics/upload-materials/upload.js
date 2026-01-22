@@ -119,46 +119,203 @@
         }
     }
 
+    // State for History
+    let allUploadedMaterials = [];
+    let currentHistoryPage = 1;
+    const historyPerPage = 5;
+
     async function loadRecentUploads() {
         try {
             const { data, error } = await window.supabaseClient
                 .from('student_materials')
-                .select('id, file_name, file_url, course_code, created_at, students(student_id, first_name, last_name)')
-                .order('created_at', { ascending: false })
-                .limit(10);
+                .select('id, file_name, file_url, course_code, created_at, student_id, student_db_id, students(student_id, first_name, last_name)')
+                .order('created_at', { ascending: false });
 
             if (error) throw error;
-
-            if (!data || data.length === 0) {
-                recentUploadsContent.innerHTML = '<p class="text-muted">No materials uploaded yet.</p>';
-                return;
-            }
-
-            recentUploadsContent.innerHTML = `
-                <table class="recent-table">
-                    <thead>
-                        <tr>
-                            <th>File Name</th>
-                            <th>Student</th>
-                            <th>Course</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${data.map(m => `
-                            <tr>
-                                <td><a href="${m.file_url}" target="_blank" class="file-link"><i class="fa-solid fa-file"></i> ${m.file_name}</a></td>
-                                <td>${m.students ? `${m.students.first_name} ${m.students.last_name}` : 'N/A'}</td>
-                                <td>${m.course_code}</td>
-                                <td>${new Date(m.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
+            allUploadedMaterials = data || [];
+            renderRecentUploadsWithPagination();
         } catch (err) {
             console.error('Error loading recent uploads:', err);
             recentUploadsContent.innerHTML = '<p class="text-muted">Could not load recent uploads.</p>';
+        }
+    }
+
+    function renderRecentUploadsWithPagination() {
+        const totalItems = allUploadedMaterials.length;
+        const totalPages = Math.ceil(totalItems / historyPerPage);
+
+        if (totalItems === 0) {
+            recentUploadsContent.innerHTML = '<p class="text-muted">No materials uploaded yet.</p>';
+            return;
+        }
+
+        const start = (currentHistoryPage - 1) * historyPerPage;
+        const end = start + historyPerPage;
+        const pageData = allUploadedMaterials.slice(start, end);
+
+        recentUploadsContent.innerHTML = `
+            <div class="bulk-actions-strip" id="bulk-actions" style="display: none;">
+                <button id="bulk-delete-btn" class="btn btn-danger btn-sm">
+                    <i class="fa-solid fa-trash-can"></i> Delete Selected (<span id="bulk-count">0</span>)
+                </button>
+            </div>
+            <table class="recent-table">
+                <thead>
+                    <tr>
+                        <th width="40"><input type="checkbox" id="master-checkbox"></th>
+                        <th>File Name</th>
+                        <th>Student</th>
+                        <th>Course</th>
+                        <th>Date</th>
+                        <th width="60">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${pageData.map(m => `
+                        <tr>
+                            <td><input type="checkbox" class="file-checkbox" data-id="${m.id}"></td>
+                            <td><a href="${m.file_url}" target="_blank" class="file-link"><i class="fa-solid ${getFileIcon(m.file_name)}"></i> ${m.file_name}</a></td>
+                            <td>${m.students ? `${m.students.first_name} ${m.students.last_name}` : (m.student_id || 'N/A')}</td>
+                            <td><span class="badge badge-primary">${m.course_code}</span></td>
+                            <td>${new Date(m.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
+                            <td>
+                                <button class="delete-single-btn" data-id="${m.id}" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            <div class="history-pagination">
+                <div class="pagination-controls">
+                    <button id="hist-prev" class="page-btn" ${currentHistoryPage === 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i></button>
+                    <span class="page-info">Page ${currentHistoryPage} of ${totalPages || 1}</span>
+                    <button id="hist-next" class="page-btn" ${currentHistoryPage >= totalPages ? 'disabled' : ''}><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="total-badge">Total: ${totalItems}</div>
+            </div>
+        `;
+
+        bindHistoryEvents();
+    }
+
+    function bindHistoryEvents() {
+        const masterBox = document.getElementById('master-checkbox');
+        const fileBoxes = document.querySelectorAll('.file-checkbox');
+        const bulkStrip = document.getElementById('bulk-actions');
+        const bulkCount = document.getElementById('bulk-count');
+        const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+
+        // Modal state handled globally within closure
+
+        // Master checkbox
+        masterBox?.addEventListener('change', (e) => {
+            fileBoxes.forEach(box => box.checked = e.target.checked);
+            updateBulkStrip();
+        });
+
+        // Individual checkboxes
+        fileBoxes.forEach(box => {
+            box.addEventListener('change', updateBulkStrip);
+        });
+
+        function updateBulkStrip() {
+            const checkedCount = document.querySelectorAll('.file-checkbox:checked').length;
+            bulkStrip.style.display = checkedCount > 0 ? 'flex' : 'none';
+            bulkCount.textContent = checkedCount;
+        }
+
+        function showConfirm(title, message, name, onConfirm) {
+            const deleteOverlay = document.getElementById('delete-overlay');
+            const deleteTitle = document.getElementById('delete-title');
+            const deleteMessage = document.getElementById('delete-message');
+            const deleteName = document.getElementById('delete-name');
+            deleteTitle.textContent = title;
+            deleteMessage.innerHTML = message;
+            deleteName.textContent = name || '';
+            deleteOverlay.style.display = 'flex';
+            currentDeleteTask = onConfirm;
+        }
+
+        // Single delete
+        document.querySelectorAll('.delete-single-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = btn.dataset.id;
+                const material = allUploadedMaterials.find(m => m.id === id);
+                const fileName = material ? material.file_name : 'file';
+
+                showConfirm(
+                    'Delete Material?',
+                    `Are you sure you want to delete <strong>${fileName}</strong>?`,
+                    '',
+                    async () => {
+                        await deleteMaterial(id);
+                    }
+                );
+            });
+        });
+
+        // Bulk delete
+        bulkDeleteBtn?.addEventListener('click', () => {
+            const checkedBoxes = document.querySelectorAll('.file-checkbox:checked');
+            const ids = Array.from(checkedBoxes).map(cb => cb.dataset.id);
+
+            showConfirm(
+                'Bulk Delete',
+                `Are you sure you want to delete ${ids.length} selected files?`,
+                '',
+                async () => {
+                    await bulkDelete(ids);
+                }
+            );
+        });
+
+        // Pagination
+        document.getElementById('hist-prev')?.addEventListener('click', () => {
+            if (currentHistoryPage > 1) {
+                currentHistoryPage--;
+                renderRecentUploadsWithPagination();
+            }
+        });
+        document.getElementById('hist-next')?.addEventListener('click', () => {
+            const totalPages = Math.ceil(allUploadedMaterials.length / historyPerPage);
+            if (currentHistoryPage < totalPages) {
+                currentHistoryPage++;
+                renderRecentUploadsWithPagination();
+            }
+        });
+    }
+
+    async function deleteMaterial(id) {
+        try {
+            const { error } = await window.supabaseClient
+                .from('student_materials')
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
+            showToast('success', 'File deleted successfully');
+            await loadRecentUploads();
+        } catch (err) {
+            console.error('Delete error:', err);
+            showToast('error', 'Failed to delete file');
+        }
+    }
+
+    async function bulkDelete(ids) {
+        try {
+            const { error } = await window.supabaseClient
+                .from('student_materials')
+                .delete()
+                .in('id', ids);
+
+            if (error) throw error;
+            showToast('success', `${ids.length} files deleted successfully`);
+            await loadRecentUploads();
+        } catch (err) {
+            console.error('Bulk delete error:', err);
+            showToast('error', 'Failed to delete files');
         }
     }
 
@@ -210,7 +367,33 @@
 
         // Upload button
         uploadBtn.addEventListener('click', handleUpload);
+
+        // Modal Listeners (Bind once)
+        const deleteOverlay = document.getElementById('delete-overlay');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+
+        const hideConfirm = () => {
+            deleteOverlay.style.display = 'none';
+            currentDeleteTask = null;
+            confirmDeleteBtn.disabled = false;
+            confirmDeleteBtn.innerHTML = 'Delete';
+        };
+
+        cancelDeleteBtn?.addEventListener('click', hideConfirm);
+        confirmDeleteBtn?.addEventListener('click', async () => {
+            if (currentDeleteTask) {
+                confirmDeleteBtn.disabled = true;
+                confirmDeleteBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+                await currentDeleteTask();
+                hideConfirm();
+            }
+        });
     }
+
+    // Modal state for deleteTask
+    let currentDeleteTask = null;
+
 
     function handleFiles(files) {
         for (const file of files) {

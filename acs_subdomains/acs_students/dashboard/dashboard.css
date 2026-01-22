@@ -155,7 +155,7 @@ body.modal-open {
 .main-content {
     flex: 1;
     margin-left: 280px;
-    padding: 30px 40px;
+    padding: 30px 20px;
 }
 
 .top-bar {
