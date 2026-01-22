@@ -332,27 +332,46 @@
   status = 200
   force = true
 
-# vHistory (Moved from settings)
+# v-History (Moved from settings - Clean URL)
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/v-history/*"
+  to = "/acs_subdomains/acs_admin/v-history/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/v-history"
+  to = "/acs_subdomains/acs_admin/v-history/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/v-history/"
+  to = "/acs_subdomains/acs_admin/v-history/index.html"
+  status = 200
+  force = true
+
+# v-History Legacy Redirects
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/vhistory/*"
-  to = "/acs_subdomains/acs_admin/vhistory/:splat"
-  status = 200
-  force = true
+  to = "/v-history/:splat"
+  status = 301
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/vhistory"
-  to = "/acs_subdomains/acs_admin/vhistory/index.html"
-  status = 200
-  force = true
+  to = "/v-history/"
+  status = 301
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
-  from = "/vhistory/"
-  to = "/acs_subdomains/acs_admin/vhistory/index.html"
-  status = 200
-  force = true
+  from = "/version-history"
+  to = "/v-history/"
+  status = 301
 
 # Student Testing
 [[redirects]]

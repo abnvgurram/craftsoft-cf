@@ -24,6 +24,7 @@
     align-items: center;
     justify-content: center;
     margin-top: 0;
+    margin-bottom: 0.5rem;
 }
 
 /* Sidebar Toggle Button */
@@ -248,10 +249,12 @@
         display: none !important;
     }
 
-    .mobile-logo {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
+    @media (max-width: 1024px) {
+        .mobile-logo {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
     }
 
     .desktop-logo {
@@ -291,17 +294,14 @@
 
 /* Section label - subtle and premium */
 .sidebar-section-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.85rem 1rem 0.5rem 1.75rem;
-    /* Reduced from 1.25rem to fix gap */
-    color: var(--gray-400);
+    padding: 10px 1.5rem 4px;
     font-size: 0.7rem;
     font-weight: 700;
+    color: var(--sidebar-text-muted);
     text-transform: uppercase;
     letter-spacing: 1.2px;
     opacity: 0.8;
+    margin-top: 5px;
 }
 
 .sidebar-spacer {
