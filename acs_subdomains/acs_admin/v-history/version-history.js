@@ -2,39 +2,6 @@
    Version History - Data & Initialization
    ============================================ */
 
-const versions = [
-    {
-        v: "v1.0",
-        focus: "The Foundation",
-        milestones: "Initial CRM launch. Basic management of Students, Clients, and Payments. Core Supabase integration."
-    },
-    {
-        v: "v2.0",
-        focus: "Portal Launch",
-        milestones: "Introduction of the Student Portal. First iteration of Payment History and mobile-responsive dashboards."
-    },
-    {
-        v: "v3.0",
-        focus: "Intelligence & UX",
-        milestones: "Introduction of Spotlight Search (Ctrl+K), real-time Desktop Notifications, and advanced analytics on the Admin dashboard."
-    },
-    {
-        v: "v4.0",
-        focus: "Scale & Security",
-        milestones: "Launch of the Gmail-style Account Manager (multi-login) and the Session Timeout / Inactivity Lock security system."
-    },
-    {
-        v: "v5.0",
-        focus: "\"CraftSoft OS\"",
-        milestones: "UI Standardisation. Modular Sidebar/Header JS engines across portals, relocation of Assets, and premium Logo Signature branding."
-    },
-    {
-        v: "v6.0",
-        focus: "Academic Suite",
-        milestones: "Paged Materials system with search capability. Bulk deletion and management for Admins. Premium custom confirmation modals."
-    }
-];
-
 document.addEventListener('DOMContentLoaded', async () => {
     // Auth Check
     const session = await window.supabaseConfig.getSession();
@@ -55,18 +22,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     const admin = await window.Auth.getCurrentAdmin();
     await AdminSidebar.renderAccountPanel(session, admin);
 
-    renderTable();
+    await fetchAndRenderTable();
 });
 
-function renderTable() {
+async function fetchAndRenderTable() {
     const container = document.getElementById('v-history-body');
     if (!container) return;
 
-    container.innerHTML = versions.map(ver => `
-        <tr>
-            <td><span class="v-badge">${ver.v}</span></td>
-            <td><span class="milestone-focus">${ver.focus}</span></td>
-            <td><div class="milestone-desc">${ver.milestones}</div></td>
-        </tr>
-    `).join('');
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('version_history')
+            .select('*')
+            .order('id', { ascending: true });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            container.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 2rem;">No version history records found in database.</td></tr>';
+            return;
+        }
+
+        container.innerHTML = data.map(ver => `
+            <tr>
+                <td><span class="v-badge">${ver.version}</span></td>
+                <td><span class="milestone-focus">${ver.focus}</span></td>
+                <td><div class="milestone-desc">${ver.milestones}</div></td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        console.error('Error fetching version history:', err);
+        container.innerHTML = '<tr><td colspan="3" style="text-align:center; color: red; padding: 2rem;">Error loading version history.</td></tr>';
+    }
 }
