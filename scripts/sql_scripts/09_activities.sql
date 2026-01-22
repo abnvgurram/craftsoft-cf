@@ -50,3 +50,27 @@ CREATE POLICY "admin_manage_activities" ON activities
 CREATE INDEX IF NOT EXISTS idx_activities_created ON activities(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_activities_type ON activities(activity_type);
 CREATE INDEX IF NOT EXISTS idx_activities_admin ON activities(admin_id);
+
+-- ============================================
+-- CLEANUP FUNCTION (Deletes activities older than 24 hours)
+-- ============================================
+DROP FUNCTION IF EXISTS cleanup_old_activities() CASCADE;
+CREATE OR REPLACE FUNCTION cleanup_old_activities()
+RETURNS void AS $$
+BEGIN
+    DELETE FROM activities 
+    WHERE created_at < NOW() - INTERVAL '24 hours';
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public;
+
+-- Auto-cleanup function for pg_cron (same as above, cleaner naming)
+DROP FUNCTION IF EXISTS auto_cleanup_activities() CASCADE;
+CREATE OR REPLACE FUNCTION auto_cleanup_activities()
+RETURNS void AS $$
+BEGIN
+    DELETE FROM activities 
+    WHERE created_at < NOW() - INTERVAL '24 hours';
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public;
