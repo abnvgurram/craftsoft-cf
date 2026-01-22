@@ -60,7 +60,7 @@
         try {
             const { data: profile, error: pErr } = await window.supabaseClient
                 .from('students')
-                .select('courses, course_tutors, course_discounts, joining_date, date_of_joining, created_at')
+                .select('courses, course_tutors, course_discounts, joining_date, created_at')
                 .eq('id', studentData.id)
                 .single();
 
