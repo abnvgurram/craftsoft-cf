@@ -206,22 +206,28 @@ const StudentSidebar = {
 
     renderAccountPanel(studentData) {
         if (!studentData) return;
-        this.pendingStudentData = studentData; // Cache for retry if header not ready
+        this.pendingStudentData = studentData;
 
         const container = document.getElementById('header-account-container');
         if (!container) return;
 
+        const initials = studentData.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+
         container.innerHTML = `
             <div class="account-header-wrapper">
                 <button class="account-trigger" id="account-trigger">
+                    <div class="account-avatar">${initials}</div>
                     <div class="account-info">
                         <span class="account-name-label">${studentData.name}</span>
-                        <i class="fa-solid fa-chevron-down account-arrow"></i>
+                        <span class="account-id-label">${studentData.student_id}</span>
                     </div>
+                    <i class="fa-solid fa-chevron-down account-arrow"></i>
                 </button>
                 
                 <div class="account-dropdown" id="account-dropdown">
-                    <div class="account-dropdown-header">Account Details</div>
+                    <div class="account-dropdown-header">
+                        <span class="dropdown-header-title">Personal Info</span>
+                    </div>
                     <div class="account-details-list">
                         <div class="account-detail-item">
                             <i class="fa-solid fa-user"></i>
