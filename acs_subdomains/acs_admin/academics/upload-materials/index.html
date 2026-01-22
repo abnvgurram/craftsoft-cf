@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Materials | Admin - Abhi's Craftsoft</title>
+
+    <!-- Security Gate -->
+    <style>
+        html {
+            visibility: hidden;
+            opacity: 0
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/assets/admin/js/supabase-config.js?v=5.0"></script>
+    <script src="/assets/admin/js/auth-guard.js?v=5.0"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="https://craftsoft.co.in/favicon.svg">
+
+    <!-- Admin Styles -->
+    <link rel="stylesheet" href="/assets/admin/css/base/variables.css?v=5.0">
+    <link rel="stylesheet" href="/assets/admin/css/base/reset.css?v=5.0">
+    <link rel="stylesheet" href="/assets/admin/css/base/typography.css?v=5.0">
+    <link rel="stylesheet" href="/assets/admin/css/layout/sidebar.css?v=5.0">
+    <link rel="stylesheet" href="/assets/admin/css/layout/header.css?v=5.0">
+    <link rel="stylesheet" href="/assets/admin/css/components/buttons.css?v=5.0">
+    <link rel="stylesheet" href="/assets/admin/css/components/forms.css?v=5.0">
+    <link rel="stylesheet" href="/assets/admin/css/components/cards.css?v=5.0">
+    <link rel="stylesheet" href="/assets/admin/css/components/notifications.css?v=5.0">
+    <link rel="stylesheet" href="/assets/admin/css/components/account-panel.css?v=5.0">
+    <link rel="stylesheet" href="/assets/admin/css/responsive/mobile-nav.css?v=5.0">
+    <link rel="stylesheet" href="upload.css?v=1.0">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <main class="admin-main">
+            <div id="page-header"></div>
+
+            <div class="page-content">
+                <div class="upload-workspace">
+                    <!-- Step 1: Select Course -->
+                    <section class="upload-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-book-bookmark"></i></div>
+                            <h2 class="section-title">Step 1: Select Course</h2>
+                        </div>
+                        <div class="section-body">
+                            <select id="course-select" class="form-select">
+                                <option value="">-- Select a Course --</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <!-- Step 2: Select Student -->
+                    <section class="upload-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-user-graduate"></i></div>
+                            <h2 class="section-title">Step 2: Select Student</h2>
+                        </div>
+                        <div class="section-body">
+                            <select id="student-select" class="form-select" disabled>
+                                <option value="">-- Select a Course First --</option>
+                            </select>
+                            <p class="form-hint" id="student-hint">Students enrolled in the selected course will appear
+                                here.</p>
+                        </div>
+                    </section>
+
+                    <!-- Step 3: Upload File -->
+                    <section class="upload-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-upload"></i></div>
+                            <h2 class="section-title">Step 3: Upload File</h2>
+                        </div>
+                        <div class="section-body">
+                            <div class="dropzone" id="dropzone">
+                                <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                                <p class="dropzone-text">Drag & Drop files here</p>
+                                <p class="dropzone-subtext">or click to browse (PDF, DOC, ZIP, Images)</p>
+                                <input type="file" id="file-input" class="file-input" multiple
+                                    accept=".pdf,.doc,.docx,.zip,.rar,.png,.jpg,.jpeg,.gif,.ppt,.pptx,.xls,.xlsx">
+                            </div>
+                            <div id="file-preview" class="file-preview-list"></div>
+                        </div>
+                    </section>
+
+                    <!-- Upload Action -->
+                    <div class="upload-actions">
+                        <button id="upload-btn" class="btn btn-primary btn-lg" disabled>
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span>Upload Materials</span>
+                        </button>
+                    </div>
+
+                    <!-- Recent Uploads Table -->
+                    <section class="upload-section recent-uploads-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <h2 class="section-title">Recent Uploads</h2>
+                        </div>
+                        <div class="section-body">
+                            <div id="recent-uploads-content">
+                                <p class="text-muted">Loading recent uploads...</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/assets/admin/js/utils.js?v=5.0"></script>
+    <script src="/assets/admin/js/sidebar.js?v=5.0"></script>
+    <script src="upload.js?v=1.0"></script>
+</body>
+
+</html>
