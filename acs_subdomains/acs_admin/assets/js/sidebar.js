@@ -55,11 +55,8 @@ const AdminSidebar = {
                     ${this.navItem('recently-deleted', 'Trash', 'fa-solid fa-recycle', 'records/recently-deleted')}
 
                     <div class="sidebar-divider"></div>
-                    <a href="javascript:void(0)" class="sidebar-item" data-trigger="student-testing" title="Student Testing">
-                        <i class="fa-solid fa-vial-circle-check"></i>
-                        <span>Student Testing</span>
-                    </a>
                     ${this.navItem('settings', 'Settings', 'fa-gear')}
+                    ${this.navItem('student-testing', 'Student Testing', 'fa-solid fa-microscope', 'testing')}
                 </nav>
             </aside>
         `;
@@ -145,11 +142,8 @@ const AdminSidebar = {
                         </div>
                     </div>
                     
-                    <a href="javascript:void(0)" class="mobile-nav-item" data-trigger="student-testing">
-                        <i class="fa-solid fa-vial-circle-check"></i>
-                        <span>Student Testing</span>
-                    </a>
                     ${this.mobileNavItem('settings', 'Settings', 'fa-gear')}
+                    ${this.mobileNavItem('student-testing', 'Student Testing', 'fa-solid fa-microscope', 'testing')}
                 </nav>
                 
                 </div>
@@ -273,25 +267,6 @@ const AdminSidebar = {
             e.preventDefault();
             const parent = document.getElementById('mobile-records-parent');
             parent?.classList.toggle('expanded');
-        });
-
-        // Student Testing Trigger (Using event delegation for reliability)
-        document.addEventListener('click', (e) => {
-            const trigger = e.target.closest('[data-trigger="student-testing"]');
-            if (trigger) {
-                e.preventDefault();
-                console.log('[StudentTesting] Trigger clicked');
-                this.closeMobileNav();
-
-                if (window.StudentTesting && typeof window.StudentTesting.open === 'function') {
-                    window.StudentTesting.open();
-                } else if (window.AdminUtils && window.AdminUtils.StudentTesting) {
-                    window.AdminUtils.StudentTesting.open();
-                } else {
-                    console.error('[StudentTesting] Module not found in window or AdminUtils');
-                    alert('Student Testing module is still loading. Please wait a second and try again.');
-                }
-            }
         });
     },
 
