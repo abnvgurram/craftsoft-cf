@@ -332,6 +332,50 @@
   status = 200
   force = true
 
+# vHistory (Moved from settings)
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/vhistory/*"
+  to = "/acs_subdomains/acs_admin/vhistory/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/vhistory"
+  to = "/acs_subdomains/acs_admin/vhistory/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/vhistory/"
+  to = "/acs_subdomains/acs_admin/vhistory/index.html"
+  status = 200
+  force = true
+
+# Student Testing
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/testing/*"
+  to = "/acs_subdomains/acs_admin/testing/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/testing"
+  to = "/acs_subdomains/acs_admin/testing/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/testing/"
+  to = "/acs_subdomains/acs_admin/testing/index.html"
+  status = 200
+  force = true
+
 # Global catch-all for assets
 [[redirects]]
   host = "admin.craftsoft.co.in"

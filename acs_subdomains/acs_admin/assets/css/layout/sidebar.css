@@ -19,10 +19,11 @@
 
 .sidebar-header {
     display: flex;
-    padding: 0.75rem 1rem;
-    /* Reduced from 1.5rem to fix top gap */
+    padding: 0.5rem 1rem 0;
+    /* Zero top padding to remove gap */
     align-items: center;
     justify-content: center;
+    margin-top: 0;
 }
 
 /* Sidebar Toggle Button */
@@ -237,10 +238,33 @@
     border-radius: 2px;
 }
 
-/* Mobile Nav Sheet - Hidden on Desktop */
-.mobile-nav-overlay,
-.mobile-nav-sheet {
-    display: none !important;
+@media (max-width: 1024px) {
+    .admin-main {
+        margin-left: 0 !important;
+        padding-top: 80px !important;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+
+    .mobile-logo {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .desktop-logo {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1025px) {
+
+    .mobile-nav-overlay,
+    .mobile-nav-sheet {
+        display: none !important;
+    }
 }
 
 /* Sidebar Items Divider */
