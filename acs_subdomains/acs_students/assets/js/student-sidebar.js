@@ -13,6 +13,8 @@ const StudentSidebar = {
         this.render();
         this.injectFooter();
         this.injectLogoStyles();
+        // Deferred binding to ensure header with mobile button is ready
+        setTimeout(() => this.bindMobileMenu(), 100);
     },
 
     determineRootPath() {
@@ -153,6 +155,21 @@ const StudentSidebar = {
             logoutMobile.addEventListener('click', () => {
                 close();
                 if (window.handleLogout) window.handleLogout();
+            });
+        }
+    },
+
+    // Separate method for mobile menu - called after header is rendered
+    bindMobileMenu() {
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const overlay = document.getElementById('mobile-nav-overlay');
+        const sheet = document.getElementById('mobile-nav-sheet');
+
+        if (menuBtn && overlay && sheet) {
+            menuBtn.addEventListener('click', () => {
+                overlay.classList.add('open');
+                sheet.classList.add('open');
+                document.body.style.overflow = 'hidden';
             });
         }
     },
