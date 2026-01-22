@@ -108,7 +108,7 @@ async function loadPortalPreview(studentId, element) {
         <div class="analysis-placeholder">
             <div class="placeholder-content">
                 <i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary"></i>
-                <h3>Synchronizing Live Data...</h3>
+                <h3>Synchronizing Live Portal Data...</h3>
             </div>
         </div>
     `;
@@ -138,72 +138,60 @@ async function loadPortalPreview(studentId, element) {
         const finalFee = student.final_fee || (student.fee - student.discount) || 0;
         const feeDue = finalFee - totalPaid;
 
-        // Populate Stats Bar
-        statFee.innerText = `â‚¹${finalFee.toLocaleString()}`;
-        statPaid.innerText = `â‚¹${totalPaid.toLocaleString()}`;
-        statBalance.innerText = `â‚¹${feeDue.toLocaleString()}`;
+        // Populate Admin Stats Bar
+        statFee.innerText = `₹${finalFee.toLocaleString()}`;
+        statPaid.innerText = `₹${totalPaid.toLocaleString()}`;
+        statBalance.innerText = `₹${feeDue.toLocaleString()}`;
         statBalance.style.color = feeDue > 0 ? '#ef4444' : '#10b981';
 
+        // Mirror the Student Portal View
         previewContainer.innerHTML = `
-            <div class="portal-preview">
-                <div class="preview-header">
+            <div class="portal-mirror-view" style="animation: fadeIn 0.4s ease;">
+                <div class="mirror-header" style="background: var(--accent-gradient); padding: 1.5rem; border-radius: 16px; color: white; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <span class="preview-badge">Student Portal Sync</span>
-                        <h2>${student.first_name} ${student.last_name || ''}</h2>
-                        <small class="text-secondary">Viewing profile ACS-${student.student_id}</small>
+                        <h2 style="margin:0; font-size: 1.4rem;">Hello, ${student.first_name}! 👋</h2>
+                        <p style="margin: 5px 0 0; opacity: 0.9; font-size: 0.9rem;">This is how the student sees their dashboard.</p>
                     </div>
+                    <i class="fa-solid fa-user-graduate" style="font-size: 2.5rem; opacity: 0.3;"></i>
                 </div>
 
-                <div class="preview-sections">
-                    <!-- Profile Card -->
-                    <div class="analysis-card">
-                        <div class="card-label">
-                            <i class="fa-solid fa-user-shield"></i> Deployment Info
+                <div class="mirror-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <!-- Student View Stats -->
+                    <div class="analysis-card" style="grid-column: span 2; display: flex; gap: 2rem; justify-content: space-around; text-align: center;">
+                        <div>
+                            <small style="color: var(--admin-text-muted); display: block; margin-bottom: 5px;">Total Paid</small>
+                            <span style="font-size: 1.2rem; font-weight: 700; color: #10b981;">₹${totalPaid.toLocaleString()}</span>
                         </div>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <small>Registration ID</small>
-                                <span>ACS-${student.student_id}</span>
-                            </div>
-                            <div class="info-item">
-                                <small>Contact Email</small>
-                                <span>${student.email || 'N/A'}</span>
-                            </div>
-                            <div class="info-item">
-                                <small>Mobile No.</small>
-                                <span>+91 ${student.phone}</span>
-                            </div>
+                        <div style="width: 1px; background: var(--admin-card-border);"></div>
+                        <div>
+                            <small style="color: var(--admin-text-muted); display: block; margin-bottom: 5px;">Balance Due</small>
+                            <span style="font-size: 1.2rem; font-weight: 700; color: ${feeDue > 0 ? '#ef4444' : '#10b981'};">₹${feeDue.toLocaleString()}</span>
                         </div>
                     </div>
 
-                    <!-- Courses -->
+                    <!-- Course Mirror -->
                     <div class="analysis-card">
-                        <div class="card-label">
-                            <i class="fa-solid fa-graduation-cap"></i> Enrolled Courses
-                        </div>
-                        <div class="course-list-mini">
+                        <div class="card-label"><i class="fa-solid fa-book"></i> Enrolled Courses</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                             ${courses.length > 0 ? courses.map(c => `
-                                <div class="course-tag">
-                                    <i class="fa-solid fa-book-bookmark"></i>
-                                    <span>${c.course_name}</span>
+                                <div style="display: flex; align-items: center; gap: 10px; background: var(--admin-bg); padding: 10px; border-radius: 8px;">
+                                    <i class="fa-solid fa-bookmark" style="color: #2896cd;"></i>
+                                    <span style="font-weight: 600; font-size: 0.85rem;">${c.course_name}</span>
                                 </div>
-                            `).join('') : '<p class="text-secondary">No courses enrolled</p>'}
+                            `).join('') : '<p style="color: var(--admin-text-muted);">No active enrollments</p>'}
                         </div>
                     </div>
 
-                    <!-- Payments -->
+                    <!-- Payment Mirror -->
                     <div class="analysis-card">
-                        <div class="card-label">
-                            <i class="fa-solid fa-receipt"></i> Recent Transactions
-                        </div>
-                        <div class="payment-history-mini">
+                        <div class="card-label"><i class="fa-solid fa-clock-rotate-left"></i> Quick History</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                             ${payments.length > 0 ? payments.map(p => `
-                                <div class="payment-mini-row">
-                                    <span class="date">${new Date(p.payment_date).toLocaleDateString()}</span>
-                                    <span class="amount">â‚¹${(p.amount_paid || 0).toLocaleString()}</span>
-                                    <span class="mode">${p.payment_mode || 'ONLINE'}</span>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 5px 0; border-bottom: 1px dashed var(--admin-card-border);">
+                                    <span>${new Date(p.payment_date).toLocaleDateString()}</span>
+                                    <span style="font-weight: 700;">₹${(p.amount_paid || 0).toLocaleString()}</span>
                                 </div>
-                            `).join('') : '<p class="text-secondary">No payment records</p>'}
+                            `).join('') : '<p style="color: var(--admin-text-muted);">No payment history</p>'}
                         </div>
                     </div>
                 </div>
@@ -211,7 +199,7 @@ async function loadPortalPreview(studentId, element) {
         `;
 
     } catch (error) {
-        console.error('Preview error:', error);
-        previewContainer.innerHTML = `<div class="p-5 text-center text-danger">Failed to sync data. Error: ${error.message}</div>`;
+        console.error('Mirror Sync error:', error);
+        previewContainer.innerHTML = `<div class="p-5 text-center text-danger">Mirror sync failed. Error: ${error.message}</div>`;
     }
 }

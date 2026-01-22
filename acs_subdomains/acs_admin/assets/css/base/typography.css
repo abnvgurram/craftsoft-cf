@@ -1,16 +1,31 @@
-/* ============================================
-   Typography Styles
-   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
 .admin-brand-name,
 .header-logo,
 .sidebar-logo-text {
     font-family: 'Outfit', sans-serif;
     font-size: 1.25rem;
     font-weight: 700;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+}
+
+.logo-sig-cursive {
+    font-family: 'Dancing Script', cursive;
+    color: #0f172a;
+    font-size: 1.4rem;
+}
+
+.logo-accent-sans {
+    font-family: 'Outfit', sans-serif;
+    color: #2896cd;
+    font-weight: 700;
+}
+
+.logo-mark-purple {
+    font-family: 'Outfit', sans-serif;
+    color: #6c5ce7;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-left: 6px;
 }
 
 /* Text Helpers */

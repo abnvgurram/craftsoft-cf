@@ -46,8 +46,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         headerContainer.innerHTML = AdminHeader.render('v-History');
     }
 
-    const admin = await window.Auth.getCurrentAdmin();
-    await AdminSidebar.renderAccountPanel(session, admin);
+    // Auth & Remote Logout Check
+    if (window.Auth && typeof window.Auth.checkSession === 'function') {
+        const admin = await window.Auth.getCurrentAdmin();
+        if (admin) {
+            await AdminSidebar.renderAccountPanel(session, admin);
+        }
+    }
 
     renderTable();
 });
