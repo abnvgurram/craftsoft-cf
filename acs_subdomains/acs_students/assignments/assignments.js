@@ -19,6 +19,20 @@
 
     // Init
     async function init() {
+        // WAITER: Wait for the inline auth script to set global session state
+        let retry = 0;
+        while (!window.studentDbId && retry < 25) {
+            await new Promise(r => setTimeout(r, 200));
+            retry++;
+        }
+
+        if (!window.studentDbId) {
+            console.error("Session State Failure: studentDbId not found.");
+            // We don't redirect here to avoid loops, let the inline script handle it or show error
+            loading.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#ef4444;"></i><p>Session verification failed. Please try logging in again.</p>';
+            return;
+        }
+
         // Render Shell
         StudentSidebar.init('assignments');
         const header = document.getElementById('header-container');
