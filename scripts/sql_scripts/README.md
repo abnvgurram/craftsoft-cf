@@ -29,6 +29,7 @@ Each file represents one table, with all related RLS policies, indexes, triggers
 | `12_student_otps.sql` | student_otps | OTP for student login |
 | `13_user_sessions.sql` | user_sessions | Admin session management |
 | `14_v-history.sql` | version_history | Platform roadmap & milestones |
+| `15_assignments.sql` | student_assignments, student_submissions, assignment_extensions | Academic assignments & student work tracking |
 
 ## Execution Order
 
@@ -51,6 +52,7 @@ Run files in numerical order to respect foreign key dependencies:
 12_student_otps.sql # Depends on: students
 13_user_sessions.sql # Depends on: admins
 14_v-history.sql    # No dependencies
+15_assignments.sql    # Depends on: courses, students, admins
 ```
 
 ## Security Model

@@ -7,13 +7,20 @@
 (async function () {
     // State
     let allCourses = [];
+    let allStudents = [];
     let allAssignments = [];
     let selectedFile = null;
     let currentDeleteId = null;
     let currentAdmin = null;
 
+    let courseSearchableSelect = null;
+    let studentSearchableSelect = null;
+
     // DOM Elements
     const courseSelect = document.getElementById('course-select');
+    const studentSelect = document.getElementById('student-select');
+    const studentSelectGroup = document.getElementById('student-select-group');
+    const studentHint = document.getElementById('student-hint');
     const publishBtn = document.getElementById('publish-btn');
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('file-input');
@@ -60,8 +67,65 @@
             allCourses = data || [];
             courseSelect.innerHTML = '<option value="">-- Select a Course --</option>' +
                 allCourses.map(c => `<option value="${c.course_code}">${c.course_code} - ${c.course_name}</option>`).join('');
+
+            // Initialize SearchableSelect
+            if (!courseSearchableSelect && window.AdminUtils.SearchableSelect) {
+                courseSearchableSelect = new window.AdminUtils.SearchableSelect('course-select', {
+                    placeholder: 'Search for a course...'
+                });
+            } else if (courseSearchableSelect) {
+                courseSearchableSelect.syncWithOptions();
+            }
         } catch (err) {
             console.error('Error loading courses:', err);
+        }
+    }
+
+    async function loadStudentsForCourse(courseCode) {
+        if (!courseCode) {
+            studentSelect.innerHTML = '<option value="">-- Select a Course First --</option>';
+            if (studentSearchableSelect) studentSearchableSelect.syncWithOptions();
+            return;
+        }
+
+        studentSelect.disabled = true;
+        studentSelect.innerHTML = '<option value="">Loading students...</option>';
+        if (studentSearchableSelect) studentSearchableSelect.syncWithOptions();
+
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('students')
+                .select('id, student_id, first_name, last_name, courses')
+                .contains('courses', [courseCode])
+                .eq('status', 'ACTIVE')
+                .is('deleted_at', null)
+                .order('student_id');
+
+            if (error) throw error;
+
+            allStudents = data || [];
+
+            if (allStudents.length === 0) {
+                studentSelect.innerHTML = '<option value="">No students found</option>';
+                studentHint.textContent = 'No students are currently enrolled in this course.';
+            } else {
+                studentSelect.innerHTML = '<option value="">-- Select a Student --</option>' +
+                    allStudents.map(s => `<option value="${s.id}">${s.student_id} - ${s.first_name} ${s.last_name}</option>`).join('');
+                studentHint.textContent = `${allStudents.length} student(s) found in this course.`;
+                studentSelect.disabled = false;
+            }
+
+            // Sync SearchableSelect
+            if (!studentSearchableSelect && window.AdminUtils.SearchableSelect) {
+                studentSearchableSelect = new window.AdminUtils.SearchableSelect('student-select', {
+                    placeholder: 'Search for a student...'
+                });
+            } else if (studentSearchableSelect) {
+                studentSearchableSelect.syncWithOptions();
+            }
+        } catch (err) {
+            console.error('Error loading students:', err);
+            studentSelect.innerHTML = '<option value="">Error loading</option>';
         }
     }
 
@@ -69,8 +133,6 @@
     // Universal Storage Adapter (R2 / S3 Ready)
     // ============================================
     async function uploadAsset(file, bucket = 'assignments') {
-        // SCALING POLICY: 
-        // Currently using Supabase Storage, but structured to slot in Cloudflare R2 easily.
         const timestamp = Date.now();
         const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
         const filePath = `${bucket}/${timestamp}_${safeName}`;
@@ -89,7 +151,9 @@
     }
 
     async function handlePublish() {
+        const mode = document.querySelector('input[name="broadcast-mode"]:checked').value;
         const course = courseSelect.value;
+        const student = studentSelect.value;
         const title = document.getElementById('assign-title').value.trim();
         const desc = document.getElementById('assign-desc').value.trim();
         const date = document.getElementById('assign-date').value;
@@ -97,6 +161,11 @@
 
         if (!course || !title || !date || !time) {
             showToast('error', 'Please fill all required fields');
+            return;
+        }
+
+        if (mode === 'student' && !student) {
+            showToast('error', 'Please select a student');
             return;
         }
 
@@ -115,6 +184,7 @@
                 .from('student_assignments')
                 .insert({
                     course_code: course,
+                    student_db_id: mode === 'student' ? student : null,
                     title: title,
                     description: desc,
                     file_url: fileUrl,
@@ -124,7 +194,7 @@
 
             if (error) throw error;
 
-            showToast('success', 'Assignment published to ' + course);
+            showToast('success', 'Assignment published successfully');
             resetForm();
             await loadAssignments();
         } catch (err) {
@@ -292,6 +362,30 @@
         const inputs = ['course-select', 'assign-title', 'assign-date', 'assign-time'];
         inputs.forEach(id => document.getElementById(id).addEventListener('input', validateForm));
 
+        // Broadcast Mode Toggle
+        document.querySelectorAll('input[name="broadcast-mode"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const isStudentMode = e.target.value === 'student';
+                studentSelectGroup.style.display = isStudentMode ? 'block' : 'none';
+                if (isStudentMode && courseSelect.value) {
+                    loadStudentsForCourse(courseSelect.value);
+                }
+                validateForm();
+            });
+        });
+
+        // Course Selection Change
+        courseSelect.addEventListener('change', (e) => {
+            const mode = document.querySelector('input[name="broadcast-mode"]:checked').value;
+            if (mode === 'student') {
+                loadStudentsForCourse(e.target.value);
+            }
+            validateForm();
+        });
+
+        // Student Selection Change
+        studentSelect.addEventListener('change', validateForm);
+
         // Publish
         publishBtn.addEventListener('click', handlePublish);
 
@@ -317,11 +411,17 @@
     }
 
     function validateForm() {
+        const mode = document.querySelector('input[name="broadcast-mode"]:checked')?.value || 'course';
         const course = courseSelect.value;
+        const student = studentSelect.value;
         const title = document.getElementById('assign-title').value.trim();
         const date = document.getElementById('assign-date').value;
         const time = document.getElementById('assign-time').value;
-        publishBtn.disabled = !(course && title && date && time);
+
+        let isValid = course && title && date && time;
+        if (mode === 'student' && !student) isValid = false;
+
+        publishBtn.disabled = !isValid;
     }
 
     function resetForm() {

@@ -6,6 +6,7 @@
 CREATE TABLE IF NOT EXISTS public.student_assignments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     course_code TEXT NOT NULL REFERENCES public.courses(course_code),
+    student_db_id UUID REFERENCES public.students(id), -- NULL means whole course, NOT NULL means specific student
     title TEXT NOT NULL,
     description TEXT,
     file_url TEXT, -- Reference or Question Paper
