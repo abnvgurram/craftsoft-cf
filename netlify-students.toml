@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && mkdir -p dist && cp -r acs_subdomains/acs_students/* dist/ && cp -r assets dist/"
+  command = "npm run build && mkdir -p dist/assets && cp -r assets/* dist/assets/ && cp -r acs_subdomains/acs_students/* dist/"
   publish = "dist"
   functions = "netlify/functions"
 
