@@ -13,8 +13,15 @@ const StudentSidebar = {
         this.render();
         this.injectFooter();
         this.injectLogoStyles();
-        // Deferred binding to ensure header with mobile button is ready
-        setTimeout(() => this.bindMobileMenu(), 100);
+
+        // Ensure account panel and mobile menu are bound after a short delay
+        setTimeout(() => {
+            this.bindMobileMenu();
+            // Fallback: If someone called renderAccountPanel before header was ready
+            if (this.pendingStudentData) {
+                this.renderAccountPanel(this.pendingStudentData);
+            }
+        }, 150);
     },
 
     determineRootPath() {
@@ -198,8 +205,11 @@ const StudentSidebar = {
     },
 
     renderAccountPanel(studentData) {
+        if (!studentData) return;
+        this.pendingStudentData = studentData; // Cache for retry if header not ready
+
         const container = document.getElementById('header-account-container');
-        if (!container || !studentData) return;
+        if (!container) return;
 
         container.innerHTML = `
             <div class="account-header-wrapper">

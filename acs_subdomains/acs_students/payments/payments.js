@@ -114,20 +114,21 @@
     }
 
     async function initPage() {
+        // Render Header First
+        const header = document.getElementById('header-container');
+        if (header && window.StudentHeader) {
+            header.innerHTML = window.StudentHeader.render('Payments');
+        }
+
         if (window.StudentSidebar) {
             window.StudentSidebar.init('payments');
             window.StudentSidebar.renderAccountPanel(studentData);
         }
 
-        const header = document.getElementById('header-container');
-        if (header && window.StudentHeader) {
-            header.innerHTML = window.StudentHeader.render('Payments History');
-        }
-
-        await loadPaymentData();
+        await loadPayments();
     }
 
-    async function loadPaymentData() {
+    async function loadPayments() {
         try {
             const { data: profile, error: pErr } = await window.supabaseClient
                 .from('students')

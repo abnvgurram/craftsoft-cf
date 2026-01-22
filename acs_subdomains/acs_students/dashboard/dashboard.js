@@ -145,14 +145,16 @@
     }
 
     async function initDashboard() {
-        if (window.StudentSidebar) {
-            window.StudentSidebar.init('dashboard');
-            window.StudentSidebar.renderAccountPanel(studentData);
-        }
-
+        // 1. Render Header First (creates the container for account panel)
         const header = document.getElementById('header-container');
         if (header && window.StudentHeader) {
             header.innerHTML = window.StudentHeader.render('Dashboard');
+        }
+
+        // 2. Init Sidebar and Account Panel
+        if (window.StudentSidebar) {
+            window.StudentSidebar.init('dashboard');
+            window.StudentSidebar.renderAccountPanel(studentData);
         }
 
         const firstNameEl = document.getElementById('first-name');

@@ -86,14 +86,15 @@
     }
 
     async function initPage() {
-        if (window.StudentSidebar) {
-            window.StudentSidebar.init('courses');
-            window.StudentSidebar.renderAccountPanel(studentData);
-        }
-
+        // Render Header First
         const header = document.getElementById('header-container');
         if (header && window.StudentHeader) {
             header.innerHTML = window.StudentHeader.render('Courses');
+        }
+
+        if (window.StudentSidebar) {
+            window.StudentSidebar.init('courses');
+            window.StudentSidebar.renderAccountPanel(studentData);
         }
 
         await loadCourses();
