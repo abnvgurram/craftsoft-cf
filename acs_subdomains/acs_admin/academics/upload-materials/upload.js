@@ -21,6 +21,13 @@
 
     // Initialize
     async function init() {
+        // Auth check first
+        const session = await window.supabaseConfig.getSession();
+        if (!session) {
+            window.location.href = '../../login.html';
+            return;
+        }
+
         // Render Header & Sidebar
         const header = document.getElementById('page-header');
         if (header && window.AdminHeader) {
@@ -28,16 +35,12 @@
         }
 
         if (window.AdminSidebar) {
-            window.AdminSidebar.init('upload-materials', '../');
+            window.AdminSidebar.init('upload-materials', '../../');
         }
 
-        // Auth check
-        if (window.Auth) {
-            const result = await window.Auth.requireAuth();
-            if (result && result.session && result.admin) {
-                window.AdminSidebar.renderAccountPanel(result.session, result.admin);
-            }
-        }
+        // Render account panel
+        const admin = await window.Auth.getCurrentAdmin();
+        await AdminSidebar.renderAccountPanel(session, admin);
 
         await loadCourses();
         await loadRecentUploads();
