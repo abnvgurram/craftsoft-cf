@@ -6,6 +6,7 @@
 (function () {
     'use strict';
 
+    let studentData = null;
     let allMaterials = [];
     const container = document.getElementById('materials-container');
     const loading = document.getElementById('materials-loading');
