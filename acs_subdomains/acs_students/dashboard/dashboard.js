@@ -148,7 +148,11 @@
         // 1. Render Header First (creates the container for account panel)
         const header = document.getElementById('header-container');
         if (header && window.StudentHeader) {
-            header.innerHTML = window.StudentHeader.render('Dashboard');
+            header.innerHTML = window.StudentHeader.render(
+                'Dashboard',
+                'Welcome back! Track your progress and updates',
+                'fa-chart-pie'
+            );
         }
 
         // 2. Init Sidebar and Account Panel

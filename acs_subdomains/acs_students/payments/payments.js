@@ -117,7 +117,11 @@
         // Render Header First
         const header = document.getElementById('header-container');
         if (header && window.StudentHeader) {
-            header.innerHTML = window.StudentHeader.render('Payments');
+            header.innerHTML = window.StudentHeader.render(
+                'Payments',
+                'Manage your fees and transaction history',
+                'fa-indian-rupee-sign'
+            );
         }
 
         if (window.StudentSidebar) {

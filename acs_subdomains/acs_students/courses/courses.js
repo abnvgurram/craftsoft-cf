@@ -1,66 +1,19 @@
 /* ============================================
-   My Courses Page Logic
-   Craft Soft - Student Module
+   My Courses Page Logic - Premium Overhaul
    ============================================ */
 
 (function () {
     'use strict';
 
-    // Dom Elements
-    const coursesList = document.getElementById('courses-list');
-    // Mobile Nav Managed by StudentSidebar
+    const tableBody = document.getElementById('courses-table-body');
+    const mobileGrid = document.getElementById('mobile-view');
+    const emptyContainer = document.getElementById('empty-state-container');
 
     let studentData = null;
 
-    // Modal Utility
-    const Modal = {
-        element: document.getElementById('modal-overlay'),
-        title: document.getElementById('modal-title'),
-        message: document.getElementById('modal-message'),
-        icon: document.getElementById('modal-icon'),
-        btnConfirm: document.getElementById('modal-confirm'),
-        btnCancel: document.getElementById('modal-cancel'),
-
-        show({ title, message, type = 'warning', confirmText = 'Confirm', onConfirm }) {
-            this.title.textContent = title;
-            this.message.textContent = message;
-            this.icon.className = `modal-icon ${type}`;
-            this.btnConfirm.textContent = confirmText;
-            this.element.style.display = 'flex';
-            document.body.classList.add('modal-open');
-
-            const close = () => {
-                this.element.style.display = 'none';
-                document.body.classList.remove('modal-open');
-            };
-
-            this.btnCancel.onclick = close;
-            this.btnConfirm.onclick = () => {
-                if (onConfirm) onConfirm();
-                close();
-            };
-        }
-    };
-
-    // Check Auth with security protections
     async function checkAuth() {
-        // History protection
-        history.pushState(null, '', location.href);
-        window.addEventListener('popstate', () => history.pushState(null, '', location.href));
-        document.addEventListener('visibilitychange', async () => {
-            if (document.visibilityState === 'visible') {
-                const token = localStorage.getItem('acs_student_token');
-                if (!token) { window.location.replace('../'); return; }
-                const { data } = await window.supabaseClient.from('student_sessions').select('id').eq('token', token).gt('expires_at', new Date().toISOString()).single();
-                if (!data) window.location.replace('../');
-            }
-        });
-
         const token = localStorage.getItem('acs_student_token');
-        if (!token) {
-            window.location.replace('../');
-            return;
-        }
+        if (!token) { window.location.replace('../'); return; }
 
         const { data: session, error } = await window.supabaseClient
             .from('student_sessions')
@@ -86,10 +39,13 @@
     }
 
     async function initPage() {
-        // Render Header First
         const header = document.getElementById('header-container');
         if (header && window.StudentHeader) {
-            header.innerHTML = window.StudentHeader.render('Courses');
+            header.innerHTML = window.StudentHeader.render(
+                'My Courses',
+                'View your enrolled learning programs',
+                'fa-book-open'
+            );
         }
 
         if (window.StudentSidebar) {
@@ -102,10 +58,9 @@
 
     async function loadCourses() {
         try {
-            // Get student profile with course discounts
             const { data: profile, error: pErr } = await window.supabaseClient
                 .from('students')
-                .select('courses, course_tutors, course_discounts')
+                .select('courses, course_tutors, course_discounts, joining_date')
                 .eq('id', studentData.id)
                 .single();
 
@@ -117,7 +72,6 @@
                 return;
             }
 
-            // Fetch course details
             const { data: courses, error: cErr } = await window.supabaseClient
                 .from('courses')
                 .select('course_code, course_name, fee')
@@ -125,7 +79,6 @@
 
             if (cErr) throw cErr;
 
-            // Fetch tutor names using tutor_id column (not UUID id)
             const tutorIds = Object.values(profile.course_tutors || {}).filter(Boolean);
             let tutorsMap = {};
 
@@ -140,116 +93,82 @@
                 }
             }
 
-            renderCourses(courses, profile.course_tutors || {}, tutorsMap, profile.course_discounts || {});
+            renderCourses(courses, profile.course_tutors || {}, tutorsMap, profile.course_discounts || {}, profile.joining_date);
 
         } catch (err) {
             console.error('Error loading courses:', err);
-            coursesList.innerHTML = '<p class="loading-state">Error loading courses.</p>';
+            emptyContainer.innerHTML = '<p class="loading-state">Error loading courses.</p>';
         }
     }
 
-    function renderCourses(courses, tutorAssignments, tutorsMap, courseDiscounts) {
-        coursesList.innerHTML = '';
+    function renderCourses(courses, tutorAssignments, tutorsMap, courseDiscounts, joiningDate) {
+        tableBody.innerHTML = '';
+        mobileGrid.innerHTML = '';
+
+        const formattedDate = joiningDate ? new Date(joiningDate).toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        }) : 'N/A';
 
         courses.forEach(c => {
             const tutorId = tutorAssignments[c.course_code];
             const tutorName = tutorId && tutorsMap[tutorId] ? tutorsMap[tutorId] : 'Not Assigned';
-
-            // Calculate discounted fee
             const baseFee = c.fee || 0;
             const discount = courseDiscounts[c.course_code] || 0;
             const finalFee = baseFee - discount;
+            const feeString = `₹${finalFee.toLocaleString('en-IN')}`;
 
+            // Desktop Row
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <span class="course-td-code">${c.course_code}</span>
+                    <span class="course-td-name">${c.course_name}</span>
+                </td>
+                <td>${tutorName}</td>
+                <td class="course-td-fee">${feeString}</td>
+                <td>${formattedDate}</td>
+            `;
+            tableBody.appendChild(row);
+
+            // Mobile Card
             const card = document.createElement('div');
-            card.className = 'course-card-full';
+            card.className = 'premium-course-card';
             card.innerHTML = `
-                <div class="course-header">
-                    <h3>${c.course_name}</h3>
-                    <span class="course-code">${c.course_code}</span>
-                </div>
-                <div class="course-body">
-                    <div class="course-detail">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                        <span>Tutor: <strong>${tutorName}</strong></span>
+                <div class="card-tag">${studentData.student_id}</div>
+                <h3 class="card-title">${c.course_name}</h3>
+                <div class="card-breakdown">
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">Tutor</span>
+                        <span class="breakdown-value">${tutorName}</span>
                     </div>
-                    <div class="course-detail">
-                        <i class="fas fa-indian-rupee-sign"></i>
-                        <span>Your Fee: <strong>₹${finalFee.toLocaleString('en-IN')}</strong></span>
-                        ${discount > 0 ? `<span class="discount-badge">-₹${discount.toLocaleString('en-IN')}</span>` : ''}
+                    <div class="breakdown-row">
+                        <span class="breakdown-label">Start Date</span>
+                        <span class="breakdown-value">${formattedDate}</span>
                     </div>
-                    <div class="course-status-badge">
-                        <i class="fas fa-check-circle"></i>
-                        Enrolled
+                    <hr class="breakdown-divider">
+                    <div class="breakdown-row breakdown-total">
+                        <span class="breakdown-label">Total Fee</span>
+                        <span class="breakdown-value">${feeString}</span>
                     </div>
                 </div>
             `;
-            coursesList.appendChild(card);
+            mobileGrid.appendChild(card);
         });
     }
 
     function renderEmptyState() {
-        coursesList.innerHTML = `
+        emptyContainer.innerHTML = `
             <div class="empty-courses">
                 <i class="fas fa-book-open"></i>
                 <h3>No Courses Enrolled</h3>
-                <p>You are not enrolled in any courses yet. Please contact the office.</p>
+                <p>You are not enrolled in any courses yet.</p>
             </div>
         `;
+        document.getElementById('desktop-view').style.display = 'none';
+        document.getElementById('mobile-view').style.display = 'none';
     }
-
-    // Account Dropdown Toggle (Legacy - only if elements exist)
-    const accountTrigger = document.getElementById('account-trigger');
-    const accountDropdown = document.getElementById('account-dropdown');
-    const accountBackdrop = document.getElementById('account-backdrop');
-
-    if (accountTrigger && accountDropdown) {
-        accountTrigger.addEventListener('click', () => {
-            const isOpen = accountDropdown.classList.toggle('open');
-            accountTrigger.classList.toggle('open');
-            if (accountBackdrop) accountBackdrop.classList.toggle('open', isOpen);
-        });
-
-        if (accountBackdrop) {
-            accountBackdrop.addEventListener('click', () => {
-                accountDropdown.classList.remove('open');
-                accountTrigger.classList.remove('open');
-                accountBackdrop.classList.remove('open');
-            });
-        }
-
-        document.addEventListener('click', (e) => {
-            if (!accountTrigger.contains(e.target) && !accountDropdown.contains(e.target)) {
-                accountDropdown.classList.remove('open');
-                accountTrigger.classList.remove('open');
-                if (accountBackdrop) accountBackdrop.classList.remove('open');
-            }
-        });
-    }
-
-
-    // Mobile Nav handled by StudentSidebar
-
-    // Logout
-    window.handleLogout = function () {
-        if (window.StudentSidebar && window.StudentSidebar.closeMobileNav) {
-            window.StudentSidebar.closeMobileNav();
-        }
-
-        Modal.show({
-            title: "Logout?",
-            message: "Are you sure you want to end your session?",
-            type: "warning",
-            confirmText: "Logout",
-            onConfirm: async () => {
-                const token = localStorage.getItem('acs_student_token');
-                if (token) {
-                    await window.supabaseClient.from('student_sessions').delete().eq('token', token);
-                    localStorage.removeItem('acs_student_token');
-                }
-                window.location.replace('../');
-            }
-        });
-    };
 
     checkAuth();
 })();

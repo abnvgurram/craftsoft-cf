@@ -209,8 +209,26 @@ const StudentSidebar = {
                 </button>
                 
                 <div class="account-dropdown" id="account-dropdown">
-                    <div class="account-dropdown-footer">
-                        <button class="account-logout-btn" id="header-logout-btn">
+                    <div class="account-dropdown-header">
+                        <span class="dropdown-header-title">Manage Account</span>
+                    </div>
+                    
+                    <div class="account-list">
+                        <div class="account-item current">
+                            <div class="account-item-avatar">${initials}</div>
+                            <div class="account-item-details">
+                                <span class="account-item-name">${studentData.name}</span>
+                                <span class="account-item-email">${studentData.email || 'N/A'}</span>
+                                <span class="account-item-id">${studentData.student_id}</span>
+                            </div>
+                            <div class="account-current-badge">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="account-actions">
+                        <button class="account-action-btn logout-all" id="header-logout-btn">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <span>Sign Out</span>
                         </button>
@@ -247,22 +265,24 @@ const StudentSidebar = {
 };
 
 const StudentHeader = {
-    render(title) {
+    render(title, subtitle = 'Student Portal', icon = 'fa-user-graduate') {
         return `
             <div class="header-left">
                 <button id="mobile-menu-btn" class="mobile-menu-btn">
                     <i class="fa-solid fa-bars-staggered"></i>
                 </button>
-                <div class="page-title">
-                    <h1>${title}</h1>
+                <div class="header-title-group">
+                    <div class="header-icon-box">
+                        <i class="fa-solid ${icon}"></i>
+                    </div>
+                    <div class="header-text-info">
+                        <h1 class="page-main-title">${title}</h1>
+                        <p class="page-subtitle">${subtitle}</p>
+                    </div>
                 </div>
             </div>
             
             <div class="header-right">
-                <div class="header-student-badge desktop-only">
-                    <i class="fa-solid fa-user-graduate"></i>
-                    <span>Student Portal</span>
-                </div>
                 <div id="header-account-container" class="header-account-container"></div>
             </div>
         `;

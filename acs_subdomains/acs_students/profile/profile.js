@@ -30,10 +30,14 @@
     }
 
     async function initPage() {
-        // Render Header First
+        // Render Header
         const header = document.getElementById('header-container');
         if (header && window.StudentHeader) {
-            header.innerHTML = window.StudentHeader.render('My Profile');
+            header.innerHTML = window.StudentHeader.render(
+                'My Profile',
+                'Manage your official student record',
+                'fa-id-badge'
+            );
         }
 
         if (window.StudentSidebar) {

@@ -6,14 +6,51 @@
 (function () {
     'use strict';
 
-    // Initialize sidebar and header
-    if (window.StudentSidebar) {
-        window.StudentSidebar.init('materials');
+    let studentData = null;
+
+    async function checkAuth() {
+        const token = localStorage.getItem('acs_student_token');
+        if (!token) { window.location.replace('../'); return; }
+
+        const { data: session, error } = await window.supabaseClient
+            .from('student_sessions')
+            .select('*')
+            .eq('token', token)
+            .gt('expires_at', new Date().toISOString())
+            .single();
+
+        if (error || !session) {
+            window.location.replace('../');
+            return;
+        }
+
+        const metadata = session.metadata;
+        studentData = {
+            id: session.student_db_id,
+            name: metadata.name,
+            student_id: metadata.student_id,
+            email: metadata.email,
+            phone: metadata.phone
+        };
+        initPage();
     }
 
-    const header = document.getElementById('header-container');
-    if (header && window.StudentHeader) {
-        header.innerHTML = window.StudentHeader.render('Materials');
+    function initPage() {
+        // Render Header
+        const header = document.getElementById('header-container');
+        if (header && window.StudentHeader) {
+            header.innerHTML = window.StudentHeader.render(
+                'Study Materials',
+                'Access notes and learning resources',
+                'fa-book-skull'
+            );
+        }
+
+        // Init Sidebar
+        if (window.StudentSidebar) {
+            window.StudentSidebar.init('materials');
+            window.StudentSidebar.renderAccountPanel(studentData);
+        }
     }
 
     // Logout handler
@@ -22,7 +59,6 @@
             window.StudentSidebar.closeMobileNav();
         }
 
-        // Terminate custom session
         const token = localStorage.getItem('acs_student_token');
         if (token) {
             window.supabaseClient.from('student_sessions').delete().eq('token', token).then(() => {
@@ -34,4 +70,5 @@
         }
     };
 
+    checkAuth();
 })();

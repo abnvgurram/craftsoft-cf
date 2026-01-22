@@ -46,95 +46,9 @@
     <link rel="icon" type="image/svg+xml" href="https://craftsoft.co.in/favicon.svg">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="../dashboard/dashboard.css?v=5.0">
+    <link rel="stylesheet" href="../dashboard/dashboard.css?v=6.0">
     <link rel="stylesheet" href="../assets/css/student-sidebar.css?v=6.0">
-    <style>
-        .profile-workspace {
-            padding: 2rem;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .profile-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .info-card {
-            background: #fff;
-            padding: 1.5rem;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-            transition: transform 0.3s ease;
-        }
-
-        .info-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(40, 150, 205, 0.15);
-        }
-
-        .info-icon {
-            width: 48px;
-            height: 48px;
-            background: #f0f7fb;
-            color: #2896cd;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .info-content {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .info-label {
-            font-size: 0.75rem;
-            color: #64748b;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-value {
-            font-size: 1.05rem;
-            color: #0f172a;
-            font-weight: 700;
-        }
-
-        .profile-header {
-            margin-bottom: 2rem;
-        }
-
-        .profile-header h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
-            color: #0f172a;
-            font-weight: 700;
-        }
-
-        .profile-header p {
-            color: #64748b;
-            font-size: 0.95rem;
-            margin-top: 4px;
-        }
-
-        @media (max-width: 768px) {
-            .profile-workspace {
-                padding: 1rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="profile.css?v=6.0">
 </head>
 
 <body class="app-container">
@@ -142,41 +56,41 @@
         <header class="top-bar" id="header-container"></header>
 
         <div class="profile-workspace animate-up">
-            <div class="profile-header">
-                <h1>My Profile</h1>
-                <p>Your official details as recorded in our system.</p>
-            </div>
+            <!-- Profile Info Section -->
+            <section class="profile-section">
+                <div class="profile-section-header">
+                    <div class="section-icon"><i class="fa-solid fa-user"></i></div>
+                    <h2 class="section-title">Profile Information</h2>
+                </div>
+                <div class="profile-rows">
+                    <div class="profile-row">
+                        <span class="row-label">Full Name</span>
+                        <span id="p-name" class="row-value">Loading...</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="row-label">Email Address</span>
+                        <span id="p-email" class="row-value">Loading...</span>
+                    </div>
+                    <div class="profile-row">
+                        <span class="row-label">Student ID</span>
+                        <span id="p-id" class="row-value">Loading...</span>
+                    </div>
+                </div>
+            </section>
 
-            <div class="profile-grid">
-                <div class="info-card">
-                    <div class="info-icon"><i class="fa-solid fa-user"></i></div>
-                    <div class="info-content">
-                        <span class="info-label">Full Name</span>
-                        <span id="p-name" class="info-value">Loading...</span>
+            <!-- Contact Details Section -->
+            <section class="profile-section">
+                <div class="profile-section-header">
+                    <div class="section-icon"><i class="fa-solid fa-phone"></i></div>
+                    <h2 class="section-title">Contact Details</h2>
+                </div>
+                <div class="profile-rows">
+                    <div class="profile-row">
+                        <span class="row-label">Phone Number</span>
+                        <span id="p-phone" class="row-value">Loading...</span>
                     </div>
                 </div>
-                <div class="info-card">
-                    <div class="info-icon"><i class="fa-solid fa-id-badge"></i></div>
-                    <div class="info-content">
-                        <span class="info-label">Student ID</span>
-                        <span id="p-id" class="info-value">Loading...</span>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
-                    <div class="info-content">
-                        <span class="info-label">Email Address</span>
-                        <span id="p-email" class="info-value">Loading...</span>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
-                    <div class="info-content">
-                        <span class="info-label">Phone Number</span>
-                        <span id="p-phone" class="info-value">Loading...</span>
-                    </div>
-                </div>
-            </div>
+            </section>
         </div>
     </main>
 
