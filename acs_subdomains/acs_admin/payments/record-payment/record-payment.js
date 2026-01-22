@@ -434,13 +434,17 @@ async function createReceipt(payment) {
 
         await window.supabaseClient.from('receipts').insert(receiptPayload);
 
-        // Record Activity
-        await window.supabaseClient.from('activities').insert({
-            activity_type: 'fee_recorded',
-            activity_name: entityName,
-            activity_link: '/admin/payments/receipts/',
-            activity_time: new Date().toISOString()
-        });
+        // Record Activity (optional - won't break if activities table doesn't exist)
+        try {
+            await window.supabaseClient.from('activities').insert({
+                activity_type: 'fee_recorded',
+                activity_name: entityName,
+                activity_link: '/admin/payments/receipts/',
+                activity_time: new Date().toISOString()
+            });
+        } catch (activityErr) {
+            console.warn('Activity logging skipped:', activityErr.message);
+        }
     } catch (err) {
         console.error('Receipt error:', err);
     }

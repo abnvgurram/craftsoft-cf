@@ -1043,21 +1043,22 @@ async function confirmDelete() {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
 
     try {
+        // DEACTIVATE: Move to Archived (set status to INACTIVE, NOT deleted_at)
         const { error } = await window.supabaseClient
             .from('clients')
             .update({
-                deleted_at: new Date().toISOString()
+                status: 'INACTIVE'
             })
             .eq('id', deleteTargetId);
 
         if (error) throw error;
 
-        Toast.success('Deleted', 'Client moved to Recovery Center');
+        Toast.success('Deactivated', 'Client moved to Archived');
         hideDeleteConfirm();
         await loadClients();
     } catch (e) {
-        console.error('Delete failed:', e);
-        Toast.error('Error', 'Failed to delete client');
+        console.error('Deactivate failed:', e);
+        Toast.error('Error', 'Failed to deactivate client');
     } finally {
         btn.disabled = false;
         btn.innerHTML = 'Delete';

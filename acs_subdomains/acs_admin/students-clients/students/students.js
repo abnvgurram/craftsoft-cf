@@ -1331,13 +1331,13 @@ async function confirmDelete() {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
     try {
-        console.log('Soft-deleting student with id:', deleteTargetId);
+        console.log('Deactivating student with id:', deleteTargetId);
 
-        // SOFT DELETE: Move to Recovery Center
+        // DEACTIVATE: Move to Archived (set status to INACTIVE, NOT deleted_at)
         const { error: studentError } = await window.supabaseClient
             .from('students')
             .update({
-                deleted_at: new Date().toISOString()
+                status: 'INACTIVE'
             })
             .eq('id', deleteTargetId);
 
@@ -1346,7 +1346,7 @@ async function confirmDelete() {
             throw studentError;
         }
 
-        Toast.success('Deleted', 'Student moved to Recovery Center.');
+        Toast.success('Deactivated', 'Student moved to Archived.');
         hideDeleteConfirm();
         await loadStudents();
     } catch (e) {
