@@ -93,7 +93,7 @@
                 }
             }
 
-            const officialJoinDate = profile.date_of_joining || profile.joining_date || profile.created_at;
+            const officialJoinDate = profile.joining_date || profile.created_at;
             renderCourses(courses, profile.course_tutors || {}, tutorsMap, profile.course_discounts || {}, officialJoinDate);
 
         } catch (err) {
