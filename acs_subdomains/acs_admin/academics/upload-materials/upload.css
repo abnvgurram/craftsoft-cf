@@ -3,79 +3,125 @@
    ============================================ */
 
 .upload-workspace {
-    padding: 2rem;
-    max-width: 900px;
+    padding: 0;
+    width: 100%;
+}
+
+/* Page Header (Match Record Payment) */
+.workspace-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+    padding: 0 0.5rem;
+}
+
+.workspace-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--admin-text-primary);
+    margin: 0;
+}
+
+.workspace-subtitle {
+    font-size: 0.95rem;
+    color: var(--admin-text-muted);
+    margin: 0.25rem 0 0;
+}
+
+.upload-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
 }
 
 .upload-section {
-    background: var(--admin-card-bg-solid, #fff);
+    background: #fff;
+    border: 1px solid var(--admin-input-border);
     border-radius: 20px;
-    border: 1px solid var(--admin-card-border, rgba(0, 0, 0, 0.05));
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    margin-bottom: 0;
+    /* Handled by .upload-cards gap */
+}
+
+.upload-section:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
 }
 
 .section-header {
-    background: rgba(248, 250, 252, 0.5);
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary-500);
+    margin-bottom: 1.75rem;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.6rem;
+    opacity: 0.8;
+    background: transparent;
+    /* Remove previous bg */
+    border: none;
+    padding: 0;
 }
 
 .section-icon {
-    width: 40px;
-    height: 40px;
-    background: rgba(40, 150, 205, 0.1);
-    color: var(--primary-600, #2896cd);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: auto;
+    height: auto;
+    background: transparent;
+    color: inherit;
+    border-radius: 0;
+    display: inline;
     font-size: 1rem;
 }
 
 .section-title {
     font-family: 'Outfit', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--admin-text-primary, #1e293b);
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
     margin: 0;
+    text-transform: uppercase;
 }
 
 .section-body {
-    padding: 1.5rem;
+    padding: 0;
 }
 
-.form-select {
+.form-select,
+.form-input {
     width: 100%;
-    padding: 0.875rem 1rem;
-    font-size: 0.95rem;
-    border: 1.5px solid var(--admin-card-border, #e2e8f0);
+    padding: 0.85rem 1.25rem;
+    border: 1.5px solid var(--admin-input-border);
     border-radius: 12px;
-    background: #fff;
-    color: var(--admin-text-primary, #1e293b);
-    transition: all 0.2s;
-    cursor: pointer;
+    font-size: 1rem;
+    background: var(--admin-input-bg);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--admin-text-primary);
 }
 
-.form-select:focus {
+.form-select:focus,
+.form-input:focus {
     outline: none;
-    border-color: var(--primary-600, #2896cd);
-    box-shadow: 0 0 0 3px rgba(40, 150, 205, 0.1);
+    border-color: var(--primary-500);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(40, 150, 205, 0.1);
 }
 
 .form-select:disabled {
-    background: #f8fafc;
+    background: var(--admin-input-bg);
     cursor: not-allowed;
     opacity: 0.7;
 }
 
 .form-hint {
-    font-size: 0.8rem;
-    color: var(--admin-text-secondary, #64748b);
+    font-size: 0.85rem;
+    color: var(--admin-text-muted);
     margin-top: 0.75rem;
     margin-bottom: 0;
 }
@@ -86,20 +132,20 @@
     border-radius: 16px;
     padding: 3rem 2rem;
     text-align: center;
-    background: rgba(40, 150, 205, 0.03);
+    background: var(--admin-input-bg);
     cursor: pointer;
     transition: all 0.3s;
 }
 
 .dropzone:hover,
 .dropzone.dragover {
-    border-color: var(--primary-600, #2896cd);
-    background: rgba(40, 150, 205, 0.08);
+    border-color: var(--primary-500);
+    background: rgba(40, 150, 205, 0.05);
 }
 
 .dropzone-icon {
     font-size: 3rem;
-    color: var(--primary-600, #2896cd);
+    color: var(--primary-500);
     margin-bottom: 1rem;
     opacity: 0.7;
 }
@@ -107,13 +153,13 @@
 .dropzone-text {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--admin-text-primary, #1e293b);
+    color: var(--admin-text-primary);
     margin-bottom: 0.5rem;
 }
 
 .dropzone-subtext {
     font-size: 0.85rem;
-    color: var(--admin-text-secondary, #64748b);
+    color: var(--admin-text-muted);
 }
 
 .file-input {
@@ -132,22 +178,22 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 0.875rem 1rem;
-    background: #f8fafc;
+    padding: 1rem;
+    background: var(--admin-input-bg);
     border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--admin-input-border);
 }
 
 .file-preview-icon {
     width: 40px;
     height: 40px;
     background: rgba(40, 150, 205, 0.1);
-    color: var(--primary-600, #2896cd);
+    color: var(--primary-600);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 1.1rem;
 }
 
 .file-preview-info {
@@ -155,15 +201,14 @@
 }
 
 .file-preview-name {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    color: var(--admin-text-primary, #1e293b);
-    word-break: break-word;
+    color: var(--admin-text-primary);
 }
 
 .file-preview-size {
-    font-size: 0.75rem;
-    color: var(--admin-text-secondary, #64748b);
+    font-size: 0.8rem;
+    color: var(--admin-text-muted);
 }
 
 .file-preview-remove {
@@ -187,91 +232,95 @@
 
 /* Upload Actions */
 .upload-actions {
-    margin-bottom: 2rem;
+    margin-top: 1rem;
 }
 
-.btn-lg {
-    padding: 1rem 2rem;
-    font-size: 1rem;
+.btn-block {
+    width: 100%;
 }
 
-.btn-lg i {
-    font-size: 1.1rem;
+/* Animation Utils */
+.animate-up {
+    animation: slideUpFade 0.6s ease-out both;
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Recent Uploads Table */
 .recent-uploads-section .section-body {
-    padding: 0;
+    overflow-x: auto;
 }
 
 .recent-table {
     width: 100%;
-    border-collapse: collapse;
-}
-
-.recent-table th,
-.recent-table td {
-    padding: 1rem 1.5rem;
-    text-align: left;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.recent-table thead {
-    background: rgba(248, 250, 252, 0.5);
+    margin-top: 0.5rem;
 }
 
 .recent-table th {
-    font-size: 0.7rem;
+    padding: 1rem;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--admin-text-secondary, #64748b);
+    color: var(--admin-text-muted);
+    border-bottom: 2px solid var(--admin-input-border);
+    text-align: left;
 }
 
 .recent-table td {
-    font-size: 0.9rem;
-    color: var(--admin-text-primary, #1e293b);
+    padding: 1.125rem 1rem;
+    font-size: 0.95rem;
+    border-bottom: 1px solid var(--admin-input-border);
+    color: var(--admin-text-primary);
 }
 
 .recent-table tr:last-child td {
     border-bottom: none;
 }
 
-.recent-table tr:hover {
-    background: rgba(248, 250, 252, 0.5);
-}
-
 .file-link {
-    color: var(--primary-600, #2896cd);
+    color: var(--primary-600);
     text-decoration: none;
     font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .file-link:hover {
+    color: var(--primary-700);
     text-decoration: underline;
 }
 
-.text-muted {
-    color: var(--admin-text-secondary, #64748b);
-    padding: 2rem;
-    text-align: center;
+/* Searchable Select Fixes */
+.searchable-select-container {
+    margin-bottom: 0;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .upload-workspace {
-        padding: 1.5rem 1rem;
+    .workspace-header {
+        margin-bottom: 1.5rem;
     }
 
-    .section-body {
-        padding: 1.25rem;
+    .workspace-title {
+        font-size: 1.5rem;
+    }
+
+    .upload-section {
+        padding: 1.5rem;
     }
 
     .dropzone {
         padding: 2rem 1rem;
-    }
-
-    .dropzone-icon {
-        font-size: 2rem;
     }
 }

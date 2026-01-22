@@ -61,11 +61,25 @@
 
 <body>
     <div class="admin-layout">
-        <main class="admin-main">
-            <div id="page-header"></div>
+        <!-- Sidebar injected by JS -->
 
-            <div class="page-content">
-                <div class="upload-workspace">
+        <main class="admin-main">
+            <!-- Header injected by JS -->
+            <div id="header-container"></div>
+
+            <div class="upload-workspace animate-up">
+                <!-- Workspace Header -->
+                <div class="workspace-header">
+                    <div class="section-icon">
+                        <i class="fa-solid fa-upload"></i>
+                    </div>
+                    <div class="section-info">
+                        <h2 class="workspace-title">Upload Materials</h2>
+                        <p class="workspace-subtitle">Share study materials with your students</p>
+                    </div>
+                </div>
+
+                <div class="upload-cards">
                     <!-- Step 1: Select Course -->
                     <section class="upload-section">
                         <div class="section-header">
@@ -114,7 +128,7 @@
 
                     <!-- Upload Action -->
                     <div class="upload-actions">
-                        <button id="upload-btn" class="btn btn-primary btn-lg" disabled>
+                        <button id="upload-btn" class="btn btn-primary btn-lg btn-block" disabled>
                             <i class="fa-solid fa-cloud-arrow-up"></i>
                             <span>Upload Materials</span>
                         </button>
@@ -146,7 +160,9 @@
     <script src="/assets/admin/js/admin-utils.js"></script>
     <script src="/assets/admin/js/auth.js"></script>
     <script src="/assets/admin/js/sidebar.js"></script>
-    <script src="upload.js?v=1.0"></script>
+    <script src="/assets/admin/js/spotlight.js"></script>
+    <script src="/assets/admin/js/notifications.js"></script>
+    <script src="upload.js?v=1.1"></script>
 </body>
 
 </html>

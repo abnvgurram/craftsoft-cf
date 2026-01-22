@@ -58,27 +58,45 @@
 
 <body>
     <div class="admin-layout">
-        <main class="admin-main">
-            <div id="page-header"></div>
+        <!-- Sidebar injected by JS -->
 
-            <div class="page-content">
-                <div style="padding: 3rem; text-align: center; max-width: 600px; margin: 0 auto;">
-                    <div style="font-size: 4rem; color: #2896cd; margin-bottom: 1.5rem;">
+        <main class="admin-main">
+            <!-- Header injected by JS -->
+            <div id="header-container"></div>
+
+            <div class="upload-workspace animate-up">
+                <!-- Workspace Header -->
+                <div class="workspace-header">
+                    <div class="section-icon">
                         <i class="fa-solid fa-explosion"></i>
                     </div>
-                    <h2
-                        style="font-family: 'Outfit', sans-serif; font-size: 1.75rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem;">
-                        Assignments Module
-                    </h2>
-                    <p style="color: #64748b; font-size: 1rem; line-height: 1.6; margin-bottom: 2rem;">
-                        This module is under development. Soon you'll be able to create assignments, set deadlines, and
-                        track student submissions here.
-                    </p>
-                    <a href="../upload-materials/"
-                        style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; background: #2896cd; color: #fff; border-radius: 12px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
-                        <i class="fa-solid fa-upload"></i>
-                        <span>Upload Materials Instead</span>
-                    </a>
+                    <div class="section-info">
+                        <h2 class="workspace-title">Assignments</h2>
+                        <p class="workspace-subtitle">Manage student assignments and submissions</p>
+                    </div>
+                </div>
+
+                <div class="page-content" style="padding-top: 2rem;">
+                    <div
+                        style="padding: 4rem 2rem; text-align: center; max-width: 800px; margin: 0 auto; background: #fff; border-radius: 20px; border: 1px solid var(--admin-input-border); box-shadow: 0 10px 30px rgba(0,0,0,0.04);">
+                        <div style="font-size: 5rem; color: var(--primary-500); margin-bottom: 2rem;">
+                            <i class="fa-solid fa-rocket"></i>
+                        </div>
+                        <h2
+                            style="font-family: 'Outfit', sans-serif; font-size: 2.25rem; font-weight: 800; color: var(--admin-text-primary); margin-bottom: 1.5rem;">
+                            Module Under Construction
+                        </h2>
+                        <p
+                            style="color: var(--admin-text-muted); font-size: 1.15rem; line-height: 1.8; margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                            We're currently building a powerful assignment management system. Soon you'll be able to
+                            create tasks, set deadlines, and track student progress seamlessly.
+                        </p>
+                        <a href="../upload-materials/" class="btn btn-primary btn-lg"
+                            style="display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 2.5rem; font-weight: 700;">
+                            <i class="fa-solid fa-upload"></i>
+                            <span>Upload Materials Instead</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </main>
@@ -90,6 +108,8 @@
     <script src="/assets/admin/js/admin-utils.js"></script>
     <script src="/assets/admin/js/auth.js"></script>
     <script src="/assets/admin/js/sidebar.js"></script>
+    <script src="/assets/admin/js/spotlight.js"></script>
+    <script src="/assets/admin/js/notifications.js"></script>
     <script>
         (async function () {
             // Auth check first
@@ -100,9 +120,9 @@
             }
 
             // Render Header & Sidebar
-            const header = document.getElementById('page-header');
-            if (header && window.AdminHeader) {
-                header.innerHTML = window.AdminHeader.render('Assignments');
+            const headerContainer = document.getElementById('header-container');
+            if (headerContainer && window.AdminHeader) {
+                headerContainer.innerHTML = window.AdminHeader.render('Assignments');
             }
 
             if (window.AdminSidebar) {

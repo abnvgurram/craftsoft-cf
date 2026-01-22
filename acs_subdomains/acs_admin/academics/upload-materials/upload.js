@@ -8,6 +8,8 @@
     let allCourses = [];
     let allStudents = [];
     let selectedFiles = [];
+    let courseSearchableSelect = null;
+    let studentSearchableSelect = null;
 
     // DOM Elements
     const courseSelect = document.getElementById('course-select');
@@ -29,9 +31,9 @@
         }
 
         // Render Header & Sidebar
-        const header = document.getElementById('page-header');
-        if (header && window.AdminHeader) {
-            header.innerHTML = window.AdminHeader.render('Upload Materials');
+        const headerContainer = document.getElementById('header-container');
+        if (headerContainer && window.AdminHeader) {
+            headerContainer.innerHTML = window.AdminHeader.render('Upload Materials');
         }
 
         if (window.AdminSidebar) {
@@ -60,6 +62,15 @@
             allCourses = data || [];
             courseSelect.innerHTML = '<option value="">-- Select a Course --</option>' +
                 allCourses.map(c => `<option value="${c.course_code}">${c.course_code} - ${c.course_name}</option>`).join('');
+
+            // Initialize SearchableSelect
+            if (!courseSearchableSelect && window.AdminUtils.SearchableSelect) {
+                courseSearchableSelect = new window.AdminUtils.SearchableSelect('course-select', {
+                    placeholder: 'Search for a course...'
+                });
+            } else if (courseSearchableSelect) {
+                courseSearchableSelect.syncWithOptions();
+            }
         } catch (err) {
             console.error('Error loading courses:', err);
             showToast('error', 'Failed to load courses');
@@ -69,6 +80,7 @@
     async function loadStudentsForCourse(courseCode) {
         studentSelect.disabled = true;
         studentSelect.innerHTML = '<option value="">Loading...</option>';
+        if (studentSearchableSelect) studentSearchableSelect.syncWithOptions();
 
         try {
             const { data, error } = await window.supabaseClient
@@ -84,13 +96,21 @@
             allStudents = data || [];
 
             if (allStudents.length === 0) {
-                studentSelect.innerHTML = '<option value="">No students enrolled in this course</option>';
-                studentHint.textContent = 'No students found. Enroll students first.';
+                studentSelect.innerHTML = '<option value="">No students enrolled</option>';
             } else {
                 studentSelect.innerHTML = '<option value="">-- Select a Student --</option>' +
                     allStudents.map(s => `<option value="${s.id}">${s.student_id} - ${s.first_name} ${s.last_name}</option>`).join('');
                 studentHint.textContent = `${allStudents.length} student(s) enrolled in this course.`;
                 studentSelect.disabled = false;
+            }
+
+            // Sync SearchableSelect
+            if (!studentSearchableSelect && window.AdminUtils.SearchableSelect) {
+                studentSearchableSelect = new window.AdminUtils.SearchableSelect('student-select', {
+                    placeholder: 'Search for a student...'
+                });
+            } else if (studentSearchableSelect) {
+                studentSearchableSelect.syncWithOptions();
             }
         } catch (err) {
             console.error('Error loading students:', err);
@@ -153,6 +173,10 @@
                 studentSelect.innerHTML = '<option value="">-- Select a Course First --</option>';
                 studentHint.textContent = 'Students enrolled in the selected course will appear here.';
                 allStudents = [];
+                if (studentSearchableSelect) {
+                    studentSearchableSelect.updateTriggerText('-- Select a Course First --');
+                    studentSearchableSelect.syncWithOptions();
+                }
             }
             validateForm();
         });
