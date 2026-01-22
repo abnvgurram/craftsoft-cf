@@ -26,12 +26,21 @@
     // Check if admin is logged in
     async function checkAdminAuth() {
         try {
+            // Wait for supabase to be ready
+            if (!window.supabaseConfig || !window.supabaseClient) {
+                console.error('Supabase not initialized');
+                showToast('System not ready. Please refresh.', 'error');
+                return false;
+            }
+
             const session = await window.supabaseConfig.getSession();
+            console.log('Session check:', session ? 'Found' : 'Not found');
+
             if (!session) {
-                showToast('Admin authentication required', 'error');
+                showToast('Please login to admin panel first', 'error');
                 setTimeout(() => {
                     window.location.href = '/'; // Redirect to admin login
-                }, 1500);
+                }, 2000);
                 return false;
             }
 
@@ -40,19 +49,44 @@
                 .from('admins')
                 .select('id, full_name, status')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle(); // Use maybeSingle to avoid error when not found
 
-            if (error || !admin || admin.status !== 'ACTIVE') {
-                showToast('Not authorized as admin', 'error');
+            console.log('Admin check:', admin, error);
+
+            if (error) {
+                console.error('Admin lookup error:', error);
+                showToast('Admin verification failed', 'error');
                 setTimeout(() => {
                     window.location.href = '../';
-                }, 1500);
+                }, 2000);
                 return false;
             }
 
+            if (!admin) {
+                showToast('You are not registered as an admin', 'error');
+                setTimeout(() => {
+                    window.location.href = '../';
+                }, 2000);
+                return false;
+            }
+
+            if (admin.status !== 'ACTIVE') {
+                showToast('Your admin account is not active', 'error');
+                setTimeout(() => {
+                    window.location.href = '../';
+                }, 2000);
+                return false;
+            }
+
+            console.log('Admin authenticated:', admin.full_name);
             return true;
+
         } catch (e) {
             console.error('Auth check failed:', e);
+            showToast('Authentication error. Please try again.', 'error');
+            setTimeout(() => {
+                window.location.href = '../';
+            }, 2000);
             return false;
         }
     }
