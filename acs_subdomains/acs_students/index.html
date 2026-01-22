@@ -43,7 +43,7 @@
                 <div id="login-step-1" class="login-step">
                     <div class="header">
                         <h2>Welcome back</h2>
-                        <p id="login-subtitle">Sign in to your account</p>
+                        <p>Sign in to your account</p>
                     </div>
 
                     <form id="loginForm">
@@ -228,12 +228,6 @@
                 <i class="fas fa-shield-alt"></i>
                 <span>ISO 9001:2015 Certified Portal</span>
             </div>
-
-            <!-- Admin Testing Link (Desktop/Tablet only) -->
-            <a href="./testing/" class="admin-test-link">
-                <i class="fas fa-user-shield"></i>
-                <span>Admin Testing Mode</span>
-            </a>
         </div>
     </div>
 
@@ -263,31 +257,6 @@
     <script src="/assets/admin/js/supabase-config.js?v=5.0"></script>
     <script src="/assets/components/logo-signature/logo-signature.js"></script>
     <script src="/login.js?v=5.0"></script>
-    <script>
-        // Triple-tap detection for admin mode on mobile
-        (function () {
-            let tapCount = 0;
-            let tapTimer = null;
-            const subtitle = document.getElementById('login-subtitle');
-
-            if (subtitle) {
-                subtitle.addEventListener('click', function () {
-                    tapCount++;
-
-                    if (tapTimer) clearTimeout(tapTimer);
-
-                    tapTimer = setTimeout(() => {
-                        tapCount = 0;
-                    }, 500);
-
-                    if (tapCount >= 3) {
-                        tapCount = 0;
-                        window.location.href = './testing/';
-                    }
-                });
-            }
-        })();
-    </script>
 </body>
 
 </html>
