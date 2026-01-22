@@ -1249,9 +1249,6 @@ async function saveStudent() {
             const { Activity } = window.AdminUtils;
             if (Activity) {
                 await Activity.add('student_added', `${fname} ${lname}`, '../students/');
-                if (demoScheduled) {
-                    await Activity.add('demo_scheduled', `${fname} ${lname}`, '../students/');
-                }
             }
 
             // Update inquiry status if converting

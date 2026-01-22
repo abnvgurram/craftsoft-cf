@@ -112,3 +112,16 @@ BEGIN
         ALTER TABLE students ADD COLUMN deleted_at TIMESTAMPTZ DEFAULT NULL;
     END IF;
 END $$;
+
+-- ============================================
+-- MIGRATION: Add course_metadata column if missing
+-- ============================================
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'students' AND column_name = 'course_metadata'
+    ) THEN
+        ALTER TABLE students ADD COLUMN course_metadata JSONB DEFAULT '{}';
+    END IF;
+END $$;
