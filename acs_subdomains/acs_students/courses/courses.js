@@ -173,7 +173,9 @@
         `;
     }
 
-    // Account Dropdown Toggle with Backdrop
+    // Account Dropdown Toggle (Legacy - only if elements exist)
+    const accountTrigger = document.getElementById('account-trigger');
+    const accountDropdown = document.getElementById('account-dropdown');
     const accountBackdrop = document.getElementById('account-backdrop');
 
     if (accountTrigger && accountDropdown) {
@@ -183,7 +185,6 @@
             if (accountBackdrop) accountBackdrop.classList.toggle('open', isOpen);
         });
 
-        // Close on backdrop click
         if (accountBackdrop) {
             accountBackdrop.addEventListener('click', () => {
                 accountDropdown.classList.remove('open');
@@ -192,7 +193,6 @@
             });
         }
 
-        // Close on outside click
         document.addEventListener('click', (e) => {
             if (!accountTrigger.contains(e.target) && !accountDropdown.contains(e.target)) {
                 accountDropdown.classList.remove('open');

@@ -168,7 +168,9 @@
         });
     }
 
-    // Account Dropdown Toggle with Backdrop
+    // Account Dropdown Toggle (Legacy - only if elements exist)
+    const accountTrigger = document.getElementById('account-trigger');
+    const accountDropdown = document.getElementById('account-dropdown');
     const accountBackdrop = document.getElementById('account-backdrop');
 
     if (accountTrigger && accountDropdown) {
