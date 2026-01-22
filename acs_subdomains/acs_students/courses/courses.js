@@ -60,7 +60,7 @@
         try {
             const { data: profile, error: pErr } = await window.supabaseClient
                 .from('students')
-                .select('courses, course_tutors, course_discounts, joining_date')
+                .select('courses, course_tutors, course_discounts, joining_date, date_of_joining, created_at')
                 .eq('id', studentData.id)
                 .single();
 
@@ -93,7 +93,8 @@
                 }
             }
 
-            renderCourses(courses, profile.course_tutors || {}, tutorsMap, profile.course_discounts || {}, profile.joining_date);
+            const officialJoinDate = profile.date_of_joining || profile.joining_date || profile.created_at;
+            renderCourses(courses, profile.course_tutors || {}, tutorsMap, profile.course_discounts || {}, officialJoinDate);
 
         } catch (err) {
             console.error('Error loading courses:', err);
