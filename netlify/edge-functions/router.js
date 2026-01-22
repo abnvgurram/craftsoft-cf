@@ -5,7 +5,12 @@ export default async (request, context) => {
 
     // 1. Student Portal Subdomain - MUST be checked FIRST before generic bypass
     if (hostname.includes("acs-student.craftsoft")) {
-        // Student assets served from student folder
+        // Shared assets from root (admin SDK, shared components)
+        if (pathname.startsWith("/assets/admin/") || pathname.startsWith("/assets/components/")) {
+            return; // Fall through to root assets
+        }
+
+        // Student-specific assets from student folder
         if (pathname.startsWith("/assets/")) {
             return context.rewrite(`/acs_subdomains/acs_students${pathname}`);
         }
