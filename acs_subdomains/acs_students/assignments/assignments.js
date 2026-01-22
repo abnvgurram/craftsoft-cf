@@ -416,6 +416,27 @@
         });
     }
 
+    // Logout with Confirmation (using website's Modal, not browser's)
+    window.handleLogout = function () {
+        if (window.StudentSidebar && window.StudentSidebar.closeMobileNav) {
+            window.StudentSidebar.closeMobileNav();
+        }
+        Modal.show({
+            title: "Logout?",
+            message: "Are you sure you want to exit your student portal?",
+            type: "warning",
+            confirmText: "Yes, Logout",
+            onConfirm: async () => {
+                const token = localStorage.getItem('acs_student_token');
+                if (token) {
+                    await window.supabaseClient.from('student_sessions').delete().eq('token', token);
+                    localStorage.removeItem('acs_student_token');
+                }
+                window.location.replace('../');
+            }
+        });
+    };
+
     function initRealtime() {
         window.supabaseClient
             .channel('assignments-sync')

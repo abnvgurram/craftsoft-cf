@@ -59,9 +59,9 @@ const AdminSidebar = {
                         ${this.navItem('inquiries', 'Inquiries', 'fa-solid fa-circle-question')}
                         
                         ${this.sectionLabel('Academics')}
-                        ${this.navItem('upload-materials', 'Upload Materials', 'fa-solid fa-upload', 'academics/upload-materials')}
-                        ${this.navItem('assignments', 'Assignments', 'fa-solid fa-book-open', 'academics/assignments')}
-                        ${this.navItem('submissions', 'Submissions', 'fa-solid fa-book-atlas', 'academics/submissions')}
+                        ${this.navItemAbsolute('upload-materials', 'Upload Materials', 'fa-solid fa-upload', '/upload-materials/')}
+                        ${this.navItemAbsolute('assignments', 'Assignments', 'fa-solid fa-book-open', '/assignments/')}
+                        ${this.navItemAbsolute('submissions', 'Submissions', 'fa-solid fa-book-atlas', '/submissions/')}
                         
                         ${this.sectionLabel('Talent')}
                         ${this.navItem('tutors', 'Tutors', 'fa-chalkboard-user', 'tutors')}
@@ -110,8 +110,9 @@ const AdminSidebar = {
                     
                     <!-- Academics (Mobile) -->
                     <div class="mobile-nav-children-standalone">
-                         ${this.mobileNavItem('upload-materials', 'Upload Materials', 'fa-solid fa-upload', 'academics/upload-materials')}
-                         ${this.mobileNavItem('assignments', 'Assignments', 'fa-solid fa-book-open', 'academics/assignments')}
+                         ${this.mobileNavItemAbsolute('upload-materials', 'Upload Materials', 'fa-solid fa-upload', '/upload-materials/')}
+                         ${this.mobileNavItemAbsolute('assignments', 'Assignments', 'fa-solid fa-book-open', '/assignments/')}
+                         ${this.mobileNavItemAbsolute('submissions', 'Submissions', 'fa-solid fa-book-atlas', '/submissions/')}
                     </div>
 
                     <!-- Operations Parent -->
@@ -200,10 +201,22 @@ const AdminSidebar = {
         return `<a href="${href}" class="sidebar-item ${this.currentPage === page ? 'active' : ''}" title="${label}"><i class="${iconClass}"></i><span>${label}</span></a>`;
     },
 
+    // Absolute path variant (for clean URLs)
+    navItemAbsolute(page, label, icon, absolutePath) {
+        const iconClass = icon.includes(' ') ? icon : `fa-solid ${icon}`;
+        return `<a href="${absolutePath}" class="sidebar-item ${this.currentPage === page ? 'active' : ''}" title="${label}"><i class="${iconClass}"></i><span>${label}</span></a>`;
+    },
+
     mobileNavItem(page, label, icon, path = null) {
         const href = path ? `${this.rootPath}${path}/` : `${this.rootPath}${page}/`;
         const iconClass = icon.includes(' ') ? icon : `fa-solid ${icon}`;
         return `<a href="${href}" class="mobile-nav-item ${this.currentPage === page ? 'active' : ''}"><i class="${iconClass}"></i><span>${label}</span></a>`;
+    },
+
+    // Absolute path variant for mobile (for clean URLs)
+    mobileNavItemAbsolute(page, label, icon, absolutePath) {
+        const iconClass = icon.includes(' ') ? icon : `fa-solid ${icon}`;
+        return `<a href="${absolutePath}" class="mobile-nav-item ${this.currentPage === page ? 'active' : ''}"><i class="${iconClass}"></i><span>${label}</span></a>`;
     },
 
     openMobileNav() {

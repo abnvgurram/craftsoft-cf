@@ -210,13 +210,30 @@
 
     async function loadAssignments() {
         try {
-            const { data, error } = await window.supabaseClient
+            // Fetch assignments
+            const { data: assignData, error: assignError } = await window.supabaseClient
                 .from('student_assignments')
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
-            allAssignments = data || [];
+            if (assignError) throw assignError;
+
+            // Fetch all submissions to check which assignments are submitted
+            const { data: subData, error: subError } = await window.supabaseClient
+                .from('student_submissions')
+                .select('assignment_id');
+
+            if (subError) throw subError;
+
+            // Create a Set of assignment IDs that have submissions
+            const submittedIds = new Set((subData || []).map(s => s.assignment_id));
+
+            // Add has_submission flag to each assignment
+            allAssignments = (assignData || []).map(a => ({
+                ...a,
+                has_submission: submittedIds.has(a.id)
+            }));
+
             renderAssignments();
         } catch (err) {
             console.error('Load assignments error:', err);
@@ -259,7 +276,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    ${pageData.map(a => `
+                    ${pageData.map(a => {
+            const now = new Date();
+            const deadlineDate = new Date(a.deadline);
+            const hasSubmission = a.has_submission;
+            const isPastDeadline = deadlineDate < now;
+
+            let deadlineCell = '';
+            let showEditBtn = true;
+
+            if (hasSubmission) {
+                // Submitted - show green badge, hide edit
+                deadlineCell = '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Submitted</span>';
+                showEditBtn = false;
+            } else if (isPastDeadline) {
+                // Past deadline, not submitted - show red badge
+                deadlineCell = `<span class="badge badge-danger"><i class="fa-solid fa-xmark"></i> Not Submitted</span>
+                                <br><small class="text-muted" style="text-decoration:line-through;">${formatDeadline(a.deadline)}</small>`;
+                showEditBtn = false;
+            } else {
+                // Active deadline
+                deadlineCell = `<span class="deadline-tag ${isUrgent(a.deadline) ? 'urgent' : ''}">${formatDeadline(a.deadline)}</span>
+                                ${a.is_deadline_edited ? '<br><small class="text-muted">✏️ Edited</small>' : ''}`;
+            }
+
+            return `
                         <tr>
                             <td><input type="checkbox" class="assign-checkbox" data-id="${a.id}" onchange="window.updateBulkBar()"></td>
                             <td>
@@ -267,22 +308,19 @@
                                 ${a.file_url ? `<br><a href="${a.file_url}" target="_blank" class="file-link small"><i class="fa-solid fa-paperclip"></i> Reference</a>` : ''}
                             </td>
                             <td><span class="badge badge-primary">${a.course_code}</span></td>
-                            <td>
-                                <span class="deadline-tag ${isUrgent(a.deadline) ? 'urgent' : ''}">${formatDeadline(a.deadline)}</span>
-                                ${a.is_deadline_edited ? '<br><small class="text-muted">✏️ Edited</small>' : ''}
-                            </td>
+                            <td>${deadlineCell}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="icon-btn btn-outline-primary" onclick="window.openEditDeadlineModal('${a.id}', '${a.title}', '${a.deadline}')" title="Edit Deadline">
+                                    ${showEditBtn ? `<button class="icon-btn btn-outline-primary" onclick="window.openEditDeadlineModal('${a.id}', '${a.title}', '${a.deadline}')" title="Edit Deadline">
                                         <i class="fa-solid fa-pen"></i>
-                                    </button>
+                                    </button>` : ''}
                                     <button class="icon-btn btn-outline-danger" onclick="window.confirmDeleteAssign('${a.id}')" title="Delete">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
-                    `).join('')}
+                    `}).join('')}
                 </tbody>
             </table>
             <div class="pagination-controls" style="display:flex; align-items:center; justify-content:center; gap:1rem; margin-top:1.5rem;">

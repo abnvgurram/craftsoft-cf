@@ -264,6 +264,28 @@
   status = 200
   force = true
 
+# Submissions (NEW)
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/submissions/*"
+  to = "/acs_subdomains/acs_admin/academics/submissions/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/submissions"
+  to = "/acs_subdomains/acs_admin/academics/submissions/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/submissions/"
+  to = "/acs_subdomains/acs_admin/academics/submissions/index.html"
+  status = 200
+  force = true
+
 # Payments
 [[redirects]]
   host = "admin.craftsoft.co.in"
