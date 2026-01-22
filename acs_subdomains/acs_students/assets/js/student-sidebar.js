@@ -30,6 +30,7 @@ const StudentSidebar = {
         if (path.includes('/payments/')) return '../';
         if (path.includes('/courses/')) return '../';
         if (path.includes('/materials/')) return '../';
+        if (path.includes('/assignments/')) return '../';
         if (path.includes('/profile/')) return '../';
         return './';
     },
@@ -63,6 +64,7 @@ const StudentSidebar = {
                         ${this.navItem('payments', 'Payments', 'fa-indian-rupee-sign', 'payments')}
                         ${this.navItem('courses', 'Courses', 'fa-book-open', 'courses')}
                         ${this.navItem('materials', 'Materials', 'fa-book-skull', 'materials')}
+                        ${this.navItem('assignments', 'Assignments', 'fa-file-signature', 'assignments')}
                         ${this.navItem('profile', 'Profile', 'fa-id-badge', 'profile')}
                     </div>
 
@@ -85,6 +87,7 @@ const StudentSidebar = {
                     ${this.mobileNavItem('payments', 'Payments', 'fa-indian-rupee-sign', 'payments')}
                     ${this.mobileNavItem('courses', 'Courses', 'fa-book-open', 'courses')}
                     ${this.mobileNavItem('materials', 'Materials', 'fa-book-skull', 'materials')}
+                    ${this.mobileNavItem('assignments', 'Assignments', 'fa-file-signature', 'assignments')}
                     ${this.mobileNavItem('profile', 'Profile', 'fa-id-badge', 'profile')}
                 </nav>
             </div>
@@ -180,7 +183,7 @@ const StudentSidebar = {
                         Abhi's CraftSoft &copy; ${new Date().getFullYear()}
                     </div>
                     <div class="footer-right">
-                        <span class="version-badge">v5.0</span>
+                        <span class="version-badge">v6.0</span>
                     </div>
                 </div>
             </footer>
