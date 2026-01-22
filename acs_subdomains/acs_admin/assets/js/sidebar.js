@@ -54,6 +54,8 @@ const AdminSidebar = {
                     ${this.navItem('archived', 'Archived', 'fa-solid fa-box', 'records/archived')}
                     ${this.navItem('recently-deleted', 'Trash', 'fa-solid fa-recycle', 'records/recently-deleted')}
 
+                    <div class="sidebar-divider"></div>
+                    ${this.navItem('student-testing', 'Student Testing', 'fa-solid fa-vial-circle-check', '#student-testing')}
                     ${this.navItem('settings', 'Settings', 'fa-gear')}
                 </nav>
             </aside>
@@ -140,6 +142,7 @@ const AdminSidebar = {
                         </div>
                     </div>
                     
+                    ${this.mobileNavItem('student-testing', 'Student Testing', 'fa-solid fa-vial-circle-check', '#student-testing')}
                     ${this.mobileNavItem('settings', 'Settings', 'fa-gear')}
                 </nav>
                 
@@ -264,6 +267,19 @@ const AdminSidebar = {
             e.preventDefault();
             const parent = document.getElementById('mobile-records-parent');
             parent?.classList.toggle('expanded');
+        });
+
+        // Student Testing Trigger
+        document.querySelectorAll('[href="#student-testing"]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.closeMobileNav();
+                if (window.StudentTesting && typeof window.StudentTesting.open === 'function') {
+                    window.StudentTesting.open();
+                } else {
+                    console.error('StudentTesting module not found');
+                }
+            });
         });
     },
 
