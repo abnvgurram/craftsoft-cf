@@ -28,6 +28,11 @@ export default async (request, context) => {
 
     // 2. Student Portal Subdomain
     if (hostname.includes("acs-student.craftsoft")) {
+        // Student assets need to be served from student folder, not root
+        if (pathname.startsWith("/assets/")) {
+            return context.rewrite(`/acs_subdomains/acs_students${pathname}`);
+        }
+
         if (pathname === "/") {
             return context.rewrite("/acs_subdomains/acs_students/index.html");
         }
