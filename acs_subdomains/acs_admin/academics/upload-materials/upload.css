@@ -83,6 +83,16 @@
     width: 100%;
 }
 
+/* Top Header Card for page title */
+.upload-workspace>.section-header {
+    background: #fff;
+    border: 1px solid var(--admin-input-border);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
 /* Page Header */
 .workspace-header {
     display: flex;
