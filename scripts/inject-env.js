@@ -10,6 +10,9 @@ const path = require('path');
 const filesToProcess = [
     'assets/js/supabase-website-config.js',
     'acs_subdomains/acs_admin/assets/js/supabase-config.js',
+    'acs_subdomains/acs_admin/assets/js/supabase-config.js',
+    'acs_subdomains/acs_students/assets/js/supabase-config.js',
+    'acs_subdomains/acs_signup/assets/js/supabase-config.js',
     'acs_subdomains/acs_students/login.js'
 ];
 
@@ -55,3 +58,4 @@ filesToProcess.forEach(filePath => {
 });
 
 console.log('--- Injection Complete ---');
+
