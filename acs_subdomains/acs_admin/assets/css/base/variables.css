@@ -1,97 +1,74 @@
 /* ============================================
-   CSS Variables - Design Tokens
+   CSS Variables - Admin Specific
+   Matched to Website Theme (craftsoft.co.in)
    ============================================ */
-
 :root {
-    /* Primary Colors */
-    --primary-50: #edf6fb;
-    --primary-100: #d4eaf5;
-    --primary-200: #a9d5eb;
-    --primary-300: #7ec0e1;
-    --primary-400: #53abd7;
-    --primary-500: #2896cd;
-    --primary-600: #1a7eb0;
-    --primary-700: #156691;
-    --primary-800: #104e72;
-    --primary-900: #0b3653;
+    /* Page & Background (matched to Why Us section) */
+    --admin-bg: #edf6fb;
+    --admin-bg-gradient: linear-gradient(135deg, #edf6fb 0%, #e5f3fa 100%);
 
-    /* Accent Colors */
+    /* Cards (Matched to Why Us section tint) */
+    --admin-card-bg: rgba(237, 246, 251, 0.85);
+    --admin-card-bg-solid: #edf6fb;
+    --admin-card-border: rgba(40, 150, 205, 0.12);
+    --admin-card-shadow: 0 4px 20px rgba(40, 150, 205, 0.08);
+    --admin-card-hover-shadow: 0 8px 30px rgba(40, 150, 205, 0.15);
+
+    /* Sidebar (Light Theme) */
+    --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #edf6fb 100%);
+    --sidebar-border: rgba(40, 150, 205, 0.15);
+    --sidebar-text: #0f172a;
+    --sidebar-text-muted: #64748b;
+    --sidebar-item-hover: rgba(40, 150, 205, 0.08);
+    --sidebar-item-active: linear-gradient(135deg, #2896cd 0%, #1a7eb0 100%);
+    --sidebar-item-active-text: #ffffff;
+
+    /* Header */
+    --header-bg: rgba(237, 246, 251, 0.9);
+    --header-border: rgba(40, 150, 205, 0.1);
+
+    /* Inputs */
+    --admin-input-bg: rgba(40, 150, 205, 0.04);
+    --admin-input-border: rgba(40, 150, 205, 0.15);
+    --admin-input-focus: #2896cd;
+    --admin-input-focus-glow: 0 0 0 3px rgba(40, 150, 205, 0.15);
+
+    /* Text */
+    --admin-text-primary: #0f172a;
+    --admin-text-secondary: #475569;
+    --admin-text-muted: #94a3b8;
+
+    /* Buttons */
+    --btn-primary-bg: linear-gradient(135deg, #2896cd 0%, #1a7eb0 100%);
+    --btn-primary-hover: linear-gradient(135deg, #1a7eb0 0%, #156691 100%);
+    --btn-primary-shadow: 0 4px 15px rgba(40, 150, 205, 0.3);
+    --btn-primary-hover-shadow: 0 6px 20px rgba(40, 150, 205, 0.4);
+
+    /* Tables */
+    --table-header-bg: rgba(40, 150, 205, 0.06);
+    --table-row-alt: rgba(40, 150, 205, 0.03);
+    --table-row-hover: rgba(40, 150, 205, 0.08);
+    --table-border: rgba(40, 150, 205, 0.1);
+
+    /* Badges */
+    --badge-primary: linear-gradient(135deg, #2896cd 0%, #1a7eb0 100%);
+    --badge-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --badge-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --badge-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+
+    /* Accent */
     --accent-gradient: linear-gradient(135deg, #2896cd 0%, #6C5CE7 100%);
-    --accent-gradient-2: linear-gradient(135deg, #00B894 0%, #00CEC9 100%);
+    --accent-glow: 0 0 40px rgba(40, 150, 205, 0.2);
 
-    /* Neutral Colors */
-    --white: #ffffff;
-    --gray-50: #f8fafc;
-    --gray-100: #f1f5f9;
-    --gray-200: #e2e8f0;
-    --gray-300: #cbd5e1;
-    --gray-400: #94a3b8;
-    --gray-500: #64748b;
-    --gray-600: #475569;
-    --gray-700: #334155;
-    --gray-800: #1e293b;
-    --gray-900: #0f172a;
-
-    /* Blue-Tinted Theme Colors */
-    --page-bg: #f0f7fb;
-    --card-bg: rgba(40, 150, 205, 0.04);
-    --card-bg-hover: rgba(40, 150, 205, 0.08);
-    --section-bg: rgba(40, 150, 205, 0.06);
-    --card-border: rgba(40, 150, 205, 0.12);
-    --divider-color: rgba(40, 150, 205, 0.15);
-
-    /* Semantic Colors */
-    --success: #10B981;
-    --warning: #F59E0B;
-    --error: #EF4444;
-    --info: #3B82F6;
-
-    /* Typography */
-    --font-primary: 'Outfit', sans-serif;
-    --font-secondary: 'Inter', sans-serif;
-
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-    --spacing-3xl: 4rem;
-    --spacing-4xl: 6rem;
-    --spacing-5xl: 8rem;
-
-    /* Border Radius */
-    --radius-sm: 0.375rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 0.75rem;
-    --radius-xl: 1rem;
-    --radius-2xl: 1.5rem;
-    --radius-full: 9999px;
-
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    --shadow-glow: 0 0 40px rgba(40, 150, 205, 0.15);
-
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-base: 300ms ease;
-    --transition-slow: 500ms ease;
-
-    /* Container */
-    --container-max: 1240px;
-    --container-padding: 2.5rem;
-
-    /* Z-Index Hierarchy */
-    --z-sidebar: 100;
-    --z-header: 90;
-    --z-dropdown: 500;
-    --z-dropdown-backdrop: 490;
-    --z-modal: 1000;
-    --z-toast: 2000;
-    --z-spotlight: 1500;
-
+    /* Z-Index Stack */
+    --z-base: 1;
+    --z-sidebar: 5000;
+    --z-header: 5000;
+    --z-mobile-nav: 6000;
+    --z-dropdown-backdrop: 9000;
+    --z-dropdown: 9001;
+    --z-modal-backdrop: 10000;
+    --z-modal: 10001;
+    --z-toast: 11000;
+    --z-spotlight: 12000;
+}

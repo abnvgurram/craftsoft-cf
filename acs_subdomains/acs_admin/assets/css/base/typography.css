@@ -1,44 +1,52 @@
-/* ============================================
-   Typography Styles
-   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: var(--font-primary);
+.admin-brand-name,
+.header-logo,
+.sidebar-logo-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
     font-weight: 700;
-    color: var(--gray-900);
-    line-height: 1.2;
 }
 
-/* Utility Classes */
-.gradient-text {
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.logo-sig-cursive {
+    font-family: 'Dancing Script', cursive;
+    color: #0f172a;
+    font-size: 1.4rem;
 }
 
-.highlight {
-    color: var(--primary-600);
+.logo-accent-sans {
+    font-family: 'Outfit', sans-serif;
+    color: #2896cd;
+    font-weight: 700;
 }
 
-/* Signature Style for "Abhi's" in logo */
-.logo-signature {
-    font-family: 'Italianno', cursive;
-    font-weight: 400;
-    font-size: 1.6em;
-    letter-spacing: 1px;
+.logo-mark-purple {
+    font-family: 'Outfit', sans-serif;
+    color: #6c5ce7;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-left: 6px;
 }
 
-/* Footer Visibility for legacy logos */
-.footer-brand .logo-signature {
-    color: var(--white) !important;
+/* Text Helpers */
+.text-center {
+    text-align: center;
 }
 
-.footer-brand .logo-text {
-    color: var(--white) !important;
+.text-muted {
+    color: var(--admin-text-muted);
+    font-size: 0.9rem;
+}
+
+.text-strong {
+    font-weight: 600;
+    color: var(--admin-text-primary);
+}
+
+/* Security - Disable selection on sensitive inputs */
+.secure-input {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
