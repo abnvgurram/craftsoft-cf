@@ -200,7 +200,16 @@ const Auth = {
             sessionStorage.removeItem('sb-auth-token');
             sessionStorage.removeItem('tab_id');
 
-            // Clear Dashboard activity log on logout
+            // 🛡️ SECURITY: Clear Activities and Session from DB
+            const admin = await this.getCurrentAdmin();
+            if (admin) {
+                // Delete activities for this admin on logout
+                await window.supabaseClient.from('activities').delete().eq('admin_id', admin.id);
+                // Delete current tab session
+                await this.deleteCurrentSession();
+            }
+
+            // Clear Dashboard activity log (Local Storage)
             localStorage.removeItem('admin_activity_log');
 
             // Redirect to login
@@ -257,7 +266,7 @@ const Auth = {
             if (existingTabId) {
                 // FIX: Use maybeSingle() to avoid 406 error when no row exists
                 const { data: existingSession } = await supabase
-                    .from('user_sessions')
+                    .from('admin_sessions')
                     .select('id')
                     .eq('admin_id', adminId)
                     .eq('session_token', existingTabId)
@@ -266,7 +275,7 @@ const Auth = {
                 if (existingSession) {
                     // Session exists for this tab, just update last_active
                     await supabase
-                        .from('user_sessions')
+                        .from('admin_sessions')
                         .update({
                             last_active: new Date().toISOString(),
                             ip_address: ipAddress
@@ -286,7 +295,7 @@ const Auth = {
 
             // Insert new session row
             const { error } = await supabase
-                .from('user_sessions')
+                .from('admin_sessions')
                 .insert({
                     admin_id: adminId,
                     session_token: tabId,
@@ -318,7 +327,7 @@ const Auth = {
 
         try {
             await supabase
-                .from('user_sessions')
+                .from('admin_sessions')
                 .delete()
                 .eq('admin_id', admin.id)
                 .eq('session_token', tabId);
@@ -334,7 +343,7 @@ const Auth = {
 
         try {
             const { error } = await supabase
-                .from('user_sessions')
+                .from('admin_sessions')
                 .delete()
                 .eq('id', sessionId);
 
@@ -351,7 +360,7 @@ const Auth = {
 
         try {
             const { error } = await supabase
-                .from('user_sessions')
+                .from('admin_sessions')
                 .delete()
                 .eq('admin_id', adminId);
 
@@ -377,7 +386,7 @@ const Auth = {
 
         try {
             await supabase
-                .from('user_sessions')
+                .from('admin_sessions')
                 .update({ last_active: new Date().toISOString() })
                 .eq('admin_id', admin.id)
                 .eq('session_token', tabId);
@@ -391,7 +400,7 @@ const Auth = {
 
         try {
             const { data, error } = await supabase
-                .from('user_sessions')
+                .from('admin_sessions')
                 .select('*')
                 .eq('admin_id', adminId)
                 .order('last_active', { ascending: false });
@@ -599,7 +608,7 @@ const Auth = {
         try {
             // FIX #3: Use maybeSingle() instead of single() to avoid 406 errors
             const { data, error } = await supabase
-                .from('user_sessions')
+                .from('admin_sessions')
                 .select('id')
                 .eq('admin_id', admin.id)
                 .eq('session_token', tabId)
@@ -628,7 +637,7 @@ const Auth = {
 
         const supabase = window.supabaseClient;
 
-        // Subscribe to DELETE events on user_sessions for THIS TAB's session only
+        // Subscribe to DELETE events on admin_sessions for THIS TAB's session only
         // The filter ensures we ONLY receive events for this specific tab_id
         const channel = supabase
             .channel('session-monitor-' + THIS_TAB_ID)
@@ -637,7 +646,7 @@ const Auth = {
                 {
                     event: 'DELETE',
                     schema: 'public',
-                    table: 'user_sessions',
+                    table: 'admin_sessions',
                     filter: `session_token=eq.${THIS_TAB_ID}`
                 },
                 (payload) => {

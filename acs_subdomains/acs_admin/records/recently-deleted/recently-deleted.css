@@ -6,32 +6,47 @@
 /* Tabs Navigation */
 .tabs-nav {
     display: flex;
-    gap: 20px;
-    border-bottom: 2px solid var(--admin-input-border, #e2e8f0);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--admin-input-border, #e2e8f0);
+    padding-bottom: 0.75rem;
 }
 
 .tab-btn {
-    background: none;
+    background: transparent;
     border: none;
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
+    padding: 0.75rem 1.25rem;
+    color: var(--admin-text-secondary);
     font-weight: 600;
-    color: var(--admin-text-muted, #94a3b8);
+    font-size: 0.95rem;
     cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
+    border-radius: 10px;
     transition: all 0.2s ease;
-}
-
-.tab-btn.active {
-    color: var(--primary-500, #2896cd);
-    border-bottom-color: var(--primary-500, #2896cd);
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    position: relative;
 }
 
 .tab-btn:hover {
-    color: var(--admin-text-primary, #0f172a);
+    background: var(--gray-50);
+    color: var(--admin-text-primary);
+}
+
+.tab-btn.active {
+    color: var(--primary-600);
+    background: rgba(40, 150, 205, 0.08);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -13px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-500);
+    border-radius: 3px 3px 0 0;
 }
 
 /* ============================================

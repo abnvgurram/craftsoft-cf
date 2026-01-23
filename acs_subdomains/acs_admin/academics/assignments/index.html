@@ -88,53 +88,87 @@
                                 <i class="fa-solid fa-plus-circle"></i> Create New Assignment
                             </div>
                             <div class="section-body">
-                                <div class="form-group">
-                                    <label>Broadcaster Mode <span class="required">*</span></label>
-                                    <div class="radio-toggle-group">
-                                        <label class="radio-label">
-                                            <input type="radio" name="broadcast-mode" value="course" checked>
-                                            <span>Whole Course</span>
-                                        </label>
-                                        <label class="radio-label">
-                                            <input type="radio" name="broadcast-mode" value="student">
-                                            <span>Specific Student</span>
-                                        </label>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label><i class="fa-solid fa-satellite-dish"></i> Broadcaster Mode <span
+                                                class="required">*</span></label>
+                                        <div class="radio-toggle-group">
+                                            <label class="radio-label">
+                                                <input type="radio" name="broadcast-mode" value="course" checked>
+                                                <span>Whole Course</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="broadcast-mode" value="student">
+                                                <span>Specific Student</span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="form-group">
-                                    <label>Select Course <span class="required">*</span></label>
-                                    <select id="course-select" class="form-select">
-                                        <option value="">-- Select a Course --</option>
-                                    </select>
+                                    <div class="form-group">
+                                        <label><i class="fa-solid fa-book-open-reader"></i> Select Course <span
+                                                class="required">*</span></label>
+                                        <div class="input-with-icon">
+                                            <i class="fa-solid fa-graduation-cap input-icon"></i>
+                                            <select id="course-select" class="form-select"
+                                                style="padding-left: 2.5rem;">
+                                                <option value="">-- Select a Course --</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div id="student-select-group" class="form-group" style="display: none;">
-                                    <label>Select Student <span class="required">*</span></label>
-                                    <select id="student-select" class="form-select">
-                                        <option value="">-- Select a Student --</option>
-                                    </select>
+                                    <label><i class="fa-solid fa-user-tag"></i> Select Student <span
+                                            class="required">*</span></label>
+                                    <div class="input-with-icon">
+                                        <i class="fa-solid fa-user-graduate input-icon"></i>
+                                        <select id="student-select" class="form-select" style="padding-left: 2.5rem;">
+                                            <option value="">-- Select a Student --</option>
+                                        </select>
+                                    </div>
                                     <p class="form-hint" id="student-hint">Showing students enrolled in the selected
                                         course.</p>
                                 </div>
+
                                 <div class="form-group">
-                                    <label>Assignment Title <span class="required">*</span></label>
-                                    <input type="text" id="assign-title" class="form-control"
-                                        placeholder="e.g. React Final Project">
+                                    <label><i class="fa-solid fa-heading"></i> Assignment Title <span
+                                            class="required">*</span></label>
+                                    <div class="input-with-icon">
+                                        <i class="fa-solid fa-file-signature input-icon"></i>
+                                        <input type="text" id="assign-title" class="form-control"
+                                            style="padding-left: 2.5rem;" placeholder="e.g. React Final Project">
+                                    </div>
                                 </div>
+
                                 <div class="form-group">
-                                    <label>Description (Markdown supported)</label>
-                                    <textarea id="assign-desc" class="form-control" rows="4"
-                                        placeholder="Instructions, requirements, etc."></textarea>
+                                    <label><i class="fa-solid fa-align-left"></i> Description <span
+                                            class="text-hint">(Markdown supported)</span></label>
+                                    <div class="input-with-icon textarea-icon">
+                                        <i class="fa-solid fa-pen-nib input-icon"></i>
+                                        <textarea id="assign-desc" class="form-control" rows="4"
+                                            style="padding-left: 2.5rem;"
+                                            placeholder="Instructions, requirements, and evaluation criteria..."></textarea>
+                                    </div>
                                 </div>
+
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Deadline Date <span class="required">*</span></label>
-                                        <input type="date" id="assign-date" class="form-control">
+                                        <label><i class="fa-solid fa-calendar-day"></i> Deadline Date <span
+                                                class="required">*</span></label>
+                                        <div class="input-with-icon">
+                                            <i class="fa-solid fa-calendar-check input-icon"></i>
+                                            <input type="date" id="assign-date" class="form-control"
+                                                style="padding-left: 2.5rem;">
+                                        </div>
                                     </div>
                                     <div class="form-group">
-                                        <label>Deadline Time <span class="required">*</span></label>
-                                        <input type="time" id="assign-time" class="form-control" value="23:59">
+                                        <label><i class="fa-solid fa-clock"></i> Deadline Time <span
+                                                class="required">*</span></label>
+                                        <div class="input-with-icon">
+                                            <i class="fa-solid fa-hourglass-start input-icon"></i>
+                                            <input type="time" id="assign-time" class="form-control"
+                                                style="padding-left: 2.5rem;" value="23:59">
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -104,17 +104,21 @@
 
             // Generate OTP
             const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+            // 🛡️ SECURITY: Hash the OTP before storing so even admins can't see it
+            const hashedOtp = await hashOTP(otpCode);
+
             const { error: otpError } = await window.supabaseClient
                 .from('student_otps')
                 .insert([{
                     student_id: student.id,
-                    otp_code: otpCode,
+                    otp_code: hashedOtp,
                     email_sent_to: student.email
                 }]);
 
             if (otpError) throw otpError;
 
-            // Send via EmailJS
+            // Send via EmailJS (Send PLAIN TEXT to user)
             await sendOtpEmail(student.email, student.first_name || 'Student', otpCode);
 
             showStep2(student.email);
@@ -131,6 +135,14 @@
             showLoading(false, btnSendOtp);
         }
     });
+
+    // 🛡️ SECURITY HELPER: SHA-256 Hashing
+    async function hashOTP(otp) {
+        const msgUint8 = new TextEncoder().encode(otp);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
     // Lookup Student from DB
     async function lookupStudent(val) {
@@ -205,11 +217,14 @@
         showLoading(true, btnVerifyOtp);
 
         try {
+            // 🛡️ SECURITY: Hash the input OTP to compare with the stored hash
+            const hashedInput = await hashOTP(otp);
+
             const { data, error } = await window.supabaseClient
                 .from('student_otps')
                 .select('*')
                 .eq('student_id', currentStudent.id)
-                .eq('otp_code', otp)
+                .eq('otp_code', hashedInput)
                 .eq('is_used', false)
                 .gt('expires_at', new Date().toISOString())
                 .order('created_at', { ascending: false })

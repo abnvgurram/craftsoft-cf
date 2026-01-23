@@ -142,7 +142,7 @@ function subscribeToSessionUpdates() {
             {
                 event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
                 schema: 'public',
-                table: 'user_sessions',
+                table: 'admin_sessions',
                 filter: `admin_id=eq.${currentAdmin.id}`
             },
             async (payload) => {
