@@ -174,7 +174,7 @@
                                     <br><small class="text-muted">${s.student?.student_id || 'N/A'}</small>
                                 </td>
                                 <td class="assignment-title">${s.assignment?.title || 'Unknown'}</td>
-                                <td><span class="badge badge-primary">${s.assignment?.course_code || 'N/A'}</span></td>
+                                <td><span class="course-tag">${s.assignment?.course_code || 'N/A'}</span></td>
                                 <td class="date-cell">${formatDate(s.submitted_at)}</td>
                                 <td>
                                     <div class="action-buttons">

@@ -10,65 +10,49 @@
     }
 }
 
-.filters-row {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.filters-row .search-box {
-    flex: 1;
-    min-width: 280px;
-    position: relative;
-}
-
-.filters-row .search-box i {
-    position: absolute;
-    left: 1.25rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--admin-text-muted);
-    font-size: 0.95rem;
-    pointer-events: none;
-    display: block !important;
-}
-
-.filters-row .search-box input {
-    padding-left: 3rem !important;
-    width: 100%;
-    padding: 0.85rem 1rem;
-    border: 1px solid var(--admin-input-border);
-    border-radius: 12px;
-    font-size: 0.95rem;
+/* Submissions Workspace Container */
+.submissions-workspace {
     background: #fff;
-    transition: all 0.2s ease;
+    border: 1px solid var(--admin-input-border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-.filters-row .search-box input:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px rgba(40, 150, 205, 0.1);
+/* Filters & Layout */
+.section-actions {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    align-items: center;
+    background: #fff;
+    padding: 1.25rem;
+    border-radius: 16px;
+    border: 1px solid var(--admin-input-border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-.filter-group {
+.section-actions .filter-group {
     display: flex;
     gap: 1rem;
-    flex: 2;
-    min-width: 400px;
+    flex: 3;
+    min-width: unset;
 }
 
-.filter-group .input-with-icon {
+.section-actions .search-box {
     flex: 1;
-    position: relative;
     min-width: 200px;
 }
 
-@media (max-width: 1200px) {
-    .filter-group {
-        flex: 1;
-        width: 100%;
+@media (max-width: 1100px) {
+    .section-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .section-actions .filter-group {
+        flex-direction: column;
     }
 }
 
@@ -161,6 +145,25 @@
 .submissions-table .date-cell {
     font-size: 0.9rem;
     color: var(--admin-text-muted);
+}
+
+/* Course Tag (match Inquiries) */
+.course-tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--primary-50);
+    color: var(--primary-700);
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Table Footer */
+.table-footer {
+    padding: 1rem;
+    text-align: center;
+    color: var(--admin-text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--admin-input-border);
 }
 
 /* Action Buttons */

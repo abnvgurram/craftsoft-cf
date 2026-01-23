@@ -68,37 +68,37 @@
             <!-- Header injected by JS -->
             <div id="header-container"></div>
 
-            <div class="upload-workspace animate-up">
-                <!-- Page Header -->
-                <div class="workspace-header">
-                    <div class="section-icon">
-                        <i class="fa-solid fa-book-atlas"></i>
-                    </div>
-                    <div class="section-info">
-                        <h2 class="workspace-title">Student Submissions</h2>
-                        <p class="workspace-subtitle">Review and manage assignment submissions</p>
+            <div class="submissions-workspace animate-up">
+                <div class="section-header">
+                    <div class="section-header-left">
+                        <div class="section-icon">
+                            <i class="fa-solid fa-book-atlas"></i>
+                        </div>
+                        <div class="section-info">
+                            <h2 class="section-title">Student Submissions</h2>
+                            <p class="section-subtitle">Review and manage assignment submissions</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Filters & Search -->
-                <div class="filters-row">
-                    <div class="search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="search-input" placeholder="Search student or assignment...">
-                    </div>
+                <div class="section-actions">
                     <div class="filter-group">
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-graduation-cap input-icon"></i>
+                        <div class="search-box">
+                            <i class="fa-solid fa-graduation-cap"></i>
                             <select id="filter-course" class="form-select">
                                 <option value="">All Courses</option>
                             </select>
                         </div>
-                        <div class="input-with-icon">
-                            <i class="fa-solid fa-file-pen input-icon"></i>
+                        <div class="search-box">
+                            <i class="fa-solid fa-file-pen"></i>
                             <select id="filter-assignment" class="form-select">
                                 <option value="">All Assignments</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="search-box" style="flex: 2;">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Search student or assignment...">
                     </div>
                 </div>
 
