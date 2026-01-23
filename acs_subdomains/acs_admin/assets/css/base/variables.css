@@ -73,3 +73,7 @@
     --z-spotlight: 12000;
 }
 
+
+.admin-main { padding-top: 100px !important; }
+@media (max-width: 768px) { .admin-main { padding-top: 85px !important; } }
+

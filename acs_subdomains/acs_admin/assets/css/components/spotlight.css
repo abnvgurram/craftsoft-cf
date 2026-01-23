@@ -93,7 +93,7 @@
 }
 
 .spotlight-kbd kbd {
-    background: var(--gray-100, #f1f5f9);
+    background: var(--gray-100, var(--admin-bg, #edf6fb));
     padding: 0.2rem 0.4rem;
     border-radius: 4px;
     font-family: inherit;
@@ -204,7 +204,7 @@
     font-weight: 600;
     padding: 0.2rem 0.5rem;
     border-radius: 6px;
-    background: var(--gray-100, #f1f5f9);
+    background: var(--gray-100, var(--admin-bg, #edf6fb));
     color: var(--admin-text-secondary, #64748b);
 }
 
@@ -273,7 +273,7 @@
 }
 
 .spotlight-footer-action kbd {
-    background: var(--gray-100, #f1f5f9);
+    background: var(--gray-100, var(--admin-bg, #edf6fb));
     padding: 0.15rem 0.35rem;
     border-radius: 4px;
     font-family: inherit;
@@ -340,4 +340,5 @@
         gap: 0.5rem;
     }
 }
+
 

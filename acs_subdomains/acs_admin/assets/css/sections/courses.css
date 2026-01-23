@@ -226,7 +226,7 @@
 
 .dropdown-search {
     padding: 0.75rem;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--admin-bg, #edf6fb);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -262,7 +262,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #94a3b8;
-    background: #f8fafc;
+    background: var(--admin-bg, #edf6fb);
 }
 
 .option-item {
@@ -276,7 +276,7 @@
 }
 
 .option-item:hover {
-    background: #f8fafc;
+    background: var(--admin-bg, #edf6fb);
 }
 
 .option-item input {
@@ -294,7 +294,7 @@
 
 .option-divider {
     height: 1px;
-    background: #f1f5f9;
+    background: var(--admin-bg, #edf6fb);
     margin: 0.5rem 0;
 }
 
@@ -326,3 +326,4 @@
 .public-pill .pill-remove:hover {
     opacity: 1;
 }
+

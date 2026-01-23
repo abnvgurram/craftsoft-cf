@@ -46,7 +46,7 @@
 .pagination-btn[disabled] {
     opacity: 0.5;
     cursor: default;
-    background: var(--gray-50, #f8fafc);
+    background: var(--gray-50, var(--admin-bg, #edf6fb));
 }
 
 .pagination-dots {
@@ -88,5 +88,6 @@
         opacity: 1;
     }
 }
+
 
 
