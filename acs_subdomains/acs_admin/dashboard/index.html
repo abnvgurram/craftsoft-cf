@@ -58,7 +58,7 @@
             try {
                 const { data: { session } } = await window.supabaseClient.auth.getSession();
                 if (!session) { window.location.replace('/login'); return; }
-                document.documentElement.style.css?v=2.0Text = 'visibility:visible;opacity:1';
+                document.documentElement.style.cssText = 'visibility:visible;opacity:1';
             } catch (e) {
                 window.location.replace('/login');
             }
@@ -187,6 +187,7 @@
 </body>
 
 </html>
+
 
 
 
