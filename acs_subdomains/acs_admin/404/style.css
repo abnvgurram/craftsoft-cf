@@ -6,7 +6,7 @@
     --text-main: #0f172a;
     --text-muted: #64748b;
     --bg-light: #f8fafc;
-    --white: #ffffff;
+    --white: var(--admin-bg, #edf6fb)fff;
     --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 

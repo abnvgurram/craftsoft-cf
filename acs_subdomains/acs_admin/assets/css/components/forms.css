@@ -305,7 +305,7 @@
 
 .toggle-item input:checked+span {
     background: var(--btn-primary-bg);
-    color: #fff;
+    color: var(--admin-bg, #edf6fb);
     box-shadow: var(--btn-primary-shadow);
 }
 
@@ -316,6 +316,7 @@
 }
 
 .searchable-select-trigger {
+    padding-left: 3rem !important;
     padding-left: 3.25rem !important;
     display: flex;
     align-items: center;
@@ -334,6 +335,7 @@
 }
 
 .searchable-select-container.open .searchable-select-trigger {
+    padding-left: 3rem !important;
     padding-left: 3.25rem !important;
     border-color: var(--primary-500);
     box-shadow: 0 0 0 3px rgba(40, 150, 205, 0.1);
@@ -433,7 +435,7 @@
 
 .searchable-option.selected {
     background: var(--primary-500);
-    color: #fff;
+    color: var(--admin-bg, #edf6fb);
 }
 
 .no-results {
@@ -549,4 +551,5 @@
 .phone-number-input::placeholder {
     color: var(--admin-text-muted);
 }
+
 

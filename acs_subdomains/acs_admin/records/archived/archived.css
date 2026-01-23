@@ -188,6 +188,7 @@
 }
 
 .search-box .searchable-select-trigger {
+    padding-left: 3rem !important;
     padding-left: 2.5rem !important;
 }
 
@@ -387,3 +388,4 @@
         justify-content: center;
     }
 }
+

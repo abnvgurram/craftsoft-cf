@@ -247,7 +247,7 @@
 }
 
 .premium-card {
-    background: var(--admin-card-bg, #ffffff);
+    background: var(--admin-card-bg, var(--admin-bg, #edf6fb)fff);
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -282,3 +282,4 @@
     color: #2896cd;
     width: 16px;
 }
+

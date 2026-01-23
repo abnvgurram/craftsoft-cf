@@ -38,6 +38,7 @@
 .input-with-icon .form-select,
 .input-with-icon .searchable-select-trigger {
     padding-left: 3rem !important;
+    padding-left: 3rem !important;
 }
 
 .input-with-icon.textarea-icon .input-icon {
@@ -62,7 +63,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: var(--admin-bg, #edf6fb);
     font-size: 1.1rem;
     box-shadow: 0 4px 12px rgba(40, 150, 205, 0.2);
     flex-shrink: 0;
@@ -156,7 +157,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: var(--admin-bg, #edf6fb);
     font-size: 1.1rem;
     box-shadow: 0 4px 10px rgba(40, 150, 205, 0.15);
     flex-shrink: 0;
@@ -310,7 +311,7 @@
 
 .file-preview-remove:hover {
     background: #ef4444;
-    color: #fff;
+    color: var(--admin-bg, #edf6fb);
 }
 
 /* Upload Actions */
@@ -700,3 +701,4 @@
     color: #ef4444;
     border-color: #fee2e2;
 }
+

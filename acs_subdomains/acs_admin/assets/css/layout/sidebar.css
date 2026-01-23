@@ -39,7 +39,7 @@
     background: var(--btn-primary-bg);
     border: none;
     border-radius: 12px;
-    color: #fff;
+    color: var(--admin-bg, #edf6fb);
     font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.2s;

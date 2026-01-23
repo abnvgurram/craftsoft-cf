@@ -117,7 +117,7 @@
 
 /* Stats Strip */
 .stats-strip {
-    background: linear-gradient(135deg, var(--primary-50), #fff);
+    background: linear-gradient(135deg, var(--primary-50), var(--admin-bg, #edf6fb));
     border: 1px solid var(--primary-100);
     border-radius: 12px;
     padding: 1rem 1.5rem;
@@ -415,3 +415,4 @@
     color: #ef4444;
     border-color: #fee2e2;
 }
+
