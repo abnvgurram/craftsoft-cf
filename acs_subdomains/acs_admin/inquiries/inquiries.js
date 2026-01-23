@@ -9,53 +9,43 @@ const itemsPerPage = window.innerWidth <= 1250 ? 5 : 10;
 let selectedInquiries = new Set();
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Inquiries: DOMContentLoaded started');
     try {
         // 1. Check Auth
         const session = await window.supabaseConfig.getSession();
         if (!session) {
-            console.log('Inquiries: No session, redirecting to login');
             window.location.href = '/';
             return;
         }
 
         // 2. Initialize Sidebar & Header (CRITICAL for UI)
         if (window.AdminSidebar) {
-            console.log('Inquiries: Initializing sidebar');
             window.AdminSidebar.init('inquiries', '/');
         }
 
         const headerCont = document.getElementById('header-container');
         if (headerCont && window.AdminHeader) {
-            console.log('Inquiries: Rendering header');
             headerCont.innerHTML = window.AdminHeader.render('Inquiries');
         }
 
         const admin = await window.Auth.getCurrentAdmin();
         if (admin && window.AdminSidebar && window.AdminSidebar.renderAccountPanel) {
-            console.log('Inquiries: Rendering account panel');
             await window.AdminSidebar.renderAccountPanel(session, admin);
         }
 
         // 3. Load Stats & Data
-        console.log('Inquiries: Loading stats');
         initializeStats();
 
-        console.log('Inquiries: Loading master data');
         await Promise.all([loadCourses(), loadServices()]);
 
-        console.log('Inquiries: Loading inquiries');
         await loadInquiries();
 
         // 4. Bind UI Events
-        console.log('Inquiries: Binding events');
         bindFormEvents();
         bindDeleteEvents();
         bindFilterEvents();
 
-        console.log('Inquiries: Initialization complete');
     } catch (error) {
-        console.error('CRITICAL: Inquiries initialization failed:', error);
+        console.error('Inquiries initialization failed:', error);
         const content = document.getElementById('inquiries-content');
         if (content) {
             content.innerHTML = `<div class="p-4 text-center text-danger">
@@ -66,6 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
+
 
 function handleFilter() {
     const q = document.getElementById('inquiry-search')?.value.toLowerCase() || '';

@@ -285,10 +285,10 @@
                 let hasError = false;
 
                 if (!identifier) {
-                    FormHelpers.showError('identifier', 'Please enter your Admin ID or Email');
+                    FormHelpers.showError('identifier', 'Please enter your Email, Admin ID or Phone');
                     hasError = true;
-                } else if (!Validators.isValidAdminId(identifier) && !Validators.isValidEmail(identifier)) {
-                    FormHelpers.showError('identifier', 'Please enter a valid Admin ID (ACS-XX) or Email');
+                } else if (!Validators.isValidAdminId(identifier) && !Validators.isValidEmail(identifier) && !Validators.isValidPhone(identifier)) {
+                    FormHelpers.showError('identifier', 'Please enter a valid Email, Admin ID (ACS-XX) or Phone');
                     hasError = true;
                 }
 
@@ -378,5 +378,3 @@
 </body>
 
 </html>
-
-

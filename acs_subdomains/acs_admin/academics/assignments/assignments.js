@@ -13,7 +13,7 @@
     let currentDeleteId = null;
     let currentAdmin = null;
     let currentPage = 1;
-    const perPage = 3;
+    const perPage = 10;
 
     let courseSearchableSelect = null;
     let studentSearchableSelect = null;
@@ -33,7 +33,7 @@
     async function init() {
         const session = await window.supabaseConfig.getSession();
         if (!session) {
-            window.location.href = '../../login.html';
+            window.location.href = '/login';
             return;
         }
 
@@ -250,6 +250,121 @@
         const start = (currentPage - 1) * perPage;
         const pageData = allAssignments.slice(start, start + perPage);
 
+        const tableHTML = `
+            <div class="table-container">
+                <table class="recent-table">
+                    <thead>
+                        <tr>
+                            <th width="40"><input type="checkbox" id="select-all" onchange="window.toggleSelectAll(this.checked)"></th>
+                            <th>Title</th>
+                            <th>Course</th>
+                            <th>Deadline</th>
+                            <th width="120">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${pageData.map(a => {
+            const now = new Date();
+            const deadlineDate = new Date(a.deadline);
+            const hasSubmission = a.has_submission;
+            const isPastDeadline = deadlineDate < now;
+
+            let deadlineCell = '';
+            let showEditBtn = true;
+
+            if (hasSubmission) {
+                deadlineCell = '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Submitted</span>';
+                showEditBtn = false;
+            } else if (isPastDeadline) {
+                deadlineCell = `<span class="badge badge-danger"><i class="fa-solid fa-xmark"></i> Not Submitted</span>
+                                <br><small class="text-muted" style="text-decoration:line-through;">${formatDeadline(a.deadline)}</small>`;
+                showEditBtn = false;
+            } else {
+                deadlineCell = `<span class="deadline-tag ${isUrgent(a.deadline) ? 'urgent' : ''}">${formatDeadline(a.deadline)}</span>
+                                ${a.is_deadline_edited ? '<br><small class="text-muted">✏️ Edited</small>' : ''}`;
+            }
+
+            return `
+                            <tr>
+                                <td><input type="checkbox" class="assign-checkbox" data-id="${a.id}" onchange="window.updateBulkBar()"></td>
+                                <td>
+                                    <strong>${a.title}</strong>
+                                    ${a.file_url ? `<br><a href="${a.file_url}" target="_blank" class="file-link small"><i class="fa-solid fa-paperclip"></i> Reference</a>` : ''}
+                                </td>
+                                <td><span class="badge badge-primary">${a.course_code}</span></td>
+                                <td>${deadlineCell}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        ${showEditBtn ? `<button class="icon-btn btn-outline-primary" onclick="window.openEditDeadlineModal('${a.id}', '${a.title}', '${a.deadline}')" title="Edit Deadline">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>` : ''}
+                                        <button class="icon-btn btn-outline-danger" onclick="window.confirmDeleteAssign('${a.id}')" title="Delete">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `}).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        const cardsHTML = `
+            <div class="data-cards">
+                ${pageData.map(a => {
+            const now = new Date();
+            const deadlineDate = new Date(a.deadline);
+            const hasSubmission = a.has_submission;
+            const isPastDeadline = deadlineDate < now;
+
+            let deadlineBadge = '';
+            let showEditBtn = true;
+
+            if (hasSubmission) {
+                deadlineBadge = '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Submitted</span>';
+                showEditBtn = false;
+            } else if (isPastDeadline) {
+                deadlineBadge = `<span class="badge badge-danger"><i class="fa-solid fa-xmark"></i> Overdue</span>`;
+                showEditBtn = false;
+            } else {
+                deadlineBadge = `<span class="deadline-tag ${isUrgent(a.deadline) ? 'urgent' : ''}">${formatDeadline(a.deadline)}</span>`;
+            }
+
+            return `
+                    <div class="premium-card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <input type="checkbox" class="assign-checkbox" data-id="${a.id}" onchange="window.updateBulkBar()">
+                                <span class="card-id-badge">${a.course_code}</span>
+                            </div>
+                            <div class="card-header-right">
+                                ${deadlineBadge}
+                            </div>
+                        </div>
+                        <div class="card-body" style="text-align: left;">
+                            <h4 class="card-name" style="margin-bottom: 0.5rem;">${a.title}</h4>
+                            <div class="card-info-row">
+                                <div class="card-info-item"><i class="fa-solid fa-calendar-day"></i> Due: ${formatDeadline(a.deadline)}</div>
+                                ${a.file_url ? `<div class="card-info-item"><i class="fa-solid fa-paperclip"></i> <a href="${a.file_url}" target="_blank" class="file-link">View Reference</a></div>` : ''}
+                                ${a.is_deadline_edited ? `<div class="card-info-item" style="font-size: 0.75rem; color: var(--admin-text-muted);">✏️ Edited by admin</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            ${showEditBtn ? `
+                                <button class="card-action-btn primary" onclick="window.openEditDeadlineModal('${a.id}', '${a.title}', '${a.deadline}')">
+                                    <i class="fa-solid fa-pen"></i> <span>Edit</span>
+                                </button>
+                            ` : ''}
+                            <button class="card-action-btn delete" onclick="window.confirmDeleteAssign('${a.id}')">
+                                <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `}).join('')}
+            </div>
+        `;
+
         historyContent.innerHTML = `
             <div class="stats-strip">
                 <div class="stat-item">
@@ -265,64 +380,8 @@
                     </button>
                 </div>
             </div>
-            <table class="recent-table">
-                <thead>
-                    <tr>
-                        <th width="40"><input type="checkbox" id="select-all" onchange="window.toggleSelectAll(this.checked)"></th>
-                        <th>Title</th>
-                        <th>Course</th>
-                        <th>Deadline</th>
-                        <th width="120">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${pageData.map(a => {
-            const now = new Date();
-            const deadlineDate = new Date(a.deadline);
-            const hasSubmission = a.has_submission;
-            const isPastDeadline = deadlineDate < now;
-
-            let deadlineCell = '';
-            let showEditBtn = true;
-
-            if (hasSubmission) {
-                // Submitted - show green badge, hide edit
-                deadlineCell = '<span class="badge badge-success"><i class="fa-solid fa-check"></i> Submitted</span>';
-                showEditBtn = false;
-            } else if (isPastDeadline) {
-                // Past deadline, not submitted - show red badge
-                deadlineCell = `<span class="badge badge-danger"><i class="fa-solid fa-xmark"></i> Not Submitted</span>
-                                <br><small class="text-muted" style="text-decoration:line-through;">${formatDeadline(a.deadline)}</small>`;
-                showEditBtn = false;
-            } else {
-                // Active deadline
-                deadlineCell = `<span class="deadline-tag ${isUrgent(a.deadline) ? 'urgent' : ''}">${formatDeadline(a.deadline)}</span>
-                                ${a.is_deadline_edited ? '<br><small class="text-muted">✏️ Edited</small>' : ''}`;
-            }
-
-            return `
-                        <tr>
-                            <td><input type="checkbox" class="assign-checkbox" data-id="${a.id}" onchange="window.updateBulkBar()"></td>
-                            <td>
-                                <strong>${a.title}</strong>
-                                ${a.file_url ? `<br><a href="${a.file_url}" target="_blank" class="file-link small"><i class="fa-solid fa-paperclip"></i> Reference</a>` : ''}
-                            </td>
-                            <td><span class="badge badge-primary">${a.course_code}</span></td>
-                            <td>${deadlineCell}</td>
-                            <td>
-                                <div class="action-buttons">
-                                    ${showEditBtn ? `<button class="icon-btn btn-outline-primary" onclick="window.openEditDeadlineModal('${a.id}', '${a.title}', '${a.deadline}')" title="Edit Deadline">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </button>` : ''}
-                                    <button class="icon-btn btn-outline-danger" onclick="window.confirmDeleteAssign('${a.id}')" title="Delete">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `}).join('')}
-                </tbody>
-            </table>
+            ${tableHTML}
+            ${cardsHTML}
             <div class="pagination-controls" style="display:flex; align-items:center; justify-content:center; gap:1rem; margin-top:1.5rem;">
                 <button class="btn btn-outline btn-sm" id="assign-prev" ${currentPage <= 1 ? 'disabled' : ''}>
                     <i class="fa-solid fa-chevron-left"></i> Prev
@@ -350,7 +409,7 @@
         try {
             const { data, error } = await window.supabaseClient
                 .from('assignment_extensions')
-                .select('*, student:students(first_name, last_name), assign:student_assignments(title)')
+                .select('*, student:students(first_name, last_name), assign:student_assignments(title, course_code)')
                 .eq('status', 'PENDING');
 
             if (error) throw error;
@@ -364,22 +423,41 @@
                 return;
             }
 
-            content.innerHTML = requests.map(r => `
-                <div class="extension-card">
-                    <div class="ext-info">
-                        <h4>${r.student ? r.student.first_name + ' ' + r.student.last_name : 'Unknown Student'}</h4>
-                        <p class="text-muted">Requesting extension for: <strong>${r.assign?.title || 'Assignment'}</strong></p>
-                        <div class="ext-reason">"${r.reason}"</div>
-                        <div class="ext-meta">
-                            <span class="ext-meta-item"><i class="fa-solid fa-calendar-plus"></i> New Date: ${new Date(r.requested_deadline).toLocaleDateString()}</span>
+            // Render both table-like layout and cards
+            content.innerHTML = `
+                <div class="data-cards">
+                    ${requests.map(r => `
+                        <div class="premium-card">
+                            <div class="card-header">
+                                <div class="card-header-left">
+                                    <span class="card-id-badge">${r.assign?.course_code || 'N/A'}</span>
+                                </div>
+                                <div class="card-header-right">
+                                    <span class="badge badge-warning">Extension Request</span>
+                                </div>
+                            </div>
+                            <div class="card-body" style="text-align: left;">
+                                <h4 class="card-name" style="margin-bottom: 0.5rem;">${r.student ? r.student.first_name + ' ' + r.student.last_name : 'Unknown Student'}</h4>
+                                <p style="font-size: 0.85rem; margin-bottom: 0.75rem;">For: <strong>${r.assign?.title || 'Assignment'}</strong></p>
+                                <div class="ext-reason" style="background: var(--gray-50); padding: 0.75rem; border-radius: 8px; border-left: 3px solid var(--primary-300);">
+                                    "${r.reason}"
+                                </div>
+                                <div class="card-info-row" style="margin-top: 1rem;">
+                                    <div class="card-info-item"><i class="fa-solid fa-calendar-plus"></i> Requested: ${new Date(r.requested_deadline).toLocaleDateString()}</div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="card-action-btn success" onclick="window.handleExtension('${r.id}', 'APPROVED')">
+                                    <i class="fa-solid fa-check"></i> <span>Approve</span>
+                                </button>
+                                <button class="card-action-btn delete" onclick="window.handleExtension('${r.id}', 'REJECTED')">
+                                    <i class="fa-solid fa-xmark"></i> <span>Reject</span>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="ext-actions">
-                        <button class="btn btn-primary btn-sm" onclick="window.handleExtension('${r.id}', 'APPROVED')">Approve</button>
-                        <button class="btn btn-outline btn-danger btn-sm" onclick="window.handleExtension('${r.id}', 'REJECTED')">Reject</button>
-                    </div>
+                    `).join('')}
                 </div>
-            `).join('');
+            `;
 
         } catch (err) {
             console.error('Load extensions error:', err);
@@ -409,6 +487,15 @@
         document.getElementById('delete-overlay').style.display = 'flex';
     };
 
+    window.handleLogout = async () => {
+        const { Modal } = window.AdminUtils || {};
+        if (Modal) {
+            Modal.confirm('Sign Out', 'Are you sure you want to sign out?', async () => {
+                await window.Auth.signOut();
+            });
+        }
+    };
+
     window.toggleSelectAll = (checked) => {
         document.querySelectorAll('.assign-checkbox').forEach(cb => cb.checked = checked);
         window.updateBulkBar();
@@ -431,21 +518,24 @@
         const selected = document.querySelectorAll('.assign-checkbox:checked');
         if (selected.length === 0) return;
 
-        if (!confirm(`Are you sure you want to delete ${selected.length} assignment(s)?`)) return;
+        const { Modal } = window.AdminUtils || {};
+        if (!Modal) return;
 
-        try {
-            const ids = Array.from(selected).map(cb => cb.dataset.id);
-            const { error } = await window.supabaseClient
-                .from('student_assignments')
-                .delete()
-                .in('id', ids);
+        Modal.confirm('Bulk Delete', `Delete ${selected.length} assignment(s)?`, async () => {
+            try {
+                const ids = Array.from(selected).map(cb => cb.dataset.id);
+                const { error } = await window.supabaseClient
+                    .from('student_assignments')
+                    .delete()
+                    .in('id', ids);
 
-            if (error) throw error;
-            showToast('success', `${ids.length} assignment(s) deleted`);
-            await loadAssignments();
-        } catch (e) {
-            showToast('error', 'Failed to delete assignments');
-        }
+                if (error) throw error;
+                showToast('success', `${ids.length} assignment(s) deleted`);
+                await loadAssignments();
+            } catch (e) {
+                showToast('error', 'Failed to delete assignments');
+            }
+        });
     };
 
     // ============================================

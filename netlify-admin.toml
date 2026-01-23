@@ -64,7 +64,7 @@
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/login"
-  to = "/acs_subdomains/acs_admin/login.html"
+  to = "/acs_subdomains/acs_admin/index.html"
   status = 200
   force = true
 
@@ -286,6 +286,35 @@
   status = 200
   force = true
 
+# Records (NEW Clean URLs)
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/archived-records"
+  to = "/acs_subdomains/acs_admin/records/archived/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/archived-records/"
+  to = "/acs_subdomains/acs_admin/records/archived/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/recently-deleted"
+  to = "/acs_subdomains/acs_admin/records/recently-deleted/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/recently-deleted/"
+  to = "/acs_subdomains/acs_admin/records/recently-deleted/index.html"
+  status = 200
+  force = true
+
 # Payments
 [[redirects]]
   host = "admin.craftsoft.co.in"
@@ -312,6 +341,20 @@
   host = "admin.craftsoft.co.in"
   from = "/all-payments/"
   to = "/acs_subdomains/acs_admin/payments/all-payments/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/payment-receipts"
+  to = "/acs_subdomains/acs_admin/payments/receipts/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/payment-receipts/"
+  to = "/acs_subdomains/acs_admin/payments/receipts/index.html"
   status = 200
   force = true
 
@@ -394,45 +437,51 @@
   status = 200
   force = true
 
-# v-History (Moved from settings - Clean URL)
+# Version History (Moved from settings - Clean URL)
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/version-history/*"
+  to = "/acs_subdomains/acs_admin/version-history/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/version-history"
+  to = "/acs_subdomains/acs_admin/version-history/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/version-history/"
+  to = "/acs_subdomains/acs_admin/version-history/index.html"
+  status = 200
+  force = true
+
+# Version History Legacy Redirects
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/v-history/*"
-  to = "/acs_subdomains/acs_admin/v-history/:splat"
-  status = 200
-  force = true
+  to = "/version-history/:splat"
+  status = 301
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/v-history"
-  to = "/acs_subdomains/acs_admin/v-history/index.html"
-  status = 200
-  force = true
+  to = "/version-history/"
+  status = 301
 
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/v-history/"
-  to = "/acs_subdomains/acs_admin/v-history/index.html"
-  status = 200
-  force = true
-
-# v-History Legacy Redirects
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/vhistory/*"
-  to = "/v-history/:splat"
+  to = "/version-history/:splat"
   status = 301
 
 [[redirects]]
   host = "admin.craftsoft.co.in"
   from = "/vhistory"
-  to = "/v-history/"
-  status = 301
-
-[[redirects]]
-  host = "admin.craftsoft.co.in"
-  from = "/version-history"
-  to = "/v-history/"
+  to = "/version-history/"
   status = 301
 
 

@@ -40,13 +40,14 @@ const AdminSidebar = {
         const isFinancialsChild = ['record-payment', 'all-payments', 'receipts'].includes(this.currentPage);
         const isOperationsChild = ['students', 'clients', 'courses', 'services'].includes(this.currentPage);
         const isRecordsChild = ['archived', 'recently-deleted'].includes(this.currentPage);
+        const isAcademicsChild = ['upload-materials', 'assignments', 'submissions'].includes(this.currentPage);
 
         // Desktop sidebar (always expanded)
         const sidebarHTML = `
             <aside class="admin-sidebar" id="admin-sidebar">
                 <nav class="sidebar-nav">
                     <div class="sidebar-header">
-                        <a href="${this.rootPath}dashboard/" class="logo-component">
+                        <a href="/dashboard/" class="logo-component">
                             <div class="logo-text-wrapper desktop-logo">
                                 <span class="logo-sig-cursive">Abhi's</span>
                                 <span class="logo-accent-sans">Craftsoft</span>
@@ -55,35 +56,35 @@ const AdminSidebar = {
                     </div>
                     <div class="sidebar-scroll-area">
                         ${this.sectionLabel('General')}
-                        ${this.navItem('dashboard', 'Dashboard', 'fa-chart-pie')}
-                        ${this.navItem('inquiries', 'Inquiries', 'fa-solid fa-circle-question')}
+                        ${this.navItemAbsolute('dashboard', 'Dashboard', 'fa-chart-pie', '/dashboard/')}
+                        ${this.navItemAbsolute('inquiries', 'Inquiries', 'fa-solid fa-circle-question', '/inquiries/')}
                         
                         ${this.sectionLabel('Academics')}
                         ${this.navItemAbsolute('upload-materials', 'Upload Materials', 'fa-solid fa-upload', '/upload-materials/')}
-                        ${this.navItemAbsolute('assignments', 'Assignments', 'fa-solid fa-book-open', '/assignments/')}
+                        ${this.navItemAbsolute('assignments', 'Assignments', 'fa-solid fa-file-pen', '/assignments/')}
                         ${this.navItemAbsolute('submissions', 'Submissions', 'fa-solid fa-book-atlas', '/submissions/')}
                         
                         ${this.sectionLabel('Talent')}
-                        ${this.navItem('tutors', 'Tutors', 'fa-chalkboard-user', 'tutors')}
+                        ${this.navItemAbsolute('tutors', 'Tutors', 'fa-chalkboard-user', '/tutors/')}
 
                         ${this.sectionLabel('Operations')}
-                        ${this.navItem('students', 'Students', 'fa-user-graduate', 'students-clients/students')}
-                        ${this.navItem('clients', 'Clients', 'fa-user-tie', 'students-clients/clients')}
-                        ${this.navItem('courses', 'Courses', 'fa-book-bookmark', 'courses-services/courses')}
-                        ${this.navItem('services', 'Services', 'fa-wrench', 'courses-services/services')}
+                        ${this.navItemAbsolute('students', 'Students', 'fa-user-graduate', '/students/')}
+                        ${this.navItemAbsolute('clients', 'Clients', 'fa-user-tie', '/clients/')}
+                        ${this.navItemAbsolute('courses', 'Courses', 'fa-book-bookmark', '/courses/')}
+                        ${this.navItemAbsolute('services', 'Services', 'fa-wrench', '/services/')}
 
                         ${this.sectionLabel('Records')}
-                        ${this.navItem('archived', 'Archived Records', 'fa-solid fa-box', 'records/archived')}
-                        ${this.navItem('recently-deleted', 'Recently Deleted', 'fa-solid fa-trash-can', 'records/recently-deleted')}
+                        ${this.navItemAbsolute('archived', 'Archived Records', 'fa-solid fa-box', '/archived-records/')}
+                        ${this.navItemAbsolute('recently-deleted', 'Recently Deleted', 'fa-solid fa-trash-can', '/recently-deleted/')}
 
                         ${this.sectionLabel('Financials')}
-                        ${this.navItem('all-payments', 'All Payments', 'fa-money-bill-trend-up', 'payments/all-payments')}
-                        ${this.navItem('record-payment', 'Record Payment', 'fa-indian-rupee-sign', 'payments/record-payment')}
-                        ${this.navItem('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
+                        ${this.navItemAbsolute('all-payments', 'All Payments', 'fa-money-bill-trend-up', '/all-payments/')}
+                        ${this.navItemAbsolute('record-payment', 'Record Payment', 'fa-indian-rupee-sign', '/record-payment/')}
+                        ${this.navItemAbsolute('receipts', 'Payment Receipts', 'fa-file-invoice', '/payment-receipts/')}
 
                         ${this.sectionLabel('System')}
-                        ${this.navItem('v-history', 'v-History', 'fa-solid fa-clock-rotate-left', 'v-history')}
-                        ${this.navItem('settings', 'Settings', 'fa-gear', 'settings')}
+                        ${this.navItemAbsolute('version-history', 'v-History', 'fa-solid fa-clock-rotate-left', '/version-history/')}
+                        ${this.navItemAbsolute('settings', 'Settings', 'fa-gear', '/settings/')}
                     </div>
                 </nav>
             </aside>
@@ -91,8 +92,9 @@ const AdminSidebar = {
 
         // Mobile nav bottom sheet (collapsible groups)
         const activeGroup = isOperationsChild ? 'operations' :
-            isFinancialsChild ? 'financials' :
-                isRecordsChild ? 'records' : null;
+            isRecordsChild ? 'records' :
+                isFinancialsChild ? 'financials' :
+                    isAcademicsChild ? 'academics' : null;
 
         const mobileNavHTML = `
             <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
@@ -104,16 +106,26 @@ const AdminSidebar = {
                     </button>
                 </div>
                 <nav class="mobile-nav-list">
-                    ${this.mobileNavItem('dashboard', 'Dashboard', 'fa-chart-pie')}
-                    ${this.mobileNavItem('inquiries', 'Inquiries', 'fa-solid fa-circle-question')}
-                    ${this.mobileNavItem('tutors', 'Tutors', 'fa-chalkboard-user', 'tutors')}
+                    ${this.mobileNavItemAbsolute('dashboard', 'Dashboard', 'fa-chart-pie', '/dashboard/')}
+                    ${this.mobileNavItemAbsolute('inquiries', 'Inquiries', 'fa-solid fa-circle-question', '/inquiries/')}
                     
-                    <!-- Academics (Mobile) -->
-                    <div class="mobile-nav-children-standalone">
-                         ${this.mobileNavItemAbsolute('upload-materials', 'Upload Materials', 'fa-solid fa-upload', '/upload-materials/')}
-                         ${this.mobileNavItemAbsolute('assignments', 'Assignments', 'fa-solid fa-book-open', '/assignments/')}
-                         ${this.mobileNavItemAbsolute('submissions', 'Submissions', 'fa-solid fa-book-atlas', '/submissions/')}
+                    <!-- Academics Parent -->
+                    <div class="mobile-nav-parent ${activeGroup === 'academics' ? 'expanded' : ''}" id="mobile-academics-parent">
+                        <button class="mobile-nav-parent-btn" id="mobile-academics-toggle">
+                            <i class="fa-solid fa-book-open"></i>
+                            <span>Academics</span>
+                            <i class="fa-solid fa-chevron-right mobile-nav-arrow"></i>
+                        </button>
+                        <div class="mobile-nav-children">
+                            <div style="min-height: 0;">
+                                 ${this.mobileNavItemAbsolute('upload-materials', 'Upload Materials', 'fa-solid fa-upload', '/upload-materials/')}
+                                 ${this.mobileNavItemAbsolute('assignments', 'Assignments', 'fa-solid fa-file-pen', '/assignments/')}
+                                 ${this.mobileNavItemAbsolute('submissions', 'Submissions', 'fa-solid fa-book-atlas', '/submissions/')}
+                            </div>
+                        </div>
                     </div>
+
+                    ${this.mobileNavItemAbsolute('tutors', 'Tutors', 'fa-chalkboard-user', '/tutors/')}
 
                     <!-- Operations Parent -->
                     <div class="mobile-nav-parent ${activeGroup === 'operations' ? 'expanded' : ''}" id="mobile-operations-parent">
@@ -124,10 +136,10 @@ const AdminSidebar = {
                         </button>
                         <div class="mobile-nav-children">
                             <div style="min-height: 0;">
-                                ${this.mobileNavItemChild('students', 'Students', 'fa-user-graduate', 'students-clients/students')}
-                                ${this.mobileNavItemChild('clients', 'Clients', 'fa-user-tie', 'students-clients/clients')}
-                                ${this.mobileNavItemChild('courses', 'Courses', 'fa-book-bookmark', 'courses-services/courses')}
-                                ${this.mobileNavItemChild('services', 'Services', 'fa-wrench', 'courses-services/services')}
+                                ${this.mobileNavItemAbsolute('students', 'Students', 'fa-user-graduate', '/students/')}
+                                ${this.mobileNavItemAbsolute('clients', 'Clients', 'fa-user-tie', '/clients/')}
+                                ${this.mobileNavItemAbsolute('courses', 'Courses', 'fa-book-bookmark', '/courses/')}
+                                ${this.mobileNavItemAbsolute('services', 'Services', 'fa-wrench', '/services/')}
                             </div>
                         </div>
                     </div>
@@ -141,8 +153,8 @@ const AdminSidebar = {
                         </button>
                         <div class="mobile-nav-children">
                             <div style="min-height: 0;">
-                                ${this.mobileNavItemChild('archived', 'Archived Records', 'fa-solid fa-box', 'records/archived')}
-                                ${this.mobileNavItemChild('recently-deleted', 'Recently Deleted', 'fa-solid fa-trash-can', 'records/recently-deleted')}
+                                ${this.mobileNavItemAbsolute('archived', 'Archived Records', 'fa-solid fa-box', '/archived-records/')}
+                                ${this.mobileNavItemAbsolute('recently-deleted', 'Recently Deleted', 'fa-solid fa-trash-can', '/recently-deleted/')}
                             </div>
                         </div>
                     </div>
@@ -156,18 +168,16 @@ const AdminSidebar = {
                         </button>
                         <div class="mobile-nav-children">
                             <div style="min-height: 0;">
-                                ${this.mobileNavItemChild('all-payments', 'All Payments', 'fa-money-bill-trend-up', 'payments/all-payments')}
-                                ${this.mobileNavItemChild('record-payment', 'Record Payment', 'fa-indian-rupee-sign', 'payments/record-payment')}
-                                ${this.mobileNavItemChild('receipts', 'Receipts', 'fa-file-invoice', 'payments/receipts')}
+                                ${this.mobileNavItemAbsolute('all-payments', 'All Payments', 'fa-money-bill-trend-up', '/all-payments/')}
+                                ${this.mobileNavItemAbsolute('record-payment', 'Record Payment', 'fa-indian-rupee-sign', '/record-payment/')}
+                                ${this.mobileNavItemAbsolute('receipts', 'Payment Receipts', 'fa-file-invoice', '/payment-receipts/')}
                             </div>
                         </div>
                     </div>
                     
-                    ${this.mobileNavItem('v-history', 'v-History', 'fa-solid fa-clock-rotate-left', 'v-history')}
-                    ${this.mobileNavItem('settings', 'Settings', 'fa-gear', 'settings')}
+                    ${this.mobileNavItemAbsolute('version-history', 'v-History', 'fa-solid fa-clock-rotate-left', '/version-history/')}
+                    ${this.mobileNavItemAbsolute('settings', 'Settings', 'fa-gear', '/settings/')}
                 </nav>
-                
-                </div>
             </div>
         `;
 
@@ -180,43 +190,19 @@ const AdminSidebar = {
 
     // Section label for desktop
     sectionLabel(text) {
-        return `<div class="sidebar-section-label desktop-only" style="margin-top: 5px; padding-top: 15px;">${text}</div>`;
+        return `<div class="sidebar-section-label desktop-only" style="margin-top: 5px; padding-top: 15px; pointer-events: none; opacity: 0.7; font-size: 0.7rem; letter-spacing: 0.05em;">${text}</div>`;
     },
 
-    // Child nav item for desktop (indented)
-    navItemChild(page, label, icon, path) {
-        const href = `${this.rootPath}${path}/`;
-        return `<a href="${href}" class="sidebar-item sidebar-child ${this.currentPage === page ? 'active' : ''}" title="${label}"><i class="fa-solid ${icon}"></i><span>${label}</span></a>`;
-    },
-
-    // Child nav item for mobile (indented)
-    mobileNavItemChild(page, label, icon, path) {
-        const href = `${this.rootPath}${path}/`;
-        return `<a href="${href}" class="mobile-nav-item mobile-nav-child ${this.currentPage === page ? 'active' : ''}"><i class="fa-solid ${icon}"></i><span>${label}</span></a>`;
-    },
-
-    navItem(page, label, icon, path = null) {
-        const href = path ? `${this.rootPath}${path}/` : `${this.rootPath}${page}/`;
-        const iconClass = icon.includes(' ') ? icon : `fa-solid ${icon}`;
-        return `<a href="${href}" class="sidebar-item ${this.currentPage === page ? 'active' : ''}" title="${label}"><i class="${iconClass}"></i><span>${label}</span></a>`;
-    },
-
-    // Absolute path variant (for clean URLs)
     navItemAbsolute(page, label, icon, absolutePath) {
         const iconClass = icon.includes(' ') ? icon : `fa-solid ${icon}`;
-        return `<a href="${absolutePath}" class="sidebar-item ${this.currentPage === page ? 'active' : ''}" title="${label}"><i class="${iconClass}"></i><span>${label}</span></a>`;
+        const isActive = this.currentPage === page;
+        return `<a href="${absolutePath}" class="sidebar-item ${isActive ? 'active' : ''}" title="${label}"><i class="${iconClass}"></i><span>${label}</span></a>`;
     },
 
-    mobileNavItem(page, label, icon, path = null) {
-        const href = path ? `${this.rootPath}${path}/` : `${this.rootPath}${page}/`;
-        const iconClass = icon.includes(' ') ? icon : `fa-solid ${icon}`;
-        return `<a href="${href}" class="mobile-nav-item ${this.currentPage === page ? 'active' : ''}"><i class="${iconClass}"></i><span>${label}</span></a>`;
-    },
-
-    // Absolute path variant for mobile (for clean URLs)
     mobileNavItemAbsolute(page, label, icon, absolutePath) {
         const iconClass = icon.includes(' ') ? icon : `fa-solid ${icon}`;
-        return `<a href="${absolutePath}" class="mobile-nav-item ${this.currentPage === page ? 'active' : ''}"><i class="${iconClass}"></i><span>${label}</span></a>`;
+        const isActive = this.currentPage === page;
+        return `<a href="${absolutePath}" class="mobile-nav-item ${isActive ? 'active' : ''}"><i class="${iconClass}"></i><span>${label}</span></a>`;
     },
 
     openMobileNav() {
@@ -255,24 +241,17 @@ const AdminSidebar = {
             this.closeMobileNav();
         });
 
-        // Mobile Courses & Services expand/collapse
-        document.getElementById('mobile-courses-services-toggle')?.addEventListener('click', (e) => {
+        // Mobile Academics expand/collapse
+        document.getElementById('mobile-academics-toggle')?.addEventListener('click', (e) => {
             e.preventDefault();
-            const parent = document.getElementById('mobile-courses-services-parent');
+            const parent = document.getElementById('mobile-academics-parent');
             parent?.classList.toggle('expanded');
         });
 
-        // Mobile Students & Clients expand/collapse
-        document.getElementById('mobile-students-clients-toggle')?.addEventListener('click', (e) => {
+        // Mobile Operations expand/collapse
+        document.getElementById('mobile-operations-toggle')?.addEventListener('click', (e) => {
             e.preventDefault();
-            const parent = document.getElementById('mobile-students-clients-parent');
-            parent?.classList.toggle('expanded');
-        });
-
-        // Mobile Payments expand/collapse toggle
-        document.getElementById('mobile-payments-toggle')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            const parent = document.getElementById('mobile-payments-parent');
+            const parent = document.getElementById('mobile-operations-parent');
             parent?.classList.toggle('expanded');
         });
 
@@ -280,6 +259,13 @@ const AdminSidebar = {
         document.getElementById('mobile-records-toggle')?.addEventListener('click', (e) => {
             e.preventDefault();
             const parent = document.getElementById('mobile-records-parent');
+            parent?.classList.toggle('expanded');
+        });
+
+        // Mobile Financials expand/collapse toggle
+        document.getElementById('mobile-financials-toggle')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const parent = document.getElementById('mobile-financials-parent');
             parent?.classList.toggle('expanded');
         });
     },

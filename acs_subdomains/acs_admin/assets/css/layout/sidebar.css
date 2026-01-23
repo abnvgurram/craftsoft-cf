@@ -302,6 +302,8 @@
     letter-spacing: 1.2px;
     opacity: 0.8;
     margin-top: 5px;
+    pointer-events: none;
+    user-select: none;
 }
 
 .sidebar-spacer {

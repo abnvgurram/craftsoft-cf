@@ -462,6 +462,16 @@
     flex: 1;
 }
 
+@media (max-width: 1250px) {
+    .table-container {
+        display: none !important;
+    }
+
+    .data-cards {
+        display: flex;
+    }
+}
+
 @media (max-width: 768px) {
     .history-pagination {
         flex-direction: column;
@@ -488,4 +498,103 @@
     .delete-confirm-box {
         padding: 2rem 1.5rem;
     }
+}
+
+/* Premium Card Layout (Responsive) */
+.data-cards {
+    display: none;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-bottom: 2rem;
+}
+
+.premium-card {
+    background: #fff;
+    border: 1px solid var(--admin-input-border, #e2e8f0);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease;
+}
+
+.card-header {
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card-id-badge {
+    font-family: inherit;
+    font-size: 0.75rem;
+    color: var(--primary-600);
+    background: var(--primary-50);
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.card-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--admin-text-primary, #0f172a);
+    margin: 0;
+}
+
+.card-info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-info-item {
+    font-size: 0.85rem;
+    color: var(--admin-text-secondary, #64748b);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-info-item i {
+    width: 14px;
+    color: var(--primary-400);
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-100);
+}
+
+.card-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--admin-input-border);
+    background: #fff;
+}
+
+.card-action-btn:active {
+    transform: scale(0.98);
+}
+
+.card-action-btn.delete {
+    color: #ef4444;
+    border-color: #fee2e2;
 }

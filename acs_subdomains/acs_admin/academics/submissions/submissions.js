@@ -23,7 +23,7 @@
     async function init() {
         const session = await window.supabaseConfig.getSession();
         if (!session) {
-            window.location.href = '../../login.html';
+            window.location.href = '/login';
             return;
         }
 
@@ -121,44 +121,81 @@
         const start = (currentPage - 1) * perPage;
         const pageData = filteredSubmissions.slice(start, start + perPage);
 
-        content.innerHTML = `
-            <table class="submissions-table">
-                <thead>
-                    <tr>
-                        <th width="40"><input type="checkbox" id="select-all" onchange="window.toggleSelectAll(this.checked)"></th>
-                        <th>Student</th>
-                        <th>Assignment</th>
-                        <th>Course</th>
-                        <th>Submitted</th>
-                        <th width="120">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${pageData.map(s => `
+        const tableHTML = `
+            <div class="table-container">
+                <table class="submissions-table">
+                    <thead>
                         <tr>
-                            <td><input type="checkbox" class="sub-checkbox" data-id="${s.id}" onchange="window.updateBulkBar()"></td>
-                            <td>
-                                <span class="student-name">${s.student?.first_name || ''} ${s.student?.last_name || ''}</span>
-                                <br><small class="text-muted">${s.student?.student_id || 'N/A'}</small>
-                            </td>
-                            <td class="assignment-title">${s.assignment?.title || 'Unknown'}</td>
-                            <td><span class="badge badge-primary">${s.assignment?.course_code || 'N/A'}</span></td>
-                            <td class="date-cell">${formatDate(s.submitted_at)}</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a href="${s.file_url}" target="_blank" download class="icon-btn btn-outline-success" title="Download">
-                                        <i class="fa-solid fa-download"></i>
-                                    </a>
-                                    <button class="icon-btn btn-outline-danger" onclick="window.deleteSubmission('${s.id}')" title="Delete">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
+                            <th width="40"><input type="checkbox" id="select-all" onchange="window.toggleSelectAll(this.checked)"></th>
+                            <th>Student</th>
+                            <th>Assignment</th>
+                            <th>Course</th>
+                            <th>Submitted</th>
+                            <th width="120">Action</th>
                         </tr>
-                    `).join('')}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        ${pageData.map(s => `
+                            <tr>
+                                <td><input type="checkbox" class="sub-checkbox" data-id="${s.id}" onchange="window.updateBulkBar()"></td>
+                                <td>
+                                    <span class="student-name">${s.student?.first_name || ''} ${s.student?.last_name || ''}</span>
+                                    <br><small class="text-muted">${s.student?.student_id || 'N/A'}</small>
+                                </td>
+                                <td class="assignment-title">${s.assignment?.title || 'Unknown'}</td>
+                                <td><span class="badge badge-primary">${s.assignment?.course_code || 'N/A'}</span></td>
+                                <td class="date-cell">${formatDate(s.submitted_at)}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="icon-btn btn-outline-success" onclick="window.downloadSubmission('${s.file_url}', '${s.assignment?.title || 'submission'}')" title="Download">
+                                            <i class="fa-solid fa-download"></i>
+                                        </button>
+                                        <button class="icon-btn btn-outline-danger" onclick="window.deleteSubmission('${s.id}')" title="Delete">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
         `;
+
+        const cardsHTML = `
+            <div class="data-cards">
+                ${pageData.map(s => `
+                    <div class="premium-card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <input type="checkbox" class="sub-checkbox" data-id="${s.id}" onchange="window.updateBulkBar()">
+                                <span class="card-id-badge">${s.assignment?.course_code || 'N/A'}</span>
+                            </div>
+                            <div class="card-header-right">
+                                <span class="badge badge-primary">${formatDate(s.submitted_at)}</span>
+                            </div>
+                        </div>
+                        <div class="card-body" style="text-align: left;">
+                            <h4 class="card-name" style="margin-bottom: 0.5rem;">${s.student ? s.student.first_name + ' ' + s.student.last_name : 'Unknown Student'}</h4>
+                            <p style="font-size: 0.85rem; color: var(--admin-text-muted); margin-bottom: 0.75rem;">${s.student?.student_id || 'N/A'}</p>
+                            <div class="card-info-row">
+                                <div class="card-info-item"><i class="fa-solid fa-file-pen"></i> Task: ${s.assignment?.title || 'Unknown'}</div>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn success" onclick="window.downloadSubmission('${s.file_url}', '${s.assignment?.title || 'submission'}')">
+                                <i class="fa-solid fa-download"></i> <span>Download</span>
+                            </button>
+                            <button class="card-action-btn delete" onclick="window.deleteSubmission('${s.id}')">
+                                <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        content.innerHTML = tableHTML + cardsHTML;
 
         // Update pagination
         document.getElementById('current-page').textContent = currentPage;
@@ -176,6 +213,38 @@
     }
 
     // Global handlers
+    window.handleLogout = async () => {
+        const { Modal } = window.AdminUtils || {};
+        if (Modal) {
+            Modal.confirm('Sign Out', 'Are you sure you want to sign out?', async () => {
+                await window.Auth.signOut();
+            });
+        }
+    };
+
+    window.downloadSubmission = async (url, title) => {
+        try {
+            showToast('info', 'Downloading...');
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Download failed');
+            const blob = await response.blob();
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            // Extract file extension from URL
+            const ext = url.split('.').pop().split('?')[0] || 'pdf';
+            link.download = `${title.replace(/[^a-zA-Z0-9]/g, '_')}.${ext}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            showToast('success', 'Downloaded successfully');
+        } catch (e) {
+            console.error('Download error:', e);
+            // Fallback: open in new tab
+            window.open(url, '_blank');
+        }
+    };
+
     window.toggleSelectAll = (checked) => {
         document.querySelectorAll('.sub-checkbox').forEach(cb => cb.checked = checked);
         window.updateBulkBar();
@@ -195,37 +264,45 @@
     };
 
     window.deleteSubmission = async (id) => {
-        if (!confirm('Delete this submission?')) return;
-        try {
-            const { error } = await window.supabaseClient
-                .from('student_submissions')
-                .delete()
-                .eq('id', id);
-            if (error) throw error;
-            showToast('success', 'Submission deleted');
-            await loadSubmissions();
-        } catch (e) {
-            showToast('error', 'Failed to delete');
-        }
+        const { Modal } = window.AdminUtils || {};
+        if (!Modal) return;
+
+        Modal.confirm('Delete Submission', 'Are you sure you want to delete this submission?', async () => {
+            try {
+                const { error } = await window.supabaseClient
+                    .from('student_submissions')
+                    .delete()
+                    .eq('id', id);
+                if (error) throw error;
+                showToast('success', 'Submission deleted');
+                await loadSubmissions();
+            } catch (e) {
+                showToast('error', 'Failed to delete');
+            }
+        });
     };
 
     window.bulkDeleteSubmissions = async () => {
         const selected = document.querySelectorAll('.sub-checkbox:checked');
         if (selected.length === 0) return;
-        if (!confirm(`Delete ${selected.length} submission(s)?`)) return;
 
-        try {
-            const ids = Array.from(selected).map(cb => cb.dataset.id);
-            const { error } = await window.supabaseClient
-                .from('student_submissions')
-                .delete()
-                .in('id', ids);
-            if (error) throw error;
-            showToast('success', `${ids.length} submission(s) deleted`);
-            await loadSubmissions();
-        } catch (e) {
-            showToast('error', 'Failed to delete');
-        }
+        const { Modal } = window.AdminUtils || {};
+        if (!Modal) return;
+
+        Modal.confirm('Bulk Delete', `Delete ${selected.length} submission(s)?`, async () => {
+            try {
+                const ids = Array.from(selected).map(cb => cb.dataset.id);
+                const { error } = await window.supabaseClient
+                    .from('student_submissions')
+                    .delete()
+                    .in('id', ids);
+                if (error) throw error;
+                showToast('success', `${ids.length} submission(s) deleted`);
+                await loadSubmissions();
+            } catch (e) {
+                showToast('error', 'Failed to delete');
+            }
+        });
     };
 
     function bindEvents() {

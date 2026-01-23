@@ -73,14 +73,14 @@ export default async (request, context) => {
         }
 
         if (pathname === "/login") {
-            return context.rewrite("/acs_subdomains/acs_admin/login.html");
+            return context.rewrite("/acs_subdomains/acs_admin/index.html");
         }
 
         // Precise Mapping Logic
         let targetPath = pathname;
 
         // Only apply short-url mapping if the full path isn't already used
-        if (!pathname.startsWith("/students-clients/") && !pathname.startsWith("/courses-services/") && !pathname.startsWith("/payments/") && !pathname.startsWith("/academics/")) {
+        if (!pathname.startsWith("/students-clients/") && !pathname.startsWith("/courses-services/") && !pathname.startsWith("/payments/") && !pathname.startsWith("/academics/") && !pathname.startsWith("/records/")) {
             if (pathname.startsWith("/students")) {
                 targetPath = pathname.replace("/students", "/students-clients/students");
             } else if (pathname.startsWith("/clients")) {
@@ -93,6 +93,8 @@ export default async (request, context) => {
                 targetPath = pathname.replace("/record-payment", "/payments/record-payment");
             } else if (pathname.startsWith("/all-payments")) {
                 targetPath = pathname.replace("/all-payments", "/payments/all-payments");
+            } else if (pathname.startsWith("/payment-receipts")) {
+                targetPath = pathname.replace("/payment-receipts", "/payments/receipts");
             } else if (pathname.startsWith("/receipts")) {
                 targetPath = pathname.replace("/receipts", "/payments/receipts");
             } else if (pathname.startsWith("/upload-materials")) {
@@ -101,6 +103,14 @@ export default async (request, context) => {
                 targetPath = pathname.replace("/assignments", "/academics/assignments");
             } else if (pathname.startsWith("/submissions")) {
                 targetPath = pathname.replace("/submissions", "/academics/submissions");
+            } else if (pathname.startsWith("/version-history")) {
+                targetPath = pathname.replace("/version-history", "/version-history");
+            } else if (pathname.startsWith("/v-history")) {
+                targetPath = pathname.replace("/v-history", "/version-history");
+            } else if (pathname.startsWith("/archived-records")) {
+                targetPath = pathname.replace("/archived-records", "/records/archived");
+            } else if (pathname.startsWith("/recently-deleted")) {
+                targetPath = pathname.replace("/recently-deleted", "/records/recently-deleted");
             }
         }
 

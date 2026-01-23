@@ -163,11 +163,17 @@
     font-size: 0.9rem;
 }
 
-.quick-actions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.25rem;
+.quick-actions-container {
     padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.quick-actions-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
 }
 
 .quick-action-btn {
@@ -634,10 +640,14 @@
         grid-column: span 2;
     }
 
-    .quick-actions {
+    .quick-actions-container {
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+
+    .quick-actions-row {
         grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
-        padding: 1rem;
     }
 
     .quick-action-btn {
@@ -683,7 +693,7 @@
         font-size: 1.5rem;
     }
 
-    .quick-actions {
+    .quick-actions-row {
         grid-template-columns: 1fr;
     }
 

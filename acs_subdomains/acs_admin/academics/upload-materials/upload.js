@@ -26,7 +26,7 @@
         // Auth check first
         const session = await window.supabaseConfig.getSession();
         if (!session) {
-            window.location.href = '../../login.html';
+            window.location.href = '/login';
             return;
         }
 
@@ -153,40 +153,79 @@
         const end = start + historyPerPage;
         const pageData = allUploadedMaterials.slice(start, end);
 
+        const tableHTML = `
+            <div class="table-container">
+                <table class="recent-table">
+                    <thead>
+                        <tr>
+                            <th width="40"><input type="checkbox" id="master-checkbox"></th>
+                            <th>File Name</th>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th>Date</th>
+                            <th width="60">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${pageData.map(m => `
+                            <tr>
+                                <td><input type="checkbox" class="file-checkbox" data-id="${m.id}"></td>
+                                <td><a href="${m.file_url}" target="_blank" class="file-link"><i class="fa-solid ${getFileIcon(m.file_name)}"></i> ${m.file_name}</a></td>
+                                <td>${m.students ? `${m.students.first_name} ${m.students.last_name}` : (m.student_id || 'N/A')}</td>
+                                <td><span class="badge badge-primary">${m.course_code}</span></td>
+                                <td>${new Date(m.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
+                                <td>
+                                    <button class="delete-single-btn" data-id="${m.id}" title="Delete">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        const cardsHTML = `
+            <div class="data-cards">
+                ${pageData.map(m => `
+                    <div class="premium-card">
+                        <div class="card-header">
+                            <div class="card-header-left">
+                                <input type="checkbox" class="file-checkbox" data-id="${m.id}">
+                                <span class="card-id-badge">${m.course_code}</span>
+                            </div>
+                            <div class="card-header-right">
+                                <span class="badge badge-info">${new Date(m.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</span>
+                            </div>
+                        </div>
+                        <div class="card-body" style="text-align: left;">
+                            <h4 class="card-name" style="margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="${m.file_name}">
+                                <i class="fa-solid ${getFileIcon(m.file_name)}"></i> ${m.file_name}
+                            </h4>
+                            <div class="card-info-row">
+                                <div class="card-info-item"><i class="fa-solid fa-user-graduate"></i> Student: ${m.students ? `${m.students.first_name} ${m.students.last_name}` : (m.student_id || 'N/A')}</div>
+                                <div class="card-info-item"><i class="fa-solid fa-link"></i> <a href="${m.file_url}" target="_blank" class="file-link">Download File</a></div>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn delete" onclick="deleteMaterial('${m.id}')">
+                                <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
         recentUploadsContent.innerHTML = `
             <div class="bulk-actions-strip" id="bulk-actions" style="display: none;">
                 <button id="bulk-delete-btn" class="btn btn-danger btn-sm">
                     <i class="fa-solid fa-trash-can"></i> Delete Selected (<span id="bulk-count">0</span>)
                 </button>
             </div>
-            <table class="recent-table">
-                <thead>
-                    <tr>
-                        <th width="40"><input type="checkbox" id="master-checkbox"></th>
-                        <th>File Name</th>
-                        <th>Student</th>
-                        <th>Course</th>
-                        <th>Date</th>
-                        <th width="60">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${pageData.map(m => `
-                        <tr>
-                            <td><input type="checkbox" class="file-checkbox" data-id="${m.id}"></td>
-                            <td><a href="${m.file_url}" target="_blank" class="file-link"><i class="fa-solid ${getFileIcon(m.file_name)}"></i> ${m.file_name}</a></td>
-                            <td>${m.students ? `${m.students.first_name} ${m.students.last_name}` : (m.student_id || 'N/A')}</td>
-                            <td><span class="badge badge-primary">${m.course_code}</span></td>
-                            <td>${new Date(m.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
-                            <td>
-                                <button class="delete-single-btn" data-id="${m.id}" title="Delete">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
+            ${tableHTML}
+            ${cardsHTML}
             <div class="history-pagination">
                 <div class="pagination-controls">
                     <button id="hist-prev" class="page-btn" ${currentHistoryPage === 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i></button>
@@ -557,6 +596,15 @@
             alert(message);
         }
     }
+
+    window.handleLogout = async () => {
+        const { Modal } = window.AdminUtils || {};
+        if (Modal) {
+            Modal.confirm('Sign Out', 'Are you sure you want to sign out?', async () => {
+                await window.Auth.signOut();
+            });
+        }
+    };
 
     // Start
     init();

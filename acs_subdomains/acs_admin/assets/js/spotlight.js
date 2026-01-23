@@ -291,6 +291,27 @@ const Spotlight = {
             });
         }
 
+        // Search Materials
+        const { data: materials } = await window.supabaseClient
+            .from('student_materials')
+            .select('id, file_name, file_url, course_code, students(first_name, last_name)')
+            .or(`file_name.ilike.%${query}%,course_code.ilike.%${query}%`)
+            .limit(5);
+
+        if (materials?.length) {
+            results.push({
+                type: 'material',
+                title: 'Materials',
+                items: materials.map(m => ({
+                    id: m.id,
+                    title: m.file_name,
+                    subtitle: `${m.course_code} • ${m.students?.first_name || ''}${m.students?.last_name ? ' ' + m.students.last_name : ''}`,
+                    icon: 'material',
+                    link: m.file_url // Open the file directly
+                }))
+            });
+        }
+
         return results;
     },
 
@@ -389,7 +410,8 @@ const Spotlight = {
             course: 'fa-book',
             service: 'fa-wrench',
             tutor: 'fa-chalkboard-user',
-            receipt: 'fa-file-invoice'
+            receipt: 'fa-file-invoice',
+            material: 'fa-file-lines'
         };
         return icons[type] || 'fa-circle';
     },

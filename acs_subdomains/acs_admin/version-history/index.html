@@ -60,6 +60,11 @@
             margin-top: 1rem;
         }
 
+        .data-table {
+            display: table;
+            width: 100%;
+        }
+
         .v-badge {
             background: var(--table-header-bg);
             padding: 4px 10px;
@@ -78,6 +83,75 @@
         .milestone-focus {
             font-weight: 700;
             color: var(--admin-text-primary);
+        }
+
+        /* Card styles from students module */
+        .data-cards {
+            display: none;
+            flex-direction: column;
+            gap: 1.25rem;
+            padding-bottom: 2rem;
+        }
+
+        .premium-card {
+            background: #fff;
+            border: 1px solid var(--admin-input-border, #e2e8f0);
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease;
+        }
+
+        .card-header {
+            margin-bottom: 0.75rem;
+        }
+
+        .card-id-badge {
+            font-family: inherit;
+            font-size: 0.75rem;
+            color: var(--admin-input-focus);
+            background: var(--gray-50, #f8fafc);
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 700;
+            border: 1px solid var(--admin-input-border);
+        }
+
+        .card-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--admin-text-primary, #0f172a);
+            margin: 0 0 0.75rem 0;
+        }
+
+        .card-info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .card-info-item {
+            font-size: 0.9rem;
+            color: var(--admin-text-secondary, #64748b);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .card-info-item i {
+            margin-top: 4px;
+            width: 16px;
+            color: var(--admin-input-focus);
+        }
+
+        @media (max-width: 1250px) {
+            .data-table {
+                display: none;
+            }
+
+            .data-cards {
+                display: flex;
+            }
         }
     </style>
 </head>

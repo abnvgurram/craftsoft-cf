@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
-        window.location.href = '../login.html';
+        window.location.href = '/login';
         return;
     }
 
