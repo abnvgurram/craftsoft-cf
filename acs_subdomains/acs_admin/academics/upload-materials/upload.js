@@ -611,14 +611,7 @@
         }
     }
 
-    window.handleLogout = async () => {
-        const { Modal } = window.AdminUtils || {};
-        if (Modal) {
-            Modal.confirm('Sign Out', 'Are you sure you want to sign out?', async () => {
-                await window.Auth.logout();
-            });
-        }
-    };
+    // window.handleLogout REMOVED - Using Global Sidebar Logout
 
     // Start
     init();

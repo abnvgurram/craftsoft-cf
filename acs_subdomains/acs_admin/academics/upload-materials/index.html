@@ -69,41 +69,47 @@
 
             <div class="upload-workspace animate-up">
                 <!-- Page Header (Inside Workspace) -->
-                <div class="workspace-header">
-                    <div class="section-icon">
-                        <i class="fa-solid fa-upload"></i>
-                    </div>
-                    <div class="section-info">
-                        <h2 class="workspace-title">Upload Materials</h2>
-                        <p class="workspace-subtitle">Share study materials with your students</p>
+                <div class="workspace-header" style="margin-bottom: 3.5rem;">
+                    <div class="card-header-mini" style="font-size: 1.5rem;">
+                        <i class="fa-solid fa-upload"></i> Upload Materials
                     </div>
                 </div>
 
                 <div class="upload-cards">
                     <!-- Step 1: Select Course -->
                     <section class="upload-section">
-                        <div class="card-header-mini">
-                            <i class="fa-solid fa-book-bookmark"></i> Step 1: Select Course
+                        <div class="form-section-header">
+                            <div class="form-section-icon"><i class="fa-solid fa-book-bookmark"></i></div>
+                            <h3 class="form-section-title">Step 1: Select Course</h3>
                         </div>
                         <div class="section-body">
                             <div class="form-group">
-                                <select id="course-select" class="form-select">
-                                    <option value="">-- Select a Course --</option>
-                                </select>
+                                <label>Target Course <span class="required">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-graduation-cap input-icon"></i>
+                                    <select id="course-select" class="form-select">
+                                        <option value="">-- Choose a Course --</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </section>
 
                     <!-- Step 2: Select Student -->
                     <section class="upload-section">
-                        <div class="card-header-mini">
-                            <i class="fa-solid fa-user-graduate"></i> Step 2: Select Student
+                        <div class="form-section-header">
+                            <div class="form-section-icon"><i class="fa-solid fa-user-graduate"></i></div>
+                            <h3 class="form-section-title">Step 2: Select Student</h3>
                         </div>
                         <div class="section-body">
                             <div class="form-group">
-                                <select id="student-select" class="form-select" disabled>
-                                    <option value="">-- Select a Course First --</option>
-                                </select>
+                                <label>Target Student <span class="required">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <select id="student-select" class="form-select" disabled>
+                                        <option value="">-- Select a Course First --</option>
+                                    </select>
+                                </div>
                                 <p class="form-hint" id="student-hint">Students enrolled in the selected course will
                                     appear here.</p>
                             </div>
@@ -112,12 +118,13 @@
 
                     <!-- Step 3: Upload File -->
                     <section class="upload-section">
-                        <div class="card-header-mini">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> Step 3: Upload File
+                        <div class="form-section-header">
+                            <div class="form-section-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                            <h3 class="form-section-title">Step 3: Upload File</h3>
                         </div>
                         <div class="section-body">
                             <div class="dropzone" id="dropzone">
-                                <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                                <i class="fa-solid fa-folder-open dropzone-icon"></i>
                                 <p class="dropzone-text">Drag & Drop files here</p>
                                 <p class="dropzone-subtext">or click to browse (PDF, DOC, ZIP, Images)</p>
                                 <input type="file" id="file-input" class="file-input" multiple

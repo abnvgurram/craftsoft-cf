@@ -13,6 +13,56 @@
     }
 }
 
+/* PREMIUM FORM FIXES - Restoring Icons for 'Add Student' Look */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-with-icon .input-icon {
+    position: absolute;
+    left: 1.125rem;
+    color: var(--primary-400);
+    font-size: 1rem;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.input-with-icon .form-control,
+.input-with-icon .form-input,
+.input-with-icon .form-select {
+    padding-left: 3rem !important;
+}
+
+.input-with-icon.textarea-icon .input-icon {
+    top: 1.25rem;
+}
+
+/* SECTION HEADERS Matching Reference Image 1 */
+.form-section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--admin-input-border);
+}
+
+.form-section-title {
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    color: var(--admin-text-primary) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    margin: 0 !important;
+}
+
 .upload-workspace {
     padding: 0;
     width: 100%;
@@ -91,14 +141,7 @@
    ============================================ */
 /* Note: upload-materials usually doesn't have icons inside inputs, 
    but we ensure consistency if any are added via components. */
-.input-with-icon .input-icon {
-    display: none !important;
-}
-
-.input-with-icon .form-control,
-.input-with-icon .form-select {
-    padding-left: 1.25rem !important;
-}
+/* Removed icon hiding rules to allow Add Student style icons */
 
 .section-body {
     padding: 0;

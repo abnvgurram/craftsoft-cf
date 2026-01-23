@@ -70,13 +70,9 @@
 
             <div class="upload-workspace animate-up">
                 <!-- Page Header -->
-                <div class="workspace-header">
-                    <div class="section-icon">
-                        <i class="fa-solid fa-file-signature"></i>
-                    </div>
-                    <div class="section-info">
-                        <h2 class="workspace-title">Manage Assignments</h2>
-                        <p class="workspace-subtitle">Broadcast tasks, track deadlines, and review submissions</p>
+                <div class="workspace-header" style="margin-bottom: 3.5rem;">
+                    <div class="card-header-mini" style="font-size: 1.5rem;">
+                        <i class="fa-solid fa-file-signature"></i> Manage Assignments
                     </div>
                 </div>
 
@@ -90,26 +86,28 @@
                             <div class="section-body">
                                 <!-- Section 1: Target -->
                                 <div class="form-section-group" data-step="1">
-                                    <div class="form-section-title">
-                                        <i class="fa-solid fa-bullseye"></i> Target Audience
+                                    <div class="form-section-header">
+                                        <div class="form-section-icon"><i class="fa-solid fa-bullseye"></i></div>
+                                        <h3 class="form-section-title">Target Audience</h3>
                                     </div>
                                     <div class="form-group">
-                                        <label><i class="fa-solid fa-satellite-dish"></i> Broadcaster Mode <span
-                                                class="required">*</span></label>
-                                        <div class="radio-toggle-group">
-                                            <label class="radio-label">
-                                                <input type="radio" name="broadcast-mode" value="course" checked>
-                                                <span>Whole Course</span>
-                                            </label>
-                                            <label class="radio-label">
-                                                <input type="radio" name="broadcast-mode" value="student">
-                                                <span>Specific Student</span>
-                                            </label>
+                                        <label>Broadcaster Mode <span class="required">*</span></label>
+                                        <div class="input-with-icon">
+                                            <i class="fa-solid fa-satellite-dish input-icon"></i>
+                                            <div class="radio-toggle-group" style="padding-left: 0.5rem;">
+                                                <label class="radio-label">
+                                                    <input type="radio" name="broadcast-mode" value="course" checked>
+                                                    <span>Whole Course</span>
+                                                </label>
+                                                <label class="radio-label">
+                                                    <input type="radio" name="broadcast-mode" value="student">
+                                                    <span>Specific Student</span>
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="form-group" style="margin-top: 1rem;">
-                                        <label><i class="fa-solid fa-book-open-reader"></i> Select Course <span
-                                                class="required">*</span></label>
+                                    <div class="form-group" style="margin-top: 1.5rem;">
+                                        <label>Select Course <span class="required">*</span></label>
                                         <div class="input-with-icon">
                                             <i class="fa-solid fa-graduation-cap input-icon"></i>
                                             <select id="course-select" class="form-select"
@@ -119,9 +117,8 @@
                                         </div>
                                     </div>
                                     <div id="student-select-group" class="form-group"
-                                        style="display: none; margin-top: 1rem;">
-                                        <label><i class="fa-solid fa-user-tag"></i> Select Student <span
-                                                class="required">*</span></label>
+                                        style="display: none; margin-top: 1.5rem;">
+                                        <label>Select Student <span class="required">*</span></label>
                                         <div class="input-with-icon">
                                             <i class="fa-solid fa-user-graduate input-icon"></i>
                                             <select id="student-select" class="form-select"
@@ -135,53 +132,48 @@
                                 </div>
 
                                 <!-- Section 2: Assignment Details -->
-                                <div class="form-section-group" data-step="2">
-                                    <div class="form-section-title">
-                                        <i class="fa-solid fa-file-lines"></i> Assignment Details
+                                <div class="form-section-group" data-step="2" style="margin-top: 3rem;">
+                                    <div class="form-section-header">
+                                        <div class="form-section-icon"><i class="fa-solid fa-file-lines"></i></div>
+                                        <h3 class="form-section-title">Assignment Details</h3>
                                     </div>
                                     <div class="form-group">
-                                        <label><i class="fa-solid fa-heading"></i> Assignment Title <span
-                                                class="required">*</span></label>
+                                        <label>Assignment Title <span class="required">*</span></label>
                                         <div class="input-with-icon">
                                             <i class="fa-solid fa-file-signature input-icon"></i>
                                             <input type="text" id="assign-title" class="form-control"
-                                                style="padding-left: 2.5rem;" placeholder="e.g. React Final Project">
+                                                placeholder="e.g. React Final Project">
                                         </div>
                                     </div>
-                                    <div class="form-group" style="margin-top: 1rem;">
-                                        <label><i class="fa-solid fa-align-left"></i> Description <span
-                                                class="text-hint">(Markdown supported)</span></label>
+                                    <div class="form-group" style="margin-top: 1.5rem;">
+                                        <label>Description <span class="text-hint">(Markdown supported)</span></label>
                                         <div class="input-with-icon textarea-icon">
                                             <i class="fa-solid fa-pen-nib input-icon"></i>
                                             <textarea id="assign-desc" class="form-control" rows="4"
-                                                style="padding-left: 2.5rem;"
                                                 placeholder="Instructions, requirements, and evaluation criteria..."></textarea>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Section 3: Deadline -->
-                                <div class="form-section-group" data-step="3">
-                                    <div class="form-section-title">
-                                        <i class="fa-solid fa-clock"></i> Deadline Schedule
+                                <div class="form-section-group" data-step="3" style="margin-top: 3rem;">
+                                    <div class="form-section-header">
+                                        <div class="form-section-icon"><i class="fa-solid fa-clock"></i></div>
+                                        <h3 class="form-section-title">Deadline Schedule</h3>
                                     </div>
                                     <div class="deadline-row">
                                         <div class="form-group">
-                                            <label><i class="fa-solid fa-calendar-day"></i> Deadline Date <span
-                                                    class="required">*</span></label>
+                                            <label>Deadline Date <span class="required">*</span></label>
                                             <div class="input-with-icon">
                                                 <i class="fa-solid fa-calendar-check input-icon"></i>
-                                                <input type="date" id="assign-date" class="form-control"
-                                                    style="padding-left: 2.5rem;">
+                                                <input type="date" id="assign-date" class="form-control">
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label><i class="fa-solid fa-hourglass-start"></i> Deadline Time <span
-                                                    class="required">*</span></label>
+                                            <label>Deadline Time <span class="required">*</span></label>
                                             <div class="input-with-icon">
                                                 <i class="fa-solid fa-stopwatch input-icon"></i>
-                                                <input type="time" id="assign-time" class="form-control"
-                                                    style="padding-left: 2.5rem;" value="23:59">
+                                                <input type="time" id="assign-time" class="form-control" value="23:59">
                                             </div>
                                         </div>
                                     </div>
@@ -190,8 +182,9 @@
                         </section>
 
                         <section class="upload-section">
-                            <div class="card-header-mini">
-                                <i class="fa-solid fa-paperclip"></i> Reference Files
+                            <div class="form-section-header">
+                                <div class="form-section-icon"><i class="fa-solid fa-paperclip"></i></div>
+                                <h3 class="form-section-title">Reference Files</h3>
                             </div>
                             <div class="section-body">
                                 <div class="dropzone" id="dropzone">
