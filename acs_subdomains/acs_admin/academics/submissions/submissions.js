@@ -7,6 +7,7 @@
     // State
     let allSubmissions = [];
     let filteredSubmissions = [];
+    let selectedSubmissions = new Set(); // 🛡️ Fix: Use Set for selection
     let courses = [];
     let assignments = [];
     let currentPage = 1;
@@ -81,6 +82,9 @@
 
             if (error) throw error;
             allSubmissions = data || [];
+
+            // 🛡️ Fix: Clear selection on refresh
+            selectedSubmissions.clear();
             applyFilters();
         } catch (e) {
             console.error('Load submissions error:', e);
@@ -118,6 +122,12 @@
         }
 
         const totalPages = Math.ceil(filteredSubmissions.length / perPage);
+
+        // 🛡️ Fix: Pagination Math
+        if (currentPage > totalPages && totalPages > 0) {
+            currentPage = totalPages;
+        }
+
         const start = (currentPage - 1) * perPage;
         const pageData = filteredSubmissions.slice(start, start + perPage);
 
@@ -126,7 +136,7 @@
                 <table class="submissions-table">
                     <thead>
                         <tr>
-                            <th width="40"><input type="checkbox" id="select-all" onchange="window.toggleSelectAll(this.checked)"></th>
+                            <th width="40"><input type="checkbox" id="select-all" ${isAllSelectedOnPage(pageData) ? 'checked' : ''} onchange="window.toggleSelectAll(this.checked)"></th>
                             <th>Student</th>
                             <th>Assignment</th>
                             <th>Course</th>
@@ -137,7 +147,7 @@
                     <tbody>
                         ${pageData.map(s => `
                             <tr>
-                                <td><input type="checkbox" class="sub-checkbox" data-id="${s.id}" onchange="window.updateBulkBar()"></td>
+                                <td><input type="checkbox" class="sub-checkbox" data-id="${s.id}" ${selectedSubmissions.has(s.id) ? 'checked' : ''} onchange="window.toggleSubmissionChoice('${s.id}', this.checked)"></td>
                                 <td>
                                     <span class="student-name">${s.student?.first_name || ''} ${s.student?.last_name || ''}</span>
                                     <br><small class="text-muted">${s.student?.student_id || 'N/A'}</small>
@@ -168,7 +178,7 @@
                     <div class="premium-card">
                         <div class="card-header">
                             <div class="card-header-left">
-                                <input type="checkbox" class="sub-checkbox" data-id="${s.id}" onchange="window.updateBulkBar()">
+                                <input type="checkbox" class="sub-checkbox" data-id="${s.id}" ${selectedSubmissions.has(s.id) ? 'checked' : ''} onchange="window.toggleSubmissionChoice('${s.id}', this.checked)">
                                 <span class="card-id-badge">${s.assignment?.course_code || 'N/A'}</span>
                             </div>
                             <div class="card-header-right">
@@ -195,14 +205,29 @@
             </div>
         `;
 
-        content.innerHTML = tableHTML + cardsHTML;
+        content.innerHTML = `
+            <div id="bulk-bar" class="bulk-actions-bar" style="display: ${selectedSubmissions.size > 0 ? 'flex' : 'none'}; border-bottom: 2px solid var(--admin-input-border); margin-bottom: 1rem; padding: 1rem; border-radius: 12px; background: rgba(239, 68, 68, 0.05);">
+                <span class="bulk-count" style="font-weight: 700; color: var(--error);"><span id="selected-count">${selectedSubmissions.size}</span> selected</span>
+                <div>
+                    <button class="btn btn-danger btn-sm" onclick="window.bulkDeleteSubmissions()">
+                        <i class="fa-solid fa-trash"></i> Delete Selected
+                    </button>
+                </div>
+            </div>
+            ${tableHTML}
+            ${cardsHTML}
+        `;
 
         // Update pagination
         document.getElementById('current-page').textContent = currentPage;
-        document.getElementById('total-pages').textContent = totalPages;
+        document.getElementById('total-pages').textContent = totalPages || 1;
         document.getElementById('prev-btn').disabled = currentPage <= 1;
         document.getElementById('next-btn').disabled = currentPage >= totalPages;
         document.getElementById('pagination').style.display = 'flex';
+    }
+
+    function isAllSelectedOnPage(pageData) {
+        return pageData.length > 0 && pageData.every(s => selectedSubmissions.has(s.id));
     }
 
     function formatDate(iso) {
@@ -217,7 +242,7 @@
         const { Modal } = window.AdminUtils || {};
         if (Modal) {
             Modal.confirm('Sign Out', 'Are you sure you want to sign out?', async () => {
-                await window.Auth.signOut();
+                await window.Auth.logout();
             });
         }
     };
@@ -245,22 +270,24 @@
         }
     };
 
+    window.toggleSubmissionChoice = (id, checked) => {
+        if (checked) selectedSubmissions.add(id);
+        else selectedSubmissions.delete(id);
+        render();
+    };
+
     window.toggleSelectAll = (checked) => {
-        document.querySelectorAll('.sub-checkbox').forEach(cb => cb.checked = checked);
-        window.updateBulkBar();
+        const start = (currentPage - 1) * perPage;
+        const pageData = filteredSubmissions.slice(start, start + perPage);
+        pageData.forEach(s => {
+            if (checked) selectedSubmissions.add(s.id);
+            else selectedSubmissions.delete(s.id);
+        });
+        render();
     };
 
     window.updateBulkBar = () => {
-        const selected = document.querySelectorAll('.sub-checkbox:checked');
-        const bar = document.getElementById('bulk-bar');
-        const count = document.getElementById('selected-count');
-
-        if (selected.length > 0) {
-            bar.classList.add('active');
-            count.textContent = selected.length;
-        } else {
-            bar.classList.remove('active');
-        }
+        // Obsolete
     };
 
     window.deleteSubmission = async (id) => {
@@ -283,15 +310,14 @@
     };
 
     window.bulkDeleteSubmissions = async () => {
-        const selected = document.querySelectorAll('.sub-checkbox:checked');
-        if (selected.length === 0) return;
+        if (selectedSubmissions.size === 0) return;
 
         const { Modal } = window.AdminUtils || {};
         if (!Modal) return;
 
-        Modal.confirm('Bulk Delete', `Delete ${selected.length} submission(s)?`, async () => {
+        Modal.confirm('Bulk Delete', `Delete ${selectedSubmissions.size} submission(s)?`, async () => {
             try {
-                const ids = Array.from(selected).map(cb => cb.dataset.id);
+                const ids = Array.from(selectedSubmissions);
                 const { error } = await window.supabaseClient
                     .from('student_submissions')
                     .delete()

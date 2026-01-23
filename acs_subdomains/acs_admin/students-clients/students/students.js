@@ -226,6 +226,11 @@ function renderStudentsList(students) {
         return;
     }
 
+    const totalPages = Math.ceil(students.length / itemsPerPage);
+    if (currentPage > totalPages && totalPages > 0) {
+        currentPage = totalPages;
+    }
+
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedStudents = students.slice(start, start + itemsPerPage);
 

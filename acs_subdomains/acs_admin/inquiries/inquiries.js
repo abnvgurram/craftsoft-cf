@@ -168,6 +168,7 @@ async function loadInquiries() {
         if (error) throw error;
 
         allInquiries = data || [];
+        selectedInquiries.clear();
         renderInquiries(allInquiries);
     } catch (e) {
         console.error('Inquiries: Error loading inquiries:', e);
@@ -189,6 +190,11 @@ function renderInquiries(items) {
                 <p>All incoming inquiries will appear here.</p>
             </div>`;
         return;
+    }
+
+    const totalPages = Math.ceil(items.length / itemsPerPage);
+    if (currentPage > totalPages && totalPages > 0) {
+        currentPage = totalPages;
     }
 
     const start = (currentPage - 1) * itemsPerPage;

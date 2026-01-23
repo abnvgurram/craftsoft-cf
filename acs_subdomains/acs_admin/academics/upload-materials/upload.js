@@ -123,6 +123,7 @@
     let allUploadedMaterials = [];
     let currentHistoryPage = 1;
     const historyPerPage = 5;
+    let selectedMaterials = new Set();
 
     async function loadRecentUploads() {
         try {
@@ -133,6 +134,7 @@
 
             if (error) throw error;
             allUploadedMaterials = data || [];
+            selectedMaterials.clear();
             renderRecentUploadsWithPagination();
         } catch (err) {
             console.error('Error loading recent uploads:', err);
@@ -143,6 +145,10 @@
     function renderRecentUploadsWithPagination() {
         const totalItems = allUploadedMaterials.length;
         const totalPages = Math.ceil(totalItems / historyPerPage);
+
+        if (currentHistoryPage > totalPages && totalPages > 0) {
+            currentHistoryPage = totalPages;
+        }
 
         if (totalItems === 0) {
             recentUploadsContent.innerHTML = '<p class="text-muted">No materials uploaded yet.</p>';
@@ -158,7 +164,7 @@
                 <table class="recent-table">
                     <thead>
                         <tr>
-                            <th width="40"><input type="checkbox" id="master-checkbox"></th>
+                            <th width="40"><input type="checkbox" id="master-checkbox" ${isAllSelectedOnPage(pageData) ? 'checked' : ''}></th>
                             <th>File Name</th>
                             <th>Student</th>
                             <th>Course</th>
@@ -169,7 +175,7 @@
                     <tbody>
                         ${pageData.map(m => `
                             <tr>
-                                <td><input type="checkbox" class="file-checkbox" data-id="${m.id}"></td>
+                                <td><input type="checkbox" class="file-checkbox" data-id="${m.id}" ${selectedMaterials.has(m.id) ? 'checked' : ''}></td>
                                 <td><a href="${m.file_url}" target="_blank" class="file-link"><i class="fa-solid ${getFileIcon(m.file_name)}"></i> ${m.file_name}</a></td>
                                 <td>${m.students ? `${m.students.first_name} ${m.students.last_name}` : (m.student_id || 'N/A')}</td>
                                 <td><span class="badge badge-primary">${m.course_code}</span></td>
@@ -192,7 +198,7 @@
                     <div class="premium-card">
                         <div class="card-header">
                             <div class="card-header-left">
-                                <input type="checkbox" class="file-checkbox" data-id="${m.id}">
+                                <input type="checkbox" class="file-checkbox" data-id="${m.id}" ${selectedMaterials.has(m.id) ? 'checked' : ''}>
                                 <span class="card-id-badge">${m.course_code}</span>
                             </div>
                             <div class="card-header-right">
@@ -219,9 +225,9 @@
         `;
 
         recentUploadsContent.innerHTML = `
-            <div class="bulk-actions-strip" id="bulk-actions" style="display: none;">
+            <div class="bulk-actions-strip" id="bulk-actions" style="display: ${selectedMaterials.size > 0 ? 'flex' : 'none'};">
                 <button id="bulk-delete-btn" class="btn btn-danger btn-sm">
-                    <i class="fa-solid fa-trash-can"></i> Delete Selected (<span id="bulk-count">0</span>)
+                    <i class="fa-solid fa-trash-can"></i> Delete Selected (<span id="bulk-count">${selectedMaterials.size}</span>)
                 </button>
             </div>
             ${tableHTML}
@@ -239,31 +245,39 @@
         bindHistoryEvents();
     }
 
+    function isAllSelectedOnPage(pageData) {
+        return pageData.length > 0 && pageData.every(m => selectedMaterials.has(m.id));
+    }
+
     function bindHistoryEvents() {
         const masterBox = document.getElementById('master-checkbox');
         const fileBoxes = document.querySelectorAll('.file-checkbox');
-        const bulkStrip = document.getElementById('bulk-actions');
-        const bulkCount = document.getElementById('bulk-count');
         const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
-
-        // Modal state handled globally within closure
 
         // Master checkbox
         masterBox?.addEventListener('change', (e) => {
-            fileBoxes.forEach(box => box.checked = e.target.checked);
-            updateBulkStrip();
+            const start = (currentHistoryPage - 1) * historyPerPage;
+            const pageData = allUploadedMaterials.slice(start, start + historyPerPage);
+
+            pageData.forEach(m => {
+                if (e.target.checked) selectedMaterials.add(m.id);
+                else selectedMaterials.delete(m.id);
+            });
+
+            renderRecentUploadsWithPagination();
         });
 
         // Individual checkboxes
         fileBoxes.forEach(box => {
-            box.addEventListener('change', updateBulkStrip);
-        });
+            box.addEventListener('change', (e) => {
+                const id = e.target.dataset.id;
+                if (e.target.checked) selectedMaterials.add(id);
+                else selectedMaterials.delete(id);
 
-        function updateBulkStrip() {
-            const checkedCount = document.querySelectorAll('.file-checkbox:checked').length;
-            bulkStrip.style.display = checkedCount > 0 ? 'flex' : 'none';
-            bulkCount.textContent = checkedCount;
-        }
+                // Refresh to sync table and card checkboxes
+                renderRecentUploadsWithPagination();
+            });
+        });
 
         function showConfirm(title, message, onConfirm) {
             const deleteOverlay = document.getElementById('delete-overlay');
@@ -296,8 +310,8 @@
 
         // Bulk delete
         bulkDeleteBtn?.addEventListener('click', () => {
-            const checkedBoxes = document.querySelectorAll('.file-checkbox:checked');
-            const ids = Array.from(checkedBoxes).map(cb => cb.dataset.id);
+            if (selectedMaterials.size === 0) return;
+            const ids = Array.from(selectedMaterials);
 
             showConfirm(
                 'Bulk Delete',
@@ -601,7 +615,7 @@
         const { Modal } = window.AdminUtils || {};
         if (Modal) {
             Modal.confirm('Sign Out', 'Are you sure you want to sign out?', async () => {
-                await window.Auth.signOut();
+                await window.Auth.logout();
             });
         }
     };

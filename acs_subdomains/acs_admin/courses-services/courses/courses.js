@@ -116,6 +116,11 @@ function renderCoursesList(courses) {
         return;
     }
 
+    const totalPages = Math.ceil(courses.length / itemsPerPage);
+    if (currentPage > totalPages && totalPages > 0) {
+        currentPage = totalPages;
+    }
+
     const start = (currentPage - 1) * itemsPerPage;
     const paginatedCourses = courses.slice(start, start + itemsPerPage);
 

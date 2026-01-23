@@ -9,6 +9,7 @@
     let allCourses = [];
     let allStudents = [];
     let allAssignments = [];
+    let selectedAssignments = new Set(); // 🛡️ Fix: Use Set for selection
     let selectedFile = null;
     let currentDeleteId = null;
     let currentAdmin = null;
@@ -234,6 +235,8 @@
                 has_submission: submittedIds.has(a.id)
             }));
 
+            // 🛡️ Fix: Clear selection on refresh
+            selectedAssignments.clear();
             renderAssignments();
         } catch (err) {
             console.error('Load assignments error:', err);
@@ -247,6 +250,12 @@
         }
 
         const totalPages = Math.ceil(allAssignments.length / perPage);
+
+        // 🛡️ Fix: Pagination Math
+        if (currentPage > totalPages && totalPages > 0) {
+            currentPage = totalPages;
+        }
+
         const start = (currentPage - 1) * perPage;
         const pageData = allAssignments.slice(start, start + perPage);
 
@@ -255,7 +264,7 @@
                 <table class="recent-table">
                     <thead>
                         <tr>
-                            <th width="40"><input type="checkbox" id="select-all" onchange="window.toggleSelectAll(this.checked)"></th>
+                            <th width="40"><input type="checkbox" id="select-all" ${isAllSelectedOnPage(pageData) ? 'checked' : ''} onchange="window.toggleSelectAll(this.checked)"></th>
                             <th>Title</th>
                             <th>Course</th>
                             <th>Deadline</th>
@@ -286,7 +295,7 @@
 
             return `
                             <tr>
-                                <td><input type="checkbox" class="assign-checkbox" data-id="${a.id}" onchange="window.updateBulkBar()"></td>
+                                <td><input type="checkbox" class="assign-checkbox" data-id="${a.id}" ${selectedAssignments.has(a.id) ? 'checked' : ''} onchange="window.toggleAssignmentChoice('${a.id}', this.checked)"></td>
                                 <td>
                                     <strong>${a.title}</strong>
                                     ${a.file_url ? `<br><a href="${a.file_url}" target="_blank" class="file-link small"><i class="fa-solid fa-paperclip"></i> Reference</a>` : ''}
@@ -335,7 +344,7 @@
                     <div class="premium-card">
                         <div class="card-header">
                             <div class="card-header-left">
-                                <input type="checkbox" class="assign-checkbox" data-id="${a.id}" onchange="window.updateBulkBar()">
+                                <input type="checkbox" class="assign-checkbox" data-id="${a.id}" ${selectedAssignments.has(a.id) ? 'checked' : ''} onchange="window.toggleAssignmentChoice('${a.id}', this.checked)">
                                 <span class="card-id-badge">${a.course_code}</span>
                             </div>
                             <div class="card-header-right">
@@ -372,8 +381,8 @@
                     <span>Total Assignments: <strong>${allAssignments.length}</strong></span>
                 </div>
             </div>
-            <div class="bulk-actions-bar" id="bulk-bar">
-                <span class="bulk-count"><span id="selected-count">0</span> selected</span>
+            <div class="bulk-actions-bar" id="bulk-bar" style="display: ${selectedAssignments.size > 0 ? 'flex' : 'none'}; border-bottom: 2px solid var(--admin-input-border); margin-bottom: 1rem; padding: 1rem; border-radius: 12px; background: rgba(239, 68, 68, 0.05);">
+                <span class="bulk-count" style="font-weight: 700; color: var(--error);"><span id="selected-count">${selectedAssignments.size}</span> selected</span>
                 <div>
                     <button class="btn btn-danger btn-sm" onclick="window.bulkDeleteAssignments()">
                         <i class="fa-solid fa-trash"></i> Delete Selected
@@ -386,7 +395,7 @@
                 <button class="btn btn-outline btn-sm" id="assign-prev" ${currentPage <= 1 ? 'disabled' : ''}>
                     <i class="fa-solid fa-chevron-left"></i> Prev
                 </button>
-                <span class="page-info">Page ${currentPage} of ${totalPages}</span>
+                <span class="page-info">Page ${currentPage} of ${totalPages || 1}</span>
                 <button class="btn btn-outline btn-sm" id="assign-next" ${currentPage >= totalPages ? 'disabled' : ''}>
                     Next <i class="fa-solid fa-chevron-right"></i>
                 </button>
@@ -400,6 +409,10 @@
         document.getElementById('assign-next')?.addEventListener('click', () => {
             if (currentPage < totalPages) { currentPage++; renderAssignments(); }
         });
+    }
+
+    function isAllSelectedOnPage(pageData) {
+        return pageData.length > 0 && pageData.every(a => selectedAssignments.has(a.id));
     }
 
     async function loadExtensions() {
@@ -491,39 +504,40 @@
         const { Modal } = window.AdminUtils || {};
         if (Modal) {
             Modal.confirm('Sign Out', 'Are you sure you want to sign out?', async () => {
-                await window.Auth.signOut();
+                await window.Auth.logout();
             });
         }
     };
 
+    window.toggleAssignmentChoice = (id, checked) => {
+        if (checked) selectedAssignments.add(id);
+        else selectedAssignments.delete(id);
+        renderAssignments();
+    };
+
     window.toggleSelectAll = (checked) => {
-        document.querySelectorAll('.assign-checkbox').forEach(cb => cb.checked = checked);
-        window.updateBulkBar();
+        const start = (currentPage - 1) * perPage;
+        const pageData = allAssignments.slice(start, start + perPage);
+        pageData.forEach(a => {
+            if (checked) selectedAssignments.add(a.id);
+            else selectedAssignments.delete(a.id);
+        });
+        renderAssignments();
     };
 
     window.updateBulkBar = () => {
-        const selected = document.querySelectorAll('.assign-checkbox:checked');
-        const bar = document.getElementById('bulk-bar');
-        const count = document.getElementById('selected-count');
-
-        if (selected.length > 0) {
-            bar.classList.add('active');
-            count.textContent = selected.length;
-        } else {
-            bar.classList.remove('active');
-        }
+        // Obsolete but kept for safety if referenced elsewhere
     };
 
     window.bulkDeleteAssignments = async () => {
-        const selected = document.querySelectorAll('.assign-checkbox:checked');
-        if (selected.length === 0) return;
+        if (selectedAssignments.size === 0) return;
 
         const { Modal } = window.AdminUtils || {};
         if (!Modal) return;
 
-        Modal.confirm('Bulk Delete', `Delete ${selected.length} assignment(s)?`, async () => {
+        Modal.confirm('Bulk Delete', `Delete ${selectedAssignments.size} assignment(s)?`, async () => {
             try {
-                const ids = Array.from(selected).map(cb => cb.dataset.id);
+                const ids = Array.from(selectedAssignments);
                 const { error } = await window.supabaseClient
                     .from('student_assignments')
                     .delete()
