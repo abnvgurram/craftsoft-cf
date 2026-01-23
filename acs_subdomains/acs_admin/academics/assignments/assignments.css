@@ -13,55 +13,38 @@
     }
 }
 
-/* Modern Form Section Styling */
+/* Simple Clean Form Styling (like upload-materials) */
 .upload-section .section-body {
-    padding: 1.5rem;
+    padding: 0;
 }
 
+/* Remove numbered sections - make it simple */
 .form-section-group {
-    background: linear-gradient(135deg, rgba(40, 150, 205, 0.03) 0%, rgba(108, 92, 231, 0.02) 100%);
-    border: 1px solid rgba(40, 150, 205, 0.1);
-    border-radius: 16px;
-    padding: 1.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
     margin-bottom: 1.5rem;
     position: relative;
 }
 
+/* Hide the numbered step circles */
 .form-section-group::before {
-    content: attr(data-step);
-    position: absolute;
-    top: -12px;
-    left: 20px;
-    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-    color: #fff;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(40, 150, 205, 0.3);
+    display: none;
 }
 
+/* Hide section titles - clean form */
 .form-section-title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--primary-600);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 1.25rem;
-    padding-left: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    display: none;
 }
 
-.form-section-title i {
-    font-size: 1rem;
-    opacity: 0.8;
+/* Clean form group spacing */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
 }
 
 /* Radio Toggle Group - Modern Style */
@@ -116,23 +99,22 @@
     }
 }
 
-/* Card Header Mini - Enhanced */
+/* Card Header Mini - Simple Style (not gradient) */
 .card-header-mini {
-    background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
-    color: #fff;
-    padding: 1rem 1.5rem;
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary-500);
+    margin-bottom: 2rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    border-radius: 12px 12px 0 0;
-    margin: -1px -1px 0 -1px;
+    opacity: 0.8;
 }
 
 .card-header-mini i {
     font-size: 1.1rem;
-    opacity: 0.9;
 }
 
 

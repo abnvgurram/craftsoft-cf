@@ -98,6 +98,16 @@
         width: 240px;
     }
 
+    /* CRITICAL: Sync header with collapsed sidebar */
+    .admin-header {
+        left: 72px;
+    }
+
+    .admin-sidebar.expanded~.admin-main .admin-header,
+    .admin-sidebar.expanded+.sidebar-overlay+.admin-main .admin-header {
+        left: 240px;
+    }
+
     .sidebar-logo-text {
         display: none;
     }

@@ -77,7 +77,7 @@ const AdminSidebar = {
                         ${this.navItemAbsolute('archived', 'Archived Records', 'fa-solid fa-box', '/archived-records/')}
                         ${this.navItemAbsolute('recently-deleted', 'Recently Deleted', 'fa-solid fa-trash-can', '/recently-deleted/')}
 
-                        ${this.sectionLabel('Financials')}
+                        ${this.sectionLabel('Finance')}
                         ${this.navItemAbsolute('all-payments', 'All Payments', 'fa-money-bill-trend-up', '/all-payments/')}
                         ${this.navItemAbsolute('record-payment', 'Record Payment', 'fa-indian-rupee-sign', '/record-payment/')}
                         ${this.navItemAbsolute('receipts', 'Payment Receipts', 'fa-file-invoice', '/payment-receipts/')}
@@ -163,7 +163,7 @@ const AdminSidebar = {
                     <div class="mobile-nav-parent ${activeGroup === 'financials' ? 'expanded' : ''}" id="mobile-financials-parent">
                         <button class="mobile-nav-parent-btn" id="mobile-financials-toggle">
                             <i class="fa-solid fa-money-bill-wave"></i>
-                            <span>Financials</span>
+                            <span>Finance</span>
                             <i class="fa-solid fa-chevron-right mobile-nav-arrow"></i>
                         </button>
                         <div class="mobile-nav-children">
