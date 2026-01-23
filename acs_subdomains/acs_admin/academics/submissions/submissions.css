@@ -15,16 +15,12 @@
 }
 
 .filters-row .search-box i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--admin-text-muted);
+    display: none !important;
 }
 
 .filters-row .search-box input {
     width: 100%;
-    padding: 0.85rem 1rem 0.85rem 2.75rem;
+    padding: 0.85rem 1rem;
     border: 1px solid var(--admin-input-border);
     border-radius: 12px;
     font-size: 0.95rem;

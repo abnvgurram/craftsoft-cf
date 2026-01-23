@@ -1133,6 +1133,12 @@ const AccountManager = {
     // Handle logout current
     handleLogoutCurrent() {
         const { Modal, Toast, NavigationSecurity } = window.AdminUtils;
+
+        // Close dropdown and backdrop first to avoid z-index/interactivity issues
+        document.getElementById('account-dropdown')?.classList.remove('open');
+        document.getElementById('account-trigger')?.classList.remove('open');
+        document.getElementById('account-backdrop')?.classList.remove('open');
+
         const currentAccount = this.getCurrentAccount();
         const accountCount = this.getAccountCount();
 

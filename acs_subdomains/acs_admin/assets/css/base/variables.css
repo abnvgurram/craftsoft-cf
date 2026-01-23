@@ -59,4 +59,16 @@
     /* Accent */
     --accent-gradient: linear-gradient(135deg, #2896cd 0%, #6C5CE7 100%);
     --accent-glow: 0 0 40px rgba(40, 150, 205, 0.2);
+
+    /* Z-Index Stack */
+    --z-base: 1;
+    --z-sidebar: 5000;
+    --z-header: 5000;
+    --z-mobile-nav: 6000;
+    --z-dropdown-backdrop: 9000;
+    --z-dropdown: 9001;
+    --z-modal-backdrop: 10000;
+    --z-modal: 10001;
+    --z-toast: 11000;
+    --z-spotlight: 12000;
 }
