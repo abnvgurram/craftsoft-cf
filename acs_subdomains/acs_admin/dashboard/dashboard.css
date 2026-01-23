@@ -165,11 +165,16 @@
 
 .quick-actions-container {
     padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
 }
 
+/* Single grid for all quick action buttons - no orphans */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+}
+
+/* Legacy support for .quick-actions-row */
 .quick-actions-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -642,6 +647,10 @@
 
     .quick-actions-container {
         padding: 1rem;
+    }
+
+    .quick-actions-grid {
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
     }
 
@@ -693,6 +702,7 @@
         font-size: 1.5rem;
     }
 
+    .quick-actions-grid,
     .quick-actions-row {
         grid-template-columns: 1fr;
     }

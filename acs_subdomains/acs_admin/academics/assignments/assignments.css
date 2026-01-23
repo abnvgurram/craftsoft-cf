@@ -13,6 +13,129 @@
     }
 }
 
+/* Modern Form Section Styling */
+.upload-section .section-body {
+    padding: 1.5rem;
+}
+
+.form-section-group {
+    background: linear-gradient(135deg, rgba(40, 150, 205, 0.03) 0%, rgba(108, 92, 231, 0.02) 100%);
+    border: 1px solid rgba(40, 150, 205, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.form-section-group::before {
+    content: attr(data-step);
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(40, 150, 205, 0.3);
+}
+
+.form-section-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1.25rem;
+    padding-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-section-title i {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* Radio Toggle Group - Modern Style */
+.radio-toggle-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: #fff;
+    border: 2px solid var(--admin-input-border, #e2e8f0);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: var(--admin-text-secondary);
+}
+
+.radio-label:hover {
+    border-color: var(--primary-300);
+    background: var(--primary-50);
+}
+
+.radio-label input[type="radio"] {
+    accent-color: var(--primary-500);
+    width: 18px;
+    height: 18px;
+}
+
+.radio-label:has(input:checked) {
+    border-color: var(--primary-500);
+    background: var(--primary-50);
+    color: var(--primary-700);
+    box-shadow: 0 2px 8px rgba(40, 150, 205, 0.15);
+}
+
+/* Deadline Row - Side by Side */
+.deadline-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 576px) {
+    .deadline-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Card Header Mini - Enhanced */
+.card-header-mini {
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+    color: #fff;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 12px 12px 0 0;
+    margin: -1px -1px 0 -1px;
+}
+
+.card-header-mini i {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+
 /* Stats Strip */
 .stats-strip {
     background: linear-gradient(135deg, var(--primary-50), #fff);

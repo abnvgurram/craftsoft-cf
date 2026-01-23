@@ -126,7 +126,11 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: var(--admin-bg);
+    background: linear-gradient(rgba(240, 247, 251, 0.85), rgba(240, 247, 251, 0.85)),
+        url('/assets/images/admin-login-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
 /* Admin Main Content */

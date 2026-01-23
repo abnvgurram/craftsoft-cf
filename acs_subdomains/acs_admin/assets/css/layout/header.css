@@ -13,7 +13,7 @@
     top: 0;
     left: 260px;
     right: 0;
-    z-index: 100;
+    z-index: 1050;
     height: 64px;
 }
 
@@ -147,7 +147,7 @@
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.2s ease;
-    z-index: 200;
+    z-index: 1100;
 }
 
 .logout-dropdown.open .logout-menu {
