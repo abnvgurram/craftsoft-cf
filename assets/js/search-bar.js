@@ -12,6 +12,28 @@ document.addEventListener('DOMContentLoaded', function () {
     const coursesPageSection = document.querySelector('.courses-page');
 
     if (searchInput) {
+        // Expand on Focus
+        searchInput.addEventListener('focus', function () {
+            const wrapper = this.closest('.search-filter-wrapper');
+            if (wrapper) wrapper.classList.add('is-expanded');
+        });
+
+        // Collapse on Blur (if empty)
+        searchInput.addEventListener('blur', function () {
+            if (this.value.trim() === '') {
+                const wrapper = this.closest('.search-filter-wrapper');
+                if (wrapper) wrapper.classList.remove('is-expanded');
+            }
+        });
+
+        // Click on Bar (for medium screen icon-only state)
+        const searchBarContainer = document.querySelector('.course-search-bar');
+        if (searchBarContainer) {
+            searchBarContainer.addEventListener('click', function () {
+                searchInput.focus();
+            });
+        }
+
         searchInput.addEventListener('input', function () {
             const query = this.value.toLowerCase().trim();
             if (searchClear) searchClear.style.display = query ? 'block' : 'none';
@@ -25,10 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
 
-            // Toggle Filter Tabs visibility
-            if (filterTabsContainer) {
-                filterTabsContainer.style.display = query ? 'none' : 'flex';
-            }
+            // Note: Filter Tabs visibility is now handled via the .is-expanded class in CSS
+            // which is toggled on focus/blur, allowing for smooth transitions.
 
             let matchCount = 0;
 
