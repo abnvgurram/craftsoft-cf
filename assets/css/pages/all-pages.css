@@ -5,7 +5,7 @@
 /* Page Header - Merged with Breadcrumbs */
 .page-header {
     background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
-    padding: 100px 0 0;
+    padding: 140px 0 40px;
     position: relative;
     overflow: hidden;
 }
@@ -71,11 +71,12 @@
 
 /* Breadcrumbs Navigation - Merged with Hero */
 .breadcrumbs {
-    background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
-    padding: 0.75rem 0 1.25rem;
+    background: transparent;
+    padding: 0.5rem 0 1.5rem;
     position: relative;
     z-index: 10;
     border: none;
+    margin-top: -10px;
 }
 
 .breadcrumb-list {
