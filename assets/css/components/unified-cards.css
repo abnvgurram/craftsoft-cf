@@ -195,7 +195,8 @@
 
     .unified-card h3,
     .unified-card>p {
-        text-align: center;
+        text-align: left;
+        /* Aligned left for form consistency */
     }
 
     .unified-card-features li {

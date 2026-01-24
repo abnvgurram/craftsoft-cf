@@ -1207,7 +1207,9 @@
         margin-right: auto;
     }
 
-    .hero-typing-wrapper {
+    .hero-typing-wrapper,
+    .hero-buttons,
+    .hero-stats {
         justify-content: center;
     }
 
