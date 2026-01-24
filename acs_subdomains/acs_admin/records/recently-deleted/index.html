@@ -59,16 +59,19 @@
 
 
 
-                <div class="tabs-nav">
-                    <button class="tab-btn active" data-tab="students">
-                        <i class="fa-solid fa-user-graduate"></i> Students
-                    </button>
-                    <button class="tab-btn" data-tab="clients">
-                        <i class="fa-solid fa-user-tie"></i> Clients
-                    </button>
-                    <button class="tab-btn" data-tab="inquiries">
-                        <i class="fa-solid fa-clipboard-question"></i> Inquiries
-                    </button>
+                <div class="toggle-group type-toggle" style="margin-bottom: 2rem;">
+                    <label class="toggle-item">
+                        <input type="radio" name="recovery-type" value="students" checked>
+                        <span><i class="fa-solid fa-user-graduate"></i> Students</span>
+                    </label>
+                    <label class="toggle-item">
+                        <input type="radio" name="recovery-type" value="clients">
+                        <span><i class="fa-solid fa-user-tie"></i> Clients</span>
+                    </label>
+                    <label class="toggle-item">
+                        <input type="radio" name="recovery-type" value="inquiries">
+                        <span><i class="fa-solid fa-clipboard-question"></i> Inquiries</span>
+                    </label>
                 </div>
 
                 <div id="trash-bulk-bar" class="bulk-actions-container" style="display:none;">

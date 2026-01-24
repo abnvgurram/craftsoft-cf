@@ -569,13 +569,12 @@
             }
         });
 
-        // Tabs
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        // Toggles (Active Assignments / Extension Requests)
+        document.querySelectorAll('input[name="assignment-view"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.tab).classList.add('active');
+                const targetId = e.target.value;
+                document.getElementById(targetId).classList.add('active');
             });
         });
 

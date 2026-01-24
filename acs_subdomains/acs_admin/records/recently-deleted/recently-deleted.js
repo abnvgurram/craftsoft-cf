@@ -63,12 +63,10 @@ async function loadRetentionSetting() {
 }
 
 function bindEvents() {
-    // Tabs
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            currentTab = e.target.dataset.tab;
+    // Toggles (Students / Clients / Inquiries)
+    document.querySelectorAll('input[name="recovery-type"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            currentTab = e.target.value;
             currentPage = 1;
             loadItems();
         });
