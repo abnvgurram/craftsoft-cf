@@ -734,6 +734,16 @@ function initShareCourse() {
             let shareUrl = '';
 
             switch (shareType) {
+                                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${encodeURIComponent('Check out this course: ' + document.title + ' ' + window.location.href)}`;
+                    window.open(shareUrl, '_blank');
+                    break;
+
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`;
+                    window.open(shareUrl, '_blank', 'width=600,height=400');
+                    break;
+
                 case 'linkedin':
                     shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${pageUrl}`;
                     window.open(shareUrl, '_blank', 'width=600,height=500');
@@ -826,8 +836,8 @@ function initDynamicCopyright() {
     const currentYear = new Date().getFullYear();
 
     copyrightElements.forEach(el => {
-        if (el.textContent.includes('©')) {
-            el.textContent = el.textContent.replace(/© \d{4}/, `© ${currentYear}`);
+        if (el.textContent.includes('ï¿½')) {
+            el.textContent = el.textContent.replace(/ï¿½ \d{4}/, `ï¿½ ${currentYear}`);
         }
     });
 }
