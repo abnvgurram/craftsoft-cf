@@ -1,18 +1,20 @@
 /* ============================================
-   SMART SEARCH BAR - CSS (Card Style Upgrade)
+   SMART SEARCH BAR - CSS (Clean Spanning & Card Vibe)
    ============================================ */
 
 .search-filter-wrapper {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin-bottom: 3rem;
-    max-width: 1250px;
+    flex-wrap: nowrap;
+    /* Force single line on desktop */
+    gap: 2.5rem;
+    margin-bottom: 3.5rem;
+    max-width: 1300px;
+    /* Increased for better spanning */
     margin-left: auto;
     margin-right: auto;
-    padding: 0 1rem;
+    padding: 0 1.5rem;
 }
 
 .course-search-bar {
@@ -21,36 +23,31 @@
     background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 100%);
     border: none;
     border-radius: 50px;
-    padding: 1rem 1.75rem;
-    flex: 1.2;
-    /* Spanned slightly more */
-    min-width: 350px;
+    padding: 0.85rem 1.75rem;
+    flex: 1;
+    /* Take all available space */
+    min-width: 0;
+    /* Allow shrinking if needed */
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
         box-shadow 0.4s ease;
     box-shadow: 0 4px 15px rgba(40, 150, 205, 0.08);
-    /* Match card shadow */
 }
 
 /* Matching Card Hover Effect */
 .course-search-bar:hover,
 .course-search-bar:focus-within {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(40, 150, 205, 0.12);
-}
-
-.course-search-bar:focus-within {
-    border: none;
-    /* Stay clean */
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(40, 150, 205, 0.12);
 }
 
 .search-filter-wrapper .course-filter-tabs {
     margin-bottom: 0 !important;
     padding: 0 !important;
-    justify-content: flex-end;
-    flex: 1;
-    gap: 0.75rem;
     display: flex;
     align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    /* Don't squash the buttons */
 }
 
 /* Desktop Visibility Logic */
@@ -61,33 +58,30 @@
 .filter-clear {
     display: inline-flex !important;
     align-items: center;
-    gap: 0.5rem;
-    background: #f8fafc;
-    color: #64748b;
-    border: 1px solid #e2e8f0;
+    gap: 0.6rem;
+    background: rgba(40, 150, 205, 0.05);
+    color: var(--primary-600);
+    border: 1px dashed rgba(40, 150, 205, 0.3);
     transition: all 0.3s ease;
     font-weight: 600;
+    margin-left: 0.5rem;
+    /* Separate clear slightly */
 }
 
 .filter-clear:hover {
     background: #e0f2fe;
     color: #2896cd;
     border-color: #2896cd;
-    transform: translateX(3px);
+    transform: translateY(-2px);
 }
 
 .filter-clear i {
-    font-size: 0.8rem;
-    opacity: 0.7;
+    font-size: 0.85rem;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .search-filter-wrapper {
         gap: 1.5rem;
-    }
-
-    .course-search-bar {
-        min-width: 300px;
     }
 }
 
@@ -95,11 +89,15 @@
     .search-filter-wrapper {
         flex-direction: column;
         align-items: stretch;
+        flex-wrap: wrap;
+        /* Allow wrap on mobile */
+        gap: 1.5rem;
     }
 
     .search-filter-wrapper .course-filter-tabs {
         justify-content: center;
         flex-wrap: wrap;
+        width: 100%;
     }
 
     /* Mobile Visibility Logic */
@@ -114,18 +112,19 @@
 
 .course-search-bar i.fa-search {
     color: var(--primary-500);
-    font-size: 1.1rem;
-    margin-right: 1rem;
+    font-size: 1rem;
+    margin-right: 1.25rem;
 }
 
 .course-search-bar input {
     flex: 1;
     border: none;
     outline: none;
-    font-size: 1.05rem;
+    font-size: 1rem;
     background: transparent;
     color: var(--gray-900);
     font-weight: 500;
+    width: 100%;
 }
 
 .course-search-bar input::placeholder {
@@ -137,6 +136,7 @@
     color: #94a3b8;
     padding: 0.25rem;
     transition: color 0.2s;
+    margin-left: 0.5rem;
 }
 
 .search-clear:hover {
@@ -145,11 +145,12 @@
 
 .search-results-count {
     text-align: center;
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--primary-500);
     margin-bottom: 2rem;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    margin-top: -1.5rem;
+    /* Pull up closer to bars */
 }
 
 /* Hide cards that don't match */
