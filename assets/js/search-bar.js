@@ -8,11 +8,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchResultsCount = document.getElementById('searchResultsCount');
     const courseCards = document.querySelectorAll('.course-card-full');
     const courseCategories = document.querySelectorAll('.course-category');
+    const filterTabsContainer = document.querySelector('.course-filter-tabs');
 
     if (searchInput) {
         searchInput.addEventListener('input', function () {
             const query = this.value.toLowerCase().trim();
             if (searchClear) searchClear.style.display = query ? 'block' : 'none';
+
+            // Toggle Filter Tabs visibility
+            if (filterTabsContainer) {
+                filterTabsContainer.style.display = query ? 'none' : 'flex';
+            }
 
             let matchCount = 0;
 
@@ -29,10 +35,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // Show/hide categories based on visible cards
+            // Show/hide categories and titles based on visible cards
             courseCategories.forEach(cat => {
                 const visibleCards = cat.querySelectorAll('.course-card-full:not(.search-hidden)');
-                cat.style.display = visibleCards.length > 0 ? 'block' : 'none';
+                const categoryTitle = cat.querySelector('.category-title');
+
+                if (visibleCards.length > 0) {
+                    cat.style.display = 'block';
+                    if (categoryTitle) {
+                        categoryTitle.style.display = query ? 'none' : 'block';
+                    }
+                } else {
+                    cat.style.display = 'none';
+                }
             });
 
             // Update results count
@@ -43,10 +58,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     searchResultsCount.style.display = 'none';
                 }
-            }
-
-            if (!query) {
-                courseCategories.forEach(cat => cat.style.display = 'block');
             }
         });
 
