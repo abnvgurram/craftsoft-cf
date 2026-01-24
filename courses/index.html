@@ -781,6 +781,11 @@
     <script src="../assets/js/search-bar.js?v=1.0"></script>
 
     <style>
+        /* Fix: Allow dropdown to overflow the card boundary */
+        .unified-form-side.unified-card {
+            overflow: visible !important;
+        }
+
         /* Improved public multi-select styles */
         .public-multi-select {
             position: relative;
@@ -856,7 +861,8 @@
         }
 
         .dropdown-options {
-            max-height: 290px;
+            max-height: 260px;
+            /* Balanced height */
             overflow-y: auto;
             padding: 0.5rem 0 1rem 0;
         }
