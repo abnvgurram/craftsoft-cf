@@ -1,5 +1,5 @@
 /* ============================================
-   SMART SEARCH BAR - CSS
+   SMART SEARCH BAR - CSS (Card Style Upgrade)
    ============================================ */
 
 .search-filter-wrapper {
@@ -7,9 +7,9 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
-    max-width: 1200px;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    max-width: 1250px;
     margin-left: auto;
     margin-right: auto;
     padding: 0 1rem;
@@ -18,62 +18,77 @@
 .course-search-bar {
     display: flex;
     align-items: center;
-    background: #fff;
-    border: 2px solid #e2e8f0;
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 100%);
+    border: none;
     border-radius: 50px;
-    padding: 0.75rem 1.5rem;
-    flex: 1;
-    min-width: 300px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    padding: 1rem 1.75rem;
+    flex: 1.2;
+    /* Spanned slightly more */
+    min-width: 350px;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.4s ease;
+    box-shadow: 0 4px 15px rgba(40, 150, 205, 0.08);
+    /* Match card shadow */
+}
+
+/* Matching Card Hover Effect */
+.course-search-bar:hover,
+.course-search-bar:focus-within {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(40, 150, 205, 0.12);
 }
 
 .course-search-bar:focus-within {
-    border-color: #2896cd;
-    box-shadow: 0 0 0 4px rgba(40, 150, 205, 0.15);
+    border: none;
+    /* Stay clean */
 }
 
 .search-filter-wrapper .course-filter-tabs {
     margin-bottom: 0 !important;
     padding: 0 !important;
     justify-content: flex-end;
-    flex: 1.5;
-    /* Take more space for tabs */
-    gap: 0.5rem;
-    /* Tighter grouping */
+    flex: 1;
+    gap: 0.75rem;
+    display: flex;
+    align-items: center;
 }
 
-.search-filter-wrapper .filter-tab {
-    padding: 0.6rem 1.25rem;
-    font-size: 0.85rem;
-}
-
-/* Desktop/Medium Visibility Logic */
+/* Desktop Visibility Logic */
 .filter-tab-all {
     display: none !important;
 }
 
 .filter-clear {
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #f1f5f9;
+    gap: 0.5rem;
+    background: #f8fafc;
     color: #64748b;
-    padding: 0 !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    font-weight: 600;
 }
 
 .filter-clear:hover {
     background: #e0f2fe;
     color: #2896cd;
-    transform: rotate(90deg);
+    border-color: #2896cd;
+    transform: translateX(3px);
 }
 
 .filter-clear i {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+@media (max-width: 1024px) {
+    .search-filter-wrapper {
+        gap: 1.5rem;
+    }
+
+    .course-search-bar {
+        min-width: 300px;
+    }
 }
 
 @media (max-width: 992px) {
@@ -84,6 +99,7 @@
 
     .search-filter-wrapper .course-filter-tabs {
         justify-content: center;
+        flex-wrap: wrap;
     }
 
     /* Mobile Visibility Logic */
@@ -97,18 +113,19 @@
 }
 
 .course-search-bar i.fa-search {
-    color: #94a3b8;
-    font-size: 1rem;
-    margin-right: 0.75rem;
+    color: var(--primary-500);
+    font-size: 1.1rem;
+    margin-right: 1rem;
 }
 
 .course-search-bar input {
     flex: 1;
     border: none;
     outline: none;
-    font-size: 1rem;
+    font-size: 1.05rem;
     background: transparent;
-    color: #1e293b;
+    color: var(--gray-900);
+    font-weight: 500;
 }
 
 .course-search-bar input::placeholder {
@@ -123,15 +140,16 @@
 }
 
 .search-clear:hover {
-    color: #475569;
+    color: var(--primary-500);
 }
 
 .search-results-count {
     text-align: center;
-    font-size: 0.95rem;
-    color: #2896cd;
-    margin-bottom: 1.5rem;
-    font-weight: 600;
+    font-size: 1rem;
+    color: var(--primary-500);
+    margin-bottom: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 /* Hide cards that don't match */
