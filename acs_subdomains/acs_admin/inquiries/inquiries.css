@@ -1,5 +1,13 @@
-.admin-main { padding-top: 100px !important; }
-@media (max-width: 768px) { .admin-main { padding-top: 85px !important; } }
+.admin-main {
+    padding-top: 100px !important;
+}
+
+@media (max-width: 768px) {
+    .admin-main {
+        padding-top: 85px !important;
+    }
+}
+
 /* Inquiries Module Styles */
 
 /* ============================================
@@ -522,10 +530,19 @@
 }
 
 .inquiry-card {
-    background: var(--admin-bg, #edf6fb);
-    border: 1px solid var(--admin-input-border);
-    border-radius: 12px;
-    padding: 1rem;
+    background: var(--admin-card-bg-solid, #edf6fb);
+    border: 1px solid var(--admin-card-border);
+    border-radius: var(--admin-radius-xl, 18px);
+    padding: 1.25rem;
+    box-shadow: var(--admin-card-shadow);
+    transition: all 0.3s ease;
+}
+
+.inquiry-card:hover {
+    background: var(--admin-hover-tint, rgba(40, 150, 205, 0.08));
+    border-color: var(--admin-hover-tint, rgba(40, 150, 205, 0.15));
+    box-shadow: var(--admin-card-hover-shadow);
+    transform: translateY(-2px);
 }
 
 .inquiry-card-header {
@@ -600,4 +617,3 @@
         display: flex;
     }
 }
-

@@ -1853,12 +1853,32 @@ window.AdminUtils = {
             const container = document.getElementById(containerId);
             if (!container) return;
 
+            const getTint = (color) => {
+                if (!color) return 'var(--tint-blue)';
+                if (color.includes('primary') || color.includes('2896cd')) return 'var(--tint-blue)';
+                if (color.includes('success') || color.includes('10b981')) return 'var(--tint-green)';
+                if (color.includes('warning') || color.includes('f59e0b')) return 'var(--tint-orange)';
+                if (color.includes('danger') || color.includes('ef4444')) return 'var(--tint-red)';
+                if (color.includes('info') || color.includes('3b82f6')) return 'var(--tint-blue)';
+                if (color.includes('purple') || color.includes('6c5ce7')) return 'var(--tint-purple)';
+                return 'var(--tint-blue)';
+            };
+
+            const getColor = (color) => {
+                if (!color) return 'var(--primary-500)';
+                if (color === 'var(--success)') return '#10b981';
+                if (color === 'var(--warning)') return '#f59e0b';
+                if (color === 'var(--danger)') return '#ef4444';
+                if (color === 'var(--info)') return '#3b82f6';
+                return color;
+            };
+
             container.innerHTML = `
                 <div class="stats-grid-wrapper">
                     <div class="stats-grid">
                         ${stats.map((stat, index) => `
                             <div class="stat-card-premium animate-up" style="animation-delay: ${index * 0.1}s">
-                                <div class="stat-card-icon" style="background: ${stat.color || 'var(--primary-500)'}">
+                                <div class="stat-card-icon" style="background: ${stat.tint || getTint(stat.color)}; color: ${getColor(stat.color)}">
                                     <i class="${stat.icon}"></i>
                                 </div>
                                 <div class="stat-card-info">

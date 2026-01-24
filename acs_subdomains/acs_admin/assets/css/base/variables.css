@@ -24,6 +24,15 @@
     --primary-700: #156691;
     --primary-50: #edf6fb;
 
+    /* Icon Tints (12% Opacity for matched background) */
+    --tint-blue: rgba(40, 150, 205, 0.12);
+    --tint-purple: rgba(108, 92, 231, 0.12);
+    --tint-green: rgba(16, 185, 129, 0.12);
+    --tint-orange: rgba(245, 158, 11, 0.12);
+    --tint-red: rgba(239, 68, 68, 0.12);
+    --tint-cyan: rgba(20, 184, 166, 0.12);
+    --tint-pink: rgba(236, 72, 153, 0.12);
+
     /* Sidebar (Light Theme) */
     --sidebar-bg: linear-gradient(180deg, #edf6fb 0%, #e5f3fa 100%);
     --sidebar-border: rgba(40, 150, 205, 0.15);

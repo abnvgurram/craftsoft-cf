@@ -71,17 +71,19 @@
 }
 
 .floating-card {
-    background: var(--admin-bg, #edf6fb);
-    border: 1px solid var(--admin-input-border);
-    border-radius: 20px;
+    background: var(--admin-card-bg-solid, #edf6fb);
+    border: 1px solid var(--admin-card-border);
+    border-radius: var(--admin-radius-xl, 18px);
     padding: 2rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: var(--admin-card-shadow);
+    transition: all 0.3s ease;
     width: 100%;
 }
 
 .floating-card:hover {
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+    background: var(--admin-hover-tint, rgba(40, 150, 205, 0.08));
+    border-color: var(--admin-hover-tint, rgba(40, 150, 205, 0.15));
+    box-shadow: var(--admin-card-hover-shadow);
 }
 
 .card-header-mini {
@@ -332,5 +334,3 @@
         height: 56px;
     }
 }
-
-
