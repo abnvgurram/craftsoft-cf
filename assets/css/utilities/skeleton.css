@@ -5,23 +5,26 @@
 
 /* Base skeleton style - Premium Diagonal Shimmer */
 .skeleton {
-    background: linear-gradient(110deg,
-            rgba(40, 150, 205, 0.05) 8%,
-            rgba(40, 150, 205, 0.12) 18%,
-            rgba(40, 150, 205, 0.05) 33%);
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
-    animation: shimmer 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    border-radius: var(--radius-md);
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-md, 8px);
 }
 
 @keyframes shimmer {
     0% {
-        background-position: -100% 0;
+        background-position: 200% 0;
     }
 
     100% {
-        background-position: 100% 0;
+        background-position: -200% 0;
     }
+}
+
+.skeleton-placeholder {
+    background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
 }
 
 /* Content fade in utility */

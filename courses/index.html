@@ -9,37 +9,50 @@
     <title>All Courses - Abhi's Craftsoft | IT Training in Hyderabad</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link rel="stylesheet" href="../assets/css/master.css?v=2.0">
-    <link rel="stylesheet" href="../assets/css/utilities/skeleton.css?v=1.0">
-    <link rel="stylesheet" href="../assets/css/sections/courses.css?v=2.2">
-    <!-- Logo Component Assets -->
-    <link rel="stylesheet" href="../assets/components/logo-signature/logo-signature.css">
-    <script src="../assets/components/logo-signature/logo-signature.js"></script>
-    <!-- FOUC Protection -->
-    <style>
-        .no-fouc {
-            opacity: 0;
-        }
+    <link <!DOCTYPE html>
+    <html lang="en">
 
-        body {
-            transition: opacity 0.3s ease;
-        }
-    </style>
-    <script>
-        document.documentElement.className += ' no-fouc';
-        document.addEventListener('DOMContentLoaded', function () {
-            document.documentElement.classList.remove('no-fouc');
-        });
-        window.addEventListener('load', function () {
-            document.documentElement.classList.remove('no-fouc');
-        });
-    </script>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description"
+            content="Explore our comprehensive range of IT training courses - Graphic Design, UI/UX, Full Stack Development, DevOps, AWS, and more at Abhi's Craftsoft, Hyderabad.">
+        <title>All Courses - Abhi's Craftsoft | IT Training in Hyderabad</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+        <link rel="stylesheet" href="../assets/css/master.css?v=2.0">
+        <link rel="stylesheet" href="../assets/css/utilities/skeleton.css?v=1.0">
+        <link rel="stylesheet" href="../assets/css/sections/courses.css?v=2.2">
+        <link rel="stylesheet" href="../assets/css/components/search-bar.css?v=1.0">
+
+        <!-- Logo Component Assets -->
+        <link rel="stylesheet" href="../assets/components/logo-signature/logo-signature.css">
+        <script src="../assets/components/logo-signature/logo-signature.js"></script>
+        <!-- FOUC Protection -->
+        <style>
+            .no-fouc {
+                opacity: 0;
+            }
+
+            body {
+                transition: opacity 0.3s ease;
+            }
+        </style>
+        <script>
+            document.documentElement.className += ' no-fouc';
+            document.addEventListener('DOMContentLoaded', function () {
+                document.documentElement.classList.remove('no-fouc');
+            });
+            window.addEventListener('load', function () {
+                document.documentElement.classList.remove('no-fouc');
+            });
+        </script>
+    </head>
 
 <body>
     <!-- Navbar -->
@@ -89,6 +102,14 @@
     <!-- Courses Content -->
     <section class="courses-page">
         <div class="container">
+            <!-- Smart Search Bar -->
+            <div class="course-search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="courseSearchInput" placeholder="Search for a course..." autocomplete="off">
+                <span class="search-clear" id="searchClear" style="display: none;"><i class="fas fa-times"></i></span>
+            </div>
+            <p class="search-results-count" id="searchResultsCount" style="display: none;"></p>
+
             <!-- Filter Tabs -->
             <div class="course-filter-tabs">
                 <button class="filter-tab active" data-filter="all">All Courses</button>
@@ -794,6 +815,7 @@
     <script src="../assets/js/supabase-website-config.js?v=1.0"></script>
     <script src="../assets/js/inquiry-sync.js?v=3.0"></script>
     <script src="../assets/js/main.js?v=2.1"></script>
+    <script src="../assets/js/search-bar.js?v=1.0"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
