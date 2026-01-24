@@ -25,7 +25,7 @@
 .stat-card-premium {
     background: var(--admin-card-bg-solid);
     border: 1px solid var(--admin-input-border);
-    border-radius: var(--admin-radius-xl);
+    border-radius: var(--admin-radius-xl, 18px);
     padding: 1.5rem;
     display: flex;
     align-items: center;
@@ -38,7 +38,8 @@
 
 .stat-card-premium:hover {
     transform: translateY(-5px);
-    border-color: var(--primary-400);
+    border-color: var(--admin-hover-tint, rgba(40, 150, 205, 0.15));
+    background: var(--admin-hover-tint, rgba(40, 150, 205, 0.08));
     box-shadow: 0 10px 25px rgba(40, 150, 205, 0.15);
 }
 
@@ -141,7 +142,7 @@
 .receipts-workspace {
     background: var(--admin-card-bg);
     border: 1px solid var(--admin-card-border);
-    border-radius: var(--admin-radius-xl);
+    border-radius: var(--admin-radius-xl, 18px);
     padding: 2rem;
     box-shadow: var(--admin-card-shadow);
 }
@@ -167,4 +168,3 @@
         font-size: 1.5rem;
     }
 }
-

@@ -49,21 +49,23 @@
 }
 
 .stat-card {
-    background: var(--admin-bg, #edf6fb);
-    border-radius: 16px;
+    background: var(--admin-card-bg-solid, #edf6fb);
+    border-radius: var(--admin-radius-xl, 18px);
     padding: 1.5rem;
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    border: 1px solid var(--admin-input-border, #e2e8f0);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    transition: all 0.2s ease;
+    border: 1px solid var(--admin-card-border);
+    box-shadow: var(--admin-card-shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(40, 150, 205, 0.1);
+    transform: translateY(-5px);
+    background: var(--admin-hover-tint, rgba(40, 150, 205, 0.08));
+    border-color: var(--admin-hover-tint, rgba(40, 150, 205, 0.15));
+    box-shadow: var(--admin-card-hover-shadow);
 }
 
 .stat-card-secondary {
@@ -130,12 +132,12 @@
    Quick Actions Card
    ============================================ */
 .quick-actions-card {
-    background: var(--admin-bg, #edf6fb);
-    border-radius: 16px;
-    border: 1px solid var(--admin-input-border, #e2e8f0);
+    background: var(--admin-card-bg-solid, #edf6fb);
+    border-radius: var(--admin-radius-xl, 18px);
+    border: 1px solid var(--admin-card-border);
     overflow: hidden;
     padding: 0;
-    min-height: auto;
+    box-shadow: var(--admin-card-shadow);
 }
 
 .card-header {
@@ -462,11 +464,12 @@
    Recent Activity Card (Dashboard Only)
    ============================================ */
 .recent-activity-card {
-    background: var(--admin-bg, #edf6fb);
-    border-radius: 16px;
-    border: 1px solid var(--admin-input-border, #e2e8f0);
+    background: var(--admin-card-bg-solid, #edf6fb);
+    border-radius: var(--admin-radius-xl, 18px);
+    border: 1px solid var(--admin-card-border);
     overflow: hidden;
     padding: 0;
+    box-shadow: var(--admin-card-shadow);
 }
 
 .recent-activity-card .card-header {
@@ -731,5 +734,3 @@
         max-height: calc(100vh - 80px);
     }
 }
-
-
