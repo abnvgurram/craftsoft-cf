@@ -553,7 +553,13 @@ function initCourseFilter() {
         tab.addEventListener('click', () => {
             // Update active tab
             filterTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
+
+            if (tab.classList.contains('filter-clear')) {
+                const allTab = document.querySelector('.filter-tab-all');
+                if (allTab) allTab.classList.add('active');
+            } else {
+                tab.classList.add('active');
+            }
 
             const filter = tab.getAttribute('data-filter');
 

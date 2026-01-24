@@ -48,6 +48,34 @@
     font-size: 0.85rem;
 }
 
+/* Desktop/Medium Visibility Logic */
+.filter-tab-all {
+    display: none !important;
+}
+
+.filter-clear {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 0 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-clear:hover {
+    background: #e0f2fe;
+    color: #2896cd;
+    transform: rotate(90deg);
+}
+
+.filter-clear i {
+    font-size: 0.9rem;
+}
+
 @media (max-width: 992px) {
     .search-filter-wrapper {
         flex-direction: column;
@@ -56,6 +84,15 @@
 
     .search-filter-wrapper .course-filter-tabs {
         justify-content: center;
+    }
+
+    /* Mobile Visibility Logic */
+    .filter-tab-all {
+        display: block !important;
+    }
+
+    .filter-clear {
+        display: none !important;
     }
 }
 
