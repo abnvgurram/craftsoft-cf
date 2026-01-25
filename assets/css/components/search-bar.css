@@ -5,67 +5,73 @@
 .search-filter-wrapper {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    /* Center everything in the line */
     flex-wrap: nowrap;
-    gap: 2.5rem;
+    gap: 1.5rem;
     margin-bottom: 3.5rem;
-    max-width: 1300px;
+    max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
     padding: 0 1.5rem;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 60px;
+    /* Force consistent height */
+    position: relative;
+    transition: all 0.4s ease;
 }
 
 .course-search-bar {
     display: flex;
     align-items: center;
     background: linear-gradient(135deg, var(--primary-50) 0%, var(--white) 100%);
-    border: none;
+    border: 1px solid rgba(40, 150, 205, 0.1);
     border-radius: 50px;
-    padding: 0.85rem 1.75rem;
-    flex: 1;
-    min-width: 0;
+    padding: 0.75rem 1.5rem;
+    flex: 0 0 50px;
+    /* Start as small circle/icon container */
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 4px 15px rgba(40, 150, 205, 0.08);
+    cursor: pointer;
     position: relative;
-    cursor: text;
+    z-index: 10;
 }
 
-/* Matching Card Hover Effect */
-.course-search-bar:hover,
-.course-search-bar:focus-within {
-    transform: translateY(-4px);
-    box-shadow: 0 15px 35px rgba(40, 150, 205, 0.12);
-}
-
-.search-filter-wrapper .course-filter-tabs {
-    margin-bottom: 0 !important;
-    padding: 0 !important;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-shrink: 0;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Expansion Magic */
-.search-filter-wrapper.is-expanded .course-filter-tabs {
-    width: 0;
-    opacity: 0;
-    visibility: hidden;
-    margin: 0;
-    padding: 0;
-    gap: 0;
-    pointer-events: none;
+.course-search-bar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 150, 205, 0.12);
 }
 
 .search-filter-wrapper.is-expanded .course-search-bar {
     flex: 1;
-    max-width: 100%;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(40, 150, 205, 0.15);
+    /* Expand to take available line space */
+    max-width: 800px;
+    /* Don't let it become pathologically wide */
+    cursor: text;
+    background: var(--white);
+    border-color: var(--primary-200);
+}
+
+.search-filter-wrapper .course-filter-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    transition: all 0.4s ease;
+    opacity: 1;
+    visibility: visible;
+    margin-bottom: 0 !important;
+}
+
+.search-filter-wrapper.is-expanded .course-filter-tabs {
+    width: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    margin: 0;
+    gap: 0;
 }
 
 /* Desktop Visibility Logic */
@@ -105,64 +111,32 @@
 
 @media (max-width: 992px) {
     .search-filter-wrapper {
-        flex-direction: row;
-        /* Keep on one line for tablet */
-        align-items: center;
-        justify-content: center;
-        gap: 1.5rem;
-        flex-wrap: wrap;
-    }
-
-    /* Medium Screen Icon-Only State */
-    .search-filter-wrapper:not(.is-expanded) .course-search-bar {
-        flex: 0 0 54px;
-        width: 54px;
-        height: 54px;
-        padding: 0;
-        justify-content: center;
-        cursor: pointer;
-        background: var(--white);
-        border: 1px solid var(--primary-100);
-        margin: 0;
-        /* Align with tabs */
-    }
-
-    .search-filter-wrapper:not(.is-expanded) .course-search-bar input,
-    .search-filter-wrapper:not(.is-expanded) .course-search-bar .search-clear {
-        display: none !important;
-    }
-
-    .search-filter-wrapper:not(.is-expanded) .course-search-bar i.fa-search {
-        margin-right: 0;
-        font-size: 1.2rem;
-    }
-
-    .search-filter-wrapper.is-expanded {
-        flex-direction: row;
-        width: 100%;
-    }
-
-    .search-filter-wrapper .course-filter-tabs {
-        justify-content: center;
-        flex-wrap: wrap;
-        width: auto;
-        /* Shrink to fit content */
+        flex-wrap: nowrap;
+        /* Force single line on tablets too */
+        gap: 1rem;
+        padding: 0 1rem;
     }
 }
 
-/* Hard Mobile Policy: NO SEARCH ON MOBILE */
 @media (max-width: 576px) {
+
+    /* MOBILE POLICY: NO SEARCH */
     .course-search-bar {
         display: none !important;
     }
 
     .search-filter-wrapper {
         flex-direction: column;
+        /* Allow stack on mobile for tabs only */
+        height: auto;
         gap: 1rem;
     }
 
     .search-filter-wrapper .course-filter-tabs {
         width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        /* Let tabs wrap on mobile */
     }
 }
 
@@ -188,15 +162,24 @@
 }
 
 .search-clear {
+    display: none;
+    /* Hidden unless there is content or expanded */
     cursor: pointer;
     color: #94a3b8;
-    padding: 0.25rem;
-    transition: color 0.2s;
-    margin-left: 0.5rem;
+    padding: 0.5rem;
+    transition: all 0.2s;
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.search-filter-wrapper.is-expanded .search-clear {
+    display: block !important;
+    /* Force visible in expanded state */
 }
 
 .search-clear:hover {
     color: var(--primary-500);
+    transform: scale(1.1);
 }
 
 .search-results-count {
