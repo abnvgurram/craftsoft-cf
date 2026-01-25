@@ -5,7 +5,7 @@
 /* Page Header - Merged with Breadcrumbs */
 .page-header {
     background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
-    padding: 130px 0 15px;
+    padding: 140px 0 var(--section-padding-desktop);
     position: relative;
     overflow: hidden;
 }
@@ -265,7 +265,6 @@
 
 .services-page,
 .courses-page {
-    padding: 1rem 0 3rem 0;
     background: rgba(40, 150, 205, 0.05);
 }
 
@@ -576,7 +575,6 @@
 
 /* Individual Course Page */
 .course-detail-page {
-    padding: 1rem 0;
     background: rgba(40, 150, 205, 0.05);
 }
 
@@ -1681,13 +1679,11 @@
 
 /* Map Section Spacing */
 .map-section {
-    padding: 4rem 0;
     background: rgba(40, 150, 205, 0.05);
 }
 
 /* Contact Section Adjustments for Contact Page */
 .contact-section {
-    padding: 4rem 0;
     background: rgba(40, 150, 205, 0.05);
 }
 
@@ -1714,8 +1710,7 @@
 
 @media (max-width: 576px) {
     .unified-contact-section {
-        padding: 3rem 0;
-        margin-top: 3rem;
+        margin-top: var(--section-padding-mobile);
     }
 
     .unified-contact-pill {

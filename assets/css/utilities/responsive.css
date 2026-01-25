@@ -8,9 +8,9 @@
         --container-padding: 2rem;
     }
 
-    /* Tablet Section Spacing - 24px */
+    /* Tablet Section Spacing */
     section {
-        padding: var(--spacing-lg) 0;
+        padding: var(--section-padding-tablet) 0;
     }
 
     .section-header {
@@ -19,27 +19,10 @@
 
     /* Page Header - Tablet */
     .page-header {
-        padding: 120px 0 50px;
+        padding: 120px 0 var(--section-padding-tablet);
     }
 
-    /* Page Sections - Tablet */
-    .courses-page,
-    .services-page,
-    .course-detail-page {
-        padding: var(--spacing-lg) 0;
-    }
-
-    .about-detailed {
-        padding: var(--spacing-lg) 0;
-    }
-
-    .faq-section {
-        padding: var(--spacing-lg) 0;
-    }
-
-    .contact-section {
-        padding: var(--spacing-lg) 0;
-    }
+    /* Page Sections - Tablet Overrides removed as they now inherit from section */
 
     .hero-container {
         grid-template-columns: 1fr;
@@ -134,9 +117,9 @@
         --container-padding: 1.25rem;
     }
 
-    /* Mobile Section Spacing - 20px */
+    /* Mobile Section Spacing */
     section {
-        padding: var(--spacing-md) 0;
+        padding: var(--section-padding-mobile) 0;
     }
 
     .section-header {
@@ -145,28 +128,10 @@
 
     /* Page Header - Mobile */
     .page-header {
-        padding: 100px 0 40px;
+        padding: 100px 0 var(--section-padding-mobile);
     }
 
-    /* Page Sections - Mobile */
-    .courses-page,
-    .services-page,
-    .course-detail-page {
-        padding: var(--spacing-md) 0;
-    }
-
-    .about-detailed {
-        padding: var(--spacing-md) 0;
-    }
-
-    .faq-section {
-        padding: var(--spacing-md) 0;
-    }
-
-    .contact-section {
-        padding: var(--spacing-md) 0 0;
-        /* Trimmed bottom padding */
-    }
+    /* Page Sections - Mobile Overrides removed as they now inherit from section */
 
     /* Mobile Navigation - Enhanced Dropdown Panel */
     .nav-menu {

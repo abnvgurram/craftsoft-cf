@@ -2,8 +2,7 @@
    FOUNDER Section
    ============================================ */
 .founder-section {
-    background: var(--white);
-    padding: var(--spacing-3xl) 0;
+    background: rgba(9, 132, 227, 0.05);
 }
 
 .founder-content {
