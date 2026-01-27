@@ -1,0 +1,11 @@
+# Features in progress
+features-needed/
+
+# Local Netlify folder
+.netlify
+node_modules/
+
+# Environment variables (NEVER COMMIT)
+.env
+.env.local
+.env.*.local
