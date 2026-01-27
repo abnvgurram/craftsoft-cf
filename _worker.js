@@ -10,15 +10,6 @@ export default {
         const hostname = url.hostname.toLowerCase();
         const pathname = url.pathname;
 
-        // 🚫 DO NOT TOUCH REAL FILES (serve as-is from assets)
-        const staticExtensions = [
-            '.js', '.css', '.map', '.json', '.svg', '.png', '.jpg', '.jpeg', '.gif',
-            '.woff', '.woff2', '.ttf', '.eot'
-        ];
-        if (staticExtensions.some(ext => pathname.endsWith(ext))) {
-            return env.ASSETS.fetch(request);
-        }
-
         // ============================================
         // GLOBAL ASSET ROUTING (Shared by all subdomains)
         // ============================================
@@ -42,6 +33,15 @@ export default {
             const assetPath = `/assets/${pathname.replace('/assets/', '')}`;
             const newUrl = new URL(assetPath, url);
             return fetchWithMimeType(request, newUrl, env);
+        }
+
+        // 🚫 DO NOT TOUCH REAL FILES (serve as-is from assets)
+        const staticExtensions = [
+            '.js', '.css', '.map', '.json', '.svg', '.png', '.jpg', '.jpeg', '.gif',
+            '.woff', '.woff2', '.ttf', '.eot', '.ico'
+        ];
+        if (staticExtensions.some(ext => pathname.endsWith(ext))) {
+            return env.ASSETS.fetch(request);
         }
 
         // ============================================
