@@ -7,9 +7,9 @@
     'use strict';
 
     // Environment Variables (Injected during build)
-    const EMAILJS_PUBLIC_KEY = "[[EMAILJS_PUBLIC_KEY]]";
-    const EMAILJS_SERVICE_ID = "[[EMAILJS_SERVICE_ID]]";
-    const EMAILJS_TEMPLATE_ID = "[[EMAILJS_TEMPLATE_ID]]";
+    const EMAILJS_PUBLIC_KEY = "2c7yrQV-JdtfdL0Cl";
+    const EMAILJS_SERVICE_ID = "service_jf5zhm4";
+    const EMAILJS_TEMPLATE_ID = "template_n3cvhg8";
 
     emailjs.init(EMAILJS_PUBLIC_KEY);
 
@@ -350,3 +350,4 @@
     }
 
 })();
+

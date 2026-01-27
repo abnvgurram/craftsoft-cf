@@ -30,26 +30,35 @@ export default {
         }
 
         // ============================================
+        // GLOBAL ASSET ROUTING (Shared by all subdomains)
+        // ============================================
+        
+        // 1. /assets/admin/* → /acs_subdomains/acs_admin/assets/:splat
+        if (pathname.startsWith('/assets/admin/')) {
+            const assetPath = `/acs_subdomains/acs_admin/assets/${pathname.replace('/assets/admin/', '')}`;
+            const newUrl = new URL(assetPath, url);
+            return fetchWithMimeType(request, newUrl, env);
+        }
+
+        // 2. /assets/student/* → /acs_subdomains/acs_students/assets/:splat
+        if (pathname.startsWith('/assets/student/')) {
+            const assetPath = `/acs_subdomains/acs_students/assets/${pathname.replace('/assets/student/', '')}`;
+            const newUrl = new URL(assetPath, url);
+            return fetchWithMimeType(request, newUrl, env);
+        }
+
+        // 3. /assets/* → /assets/:splat (Shared root assets)
+        if (pathname.startsWith('/assets/')) {
+            const assetPath = `/assets/${pathname.replace('/assets/', '')}`;
+            const newUrl = new URL(assetPath, url);
+            return fetchWithMimeType(request, newUrl, env);
+        }
+
+
+        // ============================================
         // 1. ADMIN SUBDOMAIN (admin.craftsoft.co.in)
         // ============================================
         if (hostname.includes("admin")) {
-
-
-            // 1. /assets/admin/* → /acs_subdomains/acs_admin/assets/:splat
-            if (pathname.startsWith('/assets/admin/')) {
-                const assetPath = `/acs_subdomains/acs_admin/assets/${pathname.replace('/assets/admin/', '')}`;
-                const newUrl = new URL(assetPath, url);
-                return fetchWithMimeType(request, newUrl, env);
-            }
-
-            // 2. /assets/* → /assets/:splat (shared root assets)
-            if (pathname.startsWith('/assets/')) {
-                const assetPath = `/assets/${pathname.replace('/assets/', '')}`;
-                const newUrl = new URL(assetPath, url);
-                return fetchWithMimeType(request, newUrl, env);
-            }
-
-
 
             // Netlify parity: /signup/* always returns admin 404
             if (pathname.startsWith("/signup/")) {
@@ -66,7 +75,8 @@ export default {
             }
 
 
-            // 3. Exact-match and subfolder rewrites for all admin subpages
+
+            // Exact-match and subfolder rewrites for all admin subpages
             const adminFolders = [
                 { web: '/dashboard', fs: '/acs_subdomains/acs_admin/dashboard' },
                 { web: '/archived', fs: '/acs_subdomains/acs_admin/records/archived' },
@@ -109,15 +119,14 @@ export default {
             }
 
             // Admin catch-all: serve /acs_subdomains/acs_admin/:splat for any other path
-            if (hostname.includes('admin')) {
-                if (pathname.startsWith('/acs_subdomains/acs_admin/')) {
-                    const newUrl = new URL(pathname, url);
-                    return env.ASSETS.fetch(new Request(newUrl, request));
-                }
-                // Serve 404 for anything not matched above
-                const notFoundUrl = new URL('/acs_subdomains/acs_admin/404/index.html', url);
-                return env.ASSETS.fetch(new Request(notFoundUrl, request));
+            if (pathname.startsWith('/acs_subdomains/acs_admin/')) {
+                const newUrl = new URL(pathname, url);
+                return env.ASSETS.fetch(new Request(newUrl, request));
             }
+            // Serve 404 for anything not matched above
+            const notFoundUrl = new URL('/acs_subdomains/acs_admin/404/index.html', url);
+            return env.ASSETS.fetch(new Request(notFoundUrl, request));
+        }
 
             // 5. If already inside /acs_subdomains/acs_admin/, serve directly (prevent recursion)
             if (pathname.startsWith('/acs_subdomains/acs_admin/')) {
