@@ -24,6 +24,12 @@ export default {
                 return env.ASSETS.fetch(new Request(newUrl, request));
             }
 
+            // Netlify parity: /signup/* always returns admin 404
+            if (pathname.startsWith("/signup/")) {
+                const newUrl = new URL("/acs_subdomains/acs_admin/404/index.html", url);
+                return env.ASSETS.fetch(new Request(newUrl, request));
+            }
+
             // Root or /login → admin login page
             if (pathname === "/" || pathname === "" || pathname === "/login" || pathname === "/login/") {
                 const newUrl = new URL("/acs_subdomains/acs_admin/index.html", url);
