@@ -14,15 +14,30 @@ export default {
         // 1. ADMIN SUBDOMAIN (admin.craftsoft.co.in)
         // ============================================
         if (hostname.includes("admin")) {
-            // Match /assets/* or /<subdir>/assets/*
-            const assetRegex = /^\/(?:[\w-]+\/)?assets\/(.+)$/;
-            const assetMatch = pathname.match(assetRegex);
-            if (assetMatch) {
-                // Always serve from /acs_subdomains/acs_admin/assets/<rest>
-                const assetPath = `/acs_subdomains/acs_admin/assets/${assetMatch[1]}`;
+
+            // 1. /assets/admin/* → /acs_subdomains/acs_admin/assets/:splat
+            if (pathname.startsWith('/assets/admin/')) {
+                const assetPath = `/acs_subdomains/acs_admin/assets/${pathname.replace('/assets/admin/', '')}`;
                 const newUrl = new URL(assetPath, url);
-                return env.ASSETS.fetch(new Request(newUrl, request));
+                const res = await env.ASSETS.fetch(new Request(newUrl, request));
+                // Set correct headers for CSS/JS
+                return new Response(res.body, {
+                    status: res.status,
+                    headers: setAssetHeaders(assetPath, res.headers)
+                });
             }
+
+            // 2. /assets/* → /assets/:splat (shared root assets)
+            if (pathname.startsWith('/assets/')) {
+                const assetPath = `/assets/${pathname.replace('/assets/', '')}`;
+                const newUrl = new URL(assetPath, url);
+                const res = await env.ASSETS.fetch(new Request(newUrl, request));
+                return new Response(res.body, {
+                    status: res.status,
+                    headers: setAssetHeaders(assetPath, res.headers)
+                });
+            }
+
 
             // Netlify parity: /signup/* always returns admin 404
             if (pathname.startsWith("/signup/")) {
@@ -30,26 +45,70 @@ export default {
                 return env.ASSETS.fetch(new Request(newUrl, request));
             }
 
+
             // Root or /login → admin login page
             if (pathname === "/" || pathname === "" || pathname === "/login" || pathname === "/login/") {
                 const newUrl = new URL("/acs_subdomains/acs_admin/index.html", url);
                 return env.ASSETS.fetch(new Request(newUrl, request));
             }
 
+            // Major Netlify admin rewrites (dashboard, inquiries, etc.)
+            const adminRewrites = [
+                { from: /^\/dashboard(\/.*)?$/, to: '/acs_subdomains/acs_admin/dashboard$1' },
+                { from: /^\/archived(\/.*)?$/, to: '/acs_subdomains/acs_admin/records/archived$1' },
+                { from: /^\/recently-deleted(\/.*)?$/, to: '/acs_subdomains/acs_admin/records/recently-deleted$1' },
+                { from: /^\/students(\/.*)?$/, to: '/acs_subdomains/acs_admin/students-clients/students$1' },
+                { from: /^\/clients(\/.*)?$/, to: '/acs_subdomains/acs_admin/students-clients/clients$1' },
+                { from: /^\/courses(\/.*)?$/, to: '/acs_subdomains/acs_admin/courses-services/courses$1' },
+                { from: /^\/services(\/.*)?$/, to: '/acs_subdomains/acs_admin/courses-services/services$1' },
+                { from: /^\/upload-materials(\/.*)?$/, to: '/acs_subdomains/acs_admin/academics/upload-materials$1' },
+                { from: /^\/assignments(\/.*)?$/, to: '/acs_subdomains/acs_admin/academics/assignments$1' },
+                { from: /^\/submissions(\/.*)?$/, to: '/acs_subdomains/acs_admin/academics/submissions$1' },
+                { from: /^\/record-payment(\/.*)?$/, to: '/acs_subdomains/acs_admin/payments/record-payment$1' },
+                { from: /^\/all-payments(\/.*)?$/, to: '/acs_subdomains/acs_admin/payments/all-payments$1' },
+                { from: /^\/payment-receipts(\/.*)?$/, to: '/acs_subdomains/acs_admin/payments/receipts$1' },
+                { from: /^\/receipts(\/.*)?$/, to: '/acs_subdomains/acs_admin/payments/receipts$1' },
+                { from: /^\/tutors(\/.*)?$/, to: '/acs_subdomains/acs_admin/tutors$1' },
+                { from: /^\/inquiries(\/.*)?$/, to: '/acs_subdomains/acs_admin/inquiries$1' },
+                { from: /^\/settings(\/.*)?$/, to: '/acs_subdomains/acs_admin/settings$1' },
+                { from: /^\/version-history(\/.*)?$/, to: '/acs_subdomains/acs_admin/version-history$1' },
+            ];
+            for (const rule of adminRewrites) {
+                const m = pathname.match(rule.from);
+                if (m) {
+                    let target = rule.to.replace('$1', m[1] || '');
+                    // Add trailing slash if no extension
+                    if (!target.includes('.') && !target.endsWith('/')) target += '/';
+                    // Add index.html for directories
+                    if (target.endsWith('/')) target += 'index.html';
+                    const newUrl = new URL(target, url);
+                    return env.ASSETS.fetch(new Request(newUrl, request));
+                }
+            }
+
             // All other paths → rewrite to admin folder
             let finalPath = `/acs_subdomains/acs_admin${pathname}`;
-            // Add trailing slash if no extension
             if (!pathname.includes(".") && !pathname.endsWith("/")) {
                 finalPath += "/";
             }
-            // Add index.html for directories
             if (finalPath.endsWith("/")) {
                 finalPath += "index.html";
             }
-
             const newUrl = new URL(finalPath, url);
             return env.ASSETS.fetch(new Request(newUrl, request));
         }
+// Helper to set correct headers for CSS/JS assets
+function setAssetHeaders(assetPath, origHeaders) {
+    const headers = new Headers(origHeaders);
+    if (assetPath.endsWith('.css')) {
+        headers.set('Content-Type', 'text/css');
+        headers.set('X-Content-Type-Options', 'nosniff');
+    } else if (assetPath.endsWith('.js')) {
+        headers.set('Content-Type', 'application/javascript');
+        headers.set('X-Content-Type-Options', 'nosniff');
+    }
+    return headers;
+}
 
         // ============================================
         // 2. STUDENT PORTAL (acs-student.craftsoft.co.in)
