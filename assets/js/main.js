@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initHeroTypingEffect();
     initRandomFloatingCards();
     initScrollToNext();
+    initStealthMode();
 
     initCardGlow();
     initHeroParallax();
@@ -1049,4 +1050,59 @@ function initScrollToTop() {
             behavior: 'smooth'
         });
     });
+}
+
+/**
+ * STEALTH MODE (BGV SHIELD)
+ * Triggered by triple-tapping the Hero Badge
+ * Default: VISIBLE (locally) but HIDDEN (first time users)
+ */
+function initStealthMode() {
+    const badge = document.querySelector('.hero-badge');
+    const body = document.body;
+
+    // Default state: Stealth ON (Hidden) unless explicitly disabled in localStorage
+    const stealthState = localStorage.getItem('craftsoft_stealth_mode');
+
+    if (stealthState === 'disabled') {
+        body.classList.remove('stealth-active');
+    } else {
+        body.classList.add('stealth-active');
+    }
+
+    if (!badge) return;
+
+    let clickCount = 0;
+    let lastClickTime = 0;
+
+    const handleTripleAction = (e) => {
+        const currentTime = new Date().getTime();
+        const timeDiff = currentTime - lastClickTime;
+
+        if (timeDiff < 500) {
+            clickCount++;
+        } else {
+            clickCount = 1;
+        }
+
+        lastClickTime = currentTime;
+
+        if (clickCount === 3) {
+            if (e.type === 'touchstart') e.preventDefault();
+            const isActive = body.classList.toggle('stealth-active');
+            localStorage.setItem('craftsoft_stealth_mode', isActive ? 'enabled' : 'disabled');
+
+            // Visual feedback
+            badge.style.transform = 'scale(1.1)';
+            badge.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            setTimeout(() => badge.style.transform = '', 300);
+
+            clickCount = 0;
+            // Force footer reload if exists
+            if (window.loadFooter) window.loadFooter();
+        }
+    };
+
+    badge.addEventListener('click', handleTripleAction);
+    badge.addEventListener('touchstart', handleTripleAction, { passive: false });
 }

@@ -36,3 +36,8 @@
 /* Utilities */
 @import url('utilities/animations.css');
 @import url('utilities/responsive.css');
+
+/* Stealth Mode for BGV - Defaults to Hidden */
+.stealth-active .stealth-item {
+    display: none !important;
+}
