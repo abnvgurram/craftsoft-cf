@@ -39,22 +39,14 @@ export default {
             if (pathname.startsWith('/assets/admin/')) {
                 const assetPath = `/acs_subdomains/acs_admin/assets/${pathname.replace('/assets/admin/', '')}`;
                 const newUrl = new URL(assetPath, url);
-                const res = await env.ASSETS.fetch(new Request(newUrl, request));
-                return new Response(res.body, {
-                    status: res.status,
-                    headers: setAssetHeaders(assetPath, res.headers)
-                });
+                return fetchWithMimeType(request, newUrl, env);
             }
 
             // 2. /assets/* → /assets/:splat (shared root assets)
             if (pathname.startsWith('/assets/')) {
                 const assetPath = `/assets/${pathname.replace('/assets/', '')}`;
                 const newUrl = new URL(assetPath, url);
-                const res = await env.ASSETS.fetch(new Request(newUrl, request));
-                return new Response(res.body, {
-                    status: res.status,
-                    headers: setAssetHeaders(assetPath, res.headers)
-                });
+                return fetchWithMimeType(request, newUrl, env);
             }
 
 
@@ -211,3 +203,23 @@ function setAssetHeaders(assetPath, origHeaders) {
         return env.ASSETS.fetch(request);
     }
 };
+
+// Update the fetch logic to ensure proper MIME type handling for missing files
+async function fetchWithMimeType(request, assetPath, env) {
+    const res = await env.ASSETS.fetch(new Request(assetPath, request));
+
+    if (res.status === 404) {
+        return new Response('File not found', {
+            status: 404,
+            headers: {
+                'Content-Type': 'application/javascript',
+                'X-Content-Type-Options': 'nosniff',
+            },
+        });
+    }
+
+    return new Response(res.body, {
+        status: res.status,
+        headers: setAssetHeaders(assetPath, res.headers),
+    });
+}

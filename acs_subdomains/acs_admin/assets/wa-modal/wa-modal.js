@@ -20,7 +20,7 @@
                 const link = document.createElement('link');
                 link.rel = 'stylesheet';
                 // Correct path for admin modal CSS
-                link.href = '/acs_subdomains/acs_admin/assets/wa-modal/wa-modal.css';
+                link.href = '/assets/wa-modal/wa-modal.css';
                 document.head.appendChild(link);
             }
         },
@@ -136,3 +136,4 @@
         AdminWaModal.init();
     }
 })();
+
