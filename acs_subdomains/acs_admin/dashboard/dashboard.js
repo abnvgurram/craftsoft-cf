@@ -49,7 +49,7 @@ function bindStatCardLinks() {
 }
 
 // =====================
-        await loadStatsWithAbsolutePaths();
+// ...existing code...
 // =====================
 function showSkeletonLoading() {
     const statElements = ['total-students', 'total-courses', 'total-tutors', 'total-services', 'total-clients'];
