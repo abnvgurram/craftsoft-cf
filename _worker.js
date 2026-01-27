@@ -142,10 +142,17 @@ async function fetchWithMimeType(request, assetPath, env) {
             headers: { 'Content-Type': 'text/plain' }
         });
     }
+
     const headers = new Headers(res.headers);
-    const pathStr = assetPath.toString();
-    if (pathStr.endsWith('.css')) headers.set('Content-Type', 'text/css');
-    else if (pathStr.endsWith('.js')) headers.set('Content-Type', 'application/javascript');
+    // Use pathname to ignore query strings when checking extensions
+    const pathStr = (assetPath instanceof URL) ? assetPath.pathname : assetPath.split('?')[0];
+
+    if (pathStr.endsWith('.css')) {
+        headers.set('Content-Type', 'text/css');
+    } else if (pathStr.endsWith('.js')) {
+        headers.set('Content-Type', 'application/javascript');
+    }
+
     headers.set('X-Content-Type-Options', 'nosniff');
     return new Response(res.body, { status: res.status, headers });
 }
