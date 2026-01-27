@@ -1,7 +1,7 @@
 /**
  * Cloudflare Pages Worker
  * Handles subdomain routing for craftsoft.co.in
- * Version: 3.7 - Full Netlify-parity Redirects & Path Mappings
+ * Version: 3.8 - Full Netlify-parity including Course Aliases
  */
 
 export default {
@@ -37,7 +37,6 @@ export default {
 
         // --- ADMIN SUBDOMAIN ---
         if (hostname.includes('admin')) {
-            // Block /signup/* on admin subdomain per Netlify config
             if (pathname.startsWith('/signup/')) {
                 return env.ASSETS.fetch(new Request(new URL('/acs_subdomains/acs_admin/404/index.html', url), request));
             }
@@ -54,8 +53,8 @@ export default {
             return dispatchSubdomain('acs_students', pathname, url, request, env, false);
         }
 
-        // 4. MAIN WEBSITE REDIRECTS (Legacy parity)
-        const legacyRedirects = {
+        // 4. MAIN WEBSITE REDIRECTS & COURSE ALIASES
+        const redirectMap = {
             '/about.html': '/about/',
             '/contact.html': '/contact/',
             '/courses.html': '/courses/',
@@ -66,8 +65,28 @@ export default {
             '/vhistory': '/version-history/'
         };
 
-        if (legacyRedirects[pathname]) {
-            return Response.redirect(new URL(legacyRedirects[pathname], url), 301);
+        if (redirectMap[pathname]) {
+            return Response.redirect(new URL(redirectMap[pathname], url), 301);
+        }
+
+        // Course Aliases (Proxy/Rewrite)
+        const courseAliases = {
+            '/c-ai-ml': '/courses/ai-ml/',
+            '/c-sql': '/courses/sql/',
+            '/c-salesforce-developer': '/courses/salesforce-developer/',
+            '/c-salesforce-marketing-cloud': '/courses/salesforce-marketing-cloud/',
+            '/c-cyber-security': '/courses/cyber-security/',
+            '/c-oracle-fusion-cloud': '/courses/oracle-fusion-cloud/'
+        };
+
+        for (const [alias, target] of Object.entries(courseAliases)) {
+            if (pathname === alias || pathname === alias + '/') {
+                return env.ASSETS.fetch(new Request(new URL(target + 'index.html', url), request));
+            }
+            if (pathname.startsWith(alias + '/')) {
+                const rest = pathname.substring(alias.length);
+                return env.ASSETS.fetch(new Request(new URL(target + rest, url), request));
+            }
         }
 
         // Main site 404 block for internal folders
@@ -86,7 +105,6 @@ export default {
 async function dispatchSubdomain(targetFolder, pathname, originalUrl, originalRequest, env, isAdmin) {
     let internalPath = `/acs_subdomains/${targetFolder}${pathname}`;
 
-    // ADMIN Path Mappings (Netlify Reference)
     if (isAdmin) {
         const mappings = {
             '/dashboard': '/dashboard',
@@ -110,7 +128,6 @@ async function dispatchSubdomain(targetFolder, pathname, originalUrl, originalRe
             '/version-history': '/version-history'
         };
 
-        // Handle exact path matches and sub-paths
         for (const [webPath, fsPath] of Object.entries(mappings)) {
             if (pathname === webPath || pathname === webPath + '/') {
                 internalPath = `/acs_subdomains/${targetFolder}${fsPath}/index.html`;
@@ -124,7 +141,6 @@ async function dispatchSubdomain(targetFolder, pathname, originalUrl, originalRe
         }
     }
 
-    // Auto-append index.html for directory-like requests
     if (!internalPath.includes('.') && !internalPath.endsWith('/index.html')) {
         if (!internalPath.endsWith('/')) internalPath += '/';
         internalPath += 'index.html';
@@ -133,7 +149,6 @@ async function dispatchSubdomain(targetFolder, pathname, originalUrl, originalRe
     const subRequestUrl = new URL(internalPath, originalUrl.origin);
     let response = await env.ASSETS.fetch(new Request(subRequestUrl, originalRequest));
 
-    // Redirect Shield (Intercept internal 301/302 redirects)
     if (response.status >= 300 && response.status < 400) {
         const location = response.headers.get('Location');
         if (location) {
@@ -144,13 +159,9 @@ async function dispatchSubdomain(targetFolder, pathname, originalUrl, originalRe
         }
     }
 
-    // Default 404 handling per subdomain
     if (response.status === 404) {
-        if (targetFolder === 'acs_admin') {
-            return env.ASSETS.fetch(new Request(new URL('/acs_subdomains/acs_admin/404/index.html', originalUrl.origin), originalRequest));
-        } else if (targetFolder === 'acs_signup') {
-            return env.ASSETS.fetch(new Request(new URL('/acs_subdomains/acs_signup/404/index.html', originalUrl.origin), originalRequest));
-        }
+        const notFoundFolder = targetFolder === 'acs_students' ? 'acs_students' : (targetFolder === 'acs_signup' ? 'acs_signup' : 'acs_admin');
+        return env.ASSETS.fetch(new Request(new URL(`/acs_subdomains/${notFoundFolder}/404/index.html`, originalUrl.origin), originalRequest));
     }
 
     return response;
