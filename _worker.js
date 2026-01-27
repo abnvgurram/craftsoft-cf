@@ -12,12 +12,19 @@ export default {
 
         // 🚫 DO NOT TOUCH REAL FILES (serve as-is)
         if (
-            pathname.startsWith('/acs_subdomains/') ||
-            pathname.startsWith('/assets/') ||
             pathname.endsWith('.js') ||
             pathname.endsWith('.css') ||
             pathname.endsWith('.map') ||
-            pathname.endsWith('.json')
+            pathname.endsWith('.json') ||
+            pathname.endsWith('.svg') ||
+            pathname.endsWith('.png') ||
+            pathname.endsWith('.jpg') ||
+            pathname.endsWith('.jpeg') ||
+            pathname.endsWith('.gif') ||
+            pathname.endsWith('.woff') ||
+            pathname.endsWith('.woff2') ||
+            pathname.endsWith('.ttf') ||
+            pathname.endsWith('.eot')
         ) {
             return fetch(request);
         }
