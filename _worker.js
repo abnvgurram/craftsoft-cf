@@ -71,10 +71,9 @@ export default {
                 return env.ASSETS.fetch(new Request(newUrl, request));
             }
 
-            // Admin assets rewrite
-            if (pathname.startsWith("/assets/admin/")) {
-                const assetPath = pathname.replace("/assets/admin/", "/acs_subdomains/acs_admin/assets/");
-                const newUrl = new URL(assetPath, url);
+            // ALL assets on admin subdomain → serve from admin assets folder
+            if (pathname.startsWith("/assets/")) {
+                const newUrl = new URL(`/acs_subdomains/acs_admin${pathname}`, url);
                 return env.ASSETS.fetch(new Request(newUrl, request));
             }
 
