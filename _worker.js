@@ -82,11 +82,18 @@ export default {
                     const newUrl = new URL(route.fs + '/index.html', url);
                     return env.ASSETS.fetch(new Request(newUrl, request));
                 }
-                // /page/* → /fs/:splat (deep linking, not index.html)
+                // /page/* → /fs/:splat if file exists, else index.html
                 if (pathname.startsWith(route.web + '/')) {
                     const rest = pathname.substring((route.web + '/').length);
-                    const newUrl = new URL(route.fs + '/' + rest, url);
-                    return env.ASSETS.fetch(new Request(newUrl, request));
+                    const fileUrl = new URL(route.fs + '/' + rest, url);
+                    const fileRes = await env.ASSETS.fetch(new Request(fileUrl, request));
+                    if (fileRes.status === 200) {
+                        return fileRes;
+                    } else {
+                        // fallback to index.html for any non-existent file or folder
+                        const newUrl = new URL(route.fs + '/index.html', url);
+                        return env.ASSETS.fetch(new Request(newUrl, request));
+                    }
                 }
             }
 
