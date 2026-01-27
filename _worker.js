@@ -10,6 +10,16 @@ export default {
         const hostname = url.hostname.toLowerCase();
         const pathname = url.pathname;
 
+        // HARD STOP: If already a real file, asset, or resolved admin path, serve directly (idempotent)
+        if (
+            pathname.endsWith('.html') ||
+            pathname.startsWith('/acs_subdomains/') ||
+            pathname.startsWith('/assets/') ||
+            pathname.includes('/dashboard/')
+        ) {
+            return fetch(request);
+        }
+
         // ============================================
         // 1. ADMIN SUBDOMAIN (admin.craftsoft.co.in)
         // ============================================
