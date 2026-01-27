@@ -1,6 +1,7 @@
 /**
  * Cloudflare Pages Worker
  * Handles subdomain routing for craftsoft.co.in
+ * Version: 2.0 - Fixed admin assets routing
  */
 
 export default {
