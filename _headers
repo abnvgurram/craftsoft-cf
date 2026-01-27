@@ -1,5 +1,5 @@
 # Cloudflare Pages Headers
-# (Equivalent to netlify.toml headers)
+# Version: 1.1 - Corrected Syntax
 
 /*
   X-Frame-Options: SAMEORIGIN
