@@ -10,11 +10,14 @@ export default {
         const hostname = url.hostname.toLowerCase();
         const pathname = url.pathname;
 
-        // HARD STOP: If already a real HTML file or resolved admin HTML path, serve directly (idempotent)
+        // 🚫 DO NOT TOUCH REAL FILES (serve as-is)
         if (
-            pathname.endsWith('.html') ||
-            pathname.startsWith('/acs_subdomains/') && pathname.endsWith('.html') ||
-            pathname.includes('/dashboard/') && pathname.endsWith('.html')
+            pathname.startsWith('/acs_subdomains/') ||
+            pathname.startsWith('/assets/') ||
+            pathname.endsWith('.js') ||
+            pathname.endsWith('.css') ||
+            pathname.endsWith('.map') ||
+            pathname.endsWith('.json')
         ) {
             return fetch(request);
         }
