@@ -7,7 +7,7 @@ const itemsPerPage = window.innerWidth <= 1250 ? 5 : 10;
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
-        window.location.href = '/';
+        window.location.href = '/login';
         return;
     }
 

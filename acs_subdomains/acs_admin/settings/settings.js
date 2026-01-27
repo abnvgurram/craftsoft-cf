@@ -30,7 +30,7 @@ function formatPasswordLastUpdated(dateString) {
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
-        window.location.href = '/';
+        window.location.href = '/login';
         return;
     }
 
