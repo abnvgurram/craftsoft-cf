@@ -1,4 +1,4 @@
-?let allStudents = [];
+let allStudents = [];
 let allCoursesForStudents = [];
 let allTutorsForStudents = [];
 let deleteTargetId = null;
