@@ -1,4 +1,4 @@
-﻿// Clients Module (Converted from Service Inquiries)
+// Clients Module (Converted from Service Inquiries)
 let allClients = [];
 let allServicesForClients = [];
 let serviceFees = {}; // Store per-service fees { serviceCode: fee }
@@ -81,7 +81,7 @@ async function initializeStats() {
         window.AdminUtils.StatsHeader.render('stats-container', [
             { label: 'Total Clients', value: totalCount.count || 0, icon: 'fa-solid fa-user-tie', color: 'var(--primary-500)' },
             { label: 'Projects', value: totalCount.count || 0, icon: 'fa-solid fa-hand-holding-hand', color: 'var(--info)' },
-            { label: 'Service Revenue', value: totalValue, icon: 'fa-solid fa-box-archive', color: 'var(--success)', prefix: '₹' }
+            { label: 'Service Revenue', value: totalValue, icon: 'fa-solid fa-box-archive', color: 'var(--success)', prefix: '?' }
         ]);
     } catch (err) {
         console.error('Stats load error:', err);
@@ -289,10 +289,10 @@ function renderClients(clients) {
                 <td class="text-right">
                     ${(c.services || []).map(code => {
             const fee = c.service_fees?.[code] || 0;
-            return `<div style="font-size: 0.8rem; color: var(--admin-text-muted);">${code}: ₹${formatNumber(fee)}</div>`;
+            return `<div style="font-size: 0.8rem; color: var(--admin-text-muted);">${code}: ?${formatNumber(fee)}</div>`;
         }).join('')}
                 </td>
-                <td class="text-right" style="font-weight: 700; color: var(--primary-color);">₹${formatNumber(c.total_fee || 0)}</td>
+                <td class="text-right" style="font-weight: 700; color: var(--primary-color);">?${formatNumber(c.total_fee || 0)}</td>
                 <td class="actions-cell text-right">
                     <div class="cell-actions" style="justify-content: flex-end;">
                         <button class="action-btn edit-btn" data-id="${c.id}" title="Edit">
@@ -351,13 +351,13 @@ function renderClients(clients) {
             return `
                                 <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.25rem;">
                                     <span style="color: var(--admin-text-muted);">${code}</span>
-                                    <span style="font-weight: 500;">₹${formatNumber(fee)}</span>
+                                    <span style="font-weight: 500;">?${formatNumber(fee)}</span>
                                 </div>
                             `;
         }).join('')}
                         <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-weight: 700; color: var(--primary-color); font-size: 1rem;">
                             <span>Total Quotation</span>
-                            <span>₹${formatNumber(c.total_fee || 0)}</span>
+                            <span>?${formatNumber(c.total_fee || 0)}</span>
                         </div>
                     </div>
                 </div>
@@ -539,14 +539,14 @@ function showClientConfirmation() {
         return `
                     <div class="summary-course-item">
                         <span><strong>${code}</strong> - ${service?.name || service?.service_name || code}</span>
-                        <span>₹${formatNumber(fee)}</span>
+                        <span>?${formatNumber(fee)}</span>
                     </div>
                 `;
     }).join('')}
         </div>
         <div class="summary-total">
             <span>Total Quotation</span>
-            <span>₹${formatNumber(total)}</span>
+            <span>?${formatNumber(total)}</span>
         </div>
     `;
 
@@ -572,7 +572,7 @@ function initPhoneInputComponent(prefix) {
         if (!code) return;
 
         const countryInfo = Validators.getFlagForCode(code);
-        const flag = countryInfo?.flag || '🌍';
+        const flag = countryInfo?.flag || '??';
         const displayCode = code.startsWith('+') ? code : `+${code}`;
 
         flagBtn.querySelector('.flag-emoji').textContent = flag;
@@ -639,7 +639,7 @@ async function openForm(clientId = null) {
         const flagBtn = document.getElementById('client-flag-btn');
         const codeInput = document.getElementById('client-country-code');
         const countryInfo = Validators.getFlagForCode(parsed.code);
-        flagBtn.querySelector('.flag-emoji').textContent = countryInfo?.flag || '🌍';
+        flagBtn.querySelector('.flag-emoji').textContent = countryInfo?.flag || '??';
         flagBtn.querySelector('.code-text').textContent = parsed.code;
         codeInput.style.display = 'none';
         flagBtn.style.display = 'flex';

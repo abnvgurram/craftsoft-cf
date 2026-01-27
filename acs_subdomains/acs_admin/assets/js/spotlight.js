@@ -327,7 +327,7 @@ const Spotlight = {
         }
 
         // Check for acs_admin in path (subdomain folder structure)
-        if (path.includes('/acs_admin/') || path.includes('/acs_subdomains/acs_admin/')) {
+        if (path.includes('/acs_admin/') || path.includes('./')) {
             // Find where acs_admin starts and build path from there
             const acsMatch = path.match(/.*?(\/(?:subdomains\/)?acs_admin\/)/);
             if (acsMatch) {

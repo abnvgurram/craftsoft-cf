@@ -1,4 +1,4 @@
-﻿// Receipts List Module
+// Receipts List Module
 let receipts = [];
 let filteredReceipts = [];
 let currentReceipt = null;
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function initializeStats() {
     window.AdminUtils.StatsHeader.render('stats-container', [
         { label: 'Total Receipts', value: 0, icon: 'fa-solid fa-file-invoice', color: 'var(--primary-500)' },
-        { label: 'This Month Revenue', value: 0, icon: 'fa-solid fa-hand-holding-dollar', color: 'var(--success)', prefix: '₹' },
+        { label: 'This Month Revenue', value: 0, icon: 'fa-solid fa-hand-holding-dollar', color: 'var(--success)', prefix: '?' },
         { label: 'Today\'s Count', value: 0, icon: 'fa-regular fa-file-lines', color: 'var(--info)' }
     ]);
 
@@ -56,7 +56,7 @@ async function initializeStats() {
 
         window.AdminUtils.StatsHeader.render('stats-container', [
             { label: 'Total Receipts', value: totalCount.count || 0, icon: 'fa-solid fa-file-invoice', color: 'var(--primary-500)' },
-            { label: 'This Month Rev', value: totalRevMonth, icon: 'fa-solid fa-hand-holding-dollar', color: 'var(--success)', prefix: '₹' },
+            { label: 'This Month Rev', value: totalRevMonth, icon: 'fa-solid fa-hand-holding-dollar', color: 'var(--success)', prefix: '?' },
             { label: 'Today\'s Receipts', value: todayCount.count || 0, icon: 'fa-regular fa-file-lines', color: 'var(--info)' }
         ]);
     } catch (err) {
@@ -329,15 +329,15 @@ async function viewReceipt(receiptId) {
 
                     <div class="receipt-row">
                         <span>Total</span>
-                        <strong>₹ ${totalItemFee.toLocaleString('en-IN')}</strong>
+                        <strong>? ${totalItemFee.toLocaleString('en-IN')}</strong>
                     </div>
                     <div class="receipt-row highlight">
                         <span>Paid</span>
-                        <strong>₹ ${totalPaidForItem.toLocaleString('en-IN')}</strong>
+                        <strong>? ${totalPaidForItem.toLocaleString('en-IN')}</strong>
                     </div>
                     <div class="receipt-row ${pendingForItem > 0 ? 'due' : 'paid'}">
                         <span>Balance</span>
-                        <strong>₹ ${pendingForItem.toLocaleString('en-IN')}</strong>
+                        <strong>? ${pendingForItem.toLocaleString('en-IN')}</strong>
                     </div>
 
                     <div class="receipt-divider"></div>
@@ -432,7 +432,7 @@ async function downloadReceipt(receiptId) {
             return `<tr class="${isLatest ? 'latest' : ''}">
                 <td>${formatDate(h.payment_date)}</td>
                 <td>${h.payment_mode === 'CASH' ? 'Cash' : 'UPI'} - ${h.reference_id || '-'}</td>
-                <td style="text-align:right">₹ ${h.amount_paid.toLocaleString('en-IN')}</td>
+                <td style="text-align:right">? ${h.amount_paid.toLocaleString('en-IN')}</td>
             </tr>`;
         }).join('');
 
@@ -523,8 +523,8 @@ async function downloadReceipt(receiptId) {
                     <tbody>
                         <tr>
                             <td>${itemName}</td>
-                            <td>₹ ${totalItemFee.toLocaleString('en-IN')}</td>
-                            <td>${totalPaidForItem > 0 ? '₹ ' + totalPaidForItem.toLocaleString('en-IN') : '--'}</td>
+                            <td>? ${totalItemFee.toLocaleString('en-IN')}</td>
+                            <td>${totalPaidForItem > 0 ? '? ' + totalPaidForItem.toLocaleString('en-IN') : '--'}</td>
                             <td style="text-align:right"><span class="${statusClass}">${statusText}</span></td>
                         </tr>
                     </tbody>
@@ -538,16 +538,16 @@ async function downloadReceipt(receiptId) {
                 <div class="pdf-summary">
                     <div class="pdf-sum-row">
                         <span class="label">Total Fee</span>
-                        <span class="val">₹ ${totalItemFee.toLocaleString('en-IN')}</span>
+                        <span class="val">? ${totalItemFee.toLocaleString('en-IN')}</span>
                     </div>
                     <div class="pdf-sum-row accented">
                         <span class="label">Amount Paid</span>
-                        <span class="val">₹ ${totalPaidForItem.toLocaleString('en-IN')}</span>
+                        <span class="val">? ${totalPaidForItem.toLocaleString('en-IN')}</span>
                     </div>
                     <div class="pdf-divider"></div>
                     <div class="pdf-sum-row due">
                         <span class="label">Balance Due</span>
-                        <span class="val">₹ ${pendingForItem.toLocaleString('en-IN')}</span>
+                        <span class="val">? ${pendingForItem.toLocaleString('en-IN')}</span>
                     </div>
                     </div>
                 </div>
@@ -555,7 +555,7 @@ async function downloadReceipt(receiptId) {
             </div>
             <div class="pdf-footer">
                 <p>This is a system-generated secure receipt and does not require a physical signature.</p>
-                <p>Abhi's Craftsoft © ${new Date().getFullYear()} | https://www.craftsoft.co.in</p>
+                <p>Abhi's Craftsoft � ${new Date().getFullYear()} | https://www.craftsoft.co.in</p>
             </div>
         `;
 
@@ -616,7 +616,7 @@ We have received ${amount} for ${itemName}.
 Receipt ID: ${receipt.receipt_id}
 Balance Due: ${balance}
 
-â€“ Abhi's Craftsoft`;
+– Abhi's Craftsoft`;
 
     window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`, '_blank');
 }
@@ -635,7 +635,7 @@ function formatCurrency(amount) {
 }
 
 function formatDate(dateStr) {
-    if (!dateStr) return 'â€”';
+    if (!dateStr) return '—';
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-IN', {
         day: '2-digit',

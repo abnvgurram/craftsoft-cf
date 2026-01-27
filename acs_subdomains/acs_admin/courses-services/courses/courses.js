@@ -1,4 +1,4 @@
-﻿const websiteCourses = [
+const websiteCourses = [
     { code: 'GD', name: 'Graphic Design' },
     { code: 'UX', name: 'UI/UX Design' },
     { code: 'MERN', name: 'Full Stack Development (MERN)' },
@@ -138,15 +138,15 @@ function renderCoursesList(courses) {
                         <div class="card-pricing-details">
                             <div class="price-row">
                                 <span class="label">Base Fee</span>
-                                <span class="value">₹${formatNumber(c.base_fee || c.fee || 0)}</span>
+                                <span class="value">?${formatNumber(c.base_fee || c.fee || 0)}</span>
                             </div>
                             <div class="price-row">
                                 <span class="label">GST (${defaultGstRate}%)</span>
-                                <span class="value">₹${formatNumber(c.gst_amount || 0)}</span>
+                                <span class="value">?${formatNumber(c.gst_amount || 0)}</span>
                             </div>
                             <div class="price-row total">
                                 <span class="label">Total Fee</span>
-                                <span class="value">₹${formatNumber(c.total_fee || c.fee || 0)}</span>
+                                <span class="value">?${formatNumber(c.total_fee || c.fee || 0)}</span>
                             </div>
                         </div>
                     </div>

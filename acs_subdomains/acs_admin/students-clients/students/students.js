@@ -1,4 +1,4 @@
-﻿﻿let allStudents = [];
+?let allStudents = [];
 let allCoursesForStudents = [];
 let allTutorsForStudents = [];
 let deleteTargetId = null;
@@ -84,8 +84,8 @@ async function initializeStats() {
         window.AdminUtils.StatsHeader.render('stats-container', [
             { label: 'Total Students', value: totalCount.count || 0, icon: 'fa-solid fa-user-graduate', color: 'var(--primary-500)' },
             { label: 'Enrolled Month', value: monthCount.count || 0, icon: 'fa-solid fa-user-plus', color: 'var(--success)' },
-            { label: 'Pending Dues', value: pendingDues, icon: 'fa-solid fa-receipt', color: 'var(--error, #ef4444)', prefix: '₹' },
-            { label: 'Total Revenue', value: totalPayments, icon: 'fa-solid fa-indian-rupee-sign', color: 'var(--info)', prefix: '₹' }
+            { label: 'Pending Dues', value: pendingDues, icon: 'fa-solid fa-receipt', color: 'var(--error, #ef4444)', prefix: '?' },
+            { label: 'Total Revenue', value: totalPayments, icon: 'fa-solid fa-indian-rupee-sign', color: 'var(--info)', prefix: '?' }
         ]);
     } catch (err) {
         console.error('Stats load error:', err);
@@ -277,12 +277,12 @@ function renderStudentsList(students) {
                                 ${(s.courses || []).map(code => {
             const course = allCoursesForStudents.find(c => c.course_code === code);
             const netFee = (course?.fee || 0) - (s.course_discounts?.[code] || 0);
-            return `<div style="font-size: 0.8rem; color: var(--admin-text-muted);">${code}: ₹${formatNumber(netFee)}</div>`;
+            return `<div style="font-size: 0.8rem; color: var(--admin-text-muted);">${code}: ?${formatNumber(netFee)}</div>`;
         }).join('')}
                             </td>
                             <td class="text-right" style="font-weight: 700; color: ${balanceDue > 0 ? 'var(--error, #ef4444)' : 'var(--success, #10b981)'};">
-                                <div>₹${formatNumber(balanceDue)}</div>
-                                ${totalPaid > 0 ? `<div style="font-size: 0.7rem; font-weight: 400; color: var(--admin-text-muted);">Paid: ₹${formatNumber(totalPaid)}</div>` : ''}
+                                <div>?${formatNumber(balanceDue)}</div>
+                                ${totalPaid > 0 ? `<div style="font-size: 0.7rem; font-weight: 400; color: var(--admin-text-muted);">Paid: ?${formatNumber(totalPaid)}</div>` : ''}
                             </td>
                             <td class="text-right">
                                 <div class="cell-actions" style="justify-content: flex-end;">
@@ -335,18 +335,18 @@ function renderStudentsList(students) {
             return `
                                     <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.25rem;">
                                         <span style="color: var(--admin-text-muted);">${code}</span>
-                                        <span style="font-weight: 500;">₹${formatNumber(netFee)}</span>
+                                        <span style="font-weight: 500;">?${formatNumber(netFee)}</span>
                                     </div>
                                 `;
         }).join('')}
                             <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-weight: 700; color: ${balanceDue > 0 ? 'var(--error, #ef4444)' : 'var(--success, #10b981)'}; font-size: 1rem;">
                                 <span>Balance Due</span>
-                                <span>₹${formatNumber(balanceDue)}</span>
+                                <span>?${formatNumber(balanceDue)}</span>
                             </div>
                             ${totalPaid > 0 ? `
                             <div style="display: flex; justify-content: space-between; margin-top: 0.25rem; font-size: 0.8rem; color: var(--admin-text-muted);">
                                 <span>Total Paid</span>
-                                <span>₹${formatNumber(totalPaid)}</span>
+                                <span>?${formatNumber(totalPaid)}</span>
                             </div>` : ''}
                         </div>
                     </div>
@@ -615,7 +615,7 @@ function showEnrollmentConfirmation() {
                     <span class="course-badge">${code}</span>
                     <span class="course-name">${course?.course_name || code}</span>
                     <span class="course-tutor"><i class="fa-solid fa-chalkboard-user"></i> ${tutor?.full_name || 'Unknown'}</span>
-                    <span class="course-fee" style="margin-left: auto;">₹${formatNumber(netFee)}</span>
+                    <span class="course-fee" style="margin-left: auto;">?${formatNumber(netFee)}</span>
                 </div>
                 ${(batch || joining || isDemo) ? `
                 <div class="summary-course-meta" style="display: flex; gap: 1rem; font-size: 0.8rem; color: var(--admin-text-muted); padding-left: 0.5rem;">
@@ -647,7 +647,7 @@ function showEnrollmentConfirmation() {
         </div>
         <div class="summary-total">
             <span>Total Fee</span>
-            <span class="total-amount">₹${formatNumber(totalFee)}</span>
+            <span class="total-amount">?${formatNumber(totalFee)}</span>
         </div>
     `;
 
@@ -674,7 +674,7 @@ function initPhoneInputComponent(prefix) {
         if (!code) return;
 
         const countryInfo = Validators.getFlagForCode(code);
-        const flag = countryInfo?.flag || '🌍';
+        const flag = countryInfo?.flag || '??';
         const displayCode = code.startsWith('+') ? code : `+${code}`;
 
         flagBtn.querySelector('.flag-emoji').textContent = flag;
@@ -1059,7 +1059,7 @@ async function openForm(studentId = null) {
         const flagBtn = document.getElementById('student-flag-btn');
         const codeInput = document.getElementById('student-country-code');
         const countryInfo = Validators.getFlagForCode(parsed.code);
-        flagBtn.querySelector('.flag-emoji').textContent = countryInfo?.flag || '🌍';
+        flagBtn.querySelector('.flag-emoji').textContent = countryInfo?.flag || '??';
         flagBtn.querySelector('.code-text').textContent = parsed.code;
         codeInput.style.display = 'none';
         flagBtn.style.display = 'flex';
@@ -1701,7 +1701,7 @@ function renderProfileContent(student, payments, totalPaid, balanceDue) {
                                         ${p.payment_mode}
                                     </span>
                                 </td>
-                                <td>${p.reference_id || '—'}</td>
+                                <td>${p.reference_id || '�'}</td>
                             </tr>
                         `).join('')}
                     </tbody>
