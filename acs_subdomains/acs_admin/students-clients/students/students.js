@@ -13,7 +13,7 @@ let selectedStudents = new Set();
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
-        window.location.href = '/login';
+        window.location.href = '/';
         return;
     }
 
@@ -1701,7 +1701,7 @@ function renderProfileContent(student, payments, totalPaid, balanceDue) {
                                         ${p.payment_mode}
                                     </span>
                                 </td>
-                                <td>${p.reference_id || 'ï¿½'}</td>
+                                <td>${p.reference_id || '—'}</td>
                             </tr>
                         `).join('')}
                     </tbody>

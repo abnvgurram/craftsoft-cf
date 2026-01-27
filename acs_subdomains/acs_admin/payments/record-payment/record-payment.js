@@ -12,7 +12,7 @@ let balanceDue = 0;
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
-        window.location.href = '/login';
+        window.location.href = '/';
         return;
     }
 

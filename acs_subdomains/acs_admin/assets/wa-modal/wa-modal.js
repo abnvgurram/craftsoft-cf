@@ -19,8 +19,7 @@
             if (!document.querySelector('link[href*="wa-modal.css"]')) {
                 const link = document.createElement('link');
                 link.rel = 'stylesheet';
-                // Correct path for admin modal CSS
-                link.href = '/assets/wa-modal/wa-modal.css';
+                link.href = '/assets/admin/wa-modal/wa-modal.css';
                 document.head.appendChild(link);
             }
         },
@@ -136,4 +135,3 @@
         AdminWaModal.init();
     }
 })();
-

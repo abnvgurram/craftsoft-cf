@@ -493,6 +493,13 @@
   status = 200
 
 
+# Admin Subdomain 404 (MUST follow assets catch-all)
+[[redirects]]
+  host = "admin.craftsoft.co.in"
+  from = "/*"
+  to = "/acs_subdomains/acs_admin/404/index.html"
+  status = 404
+  force = true
 
 # ============================================
 

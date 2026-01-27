@@ -1,7 +1,7 @@
 /**
  * Cloudflare Pages Worker
  * Handles subdomain routing for craftsoft.co.in
- * Version: 3.1 - Structurally corrected and optimized
+ * Version: 3.2 - Robust routing with MIME type fixes
  */
 
 export default {
@@ -11,7 +11,7 @@ export default {
         const pathname = url.pathname;
 
         // ============================================
-        // GLOBAL ASSET ROUTING (Shared by all subdomains)
+        // GLOBAL ASSET ROUTING (Remap virtual paths to physical folders)
         // ============================================
 
         // 1. /assets/admin/* → /acs_subdomains/acs_admin/assets/:splat
@@ -35,7 +35,7 @@ export default {
             return fetchWithMimeType(request, newUrl, env);
         }
 
-        // 🚫 DO NOT TOUCH REAL FILES (serve as-is from assets)
+        // 🚫 DO NOT TOUCH REAL FILES (serve as-is from assets if path exists)
         const staticExtensions = [
             '.js', '.css', '.map', '.json', '.svg', '.png', '.jpg', '.jpeg', '.gif',
             '.woff', '.woff2', '.ttf', '.eot', '.ico'
@@ -48,19 +48,13 @@ export default {
         // 1. ADMIN SUBDOMAIN (admin.craftsoft.co.in)
         // ============================================
         if (hostname.includes("admin")) {
-            // Netlify parity: /signup/* always returns admin 404
-            if (pathname.startsWith("/signup/")) {
-                const newUrl = new URL("/acs_subdomains/acs_admin/404/index.html", url);
-                return env.ASSETS.fetch(new Request(newUrl, request));
-            }
-
-            // Root or /login → admin login page
+            // Root or login → admin index
             if (pathname === "/" || pathname === "" || pathname === "/login" || pathname === "/login/") {
                 const newUrl = new URL("/acs_subdomains/acs_admin/index.html", url);
                 return env.ASSETS.fetch(new Request(newUrl, request));
             }
 
-            // Exact-match and subfolder rewrites for all admin subpages
+            // Virtual folder remappings for Admin
             const adminFolders = [
                 { web: '/dashboard', fs: '/acs_subdomains/acs_admin/dashboard' },
                 { web: '/archived', fs: '/acs_subdomains/acs_admin/records/archived' },
@@ -79,36 +73,25 @@ export default {
                 { web: '/tutors', fs: '/acs_subdomains/acs_admin/tutors' },
                 { web: '/inquiries', fs: '/acs_subdomains/acs_admin/inquiries' },
                 { web: '/settings', fs: '/acs_subdomains/acs_admin/settings' },
-                { web: '/version-history', fs: '/acs_subdomains/acs_admin/version-history' },
+                { web: '/version-history', fs: '/acs_subdomains/acs_admin/version-history' }
             ];
 
             for (const route of adminFolders) {
-                // /page or /page/ → /fs/index.html
                 if (pathname === route.web || pathname === route.web + '/') {
                     const newUrl = new URL(route.fs + '/index.html', url);
                     return env.ASSETS.fetch(new Request(newUrl, request));
                 }
-                // /page/* → /fs/:splat if file exists, else index.html
                 if (pathname.startsWith(route.web + '/')) {
                     const rest = pathname.substring((route.web + '/').length);
                     const fileUrl = new URL(route.fs + '/' + rest, url);
                     const fileRes = await env.ASSETS.fetch(new Request(fileUrl, request));
-                    if (fileRes.status === 200) {
-                        return fileRes;
-                    } else {
-                        const newUrl = new URL(route.fs + '/index.html', url);
-                        return env.ASSETS.fetch(new Request(newUrl, request));
-                    }
+                    if (fileRes.status === 200) return fileRes;
+                    const newUrl = new URL(route.fs + '/index.html', url);
+                    return env.ASSETS.fetch(new Request(newUrl, request));
                 }
             }
 
-            // Admin catch-all: serve /acs_subdomains/acs_admin/:splat
-            if (pathname.startsWith('/acs_subdomains/acs_admin/')) {
-                const newUrl = new URL(pathname, url);
-                return env.ASSETS.fetch(new Request(newUrl, request));
-            }
-
-            // Default Admin 404
+            // Admin catch-all 404
             const notFoundUrl = new URL('/acs_subdomains/acs_admin/404/index.html', url);
             return env.ASSETS.fetch(new Request(notFoundUrl, request));
         }
@@ -117,21 +100,13 @@ export default {
         // 2. STUDENT PORTAL (acs-student.craftsoft.co.in)
         // ============================================
         if (hostname.includes("acs-student")) {
-            // Root → login page
             if (pathname === "/" || pathname === "") {
                 const newUrl = new URL("/acs_subdomains/acs_students/index.html", url);
                 return env.ASSETS.fetch(new Request(newUrl, request));
             }
-
-            // All other paths
             let finalPath = `/acs_subdomains/acs_students${pathname}`;
-            if (!pathname.includes(".") && !pathname.endsWith("/")) {
-                finalPath += "/";
-            }
-            if (finalPath.endsWith("/")) {
-                finalPath += "index.html";
-            }
-
+            if (!pathname.includes(".") && !pathname.endsWith("/")) finalPath += "/";
+            if (finalPath.endsWith("/")) finalPath += "index.html";
             const newUrl = new URL(finalPath, url);
             return env.ASSETS.fetch(new Request(newUrl, request));
         }
@@ -140,67 +115,37 @@ export default {
         // 3. SIGNUP SUBDOMAIN (signup.craftsoft.co.in)
         // ============================================
         if (hostname.includes("signup")) {
-            // Root → signup page
             if (pathname === "/" || pathname === "") {
                 const newUrl = new URL("/acs_subdomains/acs_signup/index.html", url);
                 return env.ASSETS.fetch(new Request(newUrl, request));
             }
-
-            // All other paths
             let finalPath = `/acs_subdomains/acs_signup${pathname}`;
-            if (!pathname.includes(".") && !pathname.endsWith("/")) {
-                finalPath += "/";
-            }
-            if (finalPath.endsWith("/")) {
-                finalPath += "index.html";
-            }
-
+            if (!pathname.includes(".") && !pathname.endsWith("/")) finalPath += "/";
+            if (finalPath.endsWith("/")) finalPath += "index.html";
             const newUrl = new URL(finalPath, url);
             return env.ASSETS.fetch(new Request(newUrl, request));
         }
 
-        // ============================================
-        // 4. MAIN WEBSITE (craftsoft.co.in / www)
-        // ============================================
+        // Default: Main Website
         return env.ASSETS.fetch(request);
     }
 };
 
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
-
 /**
- * Ensures proper MIME types for dynamic asset routing 
- * (Critical for X-Content-Type-Options: nosniff)
+ * Ensures proper MIME types for virtual asset paths
  */
 async function fetchWithMimeType(request, assetPath, env) {
     const res = await env.ASSETS.fetch(new Request(assetPath, request));
-
     if (res.status === 404) {
         return new Response('File not found', {
             status: 404,
-            headers: {
-                'Content-Type': 'application/javascript',
-                'X-Content-Type-Options': 'nosniff',
-            },
+            headers: { 'Content-Type': 'text/plain' }
         });
     }
-
-    return new Response(res.body, {
-        status: res.status,
-        headers: setAssetHeaders(assetPath.pathname || assetPath.toString(), res.headers),
-    });
-}
-
-function setAssetHeaders(assetPath, origHeaders) {
-    const headers = new Headers(origHeaders);
-    if (assetPath.endsWith('.css')) {
-        headers.set('Content-Type', 'text/css');
-        headers.set('X-Content-Type-Options', 'nosniff');
-    } else if (assetPath.endsWith('.js')) {
-        headers.set('Content-Type', 'application/javascript');
-        headers.set('X-Content-Type-Options', 'nosniff');
-    }
-    return headers;
+    const headers = new Headers(res.headers);
+    const pathStr = assetPath.toString();
+    if (pathStr.endsWith('.css')) headers.set('Content-Type', 'text/css');
+    else if (pathStr.endsWith('.js')) headers.set('Content-Type', 'application/javascript');
+    headers.set('X-Content-Type-Options', 'nosniff');
+    return new Response(res.body, { status: res.status, headers });
 }

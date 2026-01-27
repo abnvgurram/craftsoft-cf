@@ -8,7 +8,7 @@ const itemsPerPage = window.innerWidth <= 1250 ? 5 : 10;
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await window.supabaseConfig.getSession();
     if (!session) {
-        window.location.href = '/login';
+        window.location.href = '/';
         return;
     }
 
@@ -555,7 +555,7 @@ async function downloadReceipt(receiptId) {
             </div>
             <div class="pdf-footer">
                 <p>This is a system-generated secure receipt and does not require a physical signature.</p>
-                <p>Abhi's Craftsoft ï¿½ ${new Date().getFullYear()} | https://www.craftsoft.co.in</p>
+                <p>Abhi's Craftsoft © ${new Date().getFullYear()} | https://www.craftsoft.co.in</p>
             </div>
         `;
 

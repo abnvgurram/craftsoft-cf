@@ -49,7 +49,7 @@ function bindStatCardLinks() {
 }
 
 // =====================
-// ...existing code...
+// Skeleton Loading
 // =====================
 function showSkeletonLoading() {
     const statElements = ['total-students', 'total-courses', 'total-tutors', 'total-services', 'total-clients'];
