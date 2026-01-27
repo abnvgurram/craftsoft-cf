@@ -1055,7 +1055,7 @@ function initScrollToTop() {
 /**
  * STEALTH MODE (BGV SHIELD)
  * Triggered by triple-tapping the '15+ Courses' stat in Hero
- * Default: HIDDEN for first-time users
+ * Default: ACTIVE (Services HIDDEN, Price SHOWN for BGV)
  */
 function initStealthMode() {
     // Find the Courses stat item - look for the label 'Courses'
@@ -1083,9 +1083,11 @@ function initStealthMode() {
     const updatePricing = () => {
         const isStealth = body.classList.contains('stealth-active');
         document.querySelectorAll('.price').forEach(el => {
-            if (!isStealth) {
+            if (isStealth) {
+                // BGV Mode (Active): Show Price
                 el.innerHTML = 'Starts From <span class="rupee-symbol">&#8377;</span>9999';
             } else {
+                // Normal Mode (Inactive): Show Contact for Pricing
                 el.innerText = 'Contact for Pricing';
             }
         });
@@ -1119,9 +1121,9 @@ function initStealthMode() {
             // Update Pricing Text
             updatePricing();
 
-            // Visual feedback on the clicked stat
+            // Visual feedback on the clicked stat (subtle)
             const target = e.currentTarget;
-            target.style.transform = 'scale(1.1)';
+            target.style.transform = 'scale(1.05)';
             target.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             setTimeout(() => target.style.transform = '', 300);
 
@@ -1130,7 +1132,7 @@ function initStealthMode() {
         }
     };
 
-    coursesStat.style.cursor = 'pointer'; // Make it feel slightly interactive but only if you know
+    // Keep it secret - no pointer cursor
     coursesStat.addEventListener('click', handleTripleAction);
     coursesStat.addEventListener('touchstart', handleTripleAction, { passive: false });
 }
