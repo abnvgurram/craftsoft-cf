@@ -8,17 +8,176 @@ A single, developer-friendly handover document covering the live website, subdom
 Craftsoft — INVENTORY (items present)
 ====================================
 
-Note: this document lists only items present in the workspace as of 2026-01-28. It does not include file paths or folder trees.
+Note: this is an exact, agent-focused blueprint to recreate the site. It intentionally omits any secrets (API/service keys) and does not expose repository folder trees. It is written for an automation agent or an engineer who will use this as a procedural blueprint.
 
-Present items (by type/name):
-- Edge worker script (route/dispatch logic and asset-serving helpers)
-- CSS variables file (design tokens: colors, spacing, radii, shadows, transitions, container values)
-- Main JavaScript bundle (site initializers and UI bindings)
-- Quiz widget bundle (quiz UI and logic)
-- Supabase configuration file (contains public SUPABASE URL and ANON key)
-- Component implementations (named components present: footer, logo-signature, quiz, testimonials)
+1) Purpose
+- Provide a precise, actionable blueprint to recreate the static site and its sub-apps (admin, students, signup) and the client-driven components, using the same tokens, component schemas and edge-routing behavior used by the original site.
 
-Exact CSS variables (copied from the design tokens file)
+2) Required artifacts (what the agent must produce)
+- Edge worker script implementing host- and path-based dispatch with these capabilities:
+  - Map hostnames to logical sub-apps (admin, students, signup) and serve their app index for SPA routes.
+  - Serve real static assets unchanged (CSS/JS/images) with correct Content-Type headers.
+  - Support alias rewrites (short paths → canonical content paths) and 301 redirects for legacy routes.
+  - Return dedicated 404 pages per sub-app when assets or routes are missing.
+
+- Design tokens file containing these exact variables (names and values):
+  --primary-50: #edf6fb
+  --primary-100: #d4eaf5
+  --primary-200: #a9d5eb
+  --primary-300: #7ec0e1
+  --primary-400: #53abd7
+  --primary-500: #2896cd
+  --primary-600: #1a7eb0
+  --primary-700: #156691
+  --primary-800: #104e72
+  --primary-900: #0b3653
+  --accent-gradient: linear-gradient(135deg, #2896cd 0%, #6C5CE7 100%)
+  --accent-gradient-2: linear-gradient(135deg, #00B894 0%, #00CEC9 100%)
+  --white: #ffffff
+  --gray-50: #f8fafc
+  --gray-100: #f1f5f9
+  --gray-200: #e2e8f0
+  --gray-300: #cbd5e1
+  --gray-400: #94a3b8
+  --gray-500: #64748b
+  --gray-600: #475569
+  --gray-700: #334155
+  --gray-800: #1e293b
+  --gray-900: #0f172a
+  --page-bg: #f0f7fb
+  --card-bg: rgba(40, 150, 205, 0.04)
+  --card-bg-hover: rgba(40, 150, 205, 0.08)
+  --section-bg: rgba(40, 150, 205, 0.06)
+  --card-border: rgba(40, 150, 205, 0.12)
+  --divider-color: rgba(40, 150, 205, 0.15)
+  --success: #10B981
+  --warning: #F59E0B
+  --error: #EF4444
+  --info: #3B82F6
+  --font-primary: 'Outfit', sans-serif
+  --font-secondary: 'Inter', sans-serif
+  --spacing-xs: 0.25rem
+  --spacing-sm: 0.5rem
+  --spacing-md: 1rem
+  --spacing-lg: 1.5rem
+  --spacing-xl: 2rem
+  --spacing-2xl: 3rem
+  --spacing-3xl: 4rem
+  --spacing-4xl: 6rem
+  --spacing-5xl: 8rem
+  --section-padding-desktop: 100px
+  --section-padding-tablet: 70px
+  --section-padding-mobile: 50px
+  --radius-sm: 0.375rem
+  --radius-md: 0.5rem
+  --radius-lg: 0.75rem
+  --radius-xl: 1rem
+  --radius-2xl: 1.5rem
+  --radius-full: 9999px
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05)
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)
+  --shadow-2xl: 0 25px 50px -12px rgba(0,0,0,0.25)
+  --shadow-glow: 0 0 40px rgba(40, 150, 205, 0.15)
+  --transition-fast: 150ms ease
+  --transition-base: 300ms ease
+  --transition-slow: 500ms ease
+  --container-max: 1240px
+  --container-padding: 2.5rem
+
+3) Component blueprints (schemas and required behaviors)
+- FAQ component
+  - Data schema (JSON array of entries):
+    - question: string
+    - answer: string (HTML permitted)
+    - id: optional string
+    - tags: optional array[string]
+  - Renderer behavior required:
+    - Fetch the JSON using `fetch(url, {cache: 'no-store'})` in development and support `?v=` cache-bust param.
+    - Render accessible markup: each item must be a `button` for the question with `aria-expanded` and a `div` role="region" for the answer with `aria-hidden` toggled.
+    - After render, call the site initializer `initFAQ()` (global binder) which adds toggle handlers that ensure only one item open at a time.
+
+- Testimonials component
+  - Data schema (array):
+    - name: string
+    - role: string
+    - text: string
+    - photo: URL (optional)
+  - Renderer: produce card grid, support lazy-loading photos.
+
+- Quiz widget
+  - Data structure: array of question objects with options and scoring metadata.
+  - Exposed functions needed by site: `initQuiz()`, `startInlineQuiz()`, `renderQuestion()`.
+
+4) Client initializer expectations (API of the main script)
+- Expose these global initializer functions (names required exactly):
+  - `initFAQ()` — binds accordion toggle behavior to elements with class `faq-item` and child `faq-question`.
+  - `initNavbar()` — sets active link state and scroll behavior.
+  - `initMobileMenu()` — toggles mobile menu.
+  - `initQuiz()` — sets up quiz CTA and inline quiz flows.
+  - `initScrollAnimations()` — intersection-observer-based animation hooks.
+
+5) Edge worker blueprint (pseudocode)
+- Inputs: incoming HTTP `request` (hostname + pathname) and asset namespace handle.
+- Steps:
+  1. If request path is a known internal sub-app static asset path → return asset directly from asset store.
+  2. If path maps to virtual admin/student asset prefixes → rewrite to corresponding sub-app asset path and return with correct Content-Type.
+  3. If request hostname matches admin/student/signup subdomain → dispatch to the sub-app:
+     - Build internal path: `<subapp-root> + pathname`.
+     - If path has no file extension and not ending with `/index.html` → append `/index.html`.
+     - Fetch from asset store; if 404 → return the sub-app's 404/index.html.
+  4. Global aliases/rewrites: handle a map of short alias → canonical path (return alias target's index.html when requested exactly).
+  5. Default: serve asset store request for requested path.
+
+- Asset serving helper (requirements):
+  - When returning a response for `.css` or `.js`, set the `Content-Type` header explicitly to `text/css` or `application/javascript`.
+  - Add header `X-Content-Type-Options: nosniff` to asset responses.
+
+6) Deployment & operational blueprint (commands an agent will run)
+- Basic git workflow (agent must run these locally in repo):
+  - Create branch: `git checkout -b feature/<name>`
+  - Commit: `git add .` `git commit -m "feat: ..."`
+  - Push: `git push origin feature/<name>`
+- Safe rollback to last known good commit (requires correct commit SHA):
+  - `git reset --hard <COMMIT_SHA>`
+  - `git push --force origin main`
+
+7) Environment & secrets (placeholders only)
+- The site requires a public Supabase URL and client anon key for client-side interactions. Do NOT store production service-role keys in repository.
+- Blueprint placeholders (agent must replace with actual values in deployment env):
+  - `SUPABASE_URL`: set in deployment environment as `SUPABASE_URL`
+  - `SUPABASE_ANON_KEY`: set in deployment environment as `SUPABASE_ANON_KEY`
+  - Where the client expects them, the agent must generate a small `supabase-config.js` at deploy time that reads these from environment and writes a client-safe module.
+
+8) Recreate flow (step-by-step minimal)
+ 1. Create a design tokens file with the exact CSS variables listed above.
+ 2. Implement the client initializer script exposing the listed initializer functions and include it in page templates.
+ 3. Implement components according to the provided schemas. Ensure FAQ renderer sets ARIA attributes and calls `initFAQ()` after injecting markup.
+ 4. Implement the worker script following the worker blueprint pseudocode; ensure asset helper sets Content-Type and `nosniff` header.
+ 5. Deploy to preview environment and verify:
+    - Requests for `.js` return `Content-Type: application/javascript`.
+    - Dynamic JSON endpoints fetch successfully (use `?v=` to bypass caches during testing).
+ 6. Promote to production when all checks pass.
+
+9) Artifacts the agent should produce as deliverables
+- design-tokens.css (with the listed variables),
+- site-initializer.js (exposes `initFAQ`, `initNavbar`, `initMobileMenu`, `initQuiz`, `initScrollAnimations`),
+- component JSON example files (FAQ.json, testimonials.json),
+- worker.js implementing the dispatch pseudocode,
+- deployment script that injects `SUPABASE_URL` and `SUPABASE_ANON_KEY` from environment into a small `supabase-config.js` during CI/deploy.
+
+10) Example FAQ JSON (single example entry)
+[
+  {
+    "question": "What is the duration of the course?",
+    "answer": "Most courses run for 3 months. Contact admissions for exact schedules.",
+    "id": "faq-duration-001"
+  }
+]
+
+End of blueprint.
+
 - --primary-50: #edf6fb
 - --primary-100: #d4eaf5
 - --primary-200: #a9d5eb
