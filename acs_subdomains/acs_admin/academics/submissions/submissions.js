@@ -259,15 +259,6 @@
     }
 
     // Global handlers
-    window.handleLogout = async () => {
-        const { Modal } = window.AdminUtils || {};
-        if (Modal) {
-            Modal.confirm('Sign Out', 'Are you sure you want to sign out?', async () => {
-                await window.Auth.logout();
-            });
-        }
-    };
-
     window.downloadSubmission = async (url, title) => {
         try {
             showToast('info', 'Downloading...');
