@@ -1,146 +1,133 @@
-Project Hand-over — Craftsoft Website
+Craftsoft — Website Handover
+===========================
 
-Overview
+Purpose
 -------
-This document summarizes the repository structure, sitemap, brand design tokens (colors, typography, spacing), component locations, subdomain folders, deployment notes, and recommended next steps to hand over to another agent.
+A single, developer-friendly handover document covering the live website, subdomains, routing, visual brand tokens, typography, interactive components, integrations, deployment and troubleshooting notes. This document is designed for an incoming developer or operations agent to understand, maintain, and extend the site without exposing internal folder structure or raw file trees.
 
-Repository root: `e:/Craft soft/Website`
+Audience
+--------
+- Developers taking over feature work
+- DevOps / Deploy agents
+- Designers needing brand tokens and typographic rules
+- Support/ops personnel who must triage runtime issues
 
-Summary
--------
-- Static site built with plain HTML/CSS/JS, with subfolders for admin/student subdomains under `acs_subdomains/`.
-- Cloudflare Pages used with a Worker `_worker.js` for routing between subdomains and asset handling; also Netlify config files are present for reference (`netlify.toml`, `netlify-admin.toml`, `netlify-main.toml`, `netlify-students.toml`).
-- Assets are organized under `assets/` and many subdomain-specific assets under `acs_subdomains/.../assets/`.
-
-Sitemap (top-level / important pages)
-------------------------------------
-- /index.html (Home)
-- /about/index.html
-- /contact/index.html
-- /courses/index.html and course pages (e.g. /courses/react/, /courses/python/ etc.)
-- /portfolio/index.html
-- /privacy-policy/index.html
-- /terms-of-service/index.html
-- /verify/index.html
-
-Subdomains (local folders)
+High-level Site Map (URLs)
 --------------------------
-- `acs_subdomains/acs_admin/` — Admin portal (index.html, dashboard, students, courses-services, assets/)
-- `acs_subdomains/acs_students/` — Student portal (index.html, dashboard, courses, payments, assets/)
-- `acs_subdomains/acs_signup/` — Signup flows
-- Note: each subdomain contains its own `assets/` with CSS/JS built for that portal.
+- Primary site (main domain): the root site (homepage, course pages, features, contact, portfolio, policies)
+- Canonical www host: mirrors primary site (www)
+- Admin subdomain: admin portal (login, dashboard, records, payments, students, tutors, settings)
+- Student portal subdomain: student-facing area (login, dashboard, courses, assignments, materials, payments)
+- Signup subdomain: enrollment / signup pages and verification flows
+- Misc pages: privacy policy, terms of service, contact, portfolio, features-needed docs, verify flows, 404 pages
 
-All HTML files (searchable list)
---------------------------------
-All HTML pages are under the project root and `acs_subdomains/*`. (Full list committed in repo; see `git ls-files "**/*.html"` locally or inspect the repository tree.)
+Routing & Edge Logic (concept)
+------------------------------
+- The site uses an edge-worker/router that rewrites specific hostnames and paths into the published site assets and special subdomain folders.
+- Admin and student portals are mounted on the same site host but routed by the worker by hostname and path rewriting to the correct application assets and index.html fallbacks.
+- The worker ensures single-page-app fallbacks for app sections (serves index.html for routes that don’t map to a real file), but protects real static assets so they return their original MIME types.
 
-Design tokens — Brand Colors (from `assets/css/base/variables.css`)
------------------------------------------------------------------
-Primary palette (blue):
-- --primary-500: #2896cd (primary)
-- --primary-600: #1a7eb0
-- --primary-400: #53abd7
-- --primary-50: #edf6fb
+Brand Tokens (colors & gradients)
+---------------------------------
+Primary palette (used across the site):
+- Primary (brand): #2896CD (hex)
+- Primary dark: #1A7EB0
+- Primary light / 50 variants: soft light blues used as backgrounds and card accents
+- Primary gradient example: linear-gradient(135deg, #2896cd 0%, #00cec9 100%)
 
-Accent/Gradients:
-- --accent-gradient: linear-gradient(135deg, #2896cd 0%, #6C5CE7 100%)
-- --accent-gradient-2: linear-gradient(135deg, #00B894 0%, #00CEC9 100%)
+Neutral palette (grays, used for text/controls):
+- Gray tones for text and borders vary from light (#f0f4f8/--gray-100) to darker text (--gray-800)
 
-Neutral (examples):
-- --white: #ffffff
-- --gray-100: #f1f5f9
-- --gray-500: #64748b
-- --gray-900: #0f172a
+Usage notes
+- Brand primary is used for CTAs, links, icon accents and card borders.
+- Gradients are used on cards and hero/portfolio accents (135deg brand → teal).
 
-Other tokens (spacing, radii, shadows, transitions):
-- Spacing scale: `--spacing-xs` → `--spacing-5xl` (0.25rem → 8rem)
-- Border radius tokens: `--radius-sm` .. `--radius-2xl`, plus `--radius-full`
-- Shadows: `--shadow-sm` .. `--shadow-2xl`, `--shadow-glow`
-- Transitions: `--transition-fast`, `--transition-base`, `--transition-slow`
+Typography
+----------
+- Primary web fonts loaded: `Italianno`, `Inter`, `Outfit` (via Google Fonts). These cover headings, body and accent styles.
+- Hierarchy conventions observed:
+  - Hero/Display: decorative/handwritten for some logos (`Italianno`) or large display headings.
+  - Headings (H1–H3): heavier weights (600–800) of `Inter`/`Outfit`.
+  - Body copy: `Inter` regular (400) or `Outfit` for UI microcopy.
+- Line-height and spacing use CSS variables and spacing scale (small/medium/large tokens).
 
-Typography (from `assets/css/base/variables.css` and `assets/css/base/typography.css`)
----------------------------------------------------------------------------------------
-- Primary font-family: `--font-primary`: 'Outfit', sans-serif (used for headings)
-- Secondary font-family: `--font-secondary`: 'Inter', sans-serif (body and UI)
-- Special signature font: 'Italianno' used in `.logo-signature`.
-- Headings use `font-weight: 700` and line-height ~1.2.
-- Gradient text utility available via `.gradient-text` using `--accent-gradient`.
+Key Interactive Components (what they do)
+-----------------------------------------
+- Navbar / header: responsive with active link highlighting and mobile menu.
+- Footer: dynamic loader script that injects footer content.
+- FAQ accordion: question/answer accordion; previously a static block, now a templated component backed by JSON data and JS renderer.
+- Testimonials: card-based component used on home and landing pages.
+- Quiz/assessment: quiz widget used on course pages.
+- Chat widget: quick-contact UI with WhatsApp, phone, email options.
+- Logo-signature: small component for the brand mark and small script for any behaviour.
 
-Components & Key files
-----------------------
-- `assets/components/` — reusable components (footer, logo-signature, quiz, testimonials, search-bar, etc.)
-- `assets/js/` — site-wide JS (`main.js`, `main.min.js`, `quiz.js`, `custom-select.js`, etc.)
-- `assets/css/` — site-wide CSS (`master.css`, `main.bundle.css`, `components/*`, `base/*`)
-- Subdomain component variants: `acs_subdomains/*/assets/components/*` and `acs_subdomains/*/assets/css/*` for admin/student custom styling.
-
-Routing & Deployment
---------------------
-- `_worker.js` — Cloudflare Worker used for routing between hostnames (admin, signup, acs-student) and fetching assets from `ASSETS` KV/bucket. Review this carefully before making routing changes.
-- `wrangler.toml` — Worker config for Cloudflare (if used).
-- `netlify*.toml` — Netlify config files retained for parity and reference (original site was on Netlify).
-- Deploy steps (current): push to `main` branch → Cloudflare Pages builds (repo connected to Cloudflare). Worker is included in repo (`_worker.js`) and needs to be published using `wrangler` if changed.
-
-Build / Local testing
----------------------
-- This is a static site — no build step required for most pages. If you modify JS/CSS, ensure paths remain correct.
-- To preview locally, open `index.html` in a browser or run a small static server:
-
-  ```bash
-  # from repository root
-  python -m http.server 8000
-  # or (Node)
-  npx http-server -p 8000
-  ```
-
-- If using Cloudflare Workers locally, use `wrangler dev` (requires Cloudflare account + env vars).
-
-Assets
-------
-- Images: `assets/images/` and subdomain-specific images under `acs_subdomains/*/assets/images/`.
-- JS: `assets/js/` and subdomain `assets/js/` files (e.g., `acs_admin/assets/js/*`).
-- Fonts: loaded from Google Fonts in the `<head>` (Outfit, Inter, Italianno). Also `font-family` fallbacks set in CSS.
-
-Analytics / Third-party
------------------------
-- Supabase: `assets/js/supabase-website-config.js` used in site (admin/student portals use Supabase config files)
-- Live chat / WhatsApp links used in footer and widget.
-
-Known special cases & gotchas
-----------------------------
-- Cloudflare Worker `_worker.js` performs URL rewrites; changing it can break MIME types or cause redirect loops. Test thoroughly.
-- Some pages and subdomains have their own `main.bundle.*.css` and `main.min.js` — updates must be mirrored per subdomain if keeping behavior identical.
-- When templatifying components (FAQ/testimonials), update all references (CSS & JS includes) and push carefully; changes were previously reverted after a bad partial integration.
-
-Recommended Handover Checklist for Agent
+Content & Data (how content is supplied)
 ----------------------------------------
-1. Clone repo and set up local static server.
-2. Inspect `assets/css/base/variables.css` for brand tokens and confirm any design changes with stakeholder.
-3. Review `_worker.js` and `wrangler.toml` before modifying routing rules or asset fetch behavior.
-4. If templatifying components, do changes in a feature branch, update all HTML references, and test locally before merging.
-5. Run a full smoke test on admin and student subdomains (check JS assets load with correct MIME types).
-6. Validate deploy by checking Cloudflare Pages logs and the Worker logs (if Worker modified).
+- Static content (pages) are primarily HTML pages for each course and landing area.
+- Reusable UI components can be templated by supplying JSON data to a small client-side renderer (example: FAQs can be managed via a JSON resource that the FAQ renderer fetches and renders).
+- Images, icons and media are published as static assets and referenced by pages.
 
-Extras — Useful commands
-------------------------
-- List HTML files:
-  ```bash
-  git ls-files "**/*.html"
-  ```
-- Show recent commits:
-  ```bash
-  git log --oneline --max-count=20
-  ```
-- Revert local changes to remote main (be careful):
-  ```bash
-  git fetch origin
-  git reset --hard origin/main
-  ```
+Scripts & Integrations
+----------------------
+- Main site logic: `main.js` — app-wide behaviors (scroll animations, FAQ bindings, navbar, SPA-style fallbacks, animation hooks).
+- Quiz logic: `quiz.js` / `quiz.min.js` for assessment widgets.
+- Supabase: site integrates with Supabase client (CDN version) and a site-specific config script used by admin/student areas to connect to backend services.
+- Worker/Edge script: route-handling logic that rewrites requests per hostname and path; must be maintained when adding new sub-app routes.
 
-Contact / Ownership
--------------------
-- Repo URL: (present in remote configuration) `https://github.com/abnvgurram/craftsoft-cf.git` (remote origin)
-- Cloudflare account: worker and Pages are configured (check `wrangler.toml` and Cloudflare dashboard for account info and bindings).
+SEO & Structured Data
+---------------------
+- Pages include structured data JSON-LD for the organization and FAQ schema (where applicable).
+- Meta tags for Open Graph and Twitter cards are present on key landing pages.
 
-End of handover
----------------
-This document is a starting point — hand over to the next agent with access to the Cloudflare account and the repository. If you want, I can also generate a flattened `sitemap.xml` file from the HTML pages and include it here.
+Accessibility & UX conventions
+------------------------------
+- Focus-visible and aria-expanded attributes are used for accordions and interactive elements.
+- Buttons and interactive controls use semantic elements (button, anchor) with keyboard accessibility.
+
+Maintenance & Operational Notes
+-------------------------------
+- Caching and edge/CDN: the site uses standard long-lived static caching for assets. When updating JSON-driven UI (e.g., FAQ JSON), either append a cache-busting query parameter or purge CDN caches to ensure immediate updates.
+- MIME issues: ensure the edge worker serves real assets directly; missing resources should not return an HTML page with content-type `text/html` (this will break script loads due to `X-Content-Type-Options: nosniff`). Worker routing must return correct Content-Type headers.
+
+Updating a Templated Component (example: FAQ)
+---------------------------------------------
+- Conceptual steps to update FAQs (no internal paths shown):
+  1. Update the FAQ data file (JSON) used by the FAQ renderer.
+  2. If the site uses a cached CDN, apply cache-busting (query string) or purge the CDN.
+  3. Verify on the live page: open DevTools → Console for renderer logs and confirm the count of loaded FAQs.
+  4. If accordion behavior doesn’t attach, ensure the main site initializer runs after dynamic rendering or call the FAQ bind function from the renderer.
+
+Troubleshooting Checklist (quick wins)
+-------------------------------------
+- If JS file blocked by MIME type: check the worker/routing and ensure the request returned a JS asset, not an HTML fallback. Also inspect `X-Content-Type-Options` header.
+- If dynamic JSON updates don't appear: clear cache, re-fetch with cache-busting parameter, or purge CDN.
+- If SPA routes 404: confirm edge-worker rewrite rules return the appropriate `index.html` for app paths while allowing real static files through.
+
+Deployment & Branching Guidance
+-------------------------------
+- Use feature branches for major UI changes (e.g., `feature/faq-templating`).
+- Test client-side renders locally using a static server or preview of the branch deployment (if using Pages/Cloudflare preview).
+- For safe rollouts, deploy to a preview environment first and verify assets, scripts, and worker rewrites before promoting to production.
+
+Security & Secrets
+------------------
+- Backend keys and environment secrets are kept out of the site assets. The Supabase client uses a config module; secret service access keys should be managed at the server/edge environment level (not in public assets).
+
+Hand-over Checklist (what I am passing to you)
+----------------------------------------------
+- Sitemap overview and list of public endpoints and subdomains.
+- Brand tokens: primary color, gradients, neutral text palette, typography rules.
+- Component inventory and behavior notes (FAQ, testimonials, chat, quiz).
+- Integration list: Supabase client, CDN/worker routing, analytics if present.
+- Maintenance and troubleshooting checklist (caching, MIME types, worker caveats).
+
+Next recommended steps for the new agent
+---------------------------------------
+1. Verify the live site (open a few pages and the admin/student routes) and confirm worker routing behaves as expected.
+2. Review the edge-worker logic with a focus on asset passthrough and correct Content-Type handling for static resources.
+3. Run a staging deploy for any templating changes and validate caching behavior for JSON-driven components.
+4. If required, migrate templated components to isolated feature branches and perform a controlled merge after QA.
+
+If you want this converted into a formatted handover PDF or a one-page quick-reference sheet for designers (colors, gradients, font weights), I can generate that next.
+
+End of document.
