@@ -178,6 +178,51 @@ Note: this is an exact, agent-focused blueprint to recreate the site. It intenti
 
 End of blueprint.
 
+**Subdomains, Flows & Sitemap**
+
+- Subdomains (logical names and purpose):
+  - `main` (public site): marketing pages, courses, portfolio, contact, policies.
+  - `admin` (administration): staff/admin workflows — login, records, students/clients management, payments, settings, version history.
+  - `students` (student portal): student login, dashboard, enrolled courses, assignments, materials, payments, profile.
+  - `signup` (enrollment): signup flows, email verification pages, and short-lived verification endpoints.
+
+- Request routing flow (edge-worker behavior, step-by-step):
+  1. Incoming request arrives with `hostname` + `pathname`.
+  2. Worker checks for shared static assets; if the path maps to a real static asset, return it immediately from the asset store with correct `Content-Type` and `X-Content-Type-Options: nosniff`.
+  3. If hostname matches one of the subdomains (`admin`, `students`, `signup`), the worker rewrites the request to the corresponding sub-app root and attempts to fetch the resource from the asset store.
+     - If the requested path is a nested client route (no file extension), the worker serves that sub-app's `index.html` (SPA fallback).
+     - If a requested asset or route is missing, the worker serves the sub-app-specific 404 page.
+  4. If hostname is the public `main` site, worker applies alias rewrites and redirects for legacy paths, otherwise returns the requested asset or `index.html` for SPA-like sections.
+
+- Authentication & session flow (high level):
+  - Login: client posts credentials to the auth backend (Supabase client flow in the site). On success, the client receives a session token (browser-managed) and navigates to `/dashboard` where the student/admin UI reads the session and fetches protected resources from the backend.
+  - Signup/verify: the signup flow collects user details, triggers an email with a verification link, and the verification endpoint confirms the user before allowing login.
+
+- Component/data flow (FAQ/testimonials example):
+  1. Page includes a small renderer script that fetches a JSON resource (component data) via `fetch('/path/to/data.json?v=<ts>')`.
+  2. Renderer injects semantic HTML into the page container and then calls the global initializer `initFAQ()` (or appropriate binder) to attach UI behaviors.
+  3. For updates, the deploy pipeline or CI should update the JSON and optionally bump a version parameter so clients fetch fresh data.
+
+- Sitemap guidance (how an agent produces a full sitemap without revealing repo internals):
+  - Produce a list of public URLs by enumerating published HTML endpoints and combining them with their hostnames. Example URL patterns (replace `example.com` with the actual domain):
+    - https://example.com/
+    - https://example.com/courses/
+    - https://example.com/contact/
+    - https://example.com/privacy-policy/
+    - https://admin.example.com/login/
+    - https://admin.example.com/dashboard/
+    - https://students.example.com/login/
+    - https://students.example.com/dashboard/
+    - https://signup.example.com/
+  - To generate a complete sitemap programmatically, list the site's published HTML endpoints (CI job or `git ls-files '*.html'` during build), prefix with each hostname that serves them, and output a `sitemap.xml` or plain list for audit.
+
+- Verification checklist for routing and flows (quick agent tests):
+  - Fetch a known `.js` asset and assert `Content-Type: application/javascript` and presence of `X-Content-Type-Options: nosniff`.
+  - Request a nested client route on each subdomain and confirm the worker returns the sub-app `index.html` (status 200) rather than a 404 or HTML fallback for unrelated host.
+  - Trigger signup verification flow with a test email (preview) and confirm the verify URL resolves and the controller sets the expected success state.
+
+End of subdomains & sitemap section.
+
 - --primary-50: #edf6fb
 - --primary-100: #d4eaf5
 - --primary-200: #a9d5eb
