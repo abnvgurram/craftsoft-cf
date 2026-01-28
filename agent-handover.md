@@ -444,7 +444,6 @@ The main script exposes these global initializer functions:
 | `initMobileMenu()`        | Toggles mobile hamburger menu                  |
 | `initScrollAnimations()`  | Intersection observer-based animations         |
 | `initQuiz()`              | Sets up career quiz CTAs and inline flows      |
-| `initStealthMode()`       | BGV stealth toggle (services & pricing)        |
 | `initFooter()`            | Loads and initializes footer component         |
 | `initTestimonials()`      | Renders testimonial cards                      |
 

@@ -1347,8 +1347,22 @@ function initScrollToTop() {
  * STEALTH MODE (BGV SHIELD)
  * Triggered by triple-tapping the '15+ Courses' stat in Hero
  * Default: ACTIVE (Services HIDDEN, Price SHOWN for BGV)
+ * AUTO-EXPIRES: 28 Feb 2026 00:00 IST
  */
 function initStealthMode() {
+  // Auto-expiry: After 28 Feb 2026 00:00 IST, stealth mode is permanently disabled
+  const expiryDate = new Date("2026-02-28T00:00:00+05:30");
+  if (Date.now() >= expiryDate.getTime()) {
+    // Clean up: remove stealth-active class and localStorage
+    document.body.classList.remove("stealth-active");
+    localStorage.removeItem("craftsoft_stealth_mode");
+    // Set all prices to "Contact for Pricing" (normal mode)
+    document.querySelectorAll(".price").forEach((el) => {
+      el.innerText = "Contact for Pricing";
+    });
+    return; // Exit early - no trigger, no stealth
+  }
+
   // Find the Courses stat item - look for the label 'Courses'
   const statItems = document.querySelectorAll(".stat-item");
   let coursesStat = null;
