@@ -628,6 +628,7 @@
 .chat-header h4 {
     margin: 0 0 5px;
     font-size: 1.1rem;
+    color: white;
 }
 
 .chat-header p {

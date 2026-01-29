@@ -1,7 +1,8 @@
 # Abhi's Craftsoft — Agent Handover Document
-**Version:** 2.0  
+**Version:** 2.1  
 **Last Updated:** January 29, 2026  
-**Domain:** [craftsoft.co.in](https://www.craftsoft.co.in)
+**Domain:** [craftsoft.co.in](https://www.craftsoft.co.in)  
+**Analysis Date:** January 29, 2026
 
 ---
 
@@ -37,6 +38,24 @@ Abhi's Craftsoft is a premier IT training institute located in Hyderabad, India.
 ### Primary Business Offerings
 - **IT Training Courses** — Full Stack Development, DevOps, Cloud (AWS/Azure), Salesforce, Data Analytics, Graphic Design, UI/UX, and more.
 - **Professional Services** — Website Development, UI/UX Design, Graphic Design, Branding, Cloud & DevOps Solutions.
+
+### Contact Information
+- **Address:** Plot No. 163, Vijayasree Colony, Vanasthalipuram, Hyderabad, India - 500070
+- **Phone:** +91-7842239090
+- **Email:** team.craftsoft@gmail.com
+- **WhatsApp:** +91-7842239090
+- **Social:** [@craftsoft_](https://www.instagram.com/craftsoft_) (Instagram), [LinkedIn](https://www.linkedin.com/company/abhis-craftsoft)
+
+### Business Hours
+- **Training Center:** Monday to Saturday, 9:00 AM - 7:00 PM
+- **Online Support:** 24/7 via WhatsApp and Email
+
+### Founding Information
+- **Founded:** 2019
+- **Founder:** Abhinav Gurram
+- **Student Count:** 100+ (as of Jan 2026)
+- **Course Offerings:** 25+ courses
+- **Average Rating:** 4.9/5.0
 
 ---
 
@@ -177,10 +196,29 @@ Fonts are loaded from **Google Fonts**:
 <link href="https://fonts.googleapis.com/css2?family=Italianno&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 ```
 
-### Usage Guidelines
-- **Headings**: Use `Outfit` with weights 600-800
-- **Body text**: Use `Inter` with weights 400-500
-- **Logo signature**: Use `Italianno` for the cursive "Abhi's" portion
+### Font Weight Mapping
+| Font Family | Weights Available | Usage Context |
+|-------------|-------------------|---------------|
+| **Outfit**  | 400, 500, 600, 700, 800 | Headings (h1-h6), Hero text, Section titles |
+| **Inter**   | 300, 400, 500, 600, 700, 800 | Body text, Paragraphs, Labels, UI elements |
+| **Italianno**| Regular | Logo signature "Abhi's" portion only |
+
+### Typography Scale
+| Element | Font Family | Size | Weight | Line Height |
+|---------|-------------|------|--------|-------------|
+| **H1** | Outfit | 2.5rem - 4rem | 700-800 | 1.1-1.2 |
+| **H2** | Outfit | 2rem - 3rem | 700 | 1.2 |
+| **H3** | Outfit | 1.5rem - 2rem | 600-700 | 1.2 |
+| **H4** | Outfit | 1.25rem - 1.5rem | 600 | 1.3 |
+| **Body** | Inter | 1rem | 400 | 1.6 |
+| **Small** | Inter | 0.875rem | 400 | 1.5 |
+
+### Text Utilities
+| Class | Purpose |
+|-------|---------|
+| `.gradient-text` | Applies primary gradient to text |
+| `.highlight` | Uses primary-600 color for emphasis |
+| `.logo-signature` | Special styling for "Abhi's" cursive text |
 
 ---
 
@@ -581,6 +619,245 @@ Vanasthalipuram, Hyderabad, India
 
 ### Student Portal
 [students.craftsoft.co.in](https://students.craftsoft.co.in)
+
+---
+
+## 15. Technical Implementation Details
+
+### CSS Architecture
+The website uses a modular CSS architecture with the following structure:
+
+```
+assets/css/
+├── master.css              # Main stylesheet that imports all modules
+├── main.bundle.css         # Bundled production stylesheet
+├── main.bundle.min.css     # Minified production stylesheet
+├── base/                   # Base styles and variables
+│   ├── variables.css       # CSS custom properties (design tokens)
+│   ├── reset.css           # CSS reset styles
+│   ├── typography.css      # Typography definitions
+│   └── sections.css       # Base section styles
+├── components/             # Reusable component styles
+│   ├── navbar.css          # Navigation bar styles
+│   ├── buttons.css         # Button components
+│   ├── testimonials.css    # Testimonial cards
+│   ├── faq.css             # FAQ accordion
+│   ├── footer.css          # Footer component
+│   ├── floating.css        # Floating elements
+│   ├── extras.css          # Additional components
+│   ├── unified-cards.css   # Card component system
+│   └── custom-select.css   # Custom select dropdowns
+├── sections/               # Page-specific section styles
+│   ├── hero.css            # Hero section
+│   ├── about.css           # About section
+│   ├── courses.css         # Courses section
+│   ├── services.css        # Services section
+│   ├── why-choose-us.css   # Why choose us section
+│   ├── founder.css         # Founder section
+│   └── contact.css         # Contact section
+├── pages/                  # Page-specific styles
+│   └── all-pages.css       # Shared page styles
+└── utilities/              # Utility classes
+    ├── animations.css      # Animation keyframes
+    └── responsive.css      # Media queries
+```
+
+### JavaScript Architecture
+The JavaScript is organized into modules and components:
+
+```
+assets/js/
+├── main.js                 # Main application logic
+├── main.min.js            # Minified production version
+├── quiz.js                # Career quiz functionality
+├── quiz.min.js            # Minified quiz version
+├── supabase-website-config.js  # Database configuration
+├── custom-select.js       # Custom dropdown functionality
+├── inquiry-sync.js        # Form submission handling
+├── phone-input-injector.js # Phone number input formatting
+├── search-bar.js          # Search functionality
+├── skeleton.js            # Loading skeleton management
+└── snowflakes.js           # Seasonal animation effects
+```
+
+### Component System
+The website uses a component-based architecture:
+
+```
+assets/components/
+├── footer/                # Footer component
+│   ├── footer.css         # Footer styles
+│   └── footer.js          # Footer functionality
+├── logo-signature/        # Logo component
+│   ├── logo-signature.css # Logo styles
+│   └── logo-signature.js  # Logo rendering
+├── quiz/                  # Quiz component
+│   └── quiz.css           # Quiz styles
+└── testimonials/          # Testimonials component
+    ├── testimonials-data.js # Testimonials data
+    └── testimonials.js     # Testimonials rendering
+```
+
+### Build System
+The website uses npm scripts for building:
+
+```json
+{
+  "scripts": {
+    "inject": "node scripts/inject-env.js",
+    "build:js": "npx terser assets/js/main.js -o assets/js/main.min.js -c -m && npx terser assets/js/quiz.js -o assets/js/quiz.min.js -c -m",
+    "build:css": "npx cleancss -o assets/css/main.bundle.min.css assets/css/main.bundle.css",
+    "build": "npm run inject && npm run build:js && npm run build:css",
+    "deploy": "npm run build && netlify deploy --prod --dir=."
+  }
+}
+```
+
+### Database Integration
+- **Provider:** Supabase (PostgreSQL + Auth)
+- **URL:** https://afocbygdakyqtmmrjvmy.supabase.co
+- **Authentication:** Row Level Security (RLS) enabled
+- **Usage:** Student records, course enrollments, contact forms, payments
+
+### Performance Optimizations
+- **Code Splitting:** Separate bundles for main.js and quiz.js
+- **CSS Minification:** Using clean-css-cli
+- **JavaScript Minification:** Using Terser
+- **Asset Caching:** 1-hour cache for assets, immediate for HTML
+- **Font Optimization:** Google Fonts with display=swap
+- **Image Optimization:** WebP format where supported
+
+### Security Features
+- **Content Security Policy:** Comprehensive CSP header
+- **X-Frame-Options:** SAMEORIGIN
+- **X-XSS-Protection:** Enabled with block mode
+- **X-Content-Type-Options:** nosniff
+- **Referrer Policy:** strict-origin-when-cross-origin
+
+### SEO Implementation
+- **Structured Data:** JSON-LD for organization and courses
+- **Meta Tags:** Comprehensive Open Graph and Twitter cards
+- **Semantic HTML:** Proper heading hierarchy and semantic elements
+- **URL Structure:** Clean, descriptive URLs
+- **Sitemap:** Auto-generated sitemap.xml
+
+### Accessibility Features
+- **ARIA Labels:** Proper labeling for interactive elements
+- **Keyboard Navigation:** Full keyboard accessibility
+- **Screen Reader Support:** Semantic HTML and ARIA roles
+- **Color Contrast:** WCAG AA compliant color ratios
+- **Focus Management:** Visible focus indicators
+
+---
+
+## 16. Content Management System
+
+### Data-Driven Components
+Several components are data-driven through JSON files:
+
+#### Testimonials Management
+```javascript
+// File: assets/components/testimonials/testimonials-data.js
+const TESTIMONIALS = [
+    {
+        stars: 5,
+        quote: "Deep curriculum with real-world projects.",
+        name: "Rahul Sharma",
+        role: "Full Stack Developer"
+    }
+    // ... more testimonials
+];
+```
+
+#### Course Data Structure
+Each course page follows a consistent structure:
+- Course title and description
+- Learning outcomes
+- Curriculum modules
+- Duration and schedule
+- Pricing information
+- Enrollment CTA
+
+#### Service Pages Structure
+Services follow this pattern:
+- Service overview
+- Key features
+- Process workflow
+- Portfolio examples
+- Contact form
+
+### Dynamic Content Loading
+The website uses JavaScript to dynamically load:
+- Footer component
+- Testimonials wall
+- Course listings
+- Quiz questions
+- Search results
+
+---
+
+## 17. Analytics and Monitoring
+
+### Website Analytics
+- **Google Analytics:** Implemented via gtag.js
+- **Form Tracking:** Custom event tracking for submissions
+- **User Engagement:** Scroll depth and time on page
+- **Conversion Tracking:** Course inquiries and signups
+
+### Performance Monitoring
+- **Core Web Vitals:** LCP, FID, CLS tracking
+- **Error Tracking:** JavaScript error logging
+- **Uptime Monitoring:** Cloudflare analytics
+- **CDN Performance:** Asset delivery metrics
+
+---
+
+## 18. Development Workflow
+
+### Version Control
+- **Repository:** Git-based version control
+- **Branching:** Feature branches for development
+- **Deployment:** Automatic deployment on main branch push
+
+### Local Development
+```bash
+# Install dependencies
+npm install
+
+# Build for development
+npm run build
+
+# Deploy to production
+npm run deploy
+```
+
+### Code Quality
+- **Linting:** ESLint for JavaScript
+- **Formatting:** Prettier for code formatting
+- **Validation:** HTML5 validation
+- **Testing:** Manual testing across browsers
+
+---
+
+## 19. Emergency Procedures
+
+### Website Down
+1. Check Cloudflare status
+2. Verify deployment logs
+3. Check DNS propagation
+4. Contact hosting provider if needed
+
+### Database Issues
+1. Check Supabase status
+2. Verify connection strings
+3. Review RLS policies
+4. Backup restoration if needed
+
+### Security Incident
+1. Review access logs
+2. Check for unauthorized changes
+3. Update passwords/keys
+4. Notify stakeholders
 
 ---
 
