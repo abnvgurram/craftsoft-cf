@@ -8,16 +8,51 @@
 
 ## Source of Truth
 
-| Portal | Live URL |
-|--------|----------|
-| Main Website | https://www.craftsoft.co.in |
-| Admin Portal | https://admin.craftsoft.co.in |
-| Student Portal | https://acs-student.craftsoft.co.in |
-| Signup Portal | https://signup.craftsoft.co.in |
+| Portal | Live URL | Description |
+|--------|----------|-------------|
+| Main Website | https://www.craftsoft.co.in | Public marketing site |
+| Admin Portal | https://admin.craftsoft.co.in | Staff management dashboard |
+| Student Portal | https://acs-student.craftsoft.co.in | Student learning portal |
+| Signup Portal | https://signup.craftsoft.co.in | Admin registration |
+| Netlify Preview | https://craftsoft-preview.netlify.app | (Internal testing) |
 
 ---
 
-# SECTION A: BRAND IDENTITY
+# SECTION A: DATA PERSISTENCE & FLOW
+
+## A1. Storage Mechanisms
+The migration MUST preserve how data is stored across sessions:
+
+| Type | Mechanism | Lifetime | Usage |
+|------|-----------|----------|-------|
+| **Admin Session** | `sessionStorage` | Tab lifetime | Auth tokens, tab-specific data |
+| **Student Session** | `sessionStorage` | Tab lifetime | Student portal login state |
+| **Stealth Mode** | `localStorage` | Permanent* | Secret state (Expiry: 28 Feb 2026) |
+| **User Prefs** | `localStorage` | Permanent | Theme (if applicable), language |
+| **Caching** | `ServiceWorker` | Browser-managed | Offline assets, fonts |
+
+## A2. Cross-Subdomain Communication
+- **Shared Credentials:** All subdomains use the same Supabase project.
+- **Redirects:** Subdomains should be able to redirect between each other cleanly using standard HTTPS headers or JS `window.location`.
+
+---
+
+# SECTION B: CURRENT DIRECTORY ARCHITECTURE
+
+| Path | Contents / Purpose |
+|------|--------------------|
+| `/` | Root of Main Website |
+| `/acs_subdomains/acs_admin/` | Source for `admin.craftsoft.co.in` |
+| `/acs_subdomains/acs_students/` | Source for `acs-student.craftsoft.co.in` |
+| `/acs_subdomains/acs_signup/` | Source for `signup.craftsoft.co.in` |
+| `/assets/` | Shared assets (CSS, JS, Images) for main site |
+| `/assets/admin/` | Admin-specific assets |
+| `/assets/student/` | Student-specific assets |
+| `/assets/components/` | Reusable HTML components (Footer, etc.) |
+
+---
+
+# SECTION C: BRAND IDENTITY
 
 ## A1. Brand Name Variants
 
@@ -76,7 +111,7 @@
 
 ---
 
-# SECTION B: COMPLETE SITEMAP
+# SECTION D: COMPLETE SITEMAP
 
 ## B1. Main Website (www.craftsoft.co.in)
 
@@ -143,7 +178,7 @@
 
 Example: `/c-python/` → `/courses/python/`
 
-## B2. Admin Portal (admin.craftsoft.co.in)
+## D2. Admin Portal (admin.craftsoft.co.in)
 
 | Path | Page |
 |------|------|
@@ -168,7 +203,7 @@ Example: `/c-python/` → `/courses/python/`
 | `/verify-email.html` | Email Verification |
 | `/404/` | 404 Page |
 
-## B3. Student Portal (acs-student.craftsoft.co.in)
+## D3. Student Portal (acs-student.craftsoft.co.in)
 
 | Path | Page |
 |------|------|
@@ -183,7 +218,7 @@ Example: `/c-python/` → `/courses/python/`
 | `/terms-of-service.html` | Terms of Service |
 | `/404/` | 404 Page |
 
-## B4. Signup Portal (signup.craftsoft.co.in)
+## D4. Signup Portal (signup.craftsoft.co.in)
 
 | Path | Page |
 |------|------|
@@ -193,7 +228,106 @@ Example: `/c-python/` → `/courses/python/`
 
 ---
 
-# SECTION C: NAVIGATION STRUCTURE
+# SECTION E: UI SKELETONS (ASCII)
+
+These skeletal mockups represent the visual architecture the agent MUST replicate. Use them as a structural guide while referencing the live URLs for pixel-perfect styling.
+
+## C1. Main Website Index (Landing Page)
+```text
+┌────────────────────────────────────────────────────────────┐
+│ [Logo]           Home  About  Courses  Services  Contact [C]│ (Sticky Navbar)
+├────────────────────────────────────────────────────────────┤
+│                                                            │
+│   🚀 Badge: Your career transformation starts here         │
+│   TRANSFORM YOUR CAREER WITH                               │
+│                                  [ Lottie Animation ]      │
+│   [ Typing Effect Text ]         [     (Robot/Tech)   ]      │
+│                                                            │
+│   Description: Your one-stop...                            │
+│                                                            │
+│   [Button: Explore] [Button: View Services] [Button: Talk] │
+│                                                            │
+│   Stats Row: [100+ Students]  |  [15+ Courses]  |  [4.9]   │
+│                                                            │
+├────────────────────────────────────────────────────────────┤
+│ ┌────────────────────────────────────────────────────────┐ │
+│ │ 🚀 Career Matchmaker [Take a Quiz]                     │ │ (Quiz CTA Card)
+│ └────────────────────────────────────────────────────────┘ │
+├────────────────────────────────────────────────────────────┤
+│   Our Courses (Unified Grid)                               │
+│   ┌──────┐ ┌──────┐ ┌──────┐                               │
+│   │ Card │ │ Card │ │ Card │                               │
+│   └──────┘ └──────┘ └──────┘                               │
+├────────────────────────────────────────────────────────────┤
+│   Career Growth / Professional Skills                      │
+├────────────────────────────────────────────────────────────┤
+│   Testimonials Wall (Masonry/Grids)                        │
+├────────────────────────────────────────────────────────────┤
+│   The Craftsoft Advantage (Features)                       │
+├────────────────────────────────────────────────────────────┤
+│ [Logo]   Trending   Services   Contact   [Social Icons]    │ (Footer)
+│ Subtitle  List       List      Details                     │
+└────────────────────────────────────────────────────────────┘
+```
+
+## C2. Auth Portal Layout (Admin / Student / Signup)
+Used for all login and registration screens. High-contrast split-screen on desktop.
+```text
+┌───────────────────────────┬────────────────────────────────┐
+│                           │                                │
+│ [Logo]                    │  [ Large Testimonial Quote ]   │
+│                           │  "Inspiring text goes here..." │
+│  Login/Signup Form        │                                │
+│                           │  [Module Badges Grid]          │
+│  [ Input Field ]          │  ┌─────┐ ┌─────┐               │
+│  [ Input Field ]          │  │Icon │ │Icon │               │
+│                           │  └─────┘ └─────┘               │
+│  [ PRIMARY BUTTON ]       │  ┌─────┐ ┌─────┐               │
+│                           │  │Icon │ │Icon │               │
+│  < Back to Website        │  └─────┘ └─────┘               │
+│                           │                                │
+│                           │  [System Status Panel]         │
+│                           │  Database: [OK]  Auth: [OK]    │
+└───────────────────────────┴────────────────────────────────┘
+```
+
+## C3. Dashboard Layout (Internal View)
+The primary layout for Admin and Student internal portals.
+```text
+┌──────────┬─────────────────────────────────────────────────┐
+│ [Logo]   │ [Header]              [Search]   [Profile Pic]  │
+├──────────┼─────────────────────────────────────────────────┤
+│ Sidebar  │                                                 │
+│          │  Page Title (e.g. Dashboard)                    │
+│ - Nav 1  │                                                 │
+│ - Nav 2  │  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐    │
+│ - Nav 3  │  │ Stat   │ │ Stat   │ │ Stat   │ │ Stat   │    │
+│          │  └────────┘ └────────┘ └────────┘ └────────┘    │
+│ Group    │                                                 │
+│ - Nav 4  │  ┌───────────────────────────────────────────┐  │
+│ - Nav 5  │  │                                           │  │
+│          │  │         [Main Content Area]               │  │
+│          │  │       (Tables, Forms, Lists)              │  │
+│ Settings │  │                                           │  │
+│ Logout   │  └───────────────────────────────────────────┘  │
+└──────────┴─────────────────────────────────────────────────┘
+```
+
+## C4. Card Component Anatomy
+```text
+┌──────────────────────────┐
+│ ┌────┐                   │
+│ │Icon│ Title             │ (Header)
+│ └────┘                   │
+├──────────────────────────┤
+│ Description text goes    │ (Content)
+│ here in Inter font...    │
+├──────────────────────────┤
+│              [Action Link│ (Footer)
+└──────────────────────────┘
+```
+
+# SECTION F: NAVIGATION STRUCTURE
 
 ## C1. Main Website Navigation
 
@@ -235,7 +369,7 @@ Example: `/c-python/` → `/courses/python/`
 | Privacy Policy | `/privacy-policy/` |
 | Terms of Service | `/terms-of-service/` |
 
-## C2. Admin Portal Navigation
+## F2. Admin Portal Navigation
 
 ### Sidebar Groups
 
@@ -272,7 +406,7 @@ Example: `/c-python/` → `/courses/python/`
 - Settings → `/settings/`
 - Version History → `/version-history/`
 
-## C3. Student Portal Navigation
+## F3. Student Portal Navigation
 
 ### Sidebar Items
 | Label | Path | Icon |
@@ -286,7 +420,7 @@ Example: `/c-python/` → `/courses/python/`
 
 ---
 
-# SECTION D: TYPOGRAPHY SYSTEM
+# SECTION G: TYPOGRAPHY SYSTEM
 
 ## D1. Font Families
 
@@ -296,7 +430,7 @@ Example: `/c-python/` → `/courses/python/`
 | Body | Inter | sans-serif |
 | Logo Script | Italianno | cursive |
 
-## D2. Font Weights Used
+## G2. Font Weights Used
 
 | Font | Weights |
 |------|---------|
@@ -304,7 +438,7 @@ Example: `/c-python/` → `/courses/python/`
 | Inter | 300, 400, 500, 600, 700, 800 |
 | Italianno | 400 |
 
-## D3. Type Scale
+## G3. Type Scale
 
 | Element | Font | Size | Weight | Line Height | Letter Spacing |
 |---------|------|------|--------|-------------|----------------|
@@ -322,7 +456,7 @@ Example: `/c-python/` → `/courses/python/`
 | Nav Link | Inter | 0.95rem | 500 | 1 | 0 |
 | Section Tag | Inter | 0.875rem | 600 | 1 | 0.5px |
 
-## D4. Text Colors
+## G4. Text Colors
 
 | Usage | Hex |
 |-------|-----|
@@ -337,7 +471,7 @@ Example: `/c-python/` → `/courses/python/`
 | Error | #EF4444 |
 | Success | #10B981 |
 
-## D5. Text Transformations
+## G5. Text Transformations
 
 | Element | Transform |
 |---------|-----------|
@@ -348,7 +482,7 @@ Example: `/c-python/` → `/courses/python/`
 
 ---
 
-# SECTION E: COLOR SYSTEM
+# SECTION H: COLOR SYSTEM
 
 ## E1. Primary Palette
 
@@ -365,7 +499,7 @@ Example: `/c-python/` → `/courses/python/`
 | 800 | #104e72 | 16, 78, 114 |
 | 900 | #0b3653 | 11, 54, 83 |
 
-## E2. Secondary Palette (Purple)
+## H2. Secondary Palette (Purple)
 
 | Level | Hex |
 |-------|-----|
@@ -374,7 +508,7 @@ Example: `/c-python/` → `/courses/python/`
 | Dark | #5B4BC7 |
 | Darker | #4A3DB6 |
 
-## E3. Tertiary Palette (Green)
+## H3. Tertiary Palette (Green)
 
 | Level | Hex |
 |-------|-----|
@@ -382,7 +516,7 @@ Example: `/c-python/` → `/courses/python/`
 | Main | #00B894 |
 | Dark | #059669 |
 
-## E4. Accent Palette (Orange)
+## H4. Accent Palette (Orange)
 
 | Level | Hex |
 |-------|-----|
@@ -390,7 +524,7 @@ Example: `/c-python/` → `/courses/python/`
 | Main | #FF9500 |
 | Dark | #D97706 |
 
-## E5. Neutral Palette
+## H5. Neutral Palette
 
 | Level | Hex |
 |-------|-----|
@@ -406,7 +540,7 @@ Example: `/c-python/` → `/courses/python/`
 | 800 | #1e293b |
 | 900 | #0f172a |
 
-## E6. Semantic Colors
+## H6. Semantic Colors
 
 | Purpose | Hex | Usage |
 |---------|-----|-------|
@@ -415,7 +549,7 @@ Example: `/c-python/` → `/courses/python/`
 | Error | #EF4444 | Errors, destructive actions |
 | Info | #3B82F6 | Informational messages |
 
-## E7. Background Colors
+## H7. Background Colors
 
 | Usage | Value |
 |-------|-------|
@@ -430,7 +564,7 @@ Example: `/c-python/` → `/courses/python/`
 | Footer | #0f172a |
 | Admin Sidebar | #edf6fb |
 
-## E8. Border Colors
+## H8. Border Colors
 
 | Usage | Value |
 |-------|-------|
@@ -443,7 +577,7 @@ Example: `/c-python/` → `/courses/python/`
 
 ---
 
-# SECTION F: GRADIENTS
+# SECTION I: GRADIENTS
 
 ## F1. Brand Gradients
 
@@ -453,7 +587,7 @@ Example: `/c-python/` → `/courses/python/`
 | Accent Secondary | 135deg | #00B894 → #00CEC9 | Success highlights |
 | Hero Title | 135deg | #2896cd → #6C5CE7 → #00B894 | Hero heading only |
 
-## F2. Button Gradients
+## I2. Button Gradients
 
 | Button | State | Direction | Colors |
 |--------|-------|-----------|--------|
@@ -462,7 +596,7 @@ Example: `/c-python/` → `/courses/python/`
 | Secondary | Default | 135deg | #6C5CE7 → #5B4BC7 |
 | Secondary | Hover | 135deg | #5B4BC7 → #4A3DB6 |
 
-## F3. Background Gradients
+## I3. Background Gradients
 
 | Section | Direction | Colors |
 |---------|-----------|--------|
@@ -473,7 +607,7 @@ Example: `/c-python/` → `/courses/python/`
 | Admin Sidebar | 180deg | #edf6fb → #e5f3fa |
 | Sidebar Active Item | 135deg | #2896cd → #1a7eb0 |
 
-## F4. Decorative Gradients (Hero Shapes)
+## I4. Decorative Gradients (Hero Shapes)
 
 | Shape | Colors |
 |-------|--------|
@@ -483,7 +617,7 @@ Example: `/c-python/` → `/courses/python/`
 
 ---
 
-# SECTION G: SPACING SYSTEM
+# SECTION J: SPACING SYSTEM
 
 ## G1. Base Scale
 
@@ -499,7 +633,7 @@ Example: `/c-python/` → `/courses/python/`
 | 4xl | 6 | 96 |
 | 5xl | 8 | 128 |
 
-## G2. Component Spacing
+## J2. Component Spacing
 
 | Component | Property | Value |
 |-----------|----------|-------|
@@ -513,7 +647,7 @@ Example: `/c-python/` → `/courses/python/`
 | Gap (Cards Grid) | Gap | 1.5rem - 2rem |
 | Gap (Buttons) | Gap | 1rem |
 
-## G3. Container
+## J3. Container
 
 | Property | Value |
 |----------|-------|
@@ -524,7 +658,7 @@ Example: `/c-python/` → `/courses/python/`
 
 ---
 
-# SECTION H: BORDER RADIUS
+# SECTION K: BORDER RADIUS
 
 | Token | Value | Usage |
 |-------|-------|-------|
@@ -537,7 +671,7 @@ Example: `/c-python/` → `/courses/python/`
 
 ---
 
-# SECTION I: SHADOWS
+# SECTION L: SHADOWS
 
 ## I1. Elevation Scale
 
@@ -550,7 +684,7 @@ Example: `/c-python/` → `/courses/python/`
 | xl | 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04) |
 | 2xl | 0 25px 50px -12px rgba(0,0,0,0.25) |
 
-## I2. Special Shadows
+## L2. Special Shadows
 
 | Name | Value | Usage |
 |------|-------|-------|
@@ -564,7 +698,7 @@ Example: `/c-python/` → `/courses/python/`
 
 ---
 
-# SECTION J: TRANSITIONS & ANIMATIONS
+# SECTION M: TRANSITIONS & ANIMATIONS
 
 ## J1. Transition Durations
 
@@ -574,7 +708,7 @@ Example: `/c-python/` → `/courses/python/`
 | Base | 300ms |
 | Slow | 500ms |
 
-## J2. Easing Functions
+## M2. Easing Functions
 
 | Name | Value | Usage |
 |------|-------|-------|
@@ -583,7 +717,7 @@ Example: `/c-python/` → `/courses/python/`
 | Bounce | cubic-bezier(0.175, 0.885, 0.32, 1.275) | Playful interactions |
 | Step | step-end | Cursor blink |
 
-## J3. Animation Definitions
+## M3. Animation Definitions
 
 | Name | Behavior | Duration | Iteration |
 |------|----------|----------|-----------|
@@ -596,7 +730,7 @@ Example: `/c-python/` → `/courses/python/`
 | bounceDown | translateY oscillates | 2s | Infinite |
 | rotateGlow | rotate(0→360deg) | 15-20s | Infinite |
 
-## J4. Staggered Animations
+## M4. Staggered Animations
 
 For lists/grids, delay each item:
 - Item 1: 0ms
@@ -607,7 +741,7 @@ For lists/grids, delay each item:
 
 ---
 
-# SECTION K: COMPONENT SPECIFICATIONS
+# SECTION N: COMPONENT SPECIFICATIONS
 
 ## K1. Navbar
 
@@ -642,7 +776,7 @@ For lists/grids, delay each item:
 | Shadow | 0 4px 15px rgba(...0.3) | 0 8px 25px rgba(...0.4) |
 | Transform | none | translateY(-3px) |
 
-### Secondary Button
+### N2.2 Secondary Button
 | Property | Default | Hover |
 |----------|---------|-------|
 | Background | #ffffff | #ffffff |
@@ -652,7 +786,7 @@ For lists/grids, delay each item:
 | Border Radius | 12px | - |
 | Transform | none | translateY(-3px) |
 
-### WhatsApp Button
+### N2.3 WhatsApp Button
 | Property | Value |
 |----------|-------|
 | Background | #25D366 |
@@ -675,7 +809,7 @@ For lists/grids, delay each item:
 | Shadow | md level | xl level |
 | Transform | none | translateY(-5px to -8px) |
 
-### Card Icon Container
+### N3.2 Card Icon Container
 | Property | Value |
 |----------|-------|
 | Size | 60-70px |
@@ -685,7 +819,7 @@ For lists/grids, delay each item:
 | Icon Size | 1.5-1.75rem |
 | Icon Color | #2896cd |
 
-## K4. Form Inputs
+## N4. Form Inputs
 
 | Property | Default | Focus |
 |----------|---------|-------|
@@ -711,7 +845,7 @@ For lists/grids, delay each item:
 | Color | #334155 |
 | Margin Bottom | 8px |
 
-## K5. Footer
+## N5. Footer
 
 | Property | Value |
 |----------|-------|
@@ -731,7 +865,7 @@ For lists/grids, delay each item:
 - Services column: Random 4 from service list
 - Randomize on each page load
 
-## K6. Chat Widget
+## N6. Chat Widget
 
 | Property | Value |
 |----------|-------|
@@ -764,7 +898,7 @@ For lists/grids, delay each item:
 | Phone | #0984e3 |
 | Email | #6c5ce7 |
 
-## K7. Section Header Pattern
+## N7. Section Header Pattern
 
 | Element | Specs |
 |---------|-------|
@@ -773,7 +907,7 @@ For lists/grids, delay each item:
 | Description | Gray-500, max-width 600px, centered |
 | Spacing | Tag mb-16px, Title mb-16px, Description mb-64px |
 
-## K8. Stat Items (Hero)
+## N8. Stat Items (Hero)
 
 | Element | Specs |
 |---------|-------|
@@ -784,13 +918,13 @@ For lists/grids, delay each item:
 
 ---
 
-# SECTION L: ICONS
+# SECTION O: ICONS
 
 ## L1. Icon Library
 Font Awesome 6.5.1 (Free)
 CDN: cdnjs.cloudflare.com
 
-## L2. Common Icons Used
+## O2. Common Icons Used
 
 | Purpose | Icon Class |
 |---------|------------|
@@ -834,7 +968,7 @@ CDN: cdnjs.cloudflare.com
 
 ---
 
-# SECTION M: STATES
+# SECTION P: STATES
 
 ## M1. Loading States
 
@@ -853,7 +987,7 @@ CDN: cdnjs.cloudflare.com
 - Matches shape of expected content
 - 1.5s animation cycle
 
-## M2. Empty States
+## P2. Empty States
 
 | Context | Message Pattern |
 |---------|-----------------|
@@ -861,7 +995,7 @@ CDN: cdnjs.cloudflare.com
 | No Data | Illustration + "Nothing here yet" |
 | Search Empty | "No matches for '[query]'" |
 
-## M3. Error States
+## P3. Error States
 
 ### Form Field Error
 - Red border (#EF4444)
@@ -883,7 +1017,7 @@ CDN: cdnjs.cloudflare.com
 
 ---
 
-# SECTION N: FORMS SPECIFICATION
+# SECTION Q: FORMS SPECIFICATION
 
 ## N1. Contact Form (Main Website)
 
@@ -897,14 +1031,14 @@ CDN: cdnjs.cloudflare.com
 | Course Interest | select | Conditional | If type=Course |
 | Message | textarea | No | Max 1000 chars |
 
-## N2. Admin Login Form
+## Q2. Admin Login Form
 
 | Field | Type | Required | Accepts |
 |-------|------|----------|---------|
 | Identifier | text | Yes | Email OR Admin ID (ACS-XX) OR Phone |
 | Password | password | Yes | Min 8 chars |
 
-## N3. Admin Signup Form
+## Q3. Admin Signup Form
 
 | Field | Type | Required | Validation |
 |-------|------|----------|------------|
@@ -914,7 +1048,7 @@ CDN: cdnjs.cloudflare.com
 | Password | password | Yes | Min 8 chars |
 | Confirm Password | password | Yes | Must match password |
 
-## N4. Student Login Form
+## Q4. Student Login Form
 
 | Field | Type | Required | Accepts |
 |-------|------|----------|---------|
@@ -927,7 +1061,7 @@ Then OTP step:
 
 ---
 
-# SECTION O: Z-INDEX HIERARCHY
+# SECTION R: Z-INDEX HIERARCHY
 
 | Element | Z-Index |
 |---------|---------|
@@ -946,7 +1080,7 @@ Then OTP step:
 
 ---
 
-# SECTION P: RESPONSIVE BREAKPOINTS
+# SECTION S: RESPONSIVE BREAKPOINTS
 
 | Name | Width | Key Changes |
 |------|-------|-------------|
@@ -955,7 +1089,7 @@ Then OTP step:
 | Mobile | <768px | Single column, hamburger menu |
 | Small Mobile | <480px | Further reduced spacing |
 
-## P1. Key Responsive Adjustments
+## S1. Key Responsive Adjustments
 
 ### At <1024px
 - Hero: Single column, image hidden
@@ -979,9 +1113,9 @@ Then OTP step:
 
 ---
 
-# SECTION Q: SEO REQUIREMENTS
+# SECTION T: SEO REQUIREMENTS
 
-## Q1. Meta Tags (Every Page)
+## T1. Meta Tags (Every Page)
 
 | Tag | Required |
 |-----|----------|
@@ -996,13 +1130,13 @@ Then OTP step:
 | og:image | Yes |
 | twitter:card | Yes |
 
-## Q2. Heading Structure
+## T2. Heading Structure
 
 - One H1 per page
 - Logical H2→H3→H4 hierarchy
 - No skipped levels
 
-## Q3. Image Requirements
+## T3. Image Requirements
 
 | Attribute | Required |
 |-----------|----------|
@@ -1012,29 +1146,29 @@ Then OTP step:
 
 ---
 
-# SECTION R: ACCESSIBILITY
+# SECTION U: ACCESSIBILITY
 
-## R1. Focus States
+## U1. Focus States
 - All interactive elements must have visible focus
 - Focus ring: 2-3px, primary color glow
 
-## R2. ARIA Labels
+## U2. ARIA Labels
 - All icon-only buttons need aria-label
 - Form inputs linked to labels
 - Modal has role="dialog"
 
-## R3. Color Contrast
+## U3. Color Contrast
 - Text on backgrounds: Minimum 4.5:1 ratio
 - Large text: Minimum 3:1 ratio
 
-## R4. Keyboard Navigation
+## U4. Keyboard Navigation
 - Tab order follows visual order
 - Escape closes modals
 - Enter activates buttons
 
 ---
 
-# SECTION S: CONTACT INFORMATION
+# SECTION V: CONTACT INFORMATION
 
 **Never modify these values:**
 
@@ -1057,7 +1191,7 @@ Then OTP step:
 
 ---
 
-# SECTION T: WHATSAPP MESSAGE TEMPLATES
+# SECTION W: WHATSAPP TEMPLATES
 
 | Context | Pre-filled Message |
 |---------|-------------------|
@@ -1071,16 +1205,16 @@ URL Format: `https://wa.me/917842239090?text={encoded_message}`
 
 ---
 
-# SECTION U: DATA FORMATS
+# SECTION X: DATA FORMATS
 
-## U1. ID Formats
+## X1. ID Formats
 
 | Entity | Format | Example |
 |--------|--------|---------|
 | Admin ID | ACS-XX | ACS-01, ACS-15 |
 | Student ID | CS-XXXX | CS-0001, CS-0256 |
 
-## U2. Phone Format
+## X2. Phone Format
 
 | Stage | Format |
 |-------|--------|
@@ -1088,14 +1222,14 @@ URL Format: `https://wa.me/917842239090?text={encoded_message}`
 | Storage | 7842239090 (10 digits only) |
 | Link | tel:+917842239090 |
 
-## U3. Date Formats
+## X3. Date Formats
 
 | Context | Format |
 |---------|--------|
 | Display | DD MMM YYYY (e.g., 29 Jan 2026) |
 | Relative | "2 hours ago", "Yesterday" |
 
-## U4. Currency Format
+## X4. Currency Format
 
 | Format | Example |
 |--------|---------|
@@ -1105,32 +1239,32 @@ URL Format: `https://wa.me/917842239090?text={encoded_message}`
 
 ---
 
-# SECTION V: EXTERNAL SERVICES
+# SECTION Y: EXTERNAL SERVICES
 
-## V1. Authentication Provider
+## Y1. Authentication Provider
 - Supabase Auth
 - Email + Password for Admin
 - Magic Link (OTP) for Student
 
-## V2. Database
+## Y2. Database
 - Supabase (PostgreSQL)
 - Row Level Security enabled
 
-## V3. Hosting
+## Y3. Hosting
 - Cloudflare Pages
 
-## V4. CDN
+## Y4. CDN
 - Cloudflare
 
-## V5. Fonts
+## Y5. Fonts
 - Google Fonts
 
-## V6. Icons
+## Y6. Icons
 - Font Awesome 6.5.1 Free
 
 ---
 
-# SECTION W: QUALITY CHECKLIST
+# SECTION Z: QUALITY CHECKLIST
 
 Before marking any page complete:
 
